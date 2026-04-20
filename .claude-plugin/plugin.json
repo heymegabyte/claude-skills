@@ -1,0 +1,24 @@
+{
+  "name": "emdash-operating-system",
+  "description": "55-skill autonomous product-building system for Claude Code. Converts weak one-line prompts into fully realized, production-ready SaaS products with elite UX, multimedia, testing, and deployment on Cloudflare.",
+  "version": "4.1.0",
+  "author": {
+    "name": "Brian Zalewski",
+    "url": "https://megabyte.space"
+  },
+  "homepage": "https://github.com/HeyMegabyte/emdash-skills",
+  "repository": "https://github.com/HeyMegabyte/emdash-skills",
+  "license": "MIT",
+  "keywords": [
+    "saas",
+    "cloudflare",
+    "angular",
+    "hono",
+    "autonomous",
+    "product-building",
+    "testing",
+    "deployment",
+    "design-system",
+    "computer-use"
+  ]
+}

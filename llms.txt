@@ -1,0 +1,87 @@
+# Emdash Skills System
+
+> 49-skill autonomous product-building system for Claude Code. Converts one-line prompts into fully deployed, production-ready products with elite UX, bold design, rigorous testing, and enterprise-grade instrumentation. Self-improving: tracks skill usage, detects outdated advice, and batch-applies updates.
+
+## System Files (Load Before Skills)
+
+- [Router](_router.md) -- Deterministic skill routing. Load FIRST to pick minimal skill subset.
+- [Conventions](CONVENTIONS.md) -- Shared constants: brand tokens, deploy commands, CSP, breakpoints, patterns.
+- [Quick Reference](QUICK_REF.md) -- One-page cheat sheet for simple tasks. Includes emergency playbook.
+- [Skill Profiles](SKILL_PROFILES.md) -- Maps project types to skill subsets. 6 profiles + decision tree.
+- [Changelog](CHANGELOG.md) -- Version history of the skills system itself.
+
+## Core System
+
+- [Operating System](01-operating-system/SKILL.md) -- Supreme policy, autonomy, speed, emphasis detection
+- [Goal and Brief](02-goal-and-brief/SKILL.md) -- Product thesis, target users, success criteria
+- [Planning and Research](03-planning-and-research/SKILL.md) -- Domain research, planning, decomposition, parallelism
+- [Preference and Memory](04-preference-and-memory/SKILL.md) -- User preferences, voice of customer, confidence levels
+- [Architecture and Stack](05-architecture-and-stack/SKILL.md) -- Platform selection, services, auth, data, API keys
+
+## Build and Ship
+
+- [Build and Slice Loop](06-build-and-slice-loop/SKILL.md) -- Vertical slices, anti-placeholder enforcement, code quality
+- [Quality and Verification](07-quality-and-verification/SKILL.md) -- Testing, security, accessibility, performance audits
+- [Deploy and Runtime Verification](08-deploy-and-runtime-verification/SKILL.md) -- Deploy, purge cache, verify live, rollback
+- [CI/CD Pipeline](35-ci-cd-pipeline/SKILL.md) -- GitHub Actions: deploy on push, E2E on PR, previews
+- [Launch Day Sequence](34-launch-day-sequence/SKILL.md) -- Submit sitemap, announce, verify everything live
+
+## Brand and Design
+
+- [Brand and Content System](09-brand-and-content-system/SKILL.md) -- Brand identity, copy, trust signals, legal, SEO
+- [Experience and Design System](10-experience-and-design-system/SKILL.md) -- Typography, color, layout, components, anti-slop
+- [Motion and Interaction System](11-motion-and-interaction-system/SKILL.md) -- Transitions, scroll effects, hover states, reduced-motion
+- [Media Orchestration](12-media-orchestration/SKILL.md) -- Images, video, logos, icons, social assets, critique/remix
+- [Custom Error Pages](31-custom-error-pages/SKILL.md) -- Branded 404, 500, 503, offline pages
+
+## Growth and Intelligence
+
+- [Observability and Growth](13-observability-and-growth/SKILL.md) -- Analytics, Sentry, Stripe, email, experiments
+- [Independent Idea Engine](14-independent-idea-engine/SKILL.md) -- Autonomous research, proposals, self-critique
+- [Competitive Analysis](17-competitive-analysis/SKILL.md) -- Scrape 3 competitors + web search before building
+- [SEO and Keywords](28-seo-and-keywords/SKILL.md) -- Keyword research, Yoast rules, per-page targeting
+- [Social Automation](27-social-automation/SKILL.md) -- Auto-post via Postiz to 15+ platforms on deploy
+
+## Product Features
+
+- [Easter Eggs](15-easter-eggs/SKILL.md) -- Mandatory hidden delights via URL params
+- [Stripe Billing](18-stripe-billing/SKILL.md) -- Free tier + pro, donations like GiveDirectly
+- [Contact Forms and Endpoints](32-contact-forms-and-endpoints/SKILL.md) -- Working forms with Turnstile, Resend, 8-point tests
+- [Site Search](37-site-search/SKILL.md) -- D1 LIKE or Vectorize semantic search, Cmd+K modal
+- [Onboarding and First Run](36-onboarding-and-first-run/SKILL.md) -- Welcome flow, checklist, activation tracking
+- [AI Chat Widget](43-ai-chat-widget/SKILL.md) -- Workers AI + Vectorize RAG chat (conditional)
+- [User Feedback Collection](41-user-feedback-collection/SKILL.md) -- In-app widget, NPS, testimonial moderation
+
+## Content and Infrastructure
+
+- [Domain Provisioning](16-domain-provisioning/SKILL.md) -- Auto-provision CF Worker, DNS, gorgeous placeholder
+- [Email Templates](19-email-templates/SKILL.md) -- Branded HTML emails for all transactional flows
+- [Blog and Content Engine](33-blog-and-content-engine/SKILL.md) -- Markdown blog, RSS, categories, seed posts
+- [Shared API Pool](26-shared-api-pool/SKILL.md) -- Centralized API keys + Coolify self-hosted services
+
+## Meta Skills
+
+- [Accessibility Gate](20-accessibility-gate/SKILL.md) -- axe-core audit + focus styling, WCAG AA
+- [Web Manifest System](24-web-manifest-system/SKILL.md) -- Sitemap, robots, humans, security, opensearch, PWA
+- [Documentation and Codebase Hygiene](29-documentation-and-codebase-hygiene/SKILL.md) -- README template, CLAUDE.md, JSDoc, stale removal
+- [AI-Native Coding](30-ai-native-coding/SKILL.md) -- AI-optimized code patterns, full-stack integration
+- [Internationalization](42-internationalization/SKILL.md) -- EN+ES minimum, AI translate, hreflang
+- [Wisdom and Human Psychology](51-wisdom-and-human-psychology/SKILL.md) -- Cialdini, Kahneman, servant leadership, ethics
+
+## Product Completeness
+
+- [Admin Dashboard](46-admin-dashboard/SKILL.md) -- Lightweight /admin with embedded bolt.diy editor
+- [Keyboard Shortcuts and Command Palette](47-keyboard-shortcuts-and-command-palette/SKILL.md) -- Cmd+K palette, ? shortcuts overlay
+- [Empty States and Loading](48-empty-states-and-loading/SKILL.md) -- Every empty list prompts action, skeleton screens
+- [Notification System](49-notification-system/SKILL.md) -- OneSignal push + in-app bell + email fallback
+- [Changelog and Releases](39-changelog-and-releases/SKILL.md) -- Auto-generate from git, /changelog, GitHub Releases
+- [Uptime and Health](38-uptime-and-health/SKILL.md) -- Health endpoints, external monitoring, status page
+
+## Advanced Integration
+
+- [Drizzle ORM and Migrations](44-drizzle-orm-and-migrations/SKILL.md) -- Drizzle ORM for D1/Neon, schema conventions
+- [Webhook System](45-webhook-system/SKILL.md) -- Stripe/Clerk/GitHub webhooks, idempotency, event routing
+- [Backup and Disaster Recovery](40-backup-and-disaster-recovery/SKILL.md) -- Single-zip restore, D1/KV/R2 exports, cron backups
+- [Coolify Docker Proxmox](50-coolify-docker-proxmox/SKILL.md) -- Self-hosted infra: Coolify API, Docker, Proxmox
+- [MCP and Cloud Integrations](52-mcp-and-cloud-integrations/SKILL.md) -- MCP servers, secrets, Slack/Discord/Zapier, AI APIs
+- [GitHub CI Fix](gh-fix-ci/SKILL.md) -- Debug failing GitHub Actions PR checks
