@@ -1,14 +1,6 @@
 ---
 name: "Computer Use Automation"
 description: "Desktop automation via Anthropic Computer Use MCP. Native macOS app control, visual QA workflows, screenshot-verify loops, cross-app orchestration. Teaches Claude when and how to use Computer Use vs dedicated MCPs."
-icon: "\U0001F5A5"
-priority: high
-version: 1.0.0
-triggers:
-  - user asks to interact with a native macOS app
-  - visual QA needed beyond Playwright's reach
-  - cross-app workflow requiring desktop automation
-  - user mentions "computer use" or "desktop automation"
 allowed-tools: mcp__computer-use__*, Read, Bash
 ---
 

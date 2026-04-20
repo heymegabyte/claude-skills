@@ -1,14 +1,6 @@
 ---
 name: "Coolify, Docker, and Proxmox"
 description: "Orchestrate self-hosted services on Brian's Proxmox box via Coolify API. Deploy Docker containers, manage environment variables, restart services, and provision new services. REQUIRES USER CONFIRMATION on first use per project — ask before touching production infrastructure. 70+ services already running."
-icon: 🐳
-priority: standard
-version: 4.0.0
-triggers:
-  - project needs persistent Docker hosting beyond Cloudflare
-  - user mentions "Coolify", "Docker", "Proxmox", "self-hosted"
-  - service needs a database, queue, or container that CF can't handle
-  - accessing self-hosted services (Sentry, PostHog, Postiz, n8n, etc.)
 ---
 
 # Coolify, Docker, and Proxmox

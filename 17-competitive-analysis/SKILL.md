@@ -1,14 +1,7 @@
 ---
 name: "Competitive Analysis"
 description: "Before building any product: WebSearch for 3-5 competitors, scrape their homepages and pricing pages via WebFetch, extract features, pricing tiers, design patterns, and copy tone. Summarize in comparison table. Scrape source sites for brand assets during rebuilds. Use FireCrawl (self-hosted) for deep crawling."
-icon: 🔍
-priority: standard
-version: 4.0.0
-triggers:
-  - new product being built
-  - user references competitor or "like [site]"
-  - rebuild of existing site
-  - user asks about market or competition
+context: fork
 ---
 
 # Competitive Analysis

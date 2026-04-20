@@ -1,14 +1,7 @@
 ---
 name: "AI-Native Coding"
 description: "Code patterns optimized for AI agents, not human habits. Explicit over implicit, flat over nested, self-documenting names, co-located context. AI should build complete full-stack systems with tight integration across all docs (CLAUDE.md, MEMORY.md, skills). Pushes beyond human coding patterns that limit AI capability."
-icon: 🤖
-priority: critical
-version: 4.0.0
-triggers:
-  - always (shapes all code generation)
-  - code review or refactor
-  - new project architecture decisions
-  - when AI is writing code for AI consumption
+user-invocable: false
 ---
 
 # AI-Native Coding

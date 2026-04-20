@@ -1,14 +1,6 @@
 ---
 name: "Autonomous Orchestrator"
 description: "Master process that drives entire SaaS projects to completion with minimal user input. Spawns parallel child agents for independent work streams. Makes all creative, technical, and architectural decisions autonomously. Continuously improves until the product exceeds competitors."
-icon: "\U0001F9E0"
-priority: critical
-version: 4.0.0
-triggers:
-  - start of any new project or major feature
-  - user says "build this" or "make this better" without detailed specs
-  - returning to an existing project that has pending improvements
-  - default orchestration mode for all emdash projects
 ---
 
 # 53 — Autonomous Orchestrator

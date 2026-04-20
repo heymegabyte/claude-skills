@@ -1,14 +1,6 @@
 ---
 name: "AI Technology Integration"
 description: "Latest AI APIs, models, and techniques for building AI-native products. GPT-4o vision for visual QA, Workers AI for edge inference, embeddings for RAG, structured outputs, image/video generation, speech, and the visual TDD loop."
-icon: "\U0001F9E0"
-priority: critical
-version: 1.0.0
-triggers:
-  - every build (visual TDD loop)
-  - user mentions AI, vision, generation, embeddings, RAG
-  - media generation needed
-  - visual QA after deploy
 allowed-tools: Bash, Read, Write, Edit, mcp__playwright__*
 ---
 

@@ -1,15 +1,8 @@
 ---
 name: "Chrome and Browser Workflows"
 description: "Browser automation for web app interaction, form filling, visual testing, and web scraping via Chrome MCP and Playwright MCP. Teaches the optimal tool for each browser task."
-icon: "\U0001F310"
-priority: high
-version: 1.0.0
-triggers:
-  - user asks to interact with a web application
-  - web-based visual QA or testing needed
-  - form filling or data entry in browser
-  - web scraping beyond Firecrawl's capabilities
-allowed-tools: mcp__playwright__*, mcp__firecrawl__*, Read, Bash
+context: fork
+allowed-tools: "Bash Read Glob Grep mcp__playwright__*"
 ---
 
 # Chrome and Browser Workflows

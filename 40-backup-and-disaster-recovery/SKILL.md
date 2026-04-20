@@ -1,13 +1,6 @@
 ---
 name: "Backup and Disaster Recovery"
 description: "Single-zip infrastructure restore plan: D1 database exports, R2 bucket sync, KV namespace dumps, wrangler.toml + secrets list, and a restore script that rebuilds everything from one archive. Cron-based automated backups to R2. Recovery runbook for when things go wrong."
-icon: 💾
-priority: standard
-version: 4.0.0
-triggers:
-  - new project setup (create backup plan)
-  - user asks about backups or disaster recovery
-  - before major migrations or changes
 ---
 
 # Backup and Disaster Recovery

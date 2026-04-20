@@ -1,14 +1,6 @@
 ---
 name: "Media Orchestration"
 description: "Section-by-section media planning and generation. Image generation (built-in + DALL-E fallback), logo/icon generation (Ideogram → favicon set), video generation (Sora), social preview images (OG 1200x630), stock photo curation (Unsplash, Pexels), critique/remix loops (max 3 rounds), asset compression pipeline, and media performance budgets."
-icon: 📸
-priority: standard
-version: 4.0.0
-triggers:
-  - new project (plan full media strategy)
-  - new page or section needs media
-  - branding task (logo, icons, social)
-  - "generate image" or "create logo" or "make video"
 ---
 
 # 12 — Media Orchestration

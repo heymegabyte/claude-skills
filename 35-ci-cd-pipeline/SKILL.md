@@ -1,13 +1,6 @@
 ---
 name: "CI/CD Pipeline"
 description: "GitHub Actions for auto-deploy on push to main, E2E tests on PR, branch preview deploys. Not relied on (Brian deploys live from CLI), but set up for future users and as safety net. Includes Playwright in CI, Lighthouse audit, and auto-merge for passing PRs."
-icon: ⚙️
-priority: standard
-version: 4.0.0
-triggers:
-  - new project setup (create pipeline for future users)
-  - user asks about CI/CD or GitHub Actions
-  - PR-based workflow needed
 ---
 
 # CI/CD Pipeline

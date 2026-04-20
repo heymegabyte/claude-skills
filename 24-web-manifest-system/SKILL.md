@@ -1,14 +1,6 @@
 ---
 name: "Web Manifest System"
 description: "MANDATORY: Every site gets full PWA manifest with screenshots, shortcuts (96px icons), display_override, edge_side_panel. Plus sitemap.xml, robots.txt, humans.txt, security.txt, opensearch.xml, browserconfig.xml. Comprehensive meta tags (copyright, HandheldFriendly, format-detection, color-scheme). Cross-site linking via rel=alternate. Per-page OG images. JSON-LD rich snippets. All files regenerated on every deploy."
-icon: 📋
-priority: critical
-version: 5.0.0
-triggers:
-  - every website build (mandatory)
-  - SEO audit or structured data check
-  - new page added
-  - PWA manifest errors in Chrome DevTools
 ---
 
 # Web Manifest System

@@ -1,14 +1,6 @@
 ---
 name: "Preference and Memory"
 description: "Captures and evolves user preferences with confidence levels. Maintains Voice of the Customer model with exact language, dissatisfaction and aspiration signals. Handles promotion/demotion of preferences, global vs project scoping, and Omi wearable data integration."
-icon: 💭
-priority: critical
-version: 4.0.0
-triggers:
-  - start of every session (load preferences)
-  - user corrects or confirms behavior
-  - user uses emphasis signals
-  - VoC refresh needed
 ---
 
 # 04 — Preference and Memory

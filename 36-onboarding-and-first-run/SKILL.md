@@ -1,13 +1,6 @@
 ---
 name: "Onboarding and First-Run"
 description: "SaaS onboarding flows: welcome modal, guided tour with tooltips, progress checklist, welcome email, activation tracking via PostHog. Reduces time-to-value for new users. Targets 20-40% activation rate. Use when building SaaS products with user accounts."
-icon: 👋
-priority: standard
-version: 4.0.0
-triggers:
-  - SaaS product with user accounts
-  - user mentions "onboarding", "welcome", "first-run", "activation"
-  - product has sign-up flow
 ---
 
 # Onboarding and First-Run

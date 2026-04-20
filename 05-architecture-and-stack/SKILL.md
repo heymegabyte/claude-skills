@@ -1,14 +1,6 @@
 ---
 name: "Architecture and Stack"
 description: "Cloudflare-first platform selection and architecture design. Decision trees for Workers, Pages, D1, R2, KV, Durable Objects, Queues, Vectorize. Default stack with override conditions. Auth via Clerk, data patterns, reliability structure, and complete API key reference."
-icon: 🏗️
-priority: standard
-version: 4.0.0
-triggers:
-  - new project (select full stack)
-  - new feature requiring new service
-  - architecture change needed
-  - user asks about Cloudflare services
 ---
 
 # 05 — Architecture and Stack

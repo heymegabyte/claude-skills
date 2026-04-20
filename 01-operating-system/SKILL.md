@@ -1,13 +1,7 @@
 ---
 name: "Operating System"
 description: "Supreme policy layer governing all Claude Code behavior. Controls autonomy, one-line prompt interpretation, speed standards, emphasis signal processing (***TEXT***), prompt re-synthesis, cross-skill coordination, done definitions, and conflict resolution. Loaded on every prompt."
-icon: 🧠
-priority: critical
-version: 4.0.0
-triggers:
-  - always (loaded on every prompt)
-  - "process this"
-  - any emphasized directive
+user-invocable: false
 ---
 
 # 01 — Operating System

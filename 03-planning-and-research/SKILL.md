@@ -1,14 +1,6 @@
 ---
 name: "Planning and Research"
 description: "Deep web research, competitor scanning, technology evaluation, and implementation planning. Decomposes work into vertical slices, identifies parallel workstreams, tracks assumptions with confidence levels, and designs the critical path for minimum wall-clock time."
-icon: 🔬
-priority: standard
-version: 4.0.0
-triggers:
-  - beginning of any build task
-  - unfamiliar technology or domain
-  - complex multi-step implementation
-  - user requests research or planning
 ---
 
 # 03 — Planning and Research

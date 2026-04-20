@@ -1,14 +1,6 @@
 ---
 name: "Site Search"
 description: "Cloudflare AI Search-powered site search for projectsites.dev: hybrid semantic + keyword search, multi-tenant via folder-prefix filtering or dedicated namespaces, built-in MCP endpoint for AI agents, Cmd+K modal UI, and auto-indexing at deploy time."
-icon: 🔍
-priority: standard
-version: 5.0.0
-triggers:
-  - site has 5+ pages of content
-  - user mentions "search", "find", "Cmd+K"
-  - blog or documentation site
-  - projectsites.dev tenant needs search
 ---
 
 # Site Search (Cloudflare AI Search)

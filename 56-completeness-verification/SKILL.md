@@ -1,3 +1,8 @@
+---
+name: "Completeness Verification"
+description: "Continuously loop through AI-powered visual inspection of every page, every breakpoint, every interaction state until the AI finds zero remaining issues. This is the done detector that prevents premature completion."
+---
+
 # Skill 56 — Completeness Verification Loop
 
 > **Purpose**: Continuously loop through AI-powered visual inspection of every page, every breakpoint, every interaction state until the AI finds zero remaining issues. This is the "done detector" — the skill that prevents premature completion.

@@ -1,13 +1,6 @@
 ---
 name: "Shared API Pool"
 description: "Centralized API key pool shared across all Emdash projects. Every project automatically integrates with PostHog, Sentry, Postiz, and all available services. Keys stored in one location, discovered automatically. Includes self-hosted services on Proxmox/Coolify: Sentry, PostHog, Postiz, Home Assistant, SearXNG, FireCrawl, n8n, Authentik."
-icon: 🔑
-priority: critical
-version: 4.0.0
-triggers:
-  - every project build (mandatory)
-  - when any API integration is needed
-  - key discovery or rotation
 ---
 
 # Shared API Key Pool

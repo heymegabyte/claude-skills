@@ -1,14 +1,6 @@
 ---
 name: "Notification System"
 description: "OneSignal web push notifications for product updates, donation milestones, and new content. In-app notification bell for SaaS products with unread count badge. Notification preferences per user. Stored in D1, delivered via push + email fallback. Use when product has returning users who benefit from updates."
-icon: 🔔
-priority: standard
-version: 4.0.0
-triggers:
-  - SaaS product with returning users
-  - donation/campaign milestones to announce
-  - blog or content updates to push
-  - user mentions "notifications", "push", "alerts"
 ---
 
 # Notification System

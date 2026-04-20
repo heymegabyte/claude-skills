@@ -1,13 +1,7 @@
 ---
 name: "Changelog and Releases"
 description: "Auto-generate changelog from git commits using conventional commits format. Public /changelog page. GitHub Releases with release notes. Semantic versioning. Announce significant releases via social (skill 27). Keep users informed about what changed."
-icon: 📋
-priority: standard
-version: 4.0.0
-triggers:
-  - significant feature or update deployed
-  - user asks about changelog or releases
-  - version bump needed
+model: haiku
 ---
 
 # Changelog and Releases

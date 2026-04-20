@@ -1,14 +1,6 @@
 ---
 name: "Webhook System"
 description: "Consolidated webhook handling for Stripe, Clerk, GitHub, and custom events. Signature verification, event routing, idempotency via D1 dedup table, retry-safe handlers, and outbound webhook dispatch. Every integration uses webhooks — this skill standardizes the pattern."
-icon: 🪝
-priority: standard
-version: 4.0.0
-triggers:
-  - Stripe payment integration (checkout.session.completed, invoice events)
-  - Clerk auth integration (user.created, session events)
-  - GitHub integration (push, PR, issue events)
-  - any external service sending webhooks
 ---
 
 # Webhook System

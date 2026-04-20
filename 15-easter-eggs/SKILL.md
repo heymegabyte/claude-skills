@@ -1,12 +1,6 @@
 ---
 name: "Easter Eggs"
 description: "MANDATORY: Every website gets at least one hidden Easter egg via URL query parameter. Canvas-based, full-screen, dismissible, delightful. AI chooses what — creative, contextually appropriate, and genuinely fun. Includes QR code flyer generation at /flyer.pdf."
-icon: 🥚
-priority: standard
-version: 4.0.0
-triggers:
-  - on EVERY website build (mandatory, not optional)
-  - when explicitly asked to add Easter eggs
 ---
 
 # Easter Eggs — Mandatory Hidden Delights

@@ -1,13 +1,7 @@
 ---
 name: "Uptime and Health"
 description: "Health endpoints on every Worker, external uptime monitoring via free services (UptimeRobot, Better Stack). Public status page at /status. Cron-based self-checks. Let external services handle alerting — we just expose the endpoints and set up the monitors."
-icon: 💓
-priority: standard
-version: 4.0.0
-triggers:
-  - every project deployment (mandatory health endpoint)
-  - user asks about monitoring or uptime
-  - production issues detected
+model: haiku
 ---
 
 # Uptime and Health

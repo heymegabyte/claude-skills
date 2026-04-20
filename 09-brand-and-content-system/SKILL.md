@@ -1,15 +1,6 @@
 ---
 name: "Brand and Content System"
 description: "Extract real brands before inventing (Wayback Machine for rebuilds). Business-type inference for tone and style. Copy system with headline/CTA rules. Trust surfaces (testimonials, logos, stats). Legal pages. Information architecture. SEO content with structured data, meta tags, and sitemap. PDF and DOCX generation."
-icon: ✍️
-priority: standard
-version: 4.0.0
-triggers:
-  - new project (establish brand)
-  - rebuild of existing site
-  - content creation or revision
-  - legal page creation
-  - SEO audit
 ---
 
 # 09 — Brand and Content System

@@ -1,13 +1,6 @@
 ---
 name: "Internationalization"
 description: "Multi-language support via URL parameter (?lang=es) or dropdown. Minimum English + Spanish on every site. AI translates all content at deploy time. Includes SEO hreflang tags, locale-aware structured data, RTL support detection, and language selector in navbar. Stored in KV for fast edge delivery."
-icon: 🌍
-priority: standard
-version: 4.0.0
-triggers:
-  - every website build (mandatory EN + ES minimum)
-  - user mentions "translate", "Spanish", "i18n", "multi-language"
-  - international audience detected
 ---
 
 # Internationalization (i18n)

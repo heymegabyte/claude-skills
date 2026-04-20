@@ -1,14 +1,8 @@
 ---
 name: "Quality and Verification"
 description: "5-level verification pyramid: static analysis, unit/integration tests, Playwright E2E (homepage-first at 6 breakpoints), AI-powered visual inspection, and post-deploy checks. 7-check quality gate, form testing matrix, security audits (CSP, OWASP), accessibility (WCAG AA), and GitHub CI/PR integration."
-icon: ✅
-priority: critical
-version: 4.0.0
-triggers:
-  - every code change (static analysis, tests)
-  - every deployment (full quality gate)
-  - every feature completion
-  - PR creation or CI failure
+context: fork
+allowed-tools: "Bash Read Glob Grep mcp__playwright__*"
 ---
 
 # 07 — Quality and Verification

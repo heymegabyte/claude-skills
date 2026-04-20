@@ -1,14 +1,6 @@
 ---
 name: "Goal and Brief"
 description: "Establish the project thesis before the first line of code. Infers product type from domain name, identifies target users and business model, maintains PROJECT_BRIEF.md as single source of truth, and evolves the brief across prompts without losing alignment."
-icon: 🎯
-priority: critical
-version: 4.0.0
-triggers:
-  - new project with no PROJECT_BRIEF.md
-  - first prompt in any session
-  - user changes product direction
-  - user introduces new constraints
 ---
 
 # 02 — Goal and Brief

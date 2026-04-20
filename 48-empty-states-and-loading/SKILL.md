@@ -1,13 +1,6 @@
 ---
 name: "Empty States and Loading"
 description: "Every empty list, dashboard, and data view prompts a meaningful first action — never shows 'No data.' Skeleton screens for all loading states. Consistent loading patterns across the app. Research says empty states are the #1 UX gap users notice in new products."
-icon: ⏳
-priority: standard
-version: 4.0.0
-triggers:
-  - any page that displays dynamic data
-  - SaaS product with lists, tables, or dashboards
-  - user reports "blank page" or "nothing here"
 ---
 
 # Empty States and Loading

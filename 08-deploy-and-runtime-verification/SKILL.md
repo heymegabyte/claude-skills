@@ -1,14 +1,8 @@
 ---
 name: "Deploy and Runtime Verification"
 description: "MANDATORY deploy after every code change. Typecheck → deploy → purge CDN → E2E on production → visual verify → fix-forward loop. Third-party integration health checks, cross-browser smoke tests on first deploy, cache purge strategy, rollback procedures, and GitHub auto-configuration."
-icon: 🚀
-priority: critical
-version: 4.0.0
-triggers:
-  - every code change completion
-  - user requests deployment
-  - quality gate passes
-  - feature slice complete
+context: fork
+allowed-tools: "Bash(wrangler *) Bash(curl *) Read"
 ---
 
 # 08 — Deploy and Runtime Verification

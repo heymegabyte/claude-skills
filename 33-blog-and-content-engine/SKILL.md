@@ -1,14 +1,6 @@
 ---
 name: "Blog and Content Engine"
 description: "SEO-driven blog system on Cloudflare Workers: markdown-to-HTML rendering, RSS feed, reading time, social sharing, related posts, categories, pagination. Every post targets a longtail keyword. Generates 3-5 seed posts on first build for immediate SEO value. Stored in D1 or as static markdown files."
-icon: 📝
-priority: standard
-version: 4.0.0
-triggers:
-  - site needs blog or content section
-  - SEO strategy requires longtail content
-  - user mentions "blog", "articles", "content marketing"
-  - new project that would benefit from organic traffic
 ---
 
 # Blog and Content Engine

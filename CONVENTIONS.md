@@ -9,9 +9,54 @@ Shared constants and patterns. Reference this instead of re-deriving values.
 | Black | #060610 |
 | Cyan | #00E5FF |
 | Blue | #50AAE3 |
+| Purple (tertiary) | #7C3AED (cosmic/space imagery) |
 | Font heading | Sora |
 | Font body | Space Grotesk |
 | Font mono | JetBrains Mono |
+| Handle | HeyMegabyte (all platforms) |
+| Email | hey@megabyte.space |
+| GitHub (products) | HeyMegabyte |
+| GitHub (infra) | ProfessorManhattan |
+
+## Design Principles
+
+- Dark theme FIRST, always
+- "Simpler is better" — when in doubt, simplify
+- Purple tertiary for cosmic/space imagery only
+
+## Owned Domains
+
+megabyte.space, projectsites.dev, fundl.ink, gitl.ink, deskl.ink, linkbl.ink, thebestsites.com, install.doctor, claimyour.site, item.link, socia.link, onionl.ink, all-hands.dev, dreame.dev, soupl.ink, grantl.ink
+
+## Runtime & UI Selection
+
+| Need | Choice |
+|------|--------|
+| JS Runtime | Bun preferred; Node.js for legacy/incompatible |
+| Angular UI | PrimeNG components |
+| Mobile | Ionic + Capacitor (hybrid) |
+| Auth (SaaS) | Clerk |
+| Auth (self-hosted) | Authentik |
+| Auth UX | Google Sign-In + magic email link |
+
+## Pricing Defaults
+
+| Type | Tiers |
+|------|-------|
+| SaaS | Free tier + $50/month Pro |
+| Nonprofits | Donation presets: $10/$25/$50/$100/$250/$500 |
+
+No custom pricing without explicit user request.
+
+## Bash Conventions
+
+- Functions: `camelCase` (createUser, mountJuiceFS)
+- Variables: `UPPER_CASE` (BACKUP_DIR, S3_BUCKET)
+- Logging: `gum log -sl info "msg"`, `gum log -sl warn "msg"`, `gum log -sl error "msg"` (NEVER echo)
+- Docs: shdoc format (@file, @brief, @description) at top of scripts
+- Linting: ShellCheck + shfmt mandatory
+- Cross-platform: macOS + Linux (all distributions)
+- Error handling: error-resistant, skip unavailable, never completely error out
 
 ## Deploy Command
 
@@ -35,19 +80,41 @@ get-secret SECRET_NAME          # Primary (chezmoi, 182 encrypted secrets)
 **All MCP secrets are consolidated in `.env.local`** — read with `grep KEY_NAME .env.local`.
 `get-secret` checks env vars first, then chezmoi. Load `.env.local` to make both paths work.
 
+## Infrastructure
+
+| Layer | Tool |
+|-------|------|
+| Hypervisor | Proxmox with ZFS storage |
+| Firewall | OPNsense (virtualized) |
+| Public exposure | Cloudflare Tunnels |
+| VPN | WireGuard + Mullvad |
+| Mesh network | Headscale |
+| Backup | Proxmox Backup Server → R2 + Wasabi sync |
+
 ## Self-Hosted Services
 
-| Service | URL |
-|---------|-----|
-| Sentry | sentry.megabyte.space |
-| PostHog | posthog.megabyte.space |
-| Postiz | postiz.megabyte.space |
-| SearXNG | searxng.megabyte.space |
-| FireCrawl | firecrawl.megabyte.space |
-| n8n | n8n.megabyte.space |
-| Coolify | coolify.megabyte.space |
-| Authentik | authentik.megabyte.space |
-| Browserless | browserless.megabyte.space |
+| Service | URL | Purpose |
+|---------|-----|---------|
+| Authentik | authentik.megabyte.space | SSO identity provider |
+| Bolt | bolt.megabyte.space | AI website builder (bolt.diy) |
+| LiteLLM | ai.megabyte.space | AI gateway |
+| Coolify | coolify.megabyte.space | Docker management |
+| n8n | n8n.megabyte.space | Workflow automation |
+| Postiz | postiz.megabyte.space | Social media scheduling |
+| Chatwoot | chatwoot.megabyte.space | Customer support chat |
+| NocoDB | nocodb.megabyte.space | Database UI |
+| Firecrawl | firecrawl.megabyte.space | Web scraping |
+| Browserless | browserless.megabyte.space | Headless browser |
+| Healthchecks | healthchecks.megabyte.space | Uptime monitoring |
+| Netdata | netdata.megabyte.space | Server monitoring |
+| Listmonk | listmonk.megabyte.space | Newsletter/email marketing |
+| Dozzle | dozzle.megabyte.space | Container log viewer |
+| SFTPGo | sftpgo.megabyte.space | SFTP on ZFS |
+| Open WebUI | openwebui.megabyte.space | AI chat interface |
+| SearXNG | searxng.megabyte.space | Self-hosted search |
+| Sentry | sentry.megabyte.space | Error tracking |
+| PostHog | posthog.megabyte.space | Product analytics |
+| Grafana | grafana.megabyte.space | Metrics dashboards |
 
 ## MCP Servers (All Configured in ~/.claude.json)
 
@@ -62,24 +129,20 @@ get-secret SECRET_NAME          # Primary (chezmoi, 182 encrypted secrets)
 | Google Drive | OAuth | Media, docs | OAuth (one-time) |
 | Stripe | OAuth | 18 Stripe | OAuth (one-time) |
 | Canva | OAuth | 12 Media | OAuth (one-time) |
-| GitHub | HTTP | CI/CD, PRs | `ghp_*` in .claude.json (move to chezmoi) |
-| Coolify | stdio | 50 Coolify | `COOLIFY_ACCESS_TOKEN` inline (move to chezmoi) |
-| Firecrawl | stdio | RAG, scraping | `FIRECRAWL_API_KEY` inline (move to chezmoi) |
-| n8n | stdio | 45 Webhooks, automation | `N8N_API_KEY` inline (move to chezmoi) |
-| Home Assistant | stdio | IoT, smart home | `HASS_TOKEN` (in chezmoi) |
-| DeepSeek | stdio | AI fallback | `DEEPSEEK_API_KEY` inline (move to chezmoi) |
-| Postiz | HTTP | 27 Social | `POSTIZ_MCP_URL` (in chezmoi) |
-| Notion | stdio | Docs, knowledge base | `NOTION_TOKEN` inline (move to chezmoi) |
-| Supermemory | HTTP | AI memory | Bearer token inline (move to chezmoi) |
-| WordPress | stdio | megabyte.space CMS | `WP_API_PASSWORD` inline (move to chezmoi) |
-| Plane | stdio | Project management | `PLANE_API_KEY` inline (move to chezmoi) |
-| Omi | stdio (Docker) | Memory, transcription | `OMI_MCP_KEY` inline (move to chezmoi) |
+| GitHub | HTTP | CI/CD, PRs | `ghp_*` in .claude.json |
+| Coolify | stdio | 50 Coolify | `COOLIFY_ACCESS_TOKEN` |
+| Firecrawl | stdio | RAG, scraping | `FIRECRAWL_API_KEY` |
+| n8n | stdio | 45 Webhooks, automation | `N8N_API_KEY` |
+| Home Assistant | stdio | IoT, smart home | `HASS_TOKEN` (chezmoi) |
+| DeepSeek | stdio | AI fallback | `DEEPSEEK_API_KEY` |
+| Postiz | HTTP | 27 Social | `POSTIZ_MCP_URL` (chezmoi) |
+| Notion | stdio | Docs, knowledge base | `NOTION_TOKEN` |
+| Supermemory | HTTP | AI memory | Bearer token |
+| WordPress | stdio | megabyte.space CMS | `WP_API_PASSWORD` |
+| Plane | stdio | Project management | `PLANE_API_KEY` |
+| Omi | stdio (Docker) | Memory, transcription | `OMI_MCP_KEY` |
 | Sequential Thinking | stdio | Complex reasoning | None needed |
 | Computer Use | native | Desktop automation | Permission-gated |
-
-### Secret Hygiene TODO
-12 MCP servers have inline secrets in `~/.claude.json` that should be migrated to chezmoi.
-Pattern: encrypt with `chezmoi encrypt < secret.txt > SECRET_NAME`, place in `secrets-macbook-pro/`.
 
 ## Key Integrations for projectsites.dev
 
@@ -138,23 +201,16 @@ frame-src https://www.youtube.com https://js.stripe.com https://challenges.cloud
 
 ## Linting and Formatting
 
-Use **Biome** (24K stars, Rust-based) instead of ESLint + Prettier. 10-100x faster. Single binary.
-Auto-runs via PostToolUse hook in `~/.claude/settings.json` on every file edit.
+Use **Biome** (Rust-based) instead of ESLint + Prettier. Auto-runs via PostToolUse hook.
 ```bash
 npx @biomejs/biome check --write src/  # Manual run
 ```
 
-## Readability
-
-Flesch score >= 50 on all user-facing text and code comments. Short sentences. No jargon.
-
 ## Cloudflare Credentials
 
-Account: blzalewski@gmail.com
-API Token: `get-secret CLOUDFLARE_API_TOKEN`
-Account ID: `get-secret CLOUDFLARE_ACCOUNT_ID`
+Account: blzalewski@gmail.com | API Token: `get-secret CLOUDFLARE_API_TOKEN` | Account ID: `get-secret CLOUDFLARE_ACCOUNT_ID`
 
-## Breakpoints (shared across all skills)
+## Breakpoints
 
 ```typescript
 const BREAKPOINTS = [
@@ -167,101 +223,47 @@ const BREAKPOINTS = [
 ];
 ```
 
-## JSON-LD Templates (use on every page)
-
-```json
-// Organization (every page)
-{"@context":"https://schema.org","@type":"Organization","name":"","url":"","logo":"","sameAs":[]}
-// WebSite (homepage only)
-{"@context":"https://schema.org","@type":"WebSite","name":"","url":"","potentialAction":{"@type":"SearchAction","target":"{search_term_string}","query-input":"required name=search_term_string"}}
-// WebPage (every page)
-{"@context":"https://schema.org","@type":"WebPage","name":"","description":"","url":""}
-```
-
 ## Hono Worker Starter
 
 ```typescript
 import { Hono } from 'hono';
 import { secureHeaders } from 'hono/secure-headers';
 import { cors } from 'hono/cors';
-type Env = {
-  DB: D1Database;
-  KV: KVNamespace;
-  AI: Ai;
-  VECTORIZE: VectorizeIndex;
-  AI_SEARCH: AiSearch;
-  TURNSTILE_SECRET: string;
-  SITE_NAME: string;
-  SITE_DESCRIPTION: string;
-};
+type Env = { DB: D1Database; KV: KVNamespace; AI: Ai; VECTORIZE: VectorizeIndex; AI_SEARCH: AiSearch; TURNSTILE_SECRET: string; SITE_NAME: string; SITE_DESCRIPTION: string; };
 const app = new Hono<{ Bindings: Env }>();
 app.use('*', secureHeaders());
 app.use('/api/*', cors({ origin: ['https://domain.com'] }));
 export default app;
 ```
 
-## Standard AI Bindings (include in EVERY wrangler.toml)
-
-```toml
-[ai]
-binding = "AI"
-
-[[vectorize]]
-binding = "VECTORIZE"
-index_name = "site-content"
-
-[[ai_search]]
-binding = "AI_SEARCH"
-index_name = "site-search"
-
-[vars]
-SITE_NAME = ""
-SITE_DESCRIPTION = ""
-```
-
-## Common Failure Patterns and Fixes
+## Common Failure Patterns
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `wrangler deploy` fails with "binding not found" | Missing D1/KV/R2 in wrangler.toml | Add `[[d1_databases]]` or `[kv_namespaces]` section |
-| Turnstile returns "invalid-input-response" | Wrong secret key or not awaiting verification | Check `TURNSTILE_SECRET` in wrangler secrets |
-| `ERR_BLOCKED_BY_CSP` in console | CSP header too restrictive | Add the blocked domain to the relevant CSP directive |
-| Playwright test flaky | Missing `waitFor` or race condition | Replace `sleep` with `expect().toBeVisible()` |
-| D1 "no such table" | Migration not applied | Run `wrangler d1 migrations apply DB_NAME` |
-| Angular build fails on deploy | SSR/SSG incompatibility with Workers | Use `@angular/ssr` with Cloudflare adapter |
-
-## Transactional Email Checklist (for any feature that sends email)
-
-Every email-sending feature must include:
-- Subject line with product name (not generic "Notification")
-- Plain-text fallback alongside HTML
-- Unsubscribe link if marketing (CAN-SPAM)
-- Tax receipt details if donation (amount, date, 501c3 status, EIN)
-- Resend API error handling with retry (1 retry, then log to Sentry)
-- Test mode flag that sends to `test@resend.dev` instead of real users
+| "binding not found" on deploy | Missing binding in wrangler.toml | Add `[[d1_databases]]` or `[kv_namespaces]` |
+| Turnstile "invalid-input-response" | Wrong secret or not awaited | Check `TURNSTILE_SECRET` in wrangler secrets |
+| `ERR_BLOCKED_BY_CSP` | CSP too restrictive | Add domain to relevant CSP directive |
+| Playwright flaky | Missing `waitFor` | Replace `sleep` with `expect().toBeVisible()` |
+| D1 "no such table" | Migration not applied | `wrangler d1 migrations apply DB_NAME` |
+| Angular build fails on deploy | SSR incompatible with Workers | Use `@angular/ssr` with Cloudflare adapter |
 
 ## Webhook Reliability Pattern
 
 ```typescript
-// Idempotent webhook handler template
 app.post('/api/webhooks/stripe', async (c) => {
   const sig = c.req.header('stripe-signature');
   const event = stripe.webhooks.constructEvent(body, sig!, WEBHOOK_SECRET);
-  // Check idempotency: skip if event.id already processed
   const existing = await c.env.KV.get(`webhook:${event.id}`);
-  if (existing) return c.json({ received: true }); // Already processed
+  if (existing) return c.json({ received: true });
   // Process event...
   await c.env.KV.put(`webhook:${event.id}`, 'processed', { expirationTtl: 86400 * 7 });
   return c.json({ received: true });
 });
 ```
 
-## Git Commit Message Convention
+## Git Commit Convention
 
 ```
 type(scope): description
-
 Types: feat, fix, refactor, test, docs, style, perf, ci, chore
-Scope: component name, skill number, or feature area
-Example: feat(contact): add Turnstile verification to contact form
 ```

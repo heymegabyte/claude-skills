@@ -1,13 +1,6 @@
 ---
 name: "Launch Day Sequence"
 description: "The go-live checklist that runs after the first successful deploy: submit sitemap to Google Search Console, unblock robots.txt, announce on social via Postiz, send launch email via Listmonk, verify every link, run full quality gate, set up uptime monitoring. Ensures nothing is forgotten on launch day."
-icon: 🎉
-priority: standard
-version: 4.0.0
-triggers:
-  - first deploy of a new domain
-  - user says "launch", "go live", "ship it"
-  - project transitioning from placeholder to real site
 ---
 
 # Launch Day Sequence

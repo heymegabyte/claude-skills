@@ -1,14 +1,6 @@
 ---
 name: "Motion and Interaction System"
 description: "Meaning-first animation with 3-tier motion hierarchy. Transition grammar, scroll-driven animation via IntersectionObserver, View Transitions API, hover/focus/active states on every element, skeleton loading, mandatory prefers-reduced-motion handling, and performance discipline (only animate transform/opacity). Includes Playwright animation tests."
-icon: 🎬
-priority: standard
-version: 4.0.0
-triggers:
-  - any UI implementation
-  - visual polish phase
-  - motion-specific improvements
-  - accessibility audit (reduced motion)
 ---
 
 # 11 — Motion and Interaction System

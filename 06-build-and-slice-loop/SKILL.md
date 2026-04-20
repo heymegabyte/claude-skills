@@ -1,13 +1,6 @@
 ---
 name: "Build and Slice Loop"
 description: "Implements features in vertical slices, always starting with homepage. Enforces anti-placeholder rules — no lorem ipsum, no TODO stubs, no gray boxes. Real content, real images, real interactions. TypeScript strict mode, Zod validation, and structured file organization."
-icon: 🔨
-priority: standard
-version: 4.0.0
-triggers:
-  - implementation phase of any build task
-  - user requests a new feature
-  - user requests a fix or improvement
 ---
 
 # 06 — Build and Slice Loop

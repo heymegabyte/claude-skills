@@ -1,15 +1,7 @@
 ---
 name: "Documentation and Codebase Hygiene"
 description: "Keep the entire codebase in sync: README.md (install.doctor template with divider PNGs, shields.io badges), CLAUDE.md, MEMORY.md, JSDoc/TypeDoc, code comments with references, and cross-project documentation. Remove stale code/comments. Style READMEs with branded dividers and status buttons. Runs continuously."
-icon: 📖
-priority: critical
-version: 4.0.0
-triggers:
-  - every code change (mandatory)
-  - new project setup
-  - documentation audit requested
-  - stale comments or docs detected
-  - after any refactor
+model: haiku
 ---
 
 # Documentation and Codebase Hygiene
