@@ -1,250 +1,198 @@
-# Emdash Operating System v4
+<div align="center">
 
-## 58-Skill Autonomous Product-Building System
+# claude-skills
 
-An aggressive, multimedia-rich operating system for Claude Code that converts weak, one-line prompts into fully realized, production-ready products with elite UX, outstanding media, bold design, meaningful animation, rigorous testing, and enterprise-grade instrumentation.
+### The autonomous product-building OS for Claude Code
+
+14 skill categories. 58 submodules. 9 agents. One-line prompts → production products.
+
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-00E5FF?style=for-the-badge&logo=anthropic&logoColor=white)](https://github.com/megabytespace/claude-skills)
+[![Skills](https://img.shields.io/badge/Skills-14%20Categories-7C3AED?style=for-the-badge)](https://github.com/megabytespace/claude-skills)
+[![Agents](https://img.shields.io/badge/Agents-9-50AAE3?style=for-the-badge)](https://github.com/megabytespace/claude-skills/tree/master/agents)
+[![License: MIT](https://img.shields.io/badge/License-MIT-060610?style=for-the-badge)](LICENSE)
+
+</div>
 
 ---
 
-## Architecture
+## Install
 
-4-layer model: Foundation (policy + planning) -> Build (code + media) -> Verify (test + deploy) -> Improve (ideas + docs).
+```bash
+claude plugin install megabytespace/claude-skills
+```
+
+Or clone directly:
+
+```bash
+git clone https://github.com/megabytespace/claude-skills ~/.agentskills
+ln -sf ~/.agentskills ~/.claude/skills
+```
+
+---
+
+## What It Does
+
+Give Claude Code a one-line prompt. Get a complete, deployed, production-ready product.
 
 ```
-.agentskills/
-├── README.md                              ← This file
-├── MASTER_PROMPT.md                       ← Best master prompt for activation
-├── _router.md                             ← Deterministic skill routing (load FIRST)
-├── CONVENTIONS.md                         ← Shared constants (brand, deploy, secrets)
-├── QUICK_REF.md                           ← One-page cheat sheet for simple tasks
-├── SKILL_PROFILES.md                      ← Project-type skill subsets (6 profiles)
-├── llms.txt                               ← Machine-readable skill index
-├── CHANGELOG.md                           ← Skills system version history
-├── scripts/discover-secrets.sh            ← Runtime secret discovery
-├── 01-operating-system/SKILL.md           ← Supreme policy, autonomy, speed, emphasis
-├── 02-goal-and-brief/SKILL.md             ← Project thesis, users, success criteria
-├── 03-planning-and-research/SKILL.md      ← Research, planning, decomposition, parallelism
-├── 04-preference-and-memory/SKILL.md      ← Preferences, VoC, memory, confidence levels
-├── 05-architecture-and-stack/SKILL.md     ← Platform, services, auth, data, API keys
-├── 06-build-and-slice-loop/SKILL.md       ← Vertical slices, anti-placeholder, code quality
-├── 07-quality-and-verification/SKILL.md   ← Testing, security, accessibility, performance
-├── 08-deploy-and-runtime-verification/    ← Deploy, purge, verify, rollback
+You: "fundl.ink"
+Claude: [deploys a full donation platform on Cloudflare Workers with Stripe,
+         dark theme, SEO, accessibility, analytics, social automation,
+         Easter egg, PWA manifest, contact form, and blog — in under 30 minutes]
+```
+
+The skill system transforms Claude from a code assistant into an autonomous product builder that makes every creative, technical, and architectural decision without asking.
+
+---
+
+## The 14 Categories
+
+| # | Category | What It Handles |
+|---|----------|----------------|
+| **01** | **Operating System** | Policy, autonomy, parallelization, AI-native coding patterns |
+| **02** | **Goal & Brief** | Product thesis from domain name, business model inference |
+| **03** | **Planning & Research** | Competitor analysis, task decomposition, parallel workstreams |
+| **04** | **Preference & Memory** | Voice of Customer, user preferences, behavioral psychology |
+| **05** | **Architecture & Stack** | CF Workers, Hono, Drizzle, Coolify, MCP integrations, API design |
+| **06** | **Build & Slice Loop** | 15 feature packs: forms, search, blog, i18n, PWA, webhooks, etc. |
+| **07** | **Quality & Verification** | E2E testing, a11y, security, performance, visual QA, AI critique |
+| **08** | **Deploy & Runtime** | CI/CD, launch day, uptime monitoring, backup, changelog |
+| **09** | **Brand & Content** | SEO engine, copy system, email templates, social automation |
+| **10** | **Design System** | Anti-AI-slop design, dark-first, bold typography, motion |
+| **11** | **Motion & Interaction** | CSS scroll animations, View Transitions, reduced-motion |
+| **12** | **Media Orchestration** | Image/video generation, compression pipeline, social previews |
+| **13** | **Growth & Observability** | Stripe billing, GA4/PostHog analytics, user feedback |
+| **14** | **Idea Engine** | Autonomous research, evidence-backed improvement proposals |
+
+Each category contains submodule `.md` files for specialized capabilities — 58 total.
+
+---
+
+## 9 Bundled Agents
+
+| Agent | Model | Purpose |
+|-------|-------|---------|
+| `architect` | opus | Repo analysis, task graphs, architectural seams |
+| `code-simplifier` | sonnet | Reduce complexity while preserving functionality |
+| `completeness-checker` | opus | Zero Recommendations Gate — finds what's missing |
+| `deploy-verifier` | sonnet | Post-deploy smoke tests at 6 breakpoints |
+| `security-reviewer` | opus | OWASP Top 10 audit, read-only |
+| `seo-auditor` | haiku | SEO compliance per page |
+| `test-writer` | sonnet | Vitest + Playwright test generation |
+| `visual-qa` | opus | Screenshot-based visual defect detection |
+| `computer-use-operator` | sonnet | Native macOS app automation |
+
+---
+
+## Default Stack
+
+Every project ships with this stack unless requirements demand otherwise:
+
+| Layer | Default |
+|-------|---------|
+| Hosting | Cloudflare Workers |
+| Backend | Hono (RPC mode) |
+| Frontend | Angular 19 + Ionic + PrimeNG |
+| Database | D1 (simple) / Neon Postgres (complex) |
+| Auth | Clerk |
+| Payments | Stripe ($50/mo Pro tier) |
+| Email | Resend (transactional) / Listmonk (marketing) |
+| Testing | Playwright + Vitest |
+| Linting | Biome |
+| Runtime | Bun |
+
+---
+
+## How It Works
+
+```
+Prompt arrives
+├── Decompose into parallel tasks (30 seconds)
+├── Spawn agents simultaneously:
+│   ├── Agent A: Homepage → deploy immediately
+│   ├── Agent B: Backend + DB + auth
+│   ├── Agent C: Content + SEO
+│   ├── Agent D: Analytics + integrations
+│   └── Agent E: Tests + accessibility
+├── First deploy in under 10 minutes
+├── Visual TDD loop: screenshot → AI critique → fix → verify
+└── Zero Recommendations Gate: loop until genuinely done
+```
+
+### Hard Gates (nothing ships without these)
+
+- [ ] Playwright E2E passes at 6 breakpoints
+- [ ] GPT-4o vision >= 8/10, zero layout breaks
+- [ ] Yoast GREEN on all SEO checks
+- [ ] Lighthouse Accessibility >= 95
+- [ ] axe-core: 0 violations
+- [ ] Zero console errors
+- [ ] Zero placeholders/TODO
+
+---
+
+## File Structure
+
+```
+claude-skills/
+├── .claude-plugin/plugin.json     # Plugin manifest
+├── _router.md                     # Skill routing by task type
+├── CONVENTIONS.md                 # Brand tokens, deploy commands, patterns
+├── MASTER_PROMPT.md               # Full activation prompt
+├── QUICK_REF.md                   # One-page cheat sheet
+├── SKILL_PROFILES.md              # Project-type profiles (SaaS, nonprofit, API, etc.)
+├── 01-operating-system/
+│   ├── SKILL.md                   # Main skill file
+│   ├── ai-native-coding.md        # Submodule
+│   └── autonomous-orchestrator.md # Submodule
+├── 02-goal-and-brief/
 │   └── SKILL.md
-├── 09-brand-and-content-system/SKILL.md   ← Brand, copy, trust, legal, SEO, docs
-├── 10-experience-and-design-system/       ← Typography, color, layout, components, anti-slop
-│   └── SKILL.md
-├── 11-motion-and-interaction-system/      ← Transitions, scroll, hover, reduced-motion
-│   └── SKILL.md
-├── 12-media-orchestration/                ← Images, video, logos, social, critique/remix
-│   ├── SKILL.md
-│   └── templates/PROMPTS.md               ← Reusable media generation prompts
-├── 13-observability-and-growth/SKILL.md   ← Analytics, Sentry, Stripe, email, experiments
-├── 14-independent-idea-engine/SKILL.md    ← Autonomous research, proposals, self-critique
-├── 15-easter-eggs/SKILL.md               ← MANDATORY: hidden delights via URL params
-├── 16-domain-provisioning/SKILL.md       ← Auto-provision CF Worker, DNS, gorgeous placeholder
-├── 17-competitive-analysis/SKILL.md      ← Scrape 3 competitors + web search before building
-├── 18-stripe-billing/SKILL.md            ← Free tier + $50/mo pro, donations like givedirectly
-├── 19-email-templates/SKILL.md           ← Branded HTML email templates for all transactional
-├── 20-accessibility-gate/SKILL.md        ← axe-core audit + beautiful focus styling, WCAG AA
-├── 21-TBD/SKILL.md                       ← (pending creation)
-├── 22-TBD/SKILL.md                       ← (pending creation)
-├── 23-TBD/SKILL.md                       ← (pending creation)
-├── 24-web-manifest-system/SKILL.md       ← install.doctor-grade PWA manifest with screenshots, rich snippets (4+ JSON-LD), cross-site linking, opensearch, humans.txt, security.txt
-├── 25-TBD/SKILL.md                       ← (pending creation)
-├── 26-shared-api-pool/SKILL.md           ← Centralized API keys + Coolify self-hosted services
-├── 27-social-automation/SKILL.md         ← Auto-post via Postiz to 15+ platforms on deploy
-├── 28-seo-and-keywords/SKILL.md         ← Keyword research, Yoast rules, per-page targeting
-├── 29-documentation-and-codebase-hygiene/SKILL.md ← README template, CLAUDE.md, JSDoc, stale removal
-├── 30-ai-native-coding/SKILL.md         ← AI-optimized code patterns, full-stack integration
-├── 31-custom-error-pages/SKILL.md       ← Branded 404, 500, 503, offline pages
-├── 32-contact-forms-and-endpoints/SKILL.md ← Working forms with Turnstile, Resend, 8-point tests
-├── 33-blog-and-content-engine/SKILL.md  ← SEO blog: markdown, RSS, categories, seed posts
-├── 34-launch-day-sequence/SKILL.md      ← Go-live: submit sitemap, announce, verify everything
-├── 35-ci-cd-pipeline/SKILL.md           ← GitHub Actions: deploy on push, E2E on PR, previews
-├── 36-onboarding-and-first-run/SKILL.md ← SaaS: welcome flow, checklist, activation tracking
-├── 37-site-search/SKILL.md              ← D1 LIKE or Vectorize semantic search, Cmd+K modal
-├── 38-uptime-and-health/SKILL.md        ← Health endpoints, external monitoring, status page
-├── 39-changelog-and-releases/SKILL.md   ← Auto-generate from git, /changelog, GitHub Releases
-├── 40-backup-and-disaster-recovery/SKILL.md ← Single-zip restore, D1/KV/R2 exports, cron backups
-├── 41-user-feedback-collection/SKILL.md ← In-app widget, NPS via PostHog, testimonial moderation
-├── 42-internationalization/SKILL.md     ← EN+ES minimum, AI translate, hreflang, language selector
-├── 43-ai-chat-widget/SKILL.md           ← CONDITIONAL: Workers AI + Vectorize RAG chat (when needed)
-├── 44-drizzle-orm-and-migrations/SKILL.md ← Drizzle ORM for D1/Neon, schema conventions, migrations
-├── 45-webhook-system/SKILL.md           ← Stripe/Clerk/GitHub webhooks, idempotency, event routing
-├── 46-admin-dashboard/SKILL.md          ← Lightweight /admin with embedded bolt.diy editor iframe
-├── 47-keyboard-shortcuts-and-command-palette/SKILL.md ← Cmd+K palette, ? shortcuts overlay
-├── 48-empty-states-and-loading/SKILL.md ← Every empty list prompts action, skeleton screens
-├── 49-notification-system/SKILL.md      ← OneSignal push + in-app bell + email fallback
-├── 50-coolify-docker-proxmox/SKILL.md   ← Self-hosted infra: Coolify API, Docker, Proxmox (ask first)
-├── 51-wisdom-and-human-psychology/SKILL.md ← Timeless principles: Cialdini, Kahneman, servant leadership, ethics
-├── 52-mcp-and-cloud-integrations/SKILL.md ← MCP servers, secrets discovery, Slack/Discord/Zapier, AI API strategy
-├── 53-autonomous-orchestrator/SKILL.md  ← Master orchestrator: parallel agents, autonomous decisions, competitive iteration
-├── 54-computer-use-automation/SKILL.md  ← Native macOS app automation via Computer Use MCP
-├── 55-chrome-and-browser-workflows/SKILL.md ← Browser automation, Playwright MCP, Firecrawl
-├── 56-completeness-verification/SKILL.md ← AI visual loop until zero issues remain
-├── 57-ai-technology-integration/SKILL.md ← Latest AI APIs, models, and techniques
-└── gh-fix-ci/SKILL.md                   ← Debug failing GitHub Actions PR checks
+├── ...                            # 14 categories total
+├── agents/                        # 9 bundled agents
+│   ├── architect.md
+│   ├── code-simplifier.md
+│   └── ...
+├── scripts/                       # Utility scripts
+└── templates/                     # Project templates
 ```
 
 ---
 
-## Execution Flow (one-line prompt → production product)
+## Brand
 
-```
-01 Operating System    → Parse prompt, load policy, detect emphasis
-02 Goal and Brief      → Establish product thesis before first build
-03 Planning & Research → Research domain, plan implementation, decompose
-04 Preference & Memory → Load user prefs, VoC, apply confirmed patterns
-05 Architecture        → Select stack, design boundaries, configure services
-        ↓
-   ┌────┴────┐
-   │ PARALLEL │
-   ├─────────┤
-06 Build Loop          → Implement vertical slices (homepage first)
-12 Media Orchestration → Generate images, video, logos, icons
-09 Brand & Content     → Write copy, establish trust, add legal
-13 Observability       → Set up analytics, errors, payments, email
-   └────┬────┘
-        ↓
-07 Quality Gate        → Test, lint, audit security, check accessibility
-08 Deploy & Verify     → Deploy, purge cache, verify live, fix-forward
-10 Design System       → Polish visuals, check responsiveness
-11 Motion System       → Add transitions, scroll reveals, hover states
-14 Idea Engine         → Research improvements, propose aligned upgrades
-```
+| Token | Value |
+|-------|-------|
+| Background | `#060610` |
+| Cyan | `#00E5FF` |
+| Blue | `#50AAE3` |
+| Purple | `#7C3AED` (cosmic only) |
+| Heading font | Sora |
+| Body font | Space Grotesk |
+| Mono font | JetBrains Mono |
 
 ---
 
-## Dependency Map
+## Built With Data
 
-```
-Foundation: 01-operating-system (supreme policy)
-                    ↓
-Context:    02-goal-and-brief + 04-preference-and-memory
-                    ↓
-Planning:   03-planning-and-research + 05-architecture-and-stack
-                    ↓
-Build:      06-build-and-slice-loop (parallel with 09, 12, 13)
-                    ↓
-Quality:    07-quality-and-verification + 10-design + 11-motion
-                    ↓
-Ship:       08-deploy-and-runtime-verification
-                    ↓
-Improve:    14-independent-idea-engine
-```
+This system is trained on **10,255 real messages** across **3,102 conversations** — not generic best practices. Every rule, threshold, and decision heuristic comes from actual engineering work:
+
+- **Voice of the Customer** data with exact language patterns and dissatisfaction signals
+- **Decision model** predicting technology choices with a 4-gate evaluation framework
+- **Expertise map** distinguishing deep knowledge from learning areas
+- **Communication DNA** encoding cognitive style, interaction velocity, and delegation preferences
 
 ---
 
-## Migration from v3
+## Author
 
-| Old Skill | → New Location |
-|-----------|---------------|
-| base-layer | → 01 + 05 + 06 |
-| beyond-the-prompt | → 01 + 02 |
-| always-deploy-and-test | → 08 |
-| deploy-and-verify | → 08 |
-| test-on-production | → 08 |
-| playwright-tdd | → 07 |
-| quality-gate | → 07 |
-| visual-qa | → 07 |
-| frontend-design | → 10 + 11 |
-| security-best-practices | → 07 |
-| cloudflare-deploy | → 05 + 08 |
-| google-analytics | → 13 |
-| stripe-checkout | → 13 |
-| listmonk | → 13 |
-| auto-logo | → 12 |
-| imagegen | → 12 |
-| sora | → 12 |
-| sentry | → 13 |
-| api-key-helper | → 05 |
-| gh-address-comments | → 07 |
-| gh-fix-ci | → 07 |
-| pdf | → 09 |
-| doc | → 09 |
-| new-project-bootstrap | → 02 + 06 |
+**Brian Zalewski** — Principal Software Engineer, 14+ years. Founder of [Megabyte Labs](https://megabyte.space).
+
+Open-source wizardry. 100% wizardry. 0% robes.
 
 ---
 
-## Policies
+<div align="center">
 
-### Single-Prompt Interpretation
-When under-specified: infer from domain name, apply stack defaults, build everything, record assumptions. Only ask if answer changes architecture, billing, security, or branding.
+**[megabyte.space](https://megabyte.space)**
 
-### Safe Autonomy
-**DO:** choose tech, add SEO/analytics/legal, compress images, deploy, test, generate logos, research improvements, implement aligned ideas.
-**DON'T:** deploy for analysis tasks, mutate global skills without explicit request, embed secrets in global files, override stricter rules with looser ones.
-**ASK:** architecture forks, paid services not in stack, brand changes, legal commitments.
-
-### Done Definitions
-| Task | Done When |
-|------|-----------|
-| Build | Deployed + tests pass + live URL verified |
-| Analysis | Written report, no deployment |
-| Design | Screenshots reviewed at desktop + mobile |
-
-### Conflict Resolution
-1. 01-operating-system wins over everything
-2. Project CLAUDE.md wins over global skills (for that project)
-3. More specific wins over more general
-4. Stricter wins over looser
-5. User corrections win over all inferred behavior
-
-### Quality Bar
-- E2E: 0 failures, homepage-first Playwright at 6 breakpoints
-- Lighthouse: report score, don't block for multimedia-heavy pages
-- A11y: skip link, ARIA, focus rings, 4.5:1 contrast, axe-core 0 violations
-- SEO: per-page keywords, Yoast checklist, JSON-LD, OG tags, sitemap, robots.txt
-- Readability: Flesch >= 60 on all user-facing text and code comments
-- Security: CSP, Zod validation, Turnstile on forms, no exposed secrets
-- Visual: no breaks at 375px or 1280px
-- Interactive: cursor:pointer + hover + focus + active everywhere
-- Docs: README (install.doctor template), CLAUDE.md current, JSDoc on exports
-- AI-native: explicit names, flat code, co-located context, complete features
-
----
-
-## System Self-Improvement Loop
-
-The skill system evolves continuously through these mechanisms:
-
-### Per-Prompt (Automatic)
-- Check if any skill's advice was wrong or outdated → flag in report
-- Fix broken skill content immediately if it caused a build failure
-- Save new patterns to MEMORY.md
-
-### Per-5-Prompts (Micro-Audit)
-- Review skill activation patterns → identify unused skills
-- Check SKILL_PROFILES.md accuracy for current project type
-- Verify CLAUDE.md and MEMORY.md consistency
-
-### Per-Project (End-of-Project Review)
-- Generate skill usage heatmap (which skills were used, how often)
-- Propose merges for skills that always activate together
-- Archive candidates for skills never triggered across 3+ projects
-- Batch-apply all pending skill updates from MEMORY.md
-
-### Periodically (Source Freshness)
-- Web-search for updates to authoritative sources (web.dev, NNGroup, OWASP, etc.)
-- When new research contradicts skill content, propose updates with evidence
-- Track Cloudflare changelog for new services that change architecture defaults
-
-### Guard Rails
-- Max 3 skill file modifications per prompt
-- Never weaken quality gates or remove safety checks
-- Always announce modifications in end-of-prompt report
-- Log changes to CHANGELOG.md
-
----
-
-## Loading Order (Optimal Token Efficiency)
-
-```
-1. _router.md        → Determine which skills to load (saves ~30K tokens on non-build tasks)
-2. CONVENTIONS.md    → Load shared constants once (prevents re-derivation across skills)
-3. SKILL_PROFILES.md → Pick project type → get exact skill subset
-4. Skill 01          → Supreme policy (always)
-5. Phase skills      → Only what's needed for current phase
-```
-
-This order prevents loading all 58 skills for a simple bug fix (which would waste ~40K tokens of context).
+</div>
