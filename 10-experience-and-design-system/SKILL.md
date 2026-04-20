@@ -13,6 +13,20 @@ description: "Anti-AI-slop design system for distinctive, premium interfaces. Bo
 
 **Most AI-generated sites look generic — same layout, same gradients, same feel. Ours must not.** Every design decision should serve clarity, hierarchy, and emotional impact. The test is: would a professional designer ship this?
 
+## Brian's Refinement Direction (from 3,110 conversations)
+
+The single most repeated design feedback across all history: **"Make it simpler."**
+
+When iterating on any design:
+1. First draft: bold and impactful
+2. Every subsequent iteration: remove complexity, not add it
+3. If two elements compete for attention: remove one
+4. If a section feels crowded: increase whitespace, reduce content
+5. If typography feels busy: reduce font sizes, increase weight contrast
+6. The final version should feel effortless and inevitable
+
+**"Cooler and catchier"** is the other perpetual request — but always within the constraint of simplicity. Cool ≠ complex. The coolest designs are often the simplest.
+
 ---
 
 ## The Apple Test

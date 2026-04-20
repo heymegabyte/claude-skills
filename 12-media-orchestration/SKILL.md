@@ -74,6 +74,26 @@ When the stock photo or Ideogram catalog doesn't have what you need, use DALL-E 
 
 ---
 
+## Brian's Visual Style (from 3,110 ChatGPT conversations)
+
+Every image generated must reflect this aesthetic:
+- **Space/cosmic themes**: cyan (#00E5FF) + purple (#7C3AED), deep black backgrounds
+- **Connections and dots**: quantum-inspired, neural network visuals, constellation patterns
+- **"Ultra realistic"** when generating scenes or product imagery
+- **Transparent logos** that work on dark backgrounds
+- **Refinement direction is ALWAYS "simpler"** — if in doubt, reduce visual complexity
+- **Never generic**: no stock-photo-looking AI slop, no "diverse team at whiteboard"
+- **Personal motifs**: squirrels, turtles (for easter eggs and brand personality)
+
+### Prompt Style for Brian's Brand
+```
+Dark, atmospheric [subject]. Cyan (#00E5FF) light streaks and purple (#7C3AED) nebula effects
+on deep black (#060610). Quantum-inspired dots and connections. Premium tech aesthetic.
+Ultra-wide composition. Ultra realistic. No text.
+```
+
+---
+
 ## Image Generation (Imagegen)
 
 ### Built-In Mode (Default)

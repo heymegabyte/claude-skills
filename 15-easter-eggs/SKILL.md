@@ -11,13 +11,19 @@ This is not optional. Every website deployed through Emdash must include at leas
 Easter egg accessible via a URL query parameter. The AI chooses what it is — creative,
 appropriate for the project's tone, and genuinely fun.
 
+## Brian's Personal Motifs (Use in Easter Eggs)
+- **Squirrels** — Brian's spirit animal. Animated squirrel collecting acorns, squirrel cursor follower, etc.
+- **Turtles** — secondary motif. Can appear as loading animations or hidden games.
+- **Space/cosmic themes** — stars, constellations, quantum particles in cyan/purple
+
 ## What Works (Proven Patterns)
 
 ### Full-screen canvas games/animations
+- Squirrel collecting acorns (Brian's personal favorite animal)
 - Stick figure shooting things with rainbows coming out of his mouth
-- Particle systems that spell out messages
+- Particle systems that spell out messages (in cyan #00E5FF)
 - Retro arcade references
-- Physics simulations
+- Physics simulations with turtles
 - Generative art that uses the site's brand colors
 
 ### What makes a GOOD Easter egg:
