@@ -42,7 +42,7 @@ Black #060610 | Cyan #00E5FF | Blue #50AAE3
 Headings: Sora | Body: Space Grotesk | Code: JetBrains Mono
 
 ## Quality Bar
-E2E 0 failures | WCAG AA | CSP on | Flesch >= 50 | Yoast pass
+E2E 0 failures | WCAG AA | CSP on | Flesch >= 60 | Yoast pass
 Images < 200KB WebP | No placeholders | No dead forms
 
 ## Decision Shortcuts

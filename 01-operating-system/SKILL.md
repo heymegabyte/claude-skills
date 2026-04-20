@@ -224,144 +224,45 @@ For every meaningful prompt:
 
 | Task Type | Done When |
 |-----------|-----------|
-| **Build** | Deployed + tests pass + live URL works + visually verified + FCE returns zero findings + Zero Recommendations gate passes |
+| **Build** | Deployed + tests pass + live URL works + visually verified + Zero Recommendations gate passes |
 | **Analysis** | Report delivered, no deployment |
 | **Design** | Screenshots reviewed at desktop (1280px) + mobile (375px) + GPT-4o rates >= 8/10 |
 | **Bug Fix** | Root cause identified + fix deployed + regression test added + post-task E2E passes |
 | **Refactor** | All existing tests pass + no visual regressions + deployed + post-task E2E passes |
-| **Feature Slice** | Failing test written FIRST + implementation passes test + FCE scan zero findings + Skill 56 visual verification passes |
+| **Feature Slice** | Failing test written FIRST + implementation passes test + visual verification passes |
 
-### "Zero Recommendations" Gate (THE ULTIMATE DONE DEFINITION)
-
-A project is NOT done until the AI genuinely cannot think of any more improvements.
-
-After all features are implemented, ask: **"How can I improve this app more?"**
-If the AI produces ANY reasonable recommendation → implement it → re-ask.
-Loop until the answer is: "No further recommendations. Every page is polished, every feature
-is complete, every interaction works, every edge case is handled."
-
-This is not a checklist — it's a convergence test. The AI must be its own harshest critic.
-If GPT-4o vision finds issues, there ARE issues. If the Feature Completeness Engine finds
-stubs, there ARE stubs. Only when ALL inspection methods return clean does the gate pass.
+> See Skill 07 for the "Zero Recommendations" convergence test
+> See Skill 56 for completeness verification loop (FCE visual scan)
 
 ---
 
-## MANDATORY: Post-Task Production Verification (THE LAST THING YOU DO)
+## Post-Task Production Verification
 
-**After EVERY task that touches a deployed site, the absolute last step is:**
+> See Skill 08 for full post-deploy verification sequence (E2E on live URL, 403 detection, visual inspection, self-critique loop)
 
-### 1. Full-Production Playwright E2E Test
-Run a real Chromium browser against the LIVE production URL — not localhost, not workers.dev.
-The test MUST:
-- Navigate to the homepage and verify HTTP 200 (not 403, not CF challenge)
-- Verify the page is NOT a Cloudflare "Just a moment..." challenge page
-- Navigate through to the newest feature/change and verify it works
-- Test any new UI elements (buttons, forms, links) are interactive
-- Verify cross-site navigation works (mission → donate, donate → mission)
-
-### 2. Visual Inspection with Screenshots + AI Vision
-- Take a Playwright screenshot of the changed area
-- Read the screenshot with the Read tool (AI computer vision)
-- Verify: correct layout, no visual regressions, proper colors, readable text
-- If anything looks wrong: fix it before reporting completion
-
-### 3. Self-Critique & Auto-Improvements
-After verifying, ask yourself:
-- "Is there anything obviously broken or ugly that I should fix right now?"
-- "Are there quick wins (< 2 minutes) that would meaningfully improve this?"
-- If yes: implement them, redeploy, and re-test
-- Report the top improvements made without being asked
-
-### Why This Is Mandatory
-This requirement exists because:
+After EVERY task that touches a deployed site, Skill 08's post-deploy verification is MANDATORY. This is non-negotiable because:
 - Cloudflare WAF/bot protection has caused 403s that weren't caught until the user reported them
 - CSS changes have broken layouts that went unnoticed without visual inspection
 - Cross-site links have broken without E2E verification
 - Every minute spent on post-task verification saves 10 minutes of user frustration
 
-### Template Test (add to every project)
-```typescript
-test('production site loads without 403', async ({ page }) => {
-  const res = await page.goto('https://SITE_URL');
-  expect(res?.status()).toBe(200);
-  const body = await page.textContent('body');
-  expect(body).not.toContain('Just a moment');
-  expect(body).not.toContain('Enable JavaScript and cookies');
-});
-```
-
 ---
 
-## Feature Completeness Engine (FCE) — runs AFTER build, BEFORE deploy
+## Feature and Content Gates (delegated)
 
-**Every build must pass the FCE before deployment. No exceptions.**
-
-### Technical Scan (automated grep)
-```bash
-# These MUST return zero matches before any deploy:
-grep -r "Coming soon" src/       # → DEFECT: implement or remove
-grep -r "placeholder" src/       # → DEFECT: replace with real content
-grep -r "TODO" src/              # → DEFECT: implement or remove
-grep -r "not implemented" src/   # → DEFECT: implement
-grep -r "lorem ipsum" src/       # → DEFECT: replace with real copy
-```
-
-### Data Wiring Scan
-- Every component with a data array (`signal<T[]>([])`) MUST populate it from an API call
-- Every `disabled` button MUST have a click handler or clear UX rationale
-- Every service method calling `this.api.get()` MUST target an existing backend route
-- Any mismatch = DEFECT → implement the missing piece immediately
-
-### Route Scan (Playwright)
-- Visit every route in app.routes.ts
-- Assert no visible "Coming soon", "placeholder", or empty data tables without loading states
-- Assert every interactive element responds to clicks
-- Assert zero console errors and zero console warnings
-
-### Visual Scan
-- Invoke Skill 56 completeness verification on all pages
-- GPT-4o must return `{"status": "verified"}` for every page at every breakpoint
-- Any issue found = implement fix → re-verify
-
-### Action on Findings
-**FCE findings are DEFECTS, not suggestions.** Fix them immediately without asking for approval.
-The only exceptions requiring user approval: billing changes, legal content, brand decisions.
-
----
-
-## Strict TDD Workflow (MANDATORY for every feature)
-
-Based on research from Eric Elliott (TDD Engineer Metaprogram), Addy Osmani, and Thoughtworks:
-
-### Red → Green → Refactor → Verify
-1. **Write a failing Playwright E2E test** that describes the expected user behavior
-2. **Run it** — confirm it fails (Red)
-3. **Implement the minimum code** to make it pass (Green)
-4. **Refactor** — clean up while keeping tests green
-5. **Visual verify** — screenshot + GPT-4o inspection
-6. **Deploy** — only after all tests pass + visual verification
-
-### Spec-Driven Development (SDD)
-Before writing ANY test, write a structured spec:
-```markdown
-## Feature: [Name]
-### Given: [precondition]
-### When: [user action]
-### Then: [expected outcome]
-### Acceptance Criteria:
-- [ ] [specific, testable criterion]
-- [ ] [specific, testable criterion]
-```
-The spec IS the prompt. The test IS the verification. The implementation IS the last step.
-
-### Continuous Self-Healing
-When tests fail:
-1. Read the full error output
-2. Diagnose the root cause (not just the symptom)
-3. Fix the code
-4. Re-run the test
-5. Loop until green — max 5 attempts before escalating to user
-6. Never skip a failing test or mark it `.skip`
+> See Skill 07 for quality gate (10-check suite run after every code change)
+> See Skill 56 for Feature Completeness Engine (FCE) — visual scan of all pages/breakpoints
+> See Skill 06 for Strict TDD Workflow (Red → Green → Refactor → Verify)
+> See Skill 02 for Pre-Build Self-Interrogation Protocol (product definition before code)
+> See Skill 28 for SEO on every page (keywords, schema, internal links, sitemap)
+> See Skill 29 for documentation always current (README, CLAUDE.md, JSDoc, code comments)
+> See Skill 30 for AI-native coding patterns (explicit, flat, complete, co-located context)
+> See Skill 51 for wisdom and psychology (serve first, simplicity, truth, excellence, ethical persuasion)
+> See Skill 32 for Cloudflare Turnstile on all public forms
+> See Skill 42 for multi-language support (English + Spanish minimum, language selector)
+> See Skill 41 for testimonial collection (/feedback endpoint, moderated display)
+> See Skill 18 for donation goals + progress bars (Stripe webhooks + Durable Objects)
+> See Skill 08 for GitHub auto-config (repo description, README on first deploy)
 
 ---
 
@@ -435,38 +336,6 @@ When things break during execution, fix them autonomously:
 
 ---
 
-## Pre-Build Self-Interrogation Protocol (MANDATORY before writing ANY code)
-
-Before generating a single line of implementation, the AI MUST answer these questions internally and record key assumptions. This prevents 80% of rework by front-loading decisions that otherwise surface as bugs.
-
-### Product Definition (answer all before Slice 1)
-1. **What exactly is this product?** Name it, describe it in one sentence, identify the category.
-2. **Who uses it?** Primary persona, their pain point, their context (mobile? desktop? both?).
-3. **What problem does it solve?** State the before/after — what changes in the user's life.
-4. **What pages does it need?** List every route. What's on each page? What's the H1?
-5. **What forms does it need?** List each form, its fields, validation rules, and where data goes.
-6. **Does it need:** auth? payments? blog? search? i18n? admin panel? email? notifications?
-
-### Risk Pre-Mortem (identify before building)
-7. **What are the 5 most likely things to go wrong?** (e.g., empty states, slow API, missing images, broken mobile layout, form errors with no feedback)
-8. **What would a user's first 30 seconds look like?** Walk through the landing → first action → first value moment. If any step is unclear, the spec is incomplete.
-9. **What would make this look cheap vs. premium?** (stock photos, inconsistent spacing, generic copy, missing loading states, no micro-interactions)
-
-### Spec-Driven Verification (from SBE/SDD research)
-10. **Write 3 Given/When/Then acceptance criteria** for the core feature before coding it.
-11. **Define the "done screenshot"** — what should the AI see when it inspects the finished page?
-
-### Domain-Specific Due Diligence (answer before Slice 1)
-12. **What regulatory/compliance requirements apply?** (e.g., PCI for payments, HIPAA for health, 501c3 tax receipts for donations, CCPA/GDPR for PII, state charity registration for fundraising). If unsure, research before building.
-13. **What domain-critical integrations are needed beyond the default stack?** (e.g., CRM sync, tax receipt generation, social sharing APIs, webhook reliability with idempotency, recurring billing). List them explicitly.
-14. **What trust signals does this domain demand?** (e.g., SSL badges, nonprofit verification, transparent fee disclosure, security certifications, real testimonials). Domains handling money or health data have higher trust thresholds than content sites.
-15. **What are the table-stakes features every competitor has?** Spend 2 minutes listing 3 competitors and their core features. If your plan is missing any, add them before building.
-
-### Self-Ask Gate
-If any answer above is "I don't know," resolve it by inference (domain name, project type, existing code) or ask the user with a sensible default. Never start building with unresolved ambiguity on product-shaping questions.
-
----
-
 ## What This Skill Owns
 - Supreme policy and autonomy rules
 - One-line prompt interpretation logic
@@ -485,80 +354,11 @@ If any answer above is "I don't know," resolve it by inference (domain name, pro
 - Test implementations (→ 07)
 - Media generation prompts (→ 12)
 - Analytics configuration (→ 13)
-
-## Quality Gate — Full Suite on Every Prompt (MANDATORY)
-
-Run ALL of these in parallel after every code change:
-1. Deploy to production (wrangler deploy)
-2. Purge CF cache
-3. Playwright E2E at 6 breakpoints (375, 390, 768, 1024, 1280, 1920)
-4. Form testing (empty, invalid, XSS, max-length, success, error, loading, double-submit)
-5. Third-party health (YouTube, Maps, Stripe, Resend, GA4)
-6. Lighthouse report (report score, don't block for multimedia-heavy)
-7. axe-core accessibility audit
-8. Content integrity (no placeholders, no broken images, no empty sections)
-9. Visual inspection (desktop + mobile screenshots)
-10. GitHub repo description + README auto-update on first deploy
-
-Parallelize steps 3-10 while step 1-2 completes.
-
-## Cloudflare Turnstile (on ALL public forms)
-Every contact form, newsletter signup, and donation form gets invisible Turnstile.
-Site key configured per project in wrangler.toml secrets.
-
-## Multi-Language Support (MANDATORY)
-Every site gets a language selector in the top-right of the navbar.
-Minimum: English + Spanish. Add more languages as appropriate for the audience.
-AI translates all content on deploy. Use `?lang=es` URL param or dropdown.
-
-## Testimonial Collection
-Every site with a community/customer base gets a `/feedback` endpoint.
-Submissions are moderated (held for review) and displayed after approval.
-Not linked from main nav — available as a utility URL.
-
-## Donation Goals + Progress
-Every donation page includes:
-- A configurable donation goal with progress bar
-- Real-time updates via Stripe webhooks + Durable Objects
-- Auto-email to donor: thank you + ask to share + newsletter invite
-- Auto-email to all participants when goal is met
-
-## GitHub Auto-Config (on first deploy)
-- Set repo description to match the site's meta description
-- Generate README.md from the site content (skill 29 template)
-- Scan for secrets in all known locations before prompting
-- Try to integrate with every available API key found
-
-## SEO on Every Page (MANDATORY — skill 28)
-Every page targets keywords. Every deploy runs SEO audit.
-- Primary keyword in title, H1, first paragraph, and meta description
-- 1-2 longtail phrases in H2s and body copy
-- Flesch Reading Ease >= 50 on all user-facing text
-- JSON-LD structured data validated
-- Internal links: 2-3 per page minimum
-- Sitemap and robots.txt updated on every deploy
-
-## Documentation Always Current (MANDATORY — skill 29)
-- README.md: install.doctor template with dividers and badges
-- CLAUDE.md: updated after every session
-- Code comments: explain WHY not WHAT, cite sources
-- JSDoc on all exported functions with @see links
-- Remove stale code, stale comments, stale docs on every change
-- Directory-level READMEs for folders with 3+ files
-
-## AI-Native Coding (MANDATORY — skill 30)
-- Explicit over implicit. Flat over nested. Complete over incremental.
-- Full-stack in one pass: schema → API → UI → test → SEO → analytics → docs
-- Code structured for AI scanability: short files, clear names, co-located context
-- All documentation connected: CLAUDE.md ↔ MEMORY.md ↔ skills ↔ README
-- Flesch >= 50 on all text including code comments
-
-## Wisdom and Psychology (MANDATORY — skill 51)
-Every product embodies timeless principles:
-- **Serve first** — give value before asking for anything (generous free tier, helpful errors)
-- **Simplicity** — one CTA per section, max 7 options, 3 pricing tiers
-- **Truth** — real numbers, no fake urgency, plain-English legal pages
-- **Excellence** — the Apple Test on every page, every pixel intentional
-- **Ethical persuasion** — Cialdini's principles applied honestly, never dark patterns
-- **Know thy user** — accessibility, i18n, empty states that help, errors that serve
-- **Peak-End Rule** — last impression as good as first (checkout success, onboarding completion)
+- SEO rules (→ 28)
+- Documentation standards (→ 29)
+- AI-native coding patterns (→ 30)
+- Psychology/wisdom principles (→ 51)
+- Form/Turnstile implementation (→ 32)
+- Internationalization (→ 42)
+- Testimonial collection (→ 41)
+- Feature completeness scanning (→ 56)

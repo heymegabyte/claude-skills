@@ -2,37 +2,39 @@
 
 Deterministic decision tree. Match task type first, then refine by file context.
 
-**LOADING POLICY: Be generous. At least 25 skills loaded at all times. Never leave more than half unloaded. When in doubt, load the skill.**
+**LOADING POLICY: Be generous. At least 29 skills loaded at all times. Never leave more than half unloaded. When in doubt, load the skill.**
 
 ## Always Active (load EVERY session — non-negotiable)
 
 01 Operating System, 05 Architecture, 06 Build Loop, 07 Quality, 08 Deploy,
 09 Brand/Content, 10 Design, 12 Media, 13 Observability, 20 Accessibility,
-24 Web Manifest, 28 SEO, 29 Documentation, 30 AI-Native, 31 Error Pages,
-32 Contact Forms, 37 AI Search, 42 i18n, 43 AI Chat, 44 Drizzle,
-48 Empty States, 51 Wisdom, 52 MCP Integrations, 53 Autonomous Orchestrator,
-54 Computer Use, 55 Browser Workflows, 56 Completeness Verification
+24 Web Manifest, 28 SEO, 29 Documentation, 30 AI-Native, 32 Contact Forms,
+37 AI Search, 43 AI Chat, 44 Drizzle, 48 Empty States, 51 Wisdom,
+52 MCP Integrations, 53 Autonomous Orchestrator, 54 Computer Use,
+55 Browser Workflows, 56 Completeness Verification, 57 AI Technology
 CONVENTIONS.md, STYLE_GUIDES.md
 
-**(27 skills = 49% always loaded)**
+**(26 skills + 2 shared files = always loaded, 45% of 58)**
 
 ## By Task Type (ADD these to the always-active base)
 
 | Task | Add Skills | Total ~Loaded |
 |------|-----------|---------------|
-| New project (no code) | 02, 03, 15, 16, 17, 34 | 30 |
-| Build / implement feature | 11, 15, 33, 36, 37, 45, 46, 47, 49 | 33 |
-| Fix / debug | gh-fix-ci | 25 |
-| Deploy only | 34 | 25 |
-| Full project / autonomous | ALL skills (55) | 55 |
-| Design / visual | 11, 15 | 26 |
-| SEO / content | 33 | 25 |
-| Billing / payments | 18, 45 | 26 |
-| Infrastructure | 50, 26 | 26 |
-| Testing / QA | 11 | 25 |
-| Visual QA / screenshots | 11 | 25 (+ spawn visual-qa agent) |
-| Desktop automation | (already have 54) | 24 (+ spawn computer-use-operator) |
-| Onboarding / UX | 36, 47, 49 | 27 |
+| New project (no code) | 02, 03, 15, 16, 17, 21, 22, 23, 25, 34 | 36 |
+| Build / implement feature | 11, 15, 21, 22, 23, 25, 33, 36, 45, 46, 47, 49 | 38 |
+| Fix / debug | gh-fix-ci | 27 |
+| Deploy only | 34 | 27 |
+| Full project / autonomous | ALL 58 skills | 58 |
+| Design / visual | 11, 15, 31 | 29 |
+| SEO / content | 33, 42 | 28 |
+| Billing / payments | 18, 45 | 28 |
+| Infrastructure | 50, 26 | 28 |
+| Testing / QA | 11 | 27 |
+| Visual QA / screenshots | 11 | 27 (+ spawn visual-qa agent) |
+| Desktop automation | (already have 54) | 26 (+ spawn computer-use-operator) |
+| Onboarding / UX | 36, 47, 49 | 29 |
+| i18n / localization | 42 | 27 |
+| Error handling | 31 | 27 |
 
 ## By File Being Edited (ADD to current set)
 
@@ -52,11 +54,12 @@ CONVENTIONS.md, STYLE_GUIDES.md
 
 | Profile | Load ALL always-active + these |
 |---------|-------------------------------|
-| Marketing Site | 11, 15, 33, 34 (25 total) |
-| SaaS Application | ALL 50 skills |
-| Nonprofit / Donation | 11, 15, 18, 19, 33, 34, 41, 43 (29 total) |
-| API Service | 26, 38, 40, 45, 50, 52 (27 total) |
-| Developer Tool / OSS | 33, 35, 37, 39, 47 (26 total) |
+| Marketing Site | 11, 15, 21, 22, 23, 25, 31, 33, 34, 42 (36 total) |
+| SaaS Application | ALL 58 skills |
+| Nonprofit / Donation | 11, 15, 18, 19, 21, 22, 23, 25, 31, 33, 34, 41, 42, 43 (40 total) |
+| API Service | 21, 22, 23, 25, 26, 38, 40, 45, 50 (35 total) |
+| Developer Tool / OSS | 21, 22, 23, 25, 33, 35, 39, 47 (34 total) |
+| Micro-SaaS | 11, 18, 21, 22, 23, 25, 31, 45 (34 total) |
 
 ## Parallel Agent Skill Distribution (Option C)
 
@@ -93,12 +96,12 @@ When computer-use or browser MCP is available:
 
 ```
 Is this "build everything" or "full completion"?
-├── YES → Load ALL 50 skills. Spawn parallel agents. Cascade protocol.
+├── YES → Load ALL 58 skills. Spawn parallel agents. Cascade protocol.
 └── NO → Is this a NEW project (empty folder)?
-    ├── YES → Always-active (21) + New Project extras (28 total)
+    ├── YES → Always-active (26) + New Project extras (36 total)
     └── NO → Does it mention BUG or ERROR?
-        ├── YES → Always-active (21) + gh-fix-ci (22 total)
+        ├── YES → Always-active (26) + gh-fix-ci (27 total)
         └── NO → Does it mention DESIGN or VISUAL?
-            ├── YES → Always-active (21) + 11, 15 (23 total)
-            └── NO → Always-active (21) + task-specific (22-30 total)
+            ├── YES → Always-active (26) + 11, 15, 31 (29 total)
+            └── NO → Always-active (26) + task-specific (27-38 total)
 ```

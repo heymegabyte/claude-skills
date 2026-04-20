@@ -1,12 +1,14 @@
 # Emdash Operating System v4
 
-## 50-Skill Autonomous Product-Building System
+## 58-Skill Autonomous Product-Building System
 
 An aggressive, multimedia-rich operating system for Claude Code that converts weak, one-line prompts into fully realized, production-ready products with elite UX, outstanding media, bold design, meaningful animation, rigorous testing, and enterprise-grade instrumentation.
 
 ---
 
 ## Architecture
+
+4-layer model: Foundation (policy + planning) -> Build (code + media) -> Verify (test + deploy) -> Improve (ideas + docs).
 
 ```
 .agentskills/
@@ -15,7 +17,7 @@ An aggressive, multimedia-rich operating system for Claude Code that converts we
 ├── _router.md                             ← Deterministic skill routing (load FIRST)
 ├── CONVENTIONS.md                         ← Shared constants (brand, deploy, secrets)
 ├── QUICK_REF.md                           ← One-page cheat sheet for simple tasks
-├── SKILL_PROFILES.md                      ← Project-type skill subsets (5 profiles)
+├── SKILL_PROFILES.md                      ← Project-type skill subsets (6 profiles)
 ├── llms.txt                               ← Machine-readable skill index
 ├── CHANGELOG.md                           ← Skills system version history
 ├── scripts/discover-secrets.sh            ← Runtime secret discovery
@@ -44,7 +46,11 @@ An aggressive, multimedia-rich operating system for Claude Code that converts we
 ├── 18-stripe-billing/SKILL.md            ← Free tier + $50/mo pro, donations like givedirectly
 ├── 19-email-templates/SKILL.md           ← Branded HTML email templates for all transactional
 ├── 20-accessibility-gate/SKILL.md        ← axe-core audit + beautiful focus styling, WCAG AA
+├── 21-TBD/SKILL.md                       ← (pending creation)
+├── 22-TBD/SKILL.md                       ← (pending creation)
+├── 23-TBD/SKILL.md                       ← (pending creation)
 ├── 24-web-manifest-system/SKILL.md       ← install.doctor-grade PWA manifest with screenshots, rich snippets (4+ JSON-LD), cross-site linking, opensearch, humans.txt, security.txt
+├── 25-TBD/SKILL.md                       ← (pending creation)
 ├── 26-shared-api-pool/SKILL.md           ← Centralized API keys + Coolify self-hosted services
 ├── 27-social-automation/SKILL.md         ← Auto-post via Postiz to 15+ platforms on deploy
 ├── 28-seo-and-keywords/SKILL.md         ← Keyword research, Yoast rules, per-page targeting
@@ -73,6 +79,10 @@ An aggressive, multimedia-rich operating system for Claude Code that converts we
 ├── 51-wisdom-and-human-psychology/SKILL.md ← Timeless principles: Cialdini, Kahneman, servant leadership, ethics
 ├── 52-mcp-and-cloud-integrations/SKILL.md ← MCP servers, secrets discovery, Slack/Discord/Zapier, AI API strategy
 ├── 53-autonomous-orchestrator/SKILL.md  ← Master orchestrator: parallel agents, autonomous decisions, competitive iteration
+├── 54-computer-use-automation/SKILL.md  ← Native macOS app automation via Computer Use MCP
+├── 55-chrome-and-browser-workflows/SKILL.md ← Browser automation, Playwright MCP, Firecrawl
+├── 56-completeness-verification/SKILL.md ← AI visual loop until zero issues remain
+├── 57-ai-technology-integration/SKILL.md ← Latest AI APIs, models, and techniques
 └── gh-fix-ci/SKILL.md                   ← Debug failing GitHub Actions PR checks
 ```
 
@@ -185,7 +195,7 @@ When under-specified: infer from domain name, apply stack defaults, build everyt
 - Lighthouse: report score, don't block for multimedia-heavy pages
 - A11y: skip link, ARIA, focus rings, 4.5:1 contrast, axe-core 0 violations
 - SEO: per-page keywords, Yoast checklist, JSON-LD, OG tags, sitemap, robots.txt
-- Readability: Flesch >= 50 on all user-facing text and code comments
+- Readability: Flesch >= 60 on all user-facing text and code comments
 - Security: CSP, Zod validation, Turnstile on forms, no exposed secrets
 - Visual: no breaks at 375px or 1280px
 - Interactive: cursor:pointer + hover + focus + active everywhere
@@ -237,4 +247,4 @@ The skill system evolves continuously through these mechanisms:
 5. Phase skills      → Only what's needed for current phase
 ```
 
-This order prevents loading all 50 skills for a simple bug fix (which would waste ~40K tokens of context).
+This order prevents loading all 58 skills for a simple bug fix (which would waste ~40K tokens of context).

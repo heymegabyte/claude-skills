@@ -392,7 +392,7 @@ Branding must be consistent across ALL web property files, not just visible page
 - Blog posts link to product pages naturally
 - Related content cross-links
 
-## Flesch Reading Ease: >= 50 (Non-Negotiable)
+## Flesch Reading Ease: >= 60 (Non-Negotiable)
 
 ### Rules for All Content
 - Sentences: 15-20 words average (never exceed 25)
@@ -485,7 +485,7 @@ Give value in the copy itself. Teach something. Share an insight. Make the reade
 [ ] No placeholder text anywhere
 [ ] No "Click here" or "Learn more" CTAs
 [ ] Hero headline <= 8 words
-[ ] Flesch score >= 50
+[ ] Flesch score >= 60
 [ ] All numbers specific, not vague
 [ ] Error messages human and helpful
 [ ] No corporate jargon or AI slop words
