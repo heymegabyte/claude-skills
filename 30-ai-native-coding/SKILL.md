@@ -222,7 +222,7 @@ import type { Context } from 'hono';
 
 ---
 
-## Readability Rules (Flesch >= 50 Everywhere)
+## Readability Rules (Flesch >= 60 Everywhere)
 
 ### Code Comments
 - Write like you're explaining to a smart colleague who just joined
@@ -230,10 +230,10 @@ import type { Context } from 'hono';
 - "This validates the email format" not "The following code performs validation of the electronic mail address format"
 
 ### Documentation
-- README: Flesch 60+ (accessible to all)
-- CLAUDE.md: Flesch 50+ (technical but clear)
-- Legal pages: Flesch 50+ (plain English, not legalese)
-- User-facing copy: Flesch 55+ (skill 09)
+- README: Flesch 65+ (accessible to all)
+- CLAUDE.md: Flesch 60+ (technical but clear)
+- Legal pages: Flesch 60+ (plain English, not legalese)
+- User-facing copy: Flesch 60+ (skill 09)
 - Error messages: Flesch 70+ (crystal clear)
 
 ### Testing Your Writing

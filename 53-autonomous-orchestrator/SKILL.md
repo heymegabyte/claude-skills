@@ -5,51 +5,17 @@ description: "Master process that drives entire SaaS projects to completion with
 
 # 53 — Autonomous Orchestrator
 
-> Master process that drives entire SaaS projects to completion with minimal user input. Continuously improves until the product exceeds competitors.
+> Master process that drives entire SaaS projects to completion with minimal user input. Spawns parallel child agents for independent work streams. Continuously improves until the product exceeds competitors.
 
 ---
 
-## Core Principle
+## Orchestration Principles
 
-**Build complete products from barely thought-out prompts.** The folder name IS the domain. Deploy to Cloudflare on the first prompt. Include everything. Unless it would take over 10 minutes, include all improvements. Keep improving until done.
-
-**AI programs faster than humans — use that speed.** Every prompt should produce MAXIMUM output. The 5-minute skeleton is FAILURE. The 45-minute complete product is SUCCESS.
-
-**Parallelize aggressively.** Launch multiple agents for independent work. Don't sequence what can run in parallel.
-
----
-
-## Core Principles
-
-### 1. Autonomous Decision-Making
-- NEVER present multiple options and ask the user to choose
-- Pick the best option based on: competitive analysis, design best practices, technical merit, user context
-- Implement and deploy immediately
-- Log decisions in commit messages for transparency
-
-### 2. Complete Execution
-- Every task runs to FULL completion: built, deployed, tested, verified
-- No skeletons, no TODOs, no "I'll leave this for later"
-- If a feature needs 10 sub-tasks, do all 10
-- If you discover adjacent improvements while working, do them
-
-### 3. Parallel Agent Spawning
-- Identify independent work streams at the start of every task
-- Spawn agents in parallel for: frontend, backend, testing, deployment, competitive research
-- Use background agents for long-running tasks (builds, E2E tests)
-- Coordinate results and resolve conflicts
-
-### 4. Competitive Excellence
-- Before building any feature, research what competitors offer
-- Implement ALL features competitors have, then add differentiators
-- Use AI computer vision to audit UI quality against competitors
-- Keep iterating until the product is objectively better
-
-### 5. AI-Native Features
-- Proactively integrate AI capabilities: vision, NLP, voice, embeddings
-- Use serverless architectures (Cloudflare Workers, D1, R2, KV)
-- Leverage GPT-4o Vision for UI auditing, document processing, form filling
-- Use AI for copy generation, image generation, logo creation
+1. **Autonomous decisions** — never present options; pick the best, implement, log in commits
+2. **Complete execution** — every task runs to full completion (no stubs, no TODOs, all sub-tasks)
+3. **Parallel agent spawning** — identify independent streams, spawn agents, coordinate results
+4. **Competitive excellence** — research competitors, match all features, then exceed them
+5. **AI-native** — proactively integrate vision, NLP, embeddings; use AI for copy, images, audits
 
 ---
 
@@ -87,7 +53,7 @@ description: "Master process that drives entire SaaS projects to completion with
    a. **Technical inspection:**
       - grep all frontend templates for: 'Coming soon', empty arrays, disabled buttons, TODO, 'placeholder'
       - grep all component classes for data arrays initialized to [] but never populated from API
-      - diff frontend API calls against backend route definitions → find gaps
+      - diff frontend API calls against backend route definitions -> find gaps
 
    b. **Visual inspection:**
       - Screenshot EVERY admin page at 1280px
@@ -118,18 +84,6 @@ description: "Master process that drives entire SaaS projects to completion with
 
 ---
 
-## Decision Framework
-
-When making autonomous decisions, prioritize:
-1. User safety and data security
-2. Accessibility and inclusivity
-3. Performance and reliability
-4. Visual polish and delight
-5. Feature completeness vs. competitors
-6. Developer experience and maintainability
-
----
-
 ## Agent Types to Spawn
 
 | Agent | Purpose | When |
@@ -143,7 +97,7 @@ When making autonomous decisions, prioritize:
 | Copy Writer | Marketing copy, microcopy, SEO | Content updates |
 | Image Generator | Logos, icons, hero images via AI | Design work |
 
-**Reference implementation:** wasp-lang/open-saas (14K+ stars) -- study their AGENTS.md and Claude Code plugin for agent orchestration patterns. Their approach demonstrates that AI-readiness comes from clarity and convention (config-driven features, full-stack type safety, skill-based architecture) rather than AI-specific code. Custom plugins inject framework knowledge + best practices into CLAUDE.md/AGENTS.md so AI tools understand project conventions without extensive context.
+**Reference implementation:** wasp-lang/open-saas (14K+ stars) -- study their AGENTS.md and Claude Code plugin for agent orchestration patterns. Their approach demonstrates that AI-readiness comes from clarity and convention (config-driven features, full-stack type safety, skill-based architecture) rather than AI-specific code.
 
 ---
 
@@ -176,12 +130,7 @@ A task is NOT done until:
 [ ] Commit messages describe all decisions made
 ```
 
-### "Zero Recommendations" Gate (THE ULTIMATE DONE TEST)
-After all features pass all tests and visual inspection:
-Ask yourself: "How can I improve this app more?"
-If you have ANY reasonable recommendation → implement it → re-ask.
-The project is DONE only when you genuinely cannot think of improvements.
-This prevents premature "done" declarations and ensures true completeness.
+> Zero Recommendations Gate: see Skill 07 (Quality and Verification)
 
 ### Feature Completeness Engine Must Pass
 - grep "Coming soon" returns zero matches
@@ -189,6 +138,85 @@ This prevents premature "done" declarations and ensures true completeness.
 - Every button has a working click handler
 - Every admin section is fully functional (no stubs)
 - Skill 56 visual verification converged on ALL routes
+
+---
+
+## Agent Teams Configuration
+
+### Team Structure (for complex projects)
+```
+Team Lead (opus) — plans, coordinates, synthesizes
+├── Frontend Agent (sonnet) — UI, design, motion, accessibility
+├── Backend Agent (sonnet) — API, DB, auth, webhooks
+├── Quality Agent (sonnet) — tests, security, performance
+├── Content Agent (haiku) — copy, SEO, media, docs
+└── Deploy Agent (haiku) — build, deploy, verify, monitor
+```
+
+### Coordination Rules
+- Team lead creates shared task list with dependencies
+- Agents claim tasks and mark in_progress -> completed
+- File ownership: frontend owns `src/app/`, backend owns `src/api/`
+- Test agent never modifies application code
+- Deploy agent runs AFTER all build agents complete
+- Peer messaging for cross-cutting concerns (e.g., "I added a new API endpoint, update the frontend")
+
+### Custom Agent Dispatch
+Spawn these pre-built agents from `~/.claude/agents/`:
+- `deploy-verifier` -> after every deployment
+- `security-reviewer` -> before merging to main
+- `test-writer` -> after implementing new features
+- `seo-auditor` -> after adding new pages
+- `visual-qa` -> after design changes
+- `computer-use-operator` -> for native app automation
+
+---
+
+## Self-Healing Decision Trees
+
+### Failure Classification
+```
+Error occurs during autonomous execution
+├── TRANSIENT (retry)
+│   ├── Rate limit -> exponential backoff, max 3 retries
+│   ├── Network timeout -> retry after 2s
+│   ├── API 503 -> check service status via Coolify MCP, retry or skip
+│   └── Build cache stale -> clean and rebuild
+├── CODE BUG (fix)
+│   ├── Type error -> read error, fix types, recompile
+│   ├── Null reference -> add guard, test edge case
+│   ├── Logic error -> trace execution, fix condition
+│   └── Import error -> check paths, fix import
+├── ARCHITECTURE MISMATCH (reassess)
+│   ├── Wrong framework for use case -> stop, propose alternative
+│   ├── DB schema doesn't fit -> redesign before continuing
+│   ├── API structure fundamentally wrong -> refactor before adding features
+│   └── Skill loaded wrong subset -> re-route via _router.md
+├── EXTERNAL DEPENDENCY (degrade)
+│   ├── API permanently down -> use fallback or skip feature
+│   ├── Service deprecated -> find replacement
+│   ├── Credentials expired -> prompt user once, store result
+│   └── Quota exhausted -> switch to free tier or defer
+└── SKILL MISMATCH (re-route)
+    ├── Routed to wrong skill -> re-evaluate task type in _router.md
+    ├── Two skills conflict -> Skill 01 (OS) > specific skill > general
+    ├── Skill advice was wrong -> fix skill (max 3 per prompt), note in MEMORY.md
+    └── Missing skill for task -> create lightweight inline guidance, note gap
+```
+
+### Recovery Protocol
+1. Detect failure (error output, test failure, visual defect)
+2. Classify using tree above
+3. Apply the prescribed fix for that classification
+4. Verify fix resolved the issue
+5. If same failure 3x -> escalate one level (transient -> code bug -> architecture)
+6. If architecture-level failure -> pause, explain to user, propose alternative
+7. After resolution -> check if fix caused regressions elsewhere
+
+### Skill Mismatch Detection
+- If a skill's advice produces 2+ failures in a row -> flag skill as potentially stale
+- If router loaded skill X but task actually needs skill Y -> add routing rule
+- After every 5 prompts -> micro-audit: were the right skills loaded?
 
 ---
 
@@ -207,158 +235,11 @@ This prevents premature "done" declarations and ensures true completeness.
 | 17 Competitive Analysis | Delegates competitor research |
 | 30 AI-Native Coding | Ensures AI-optimized code patterns |
 
----
+> Emphasis parsing: see Skill 01 (Operating System)
 
-## Self-Healing Decision Trees
+> VoC model: see Skill 04 (Preference and Memory)
 
-### Failure Classification
-```
-Error occurs during autonomous execution
-├── TRANSIENT (retry)
-│   ├── Rate limit → exponential backoff, max 3 retries
-│   ├── Network timeout → retry after 2s
-│   ├── API 503 → check service status via Coolify MCP, retry or skip
-│   └── Build cache stale → clean and rebuild
-├── CODE BUG (fix)
-│   ├── Type error → read error, fix types, recompile
-│   ├── Null reference → add guard, test edge case
-│   ├── Logic error → trace execution, fix condition
-│   └── Import error → check paths, fix import
-├── ARCHITECTURE MISMATCH (reassess)
-│   ├── Wrong framework for use case → stop, propose alternative
-│   ├── DB schema doesn't fit → redesign before continuing
-│   ├── API structure fundamentally wrong → refactor before adding features
-│   └── Skill loaded wrong subset → re-route via _router.md
-├── EXTERNAL DEPENDENCY (degrade)
-│   ├── API permanently down → use fallback or skip feature
-│   ├── Service deprecated → find replacement
-│   ├── Credentials expired → prompt user once, store result
-│   └── Quota exhausted → switch to free tier or defer
-└── SKILL MISMATCH (re-route)
-    ├── Routed to wrong skill → re-evaluate task type in _router.md
-    ├── Two skills conflict → Skill 01 (OS) > specific skill > general
-    ├── Skill advice was wrong → fix skill (max 3 per prompt), note in MEMORY.md
-    └── Missing skill for task → create lightweight inline guidance, note gap
-```
-
-### Recovery Protocol
-1. Detect failure (error output, test failure, visual defect)
-2. Classify using tree above
-3. Apply the prescribed fix for that classification
-4. Verify fix resolved the issue
-5. If same failure 3x → escalate one level (transient → code bug → architecture)
-6. If architecture-level failure → pause, explain to user, propose alternative
-7. After resolution → check if fix caused regressions elsewhere
-
-### Skill Mismatch Detection
-- If a skill's advice produces 2+ failures in a row → flag skill as potentially stale
-- If router loaded skill X but task actually needs skill Y → add routing rule
-- After every 5 prompts → micro-audit: were the right skills loaded?
-
----
-
-## Emphasis Signal Processing (***TEXT***)
-
-### Parsing Rules
-When user writes `***TEXT HERE***`:
-1. Classify as: global / project-level / temporary / hard constraint / permanent preference
-2. Propagate to correct layer:
-   - Global → update CLAUDE.md or skill file
-   - Project → update project CLAUDE.md
-   - Temporary → hold in session context only
-   - Hard constraint → enforce in hooks or quality gates
-   - Permanent preference → update Skill 04 (Memory)
-
-### ***PROCESS THIS*** Directive
-When user writes `***PROCESS THIS***`:
-1. Re-scan entire prompt top to bottom
-2. Extract: goals, frustrations, priorities, quality standards, emotional emphasis
-3. Reconcile against: current goal brief, CLAUDE.md, active skills, CONVENTIONS.md
-4. Regenerate canonical project context
-5. Update affected skills/docs (max 3 files)
-6. Resume execution from regenerated context
-
----
-
-## Voice of the Customer (VoC)
-
-### Capture
-For each material prompt, extract:
-- Desired outcome (what they want built)
-- Dissatisfaction signals ("too slow", "ugly", "incomplete", "generic")
-- Aspiration signals ("elite", "premium", "enterprise-grade", "industry-leading")
-- Quality implications (which skills need to produce higher-quality output)
-
-### Storage
-VoC stored in: project CLAUDE.md under `## Voice of the Customer`
-Format:
-```markdown
-## Voice of the Customer
-- Desires: [specific outcomes]
-- Frustrations: [what they find unacceptable]
-- Aspirations: [quality bar they expect]
-- Standards: [specific quality thresholds mentioned]
-```
-
-### Refresh Triggers
-- User changes priorities
-- User corrects the system
-- User redefines "done"
-- User adds strong emphasis (***TEXT***)
-- User writes ***PROCESS THIS***
-
-### Application
-VoC informs: product direction, prioritization, copy tone, design ambition,
-media quality bar, motion intensity, testing thoroughness, documentation depth.
-
----
-
-## Prompt Re-Synthesis Engine
-
-For every meaningful prompt:
-1. Parse for emphasis signals and VoC
-2. Detect goal changes, new preferences, new constraints
-3. Check implications across: skills, CLAUDE.md, architecture, testing, media
-4. If material change detected → regenerate canonical context
-5. Resume execution from updated context (not stale context)
-
-Always re-synthesize when:
-- User writes ***PROCESS THIS***
-- User introduces new permanent rule
-- User raises quality bar
-- User changes direction
-- User corrects prior assumptions
-
----
-
-## Agent Teams Configuration
-
-### Team Structure (for complex projects)
-```
-Team Lead (opus) — plans, coordinates, synthesizes
-├── Frontend Agent (sonnet) — UI, design, motion, accessibility
-├── Backend Agent (sonnet) — API, DB, auth, webhooks
-├── Quality Agent (sonnet) — tests, security, performance
-├── Content Agent (haiku) — copy, SEO, media, docs
-└── Deploy Agent (haiku) — build, deploy, verify, monitor
-```
-
-### Coordination Rules
-- Team lead creates shared task list with dependencies
-- Agents claim tasks and mark in_progress → completed
-- File ownership: frontend owns `src/app/`, backend owns `src/api/`
-- Test agent never modifies application code
-- Deploy agent runs AFTER all build agents complete
-- Peer messaging for cross-cutting concerns (e.g., "I added a new API endpoint, update the frontend")
-
-### Custom Agent Dispatch
-Spawn these pre-built agents from `~/.claude/agents/`:
-- `deploy-verifier` → after every deployment
-- `security-reviewer` → before merging to main
-- `test-writer` → after implementing new features
-- `seo-auditor` → after adding new pages
-- `visual-qa` → after design changes
-- `computer-use-operator` → for native app automation
+> Context re-synthesis: see Skill 01 (Operating System)
 
 ---
 

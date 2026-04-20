@@ -1,6 +1,6 @@
 # Emdash Skills System
 
-> 49-skill autonomous product-building system for Claude Code. Converts one-line prompts into fully deployed, production-ready products with elite UX, bold design, rigorous testing, and enterprise-grade instrumentation. Self-improving: tracks skill usage, detects outdated advice, and batch-applies updates.
+> 58-skill autonomous product-building system for Claude Code. Converts one-line prompts into fully deployed, production-ready products with elite UX, bold design, rigorous testing, and enterprise-grade instrumentation. Self-improving: tracks skill usage, detects outdated advice, and batch-applies updates.
 
 ## System Files (Load Before Skills)
 

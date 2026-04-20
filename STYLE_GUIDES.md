@@ -55,7 +55,7 @@ Source: hono.dev/docs/guides/best-practices
 
 1. **Humans first,** search engines second
 2. **Active voice** and positive language
-3. **5th-8th grade reading level** (Flesch 50+)
+3. **5th-8th grade reading level** (Flesch 60+)
 4. **Front-load** important information (inverted pyramid)
 5. **One idea per paragraph,** one topic per section
 6. **Descriptive link text** (not "click here"), with hover + focus states

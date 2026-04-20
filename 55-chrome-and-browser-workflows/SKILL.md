@@ -188,7 +188,7 @@ Prefer Playwright. Use Computer Use only for visual DevTools analysis.
 2. firecrawl_scrape → top 5 results
 3. Extract: headings, key points, statistics
 4. Synthesize into original content
-5. Verify Flesch >= 50
+5. Verify Flesch >= 60
 ```
 
 ### SEO Audit (Skill 28 Integration)

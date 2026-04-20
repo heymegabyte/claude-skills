@@ -168,7 +168,7 @@ async function extractCompetitorKeywords(url: string) {
 - [ ] Primary keyword density: 1-2% (natural, not stuffed)
 - [ ] Longtail keywords appear in body naturally
 - [ ] Content length: minimum 300 words per page (600+ preferred)
-- [ ] Flesch Reading Ease: >= 50 (see readability section)
+- [ ] Flesch Reading Ease: >= 60 (see readability section)
 - [ ] Short paragraphs (2-4 sentences max)
 - [ ] Subheadings every 200-300 words
 - [ ] Transition words used (however, therefore, additionally)
@@ -212,7 +212,7 @@ async function extractCompetitorKeywords(url: string) {
 
 ## Flesch Reading Ease Enforcement
 
-### Target: >= 50 (All Content)
+### Target: >= 60 (All Content)
 
 ```typescript
 // Simple Flesch calculator for runtime checking
@@ -244,7 +244,7 @@ All 9 are automatable with no external API:
 
 | # | Check | Rule | How to Automate |
 |---|-------|------|-----------------|
-| 1 | Flesch Reading Ease | Score >= 50 | Formula above |
+| 1 | Flesch Reading Ease | Score >= 60 | Formula above |
 | 2 | Sentence length | Avg <= 20 words | Split on `.!?`, count words |
 | 3 | Paragraph length | Max 150 words | Count between `\n\n` |
 | 4 | Passive voice | < 10% of sentences | Detect "was/were/been + past participle" |
@@ -441,7 +441,7 @@ Store any keys in the shared API pool (skill 26).
 - **06 Build Loop** ��� every page targets specific keywords from build start
 - **09 Brand & Content** — copy written around target keywords naturally
 - **17 Competitive Analysis** — competitor keywords feed into our targeting
-- **22 Copy System** — Flesch >= 50 enforced on all copy
+- **22 Copy System** — Flesch >= 60 enforced on all copy
 - **24 Web Manifest** — sitemap, robots.txt, structured data verified
 - **07 Quality Gate** — SEO audit runs as part of quality gate
 

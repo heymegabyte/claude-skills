@@ -1,6 +1,6 @@
 # Skill Profiles
 
-Maps project types to skill subsets. Not all 49 skills apply to every project.
+Maps project types to skill subsets. Not all 58 skills apply to every project.
 
 ## Quick-Match: Domain Name to Profile
 

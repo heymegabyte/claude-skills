@@ -463,7 +463,7 @@ test('SEO audit', async ({ page }) => {
 });
 ```
 
-## Readability Check (Flesch >= 50)
+## Readability Check (Flesch >= 60)
 After deploy, check all user-facing text:
 ```typescript
 test('readability check', async ({ page }) => {
@@ -473,7 +473,7 @@ test('readability check', async ({ page }) => {
   const sentences = text!.split(/[.!?]+/).filter(s => s.trim().length > 5);
   const words = text!.split(/\s+/).filter(w => w.length > 0);
   const avgSentenceLength = words.length / Math.max(sentences.length, 1);
-  // Avg sentence length should be under 22 words (Flesch 50+ territory)
+  // Avg sentence length should be under 20 words (Flesch 60+ territory)
   expect(avgSentenceLength).toBeLessThan(22);
 });
 ```
@@ -689,7 +689,7 @@ After the AI visual inspection loop completes, run these 5 verification passes i
 - All copy is specific to this product — not generic marketing filler
 - Microcopy is complete: button labels, empty states, error messages, tooltips
 - Alt text on every image; meta descriptions on every page
-- Reading level Flesch >= 50 on all user-facing text
+- Reading level Flesch >= 60 on all user-facing text
 
 ### Pass 4: Technical Verification
 - Lighthouse Performance >= 90 (report, don't block for multimedia-heavy)
