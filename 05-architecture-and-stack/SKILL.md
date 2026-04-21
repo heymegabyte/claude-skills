@@ -58,13 +58,17 @@ submodules:
 
 Key reasoning: Hono over NestJS (native CF Workers), Angular over React (Brian's background), Neon over Supabase (multi-DB, lower cost), Drizzle over Prisma (lighter edge), Biome over ESLint (single Rust tool).
 
+## CF-Only Assumption (***DEFAULT***)
+Every feature MUST try CF-native first. Never reach for external services when CF has an equivalent. Template: megabytespace/saas-starter has stubs for all CF primitives.
+AI→Workers AI (not OpenAI). Cache→KV/Cache API (not Redis). DB→D1 (not Postgres). Storage→R2 (not S3). Queue→CF Queues (not SQS). Realtime→DO+WebSocket (not Pusher). Schedule→Cron Triggers (not external cron). Search→Vectorize (not Algolia). Only escape to external when CF primitive insufficient (complex joins→Neon, specific model→OpenAI/Anthropic via AI Gateway).
+
 ## CF Platform Decision Trees
 
-**Run code:** Static → Pages. API → Workers (Hono). Long-running → Workers+Queues/Workflows. Stateful → DO. Container → CF Containers. Scheduled → Cron. Browser → Browser Rendering API.
+**Run code:** Static→Pages. API→Workers(Hono). Long-running→Workers+Queues/Workflows. Stateful→DO. Container→CF Containers. Scheduled→Cron Triggers. Browser→Browser Rendering API.
 
-**Store data:** KV config → KV. Relational simple → D1. Relational complex → Neon. Files → R2. Session → DO/KV. Search → Vectorize. Messages → Queues.
+**Store data:** Config→KV. Relational simple→D1. Relational complex→Neon. Files→R2. Session→DO/KV. Search→Vectorize. Messages→Queues. Cache→KV(CACHE binding, TTL).
 
-**Security:** Bots → Turnstile. DDoS → always-on free. WAF → CF WAF. Auth → Clerk. Rate limit → KV counters. Secrets → wrangler secret put.
+**Security:** Bots→Turnstile. DDoS→always-on free. WAF→CF WAF. Auth→Clerk. Rate limit→KV counters (src/lib/cache.ts). Secrets→wrangler secret put. Admin→CF Access.
 
 ## Architecture Patterns
 
