@@ -5,22 +5,13 @@ description: "Screenshot → GPT-4o Vision (temp:0, JSON, evidence fields) → F
 
 # Visual Inspection Loop
 
-## GPT-4o Vision Protocol (Research-Backed)
-- `temperature: 0` — deterministic QA assertions, CI-safe
-- `response_format: { type: "json_object" }` — guaranteed valid JSON
-- `detail: "low"` for triage (85 tokens), `"high"` for fine analysis (85 + 170/tile)
-- Text instructions BEFORE images in content array (better extraction accuracy)
-- Every claim requires `"evidence"` field (what was ACTUALLY seen — anti-hallucination)
-- Two-pass for complex pages: pass 1 list elements, pass 2 evaluate each
-- Crop+zoom specific failures vs re-sending full page (200x200 crop = 255 tokens)
-- Batch API for nightly regression scans (50% cheaper, 24hr turnaround)
+## AI Vision Protocol
+temp:0|json_object format|evidence field in every claim (anti-hallucination)|detail:low for triage (85tok), high for fine (85+170/tile)|text BEFORE images|two-pass complex pages (list→evaluate)|crop+zoom failures vs full page|Batch API nightly regression (50% cheaper).
 
 ## Dual Strategy
-- **GPT-4o Vision**: layout breaks, brand consistency, visual hierarchy, "does it look good?" (~57% of a11y issues)
-- **axe-core + Playwright a11y tree**: functional verification, ARIA, screen reader, focus management (remaining 43%)
-- Never rely on vision alone for WCAG compliance
+AI vision: layout, brand, hierarchy, aesthetics (~57% a11y). axe-core+Playwright a11y tree: ARIA, screen reader, focus (43%). Never vision alone for WCAG.
 
-## The Loop (3-round max)
+## Loop (3-round max)
 ```
 1. Deploy to production
 2. Take Playwright screenshots at all 6 breakpoints
