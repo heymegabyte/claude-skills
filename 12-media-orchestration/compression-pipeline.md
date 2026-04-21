@@ -1,11 +1,5 @@
 # Compression Pipeline
-
-> Submodule of 12-media-orchestration. Contains image compression code, size verification, and delivery patterns.
-
----
-
 ## Python Compression
-
 ```python
 from PIL import Image
 import subprocess
@@ -28,10 +22,7 @@ def optimize_image(input_path, output_path, max_width=1200, quality=80):
     img.save(output_path.replace('.png', '.jpg'), 'JPEG', quality=quality, optimize=True)
 ```
 
----
-
 ## Size Verification
-
 ```python
 import os
 MAX_SIZES = {
@@ -51,10 +42,7 @@ def check_size(path, category='hero'):
     return True
 ```
 
----
-
 ## Compression Standards
-
 | Format | Quality | Max Size | Tool |
 |--------|---------|----------|------|
 | WebP (photo) | 80% | 200KB | cwebp or sharp |
@@ -65,10 +53,7 @@ def check_size(path, category='hero'):
 | MP4 (feature video) | CRF 26 | 5MB | ffmpeg |
 | ICO | Multi-resolution | 15KB | ImageMagick |
 
----
-
 ## Image Dimensions
-
 | Use | Dimensions | Format |
 |-----|-----------|--------|
 | Hero (desktop) | 1920x1080 | WebP |
@@ -80,10 +65,7 @@ def check_size(path, category='hero'):
 | Logo (horizontal) | 240xauto | SVG or PNG |
 | Favicon | 16/32/48/180/192/512 | ICO/PNG |
 
----
-
 ## Delivery via Cloudflare
-
 ```html
 <!-- Responsive images -->
 <picture>
@@ -96,10 +78,7 @@ def check_size(path, category='hero'):
 <img src="/images/feature.webp" alt="..." loading="lazy" decoding="async">
 ```
 
----
-
 ## Cloudflare Image Transforms
-
 Store originals in R2, transform on-the-fly via URL params — no pre-generated variants:
 ```
 https://domain.com/cdn-cgi/image/width=800,quality=75,format=auto/path/to/image.jpg
@@ -108,10 +87,7 @@ https://domain.com/cdn-cgi/image/width=800,quality=75,format=auto/path/to/image.
 - Each variant cached at the edge automatically
 - Sub-50ms delivery globally
 
----
-
 ## Preventing CLS (Layout Shift)
-
 Always include `width` and `height` attributes on `<img>` tags.
 Use CSS `aspect-ratio` for responsive containers:
 ```css
@@ -126,10 +102,7 @@ Use CSS `aspect-ratio` for responsive containers:
 }
 ```
 
----
-
 ## Broken Image Detection (Playwright)
-
 ```typescript
 test('no broken images', async ({ page }) => {
   await page.goto('/');

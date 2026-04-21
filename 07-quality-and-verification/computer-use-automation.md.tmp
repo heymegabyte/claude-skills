@@ -215,4 +215,3 @@ Use batching when actions are predictable and don't need intermediate verificati
 - Visual QA workflows beyond Playwright's reach
 - Cross-app orchestration
 - Computer Use security enforcement
-
