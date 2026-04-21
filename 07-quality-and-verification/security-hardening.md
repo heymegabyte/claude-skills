@@ -3,34 +3,15 @@ name: "Security Hardening"
 description: "Canonical owner of CSP headers, OWASP Top 10 prevention, Zod validation at all boundaries, Turnstile CAPTCHA integration, KV-based rate limiting, secret rotation, dependency scanning, and XSS/CSRF/injection prevention. Every deploy is secure by default."
 always-load: false---
 
-# 22 — Security Hardening
+# Security Hardening
 
-> Secure by default. Every boundary validated. Every header set. Every secret rotated.
-
----
-
-## Core Principle
-
-**Security is not a feature — it is a property of correct code.** Every input is hostile until validated. Every response has security headers. Every secret is encrypted at rest and rotated on schedule. Defense in depth: no single control prevents all attacks.
-
----
-
-## Canonical Definitions
-
-### Security Headers (MANDATORY on every Worker)
-
+## Security Headers (MANDATORY every Worker)
 ```typescript
-import { secureHeaders } from 'hono/secure-headers';
-
-// Apply to all routes
-app.use('*', secureHeaders());
-
-// Custom headers for full control
 app.use('*', async (c, next) => {
   await next();
   c.header('X-Content-Type-Options', 'nosniff');
   c.header('X-Frame-Options', 'DENY');
-  c.header('X-XSS-Protection', '0'); // Deprecated but set to 0 (modern CSP is better)
+  c.header('X-XSS-Protection', '0');
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
   c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
   c.header('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
@@ -40,10 +21,9 @@ app.use('*', async (c, next) => {
 });
 ```
 
-### CSP Template (Emdash Standard)
-
+## CSP Template
 ```typescript
-const CSP_DIRECTIVES = [
+const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://challenges.cloudflare.com https://*.posthog.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
@@ -51,261 +31,89 @@ const CSP_DIRECTIVES = [
   "img-src 'self' data: https://images.unsplash.com https://images.pexels.com https://*.stripe.com https://*.cloudflare.com",
   "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://*.posthog.com https://*.sentry.io https://challenges.cloudflare.com",
   "frame-src https://www.youtube.com https://www.google.com https://js.stripe.com https://challenges.cloudflare.com",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
+  "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'", "upgrade-insecure-requests",
 ].join('; ');
-
-app.use('*', async (c, next) => {
-  await next();
-  c.header('Content-Security-Policy', CSP_DIRECTIVES);
-});
 ```
 
-### OWASP Top 10 (2025) Prevention Map
-
-| # | Vulnerability | Our Prevention |
-|---|--------------|----------------|
-| A01 | Broken Access Control | Clerk JWT middleware on every protected route |
-| A02 | Cryptographic Failures | HTTPS-only, secrets in wrangler secrets, no client-side crypto |
-| A03 | Injection | Zod validation + parameterized D1 queries (Drizzle) |
-| A04 | Insecure Design | Threat modeling at architecture phase (skill 05) |
-| A05 | Security Misconfiguration | Security headers on every response, CSP enforced |
-| A06 | Vulnerable Components | `npm audit` in CI, Dependabot alerts enabled |
-| A07 | Auth Failures | Clerk handles auth, rate limit login attempts |
-| A08 | Data Integrity Failures | Webhook signature verification, SRI for CDN scripts |
-| A09 | Logging Failures | Sentry captures all errors, structured logs |
-| A10 | SSRF | No user-controlled URLs in server-side fetch without allowlist |
-
----
+## OWASP Top 10 Prevention
+| # | Vulnerability | Prevention |
+|---|--------------|------------|
+| A01 | Broken Access | Clerk JWT on protected routes |
+| A02 | Crypto Failures | HTTPS-only, wrangler secrets |
+| A03 | Injection | Zod + Drizzle parameterized queries |
+| A04 | Insecure Design | Threat modeling at architecture phase |
+| A05 | Misconfiguration | Security headers on every response |
+| A06 | Vulnerable Components | `npm audit` in CI, Dependabot |
+| A07 | Auth Failures | Clerk, rate limit login |
+| A08 | Data Integrity | Webhook sig verification, SRI |
+| A09 | Logging Failures | Sentry captures all errors |
+| A10 | SSRF | No user-controlled URLs in server fetch without allowlist |
 
 ## Rules
+1. Zod on ALL input (body, query, params, headers). No unvalidated input touches logic.
+2. Never `eval()`, `innerHTML`, `document.write()`. Use `textContent`.
+3. Parameterized queries only. Drizzle default. Raw must `.bind()`.
+4. Secrets in `wrangler secret put` only. Never in code, .env in repos, or wrangler.toml vars.
+5. CORS: exact origins only. Never `'*'` in production.
+6. Rate limit all public endpoints (60/min default, 10/min auth). KV-based.
+7. Turnstile on every public form. No exceptions.
+8. Webhook signatures verified before parsing payload.
+9. `npm audit --production` in CI. Critical/high blocks deploy.
+10. No sensitive data in URLs (tokens, PIIs appear in logs/Referer).
+11. Cookies: HttpOnly, Secure, SameSite=Strict. Prefer Clerk JWT.
+12. Log security events (failed auth, rate limits, invalid sigs) to Sentry.
 
-1. **Validate ALL input at the boundary.** Every request body, query parameter, URL parameter, and header value passes through Zod before touching business logic. No exceptions.
-2. **Never use `eval()`, `innerHTML`, or `document.write()`.** These are XSS vectors. Use `textContent` for text, template literals for HTML generation server-side.
-3. **Parameterized queries ONLY.** Never string-concatenate SQL. Drizzle ORM handles this by default. Raw queries must use `.bind()`.
-4. **Secrets live in `wrangler secret put`, never in code.** No `.env` files in repositories. No secrets in `wrangler.toml [vars]`. Access via `c.env.SECRET_NAME`.
-5. **CORS must specify exact origins.** Never use `origin: '*'` in production. Enumerate allowed origins explicitly.
-6. **Rate limit all public endpoints.** Default: 60 requests per minute per IP. Tighter for auth endpoints (10/min). Use KV-based counters.
-7. **Turnstile on every public form.** Contact forms, signup forms, newsletter forms, donation forms. No exceptions.
-8. **Webhook signatures must be verified.** Stripe uses HMAC-SHA256. Clerk uses Svix. GitHub uses SHA-256. Never process unverified webhook payloads.
-9. **Dependencies audited on every build.** `npm audit --production` in CI. Critical/high vulnerabilities block deploy.
-10. **No sensitive data in URLs.** Tokens, session IDs, and PII never appear in query strings (they end up in logs and Referer headers).
-11. **Set `HttpOnly`, `Secure`, `SameSite=Strict`** on all cookies. Prefer token-based auth (Clerk JWT) over cookies when possible.
-12. **Log security events.** Failed auth attempts, rate limit hits, invalid webhook signatures, and validation failures. Send to Sentry with security tag.
+## Key Patterns
 
----
-
-## Patterns
-
-### Zod Validation at Every Boundary
-
+**Rate Limiting (KV):**
 ```typescript
-import { zValidator } from '@hono/zod-validator';
-import { z } from 'zod';
-
-const ContactSchema = z.object({
-  name: z.string().min(1).max(100).trim(),
-  email: z.string().email().max(254),
-  message: z.string().min(10).max(5000).trim(),
-  turnstileToken: z.string().min(1),
-});
-
-app.post('/api/contact', zValidator('json', ContactSchema), async (c) => {
-  const data = c.req.valid('json');
-  // data is fully typed and validated
-  // Turnstile verification next...
-});
-
-// URL parameters validated too
-const IdParam = z.object({ id: z.string().ulid() });
-app.get('/api/users/:id', zValidator('param', IdParam), async (c) => {
-  const { id } = c.req.valid('param');
-  // Safe to use in queries
-});
-```
-
-### Rate Limiting Middleware
-
-```typescript
-interface RateLimitConfig {
-  limit: number;      // Max requests
-  window: number;     // Window in seconds
-  keyPrefix: string;  // KV key prefix
-}
-
-function rateLimit(config: RateLimitConfig) {
-  return async (c: Context, next: Next) => {
+function rateLimit({ limit, window, keyPrefix }: RateLimitConfig) {
+  return async (c, next) => {
     const ip = c.req.header('cf-connecting-ip') || 'unknown';
-    const key = `rl:${config.keyPrefix}:${ip}`;
+    const key = `rl:${keyPrefix}:${ip}`;
     const current = parseInt(await c.env.KV.get(key) || '0');
-
-    if (current >= config.limit) {
-      c.header('Retry-After', String(config.window));
-      return c.json({ error: 'Too many requests', code: 'RATE_LIMITED' }, 429);
-    }
-
-    await c.env.KV.put(key, String(current + 1), { expirationTtl: config.window });
-    c.header('X-RateLimit-Limit', String(config.limit));
-    c.header('X-RateLimit-Remaining', String(config.limit - current - 1));
+    if (current >= limit) return c.json({ error: 'Too many requests', code: 'RATE_LIMITED' }, 429);
+    await c.env.KV.put(key, String(current + 1), { expirationTtl: window });
     await next();
   };
 }
-
-// Apply to routes
-app.use('/api/contact', rateLimit({ limit: 5, window: 300, keyPrefix: 'contact' }));
-app.use('/api/auth/*', rateLimit({ limit: 10, window: 60, keyPrefix: 'auth' }));
-app.use('/api/*', rateLimit({ limit: 60, window: 60, keyPrefix: 'api' }));
 ```
 
-### Turnstile Verification
-
+**Turnstile Verification:**
 ```typescript
 async function verifyTurnstile(token: string, secret: string, ip: string): Promise<boolean> {
-  const form = new URLSearchParams();
-  form.append('secret', secret);
-  form.append('response', token);
-  form.append('remoteip', ip);
-
   const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    body: form,
+    method: 'POST', body: new URLSearchParams({ secret, response: token, remoteip: ip }),
   });
-
-  const result = await res.json<{ success: boolean; 'error-codes'?: string[] }>();
-  if (!result.success) {
-    console.error('Turnstile failed:', result['error-codes']);
-  }
-  return result.success;
+  return (await res.json<{ success: boolean }>()).success;
 }
-
-// Usage in handler
-app.post('/api/contact', zValidator('json', ContactSchema), async (c) => {
-  const { turnstileToken, ...data } = c.req.valid('json');
-  const ip = c.req.header('cf-connecting-ip') || '';
-
-  if (!await verifyTurnstile(turnstileToken, c.env.TURNSTILE_SECRET, ip)) {
-    return c.json({ error: 'Captcha verification failed', code: 'CAPTCHA_FAILED' }, 403);
-  }
-  // Proceed with validated, verified request...
-});
 ```
 
-### Authentication Middleware (Clerk JWT)
-
+**Auth Middleware (Clerk JWT):**
 ```typescript
-import { verifyToken } from '@clerk/backend';
-
 function requireAuth() {
-  return async (c: Context, next: Next) => {
-    const authHeader = c.req.header('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return c.json({ error: 'Unauthorized', code: 'NO_TOKEN' }, 401);
-    }
-
-    const token = authHeader.slice(7);
-    try {
-      const payload = await verifyToken(token, {
-        secretKey: c.env.CLERK_SECRET_KEY,
-      });
-      c.set('userId', payload.sub);
-      c.set('sessionId', payload.sid);
-    } catch {
-      return c.json({ error: 'Invalid token', code: 'INVALID_TOKEN' }, 401);
-    }
-
+  return async (c, next) => {
+    const token = c.req.header('authorization')?.slice(7);
+    if (!token) return c.json({ error: 'Unauthorized' }, 401);
+    try { const payload = await verifyToken(token, { secretKey: c.env.CLERK_SECRET_KEY }); c.set('userId', payload.sub); }
+    catch { return c.json({ error: 'Invalid token' }, 401); }
     await next();
   };
 }
-
-// Apply to protected routes
-app.use('/api/admin/*', requireAuth());
-app.use('/api/user/*', requireAuth());
 ```
 
-### XSS Prevention in HTML Responses
+**XSS Prevention:** `escapeHtml()` for dynamic content in server-rendered HTML.
 
-```typescript
-// HTML escape function for dynamic content in server-rendered HTML
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
-}
-
-// Never inject user input unescaped
-const html = `<p>Hello, ${escapeHtml(userName)}</p>`;
-```
-
-### Secret Rotation Checklist
-
-```
-Every 90 days:
-[ ] Rotate STRIPE_API_KEY (create new restricted key, update wrangler secret, delete old)
-[ ] Rotate TURNSTILE_SECRET (regenerate in CF dashboard, update wrangler secret)
-[ ] Rotate CLERK_SECRET_KEY (generate new key in Clerk, update wrangler secret)
-[ ] Verify npm audit shows 0 critical/high vulnerabilities
-[ ] Review Dependabot alerts and merge security PRs
-[ ] Check CF WAF for new attack patterns to block
-```
-
----
+## Secret Rotation (Every 90 days)
+Rotate: STRIPE_API_KEY, TURNSTILE_SECRET, CLERK_SECRET_KEY. Verify npm audit 0 critical/high. Review Dependabot. Check CF WAF.
 
 ## Security Audit Quick Scan
-
 ```bash
-# Find dangerous patterns in source
-grep -rn 'eval\|innerHTML\|document\.write\|dangerouslySetInnerHTML' src/ --include="*.ts" --include="*.tsx"
-# Find hardcoded secrets
-grep -rn 'password.*=.*["\x27]\|api_key.*=.*["\x27]\|secret.*=.*["\x27]' src/ --include="*.ts"
-# Find string concatenation in queries (SQL injection risk)
-grep -rn '`.*\$\{.*\}.*WHERE\|`.*\$\{.*\}.*INSERT\|`.*\$\{.*\}.*UPDATE' src/ --include="*.ts"
-# Check for wildcard CORS
+grep -rn 'eval\|innerHTML\|document\.write' src/ --include="*.ts"
+grep -rn 'password.*=.*["\x27]\|api_key.*=.*["\x27]' src/ --include="*.ts"
 grep -rn "origin.*['\"]\\*['\"]" src/ --include="*.ts"
 ```
 
----
-
-## Integration Points
-
-| Skill | Interaction |
-|-------|------------|
-| 05 Architecture | Security patterns in architecture decisions, Turnstile/WAF selection |
-| 07 Quality | Security is one of 7 quality gate checks |
-| 08 Deploy | Security headers verified post-deploy |
-| 25 API Design | Rate limiting, auth middleware, input validation on all endpoints |
-| 32 Forms | Turnstile on every form, Zod validation |
-| 35 CI/CD | npm audit in pipeline, block on critical vulns |
-| 44 Drizzle | Parameterized queries prevent injection |
-| 45 Webhooks | Signature verification for all inbound webhooks |
-
----
-
-## What This Skill Owns
-
-- Content Security Policy definition and maintenance
-- Security header configuration (HSTS, X-Frame-Options, CORP, COOP, COEP)
-- OWASP Top 10 prevention strategy
-- Input validation patterns (Zod at boundaries)
-- Turnstile CAPTCHA integration and verification
-- Rate limiting implementation (KV-based)
-- Secret management policy and rotation schedule
-- Dependency vulnerability scanning
-- XSS/CSRF/injection prevention patterns
-- CORS policy enforcement
-- Authentication middleware patterns
-- Security audit procedures
-
-## What This Skill Must Never Own
-
-- Auth provider selection or configuration (-> 05 Architecture)
-- Webhook business logic (-> 45 Webhooks)
-- Form UI design (-> 32 Forms)
-- CI/CD pipeline setup (-> 35 CI/CD)
-- Error page design (-> 31 Error Pages)
-- API route implementation (-> 25 API Design)
+## Ownership
+**Owns:** CSP, security headers, OWASP prevention, Zod validation, Turnstile, rate limiting, secret management, dependency scanning, XSS/CSRF/injection prevention, CORS, auth middleware, security audits.
+**Never owns:** Auth provider selection (->05), webhook logic (->45), form UI (->32), CI/CD (->35), API routes (->25).
