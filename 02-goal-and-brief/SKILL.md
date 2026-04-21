@@ -33,8 +33,29 @@ Every project brief contains:
 | *link / *l.ink | URL shortener / link management |
 | install.* | Software distribution |
 | editor.* | Online editor |
-| fund* | Fundraising / financial |
+| fund* / give* / donate* | Fundraising / financial |
 | Generic .com/.dev/.space | Infer from README/package.json or ask |
+
+## Domain-to-Feature Inference (Auto-Select ACs)
+
+When a domain implies a product type, auto-include these feature ACs from the SaaS Feature Manifest:
+
+| Domain Signal | Product Type | Auto-Include ACs |
+|---------------|-------------|-----------------|
+| *l.ink, *link, shorten* | Link shortener | Analytics dashboard, custom slugs, QR codes, UTM builder, click tracking, bulk import, API |
+| fund*, give*, donate* | Nonprofit/fundraising | Stripe donations (presets $10-$500), donor wall, impact counter, recurring gifts, tax receipts, campaign pages |
+| *docs, *wiki, *kb | Knowledge base | Search (CF AI), versioning, sidebar nav, breadcrumbs, feedback widget, PDF export |
+| *shop, *store, buy* | E-commerce | Stripe checkout, product catalog, cart, inventory, order tracking, reviews |
+| *dash, *admin, *portal | Dashboard SaaS | Auth (Clerk), RBAC, data tables (ag-grid), charts, export, audit log, notifications |
+| *api, *service | API platform | API docs (OpenAPI), rate limiting, API keys, usage metering, webhooks, SDK gen |
+| *blog, *news, *journal | Content platform | Editor.js, categories/tags, RSS, comments, social sharing, reading time |
+| *chat, *msg, *talk | Messaging | WebSocket, message history, typing indicators, file upload, notifications |
+| *meet, *cal, *book | Scheduling | Calendar integration, availability, timezone handling, reminders, video links |
+| *learn, *course, *edu | EdTech | Progress tracking, quizzes, certificates, video hosting, discussion forums |
+| portfolio, *folio | Portfolio | Project gallery, case studies, contact form, resume/CV, testimonials |
+| *.space (Megabyte) | Internal tool | Coolify deploy, Authentik SSO, PostHog analytics, Sentry errors |
+
+Ambiguous domains: check for existing code → README → package.json → ask with default.
 
 ## Brief Evolution Rules
 

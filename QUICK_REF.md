@@ -8,7 +8,7 @@ npx wrangler deploy && curl -sX POST "https://api.cloudflare.com/client/v4/zones
 ## Test
 ```
 PROD_URL=https://domain.com npx playwright test
-npx tsc --noEmit && npx eslint .
+npx tsc --noEmit && npx @biomejs/biome check --write src/
 ```
 
 ## Secrets

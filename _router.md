@@ -66,4 +66,4 @@ Tool priority: 1. Dedicated MCP → 2. Playwright MCP → 3. Chrome MCP → 4. C
 
 ## Custom Agents (~/.claude/agents/)
 
-deploy-verifier (sonnet), security-reviewer (opus), test-writer (sonnet), seo-auditor (haiku), visual-qa (opus), computer-use-operator (sonnet)
+architect (opus), code-simplifier (sonnet), completeness-checker (opus), deploy-verifier (sonnet), security-reviewer (opus), test-writer (sonnet), seo-auditor (haiku), visual-qa (opus), computer-use-operator (sonnet)

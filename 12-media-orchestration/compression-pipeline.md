@@ -1,3 +1,8 @@
+---
+name: "compression-pipeline"
+description: "Image/video compression targets and automation scripts for WebP, AVIF, MP4"
+---
+
 # Compression Pipeline
 ## Python Compression
 ```python
