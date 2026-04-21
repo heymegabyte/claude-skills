@@ -12,6 +12,7 @@ submodules:
   - tdd-verification.md
   - testing-matrices.md
   - adversarial-testing.md
+  - spec-driven-development.md
 ---
 
 # 07 — Quality and Verification
