@@ -175,7 +175,7 @@ Prefer Playwright. Use Computer Use only for visual DevTools analysis.
 1. firecrawl_map → get all pages on domain
 2. For each page:
    a. firecrawl_scrape → get HTML
-   b. Check: title (50-60 chars), meta desc (150-160), H1, canonical
+   b. Check: title (50-60 chars), meta desc (120-156), H1, canonical
    c. Check: JSON-LD blocks (need 4+), OG tags, internal links
 3. Generate SEO report with fixes
 ```

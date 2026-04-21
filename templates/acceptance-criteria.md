@@ -60,7 +60,7 @@
 <!-- Skill 28 -->
 
 - [ ] **Title tags** — 50-60 chars, unique per page, includes primary keyword
-- [ ] **Meta descriptions** — 150-160 chars, unique per page, includes CTA
+- [ ] **Meta descriptions** — 120-156 chars, unique per page, includes CTA
 - [ ] **One H1 per page** — Matches the page intent
 - [ ] **Canonical URLs** — Set on all pages
 - [ ] **JSON-LD** — 4+ structured data blocks (Organization, WebSite, BreadcrumbList, Product/Service)

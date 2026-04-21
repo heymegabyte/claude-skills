@@ -40,7 +40,7 @@ Named testimonials > logos > stats > awards > media > ratings > GitHub stars. Ev
 ## IA: Hero, social proof, features (3-4), how it works (3 steps), testimonials, pricing, FAQ (4-6), final CTA, footer. Content density: hero 20-30, features 15-25, testimonials 20-40, FAQ 30-60, body 50-100.
 
 ## SEO
-Per-page: title 50-60 (keyword+brand), meta 150-160, one H1, canonical, OG+Twitter, JSON-LD (Organization, WebSite+SearchAction, WebPage, FAQPage, Product, BreadcrumbList, SoftwareApplication). robots.txt, sitemap.xml, internal linking, alt text.
+Per-page: title 50-60 (keyword+brand), meta 120-156, one H1, canonical, OG+Twitter, JSON-LD (Organization, WebSite+SearchAction, WebPage, FAQPage, Product, BreadcrumbList, SoftwareApplication). robots.txt, sitemap.xml, internal linking, alt text.
 
 Keywords: primary in title/H1/first paragraph/meta. Longtails in H2s (1-2/page). Density 1-2%. Lengths: homepage 500+, feature 600+, pricing 400+, blog 1000+, about 300+. Internal links 2-3/page.
 

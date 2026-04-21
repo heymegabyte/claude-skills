@@ -96,7 +96,7 @@ description: "MANDATORY: Every site gets full PWA manifest with screenshots, sho
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 <title>Page Title — Brand</title>
-<meta name="description" content="150-160 char with CTA and keywords">
+<meta name="description" content="120-156 char with CTA and keywords">
 <meta name="keywords" content="comma, separated, keywords">
 <meta name="author" content="Name">
 <meta name="copyright" content="Company">

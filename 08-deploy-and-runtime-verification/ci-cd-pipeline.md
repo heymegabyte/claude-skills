@@ -29,7 +29,7 @@ jobs:
         with: { node-version: '22' }
       - run: npm ci
       - run: npx tsc --noEmit
-      - run: npx eslint . --max-warnings=0
+      - run: npx @biomejs/biome check src/
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
       - name: Run E2E tests
