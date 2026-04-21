@@ -50,28 +50,43 @@ Take one-line prompts and convert them into production-ready products with elite
 - Embed secrets in skill files, override stricter rules with looser ones
 - Force-push, skip tests, ship placeholder content
 
-## Prompt Processing Pipeline (EVERY PROMPT)
+## Prompt Pipeline (EVERY PROMPT)
 
-1. **Parse for value:** Extract preferences, rules, tech decisions, requirements → update ~/.claude memory, ~/.agentskills skills, project-specific CLAUDE.md
-2. **Document requirements:** Every new requirement → add to project docs (CLAUDE.md, README.md, or spec)
-3. **Implement:** Build the feature/fix
-4. **Add tests:** Every feature change → add/update Playwright E2E test covering that feature against PROD_URL. Target ~1min per test file. Use raw Playwright selectors with Stagehand fallback.
-5. **Deploy:** wrangler deploy + purge cache
-6. **Verify with Playwright:** Run E2E at 6 breakpoints (375,390,768,1024,1280,1920). Screenshot every page.
-7. **GPT-4o critique:** Send screenshots to GPT-4o vision for senior web developer critique. If issues found → fix → redeploy → re-test (max 3 rounds)
-8. **DONE only when:** Tests pass + GPT-4o says zero issues + production URL verified working
+```
+Parse prompt → extract value → update memory/skills/project docs
+  ↓
+Generate SPEC.md (acceptance criteria) if new feature
+  ↓
+Write FAILING Playwright tests for each AC (1min/file, PROD_URL)
+  ↓
+Implement slice by slice (AC1 passes → AC2 → ACN)
+  ↓
+Deploy (wrangler deploy + purge)
+  ↓
+E2E at 6 breakpoints → screenshot → GPT-4o critique
+  ↓
+Issues? Fix → redeploy → re-test (max 3 rounds)
+  ↓
+DONE only when: all tests pass + GPT-4o zero issues + prod verified
+```
 
-**Never stop without production verification. Never consider done without Playwright + screenshot + GPT-4o proof.**
+Never stop without production proof. No screenshot = not verified.
 
-## Completion-Driven Execution
+### Value Extraction (runs on EVERY prompt, even non-code prompts)
+Scan prompt for: corrections → feedback memory | "always/never" → rules/prefs | tech choice → tech_preferences | design feedback → skill 10 | new requirement → SPEC.md + E2E test | validated approach (silence) → mark confirmed | repeated pattern (3x+) → promote to skill
 
-Every prompt drives to verified completion:
-1. All changes deployed to production
-2. E2E tests added/updated for the specific feature changed
-3. Playwright screenshots at 6 breakpoints sent to GPT-4o for critique
-4. Zero placeholders, broken images, console errors
-5. SEO audit passes (title, meta, H1, JSON-LD, OG)
-6. Accessibility audit passes (axe-core, keyboard, focus rings)
+Write updates at same compression density as existing files. Dense tokens, no prose wrappers.
+
+### Ralph Loop (full-app autonomous builds)
+1. Generate SPEC.md: all features as acceptance criteria
+2. Generate progress.md: all ACs unchecked
+3. Loop: read progress → pick next AC → failing test → implement → deploy → verify → mark done → commit
+4. Context >60%? Save progress.md → spawn fresh agent → "Read progress.md+SPEC.md, continue"
+5. All ACs done? Recommendations loop (skill 14) → implement each → verify
+6. DONE: all ACs pass + zero recommendations + GPT-4o zero issues
+
+### Completion Gates
+Deployed + E2E pass + GPT-4o ≥8/10 + axe-core 0 + Yoast GREEN + zero console errors + zero placeholders
 
 ### Assumption Protocol
 1. Infer from context (domain, project type, code) → proceed
@@ -175,28 +190,10 @@ After session: update "Current State". After correction: save feedback. After ne
 
 ## Self-Improving System (ALWAYS ACTIVE)
 
-| Signal | Detection | Action |
-|--------|-----------|--------|
-| Correction | "no", "not that", "wrong" | Save to feedback memory |
-| Permanent rule | "always", "never", "must" | Save to preferences/rules |
-| Tech decision | First use of new tool | Save to tech_preferences_confirmed.md |
-| Design feedback | "darker", "simpler" | Save to skill 10 |
-| Validated approach | Silence + next instruction | Mark confirmed |
-| Repeated pattern | Same request 3+ times | Promote to skill content |
-| New capability | No skill covers it | Create submodule or update existing |
-| New requirement | Feature request in prompt | Add E2E test + document in project |
+Signals: correction→feedback memory | "always/never"→prefs/rules | new tool→tech_preferences | design change→skill 10 | silence→confirmed | 3x repeat→promote to skill | new capability→create submodule | new requirement→SPEC+E2E test
 
-### Emdash Project Maintenance
-When working on any project in ~/emdash-projects/:
-- Ensure project has CLAUDE.md with project-specific context
-- Ensure README.md matches current state (use install.doctor template style)
-- Ensure E2E tests exist for every deployed feature
-- Every prompt that changes a feature → update tests → deploy → verify on production
+Updates: memory=prefs/feedback/state | skill submodules=patterns/decisions | rules=only if every-prompt (keep <1100 tokens total) | CLAUDE.md=structural only (rare) | agents=new types | settings.json=confirm first
 
-### What to Update Where
-- Memory files: user prefs, feedback, project state
-- Skill submodules: patterns, templates, technical decisions
-- Rules (~/.claude/rules/): only for always-loaded rules (<2200 tokens)
-- CLAUDE.md: structural changes only (rare)
-- Agents: new types or tool scope changes
-- settings.json: permissions, domains, hooks (confirm first)
+Emdash projects (~/emdash-projects/): each project must have CLAUDE.md + README.md (install.doctor style) + E2E tests for deployed features. Every feature change→update tests→deploy→verify prod.
+
+Stop hook auto-commits+pushes skill/memory changes to megabytespace/claude-skills after every session.
