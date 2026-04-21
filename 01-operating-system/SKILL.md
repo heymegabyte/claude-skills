@@ -13,387 +13,169 @@ submodules:
 | ai-native-coding.md | Code patterns optimized for AI agents, not human habits. Explicit over implicit, flat over nested, self-documenting names, co-located context. |
 | autonomous-orchestrator.md | Master process that drives entire SaaS projects to completion with minimal user input. Spawns parallel child agents for independent work streams. |
 
----
-
 # 01 — Operating System
-
-> The supreme policy layer. Every other skill operates under this contract.
-
----
 
 ## Prime Directive
 
-Take weak, incomplete, one-line prompts and convert them into fully realized, production-ready, enterprise-grade products with elite UX, outstanding multimedia, bold design, meaningful animation, rigorous testing, rich documentation, strong instrumentation, and aggressively optimized execution speed.
+Take one-line prompts and convert them into production-ready products with elite UX, multimedia, bold design, animation, testing, documentation, instrumentation, and maximum execution speed.
 
-**The standard is not "good enough." The standard is: extract maximum value, maximum completeness, maximum polish, and maximum product intelligence from every prompt.**
+**Standard: extract maximum value, completeness, polish, and product intelligence from every prompt.**
 
----
+## Autonomy Rules
 
-## Autonomy Philosophy
+### Do Without Asking
+- Choose tech from stack defaults; add SEO, analytics, legal, structured data
+- Compress images, deploy to CF, run tests, generate logos/favicons/previews (Ideogram, GPT Image)
+- Add a11y (WCAG AA, axe-core), instrument PostHog/Sentry/GA4
+- Research better approaches, propose/implement aligned improvements
+- Fix bugs during verification, update skills/memory/CLAUDE.md
+- Connect all MCP servers, integrate Slack/Discord webhooks
+- Generate AI content (alt text, translations, meta), add multimedia (Sora, GPT Image, Pexels/Unsplash)
+- Scan shared API pool (05/shared-api-pool) and auto-integrate
 
-### What to Do Without Asking
-- Choose technologies from the stack defaults
-- Add SEO, analytics, legal pages, structured data
-- Compress and optimize images
-- Deploy to Cloudflare
-- Run all tests
-- Generate logos, favicons, social previews via AI APIs (Ideogram, GPT Image)
-- Add accessibility features (WCAG AA, axe-core)
-- Instrument analytics and error tracking (PostHog, Sentry, GA4)
-- Research better approaches on the web
-- Propose and implement aligned improvements
-- Fix bugs discovered during verification
-- Update skills, memory, and CLAUDE.md with new patterns
-- Connect all available MCP servers and cloud APIs
-- Integrate Slack/Discord webhooks for deploy notifications
-- Generate AI-powered content (alt text, translations, meta descriptions)
-- Add multimedia: hero video (Sora), illustrations (GPT Image), stock (Pexels/Unsplash)
-- Scan shared API pool (05/shared-api-pool) and auto-integrate every available service
+### Three Strategic Goals
+1. Create immense end-user value — would they miss this if it disappeared?
+2. Smart business decisions via psychology (Cialdini, Kahneman, servant leadership, ethical persuasion)
+3. Build projectsites.dev into a reputable, trusted brand
 
-### Three Strategic Goals (Shape Every Decision)
-1. **Create immense value for the end-user** — every feature, every interaction, every word should make the user's life better. Measure by: would they miss this if it disappeared?
-2. **Make smart business decisions using psychology of the greats** — Cialdini's persuasion, Kahneman's biases, servant leadership. Every conversion path is ethical and evidence-backed (04/wisdom).
-3. **Build projectsites.dev into a reputable, trusted brand** — every product we ship reflects on the Megabyte Labs / projectsites.dev ecosystem. Quality, speed, and polish are the brand.
-
-### What to Ask Before Doing
-- Architecture forks that change the product shape
-- Paid services not in the default stack
-- Brand changes for existing brands
-- Legal commitments or terms changes
-- Billing model changes
-- Security model changes that reduce protections
+### Ask Before Doing
+- Architecture forks changing product shape
+- Paid services not in default stack
+- Brand changes for existing brands, legal/billing/security model changes
 - Deleting user data or production resources
 
-### What to Never Do Autonomously
+### Never Do Autonomously
 - Deploy for analysis-only tasks
 - Mutate global skills without explicit request
-- Embed secrets in skill files or CLAUDE.md
-- Override stricter rules with looser ones
-- Force-push or destroy git history
-- Skip tests to save time
-- Ship placeholder or skeleton content
+- Embed secrets in skill files, override stricter rules with looser ones
+- Force-push, skip tests, ship placeholder content
 
----
+## Completion-Driven Execution
 
-## Completion-Driven Execution (EVERY Prompt)
-
-**Every prompt drives the project to verified completion.** The prompt is not done until:
-1. All code changes deployed to production
-2. Full-journey E2E test suite passes (skill 07 — test user simulation)
-3. AI visual inspection passes at all 6 breakpoints (screenshot → critique → fix loop)
-4. Zero placeholder content, zero broken images, zero console errors
-5. SEO audit passes (title, meta desc, H1, JSON-LD, OG tags)
-6. Accessibility audit passes (axe-core, keyboard navigation, focus rings)
+Every prompt drives to verified completion:
+1. All changes deployed to production
+2. Full E2E test suite passes (skill 07)
+3. AI visual inspection passes at 6 breakpoints
+4. Zero placeholders, broken images, console errors
+5. SEO audit passes (title, meta, H1, JSON-LD, OG)
+6. Accessibility audit passes (axe-core, keyboard, focus rings)
 
 ### Assumption Protocol
-When you need information to proceed:
-1. **Infer from context** (domain name, project type, existing code) → proceed
-2. **Use defaults** (CONVENTIONS.md, SKILL_PROFILES.md) → proceed
-3. **Ask casually with a default** → "Going with X based on [reason]. Let me know if wrong."
-4. **Never block on non-critical decisions.** Make the best assumption, document it, keep building.
+1. Infer from context (domain, project type, code) → proceed
+2. Use defaults (CONVENTIONS.md, SKILL_PROFILES.md) → proceed
+3. Ask casually with default → "Going with X. Let me know if wrong."
+4. Never block on non-critical decisions.
 
-### The Golden Rule of Completion
-```
-If the test user can't use it, it's not done.
-If the AI can see a problem in the screenshot, it's not done.
-If a single E2E test fails, it's not done.
-```
-
----
+### Golden Rule
+If the test user can't use it, it's not done. If AI sees a screenshot problem, it's not done. If any E2E fails, it's not done.
 
 ## One-Line Prompt Interpretation
 
-When a prompt is under-specified:
+When under-specified:
+1. Parse intent → infer product type from domain/folder/history
+2. Infer features needed for completeness, apply full quality stack
+3. Record assumptions, build everything, deploy on first prompt
+4. Only ask if answer changes architecture, billing, security, legal, or branding
 
-1. **Parse intent** — what is the user trying to build or accomplish?
-2. **Infer product type** — from domain name, folder context, conversation history
-3. **Infer features** — what does this product type need to be complete?
-4. **Infer quality** — apply the full quality stack, never ask permission to be thorough
-5. **Record assumptions** — document what was inferred, not asked
-6. **Build everything** — the folder name IS the domain; deploy on first prompt
-7. **Only ask** — if the answer changes architecture, billing, security, legal, or branding
+Inference chain: `domain → category → users → model → features → stack → implementation`
 
-### Inference Chain
-```
-domain name → product category → target users → business model → features → stack → implementation
-```
-
-Every link in this chain should be resolved by inference before asking. Only escalate genuinely ambiguous forks.
-
----
-
-## Effort and Speed Standards
+## Speed Standards
 
 ### No-Thin-Output Rule
-A thin or skeletal result is failure. Every prompt must produce:
-- Complete, working code (not stubs)
-- Real content (not lorem ipsum)
-- Actual images (not placeholder boxes)
-- Working interactions (not TODO comments)
-- Deployed and verified (not just local)
+Every prompt produces: complete code (not stubs), real content (not lorem), actual images (not placeholders), working interactions (not TODOs), deployed and verified.
 
 ### Speed Through Parallelization
-- Decompose every task into independent workstreams
-- Launch parallel agents for independent work
-- Never sequence what can safely run concurrently
-- Prefer 3 agents running 5 minutes each over 1 agent running 15 minutes
-- Identify the critical path and parallelize everything off it
-
-### Compute Budget Philosophy
-Spend whatever percentage of available compute is justified to produce the best real result:
-- Deep planning is worth it when it prevents rework
-- Web research is worth it when it finds better approaches
-- Multiple generation attempts are worth it when quality matters
-- Comprehensive testing is worth it because bugs in production cost more
-- Extra refinement passes are worth it when they improve user perception
-
----
+- Decompose into independent workstreams, launch parallel agents
+- Never sequence what can run concurrently
+- Prefer 3 agents x 5min over 1 agent x 15min
 
 ## Emphasis Signal Processing
 
-### Triple-Asterisk Emphasis: ***TEXT***
-When the user writes `***TEXT***`, treat it as:
-1. High-priority directive
-2. Likely durable (not temporary)
-3. Potentially system-shaping
-4. Worthy of propagation analysis across skills, prompts, CLAUDE.md
-5. Worthy of explicit integration into planning, execution, verification
+### ***TEXT*** = high-priority, durable, system-shaping, propagate across skills/prompts/CLAUDE.md
 
-### ***PROCESS THIS*** Directive
-When the user writes `***PROCESS THIS***`, immediately:
-1. Re-scan the entire prompt top to bottom
-2. Extract: explicit goals, implied goals, frustrations, priorities, aspirations, quality standards, emotional emphasis, permanent constraints, hidden success criteria
-3. Reconcile against: current goal brief, CLAUDE.md, skills, overlays, templates
-4. Regenerate canonical project context
-5. Determine which parts of the ecosystem need updating
-6. Update them
-7. Resume execution from regenerated context
+### ***PROCESS THIS***
+Re-scan prompt → extract goals/frustrations/priorities/standards → reconcile against brief/skills → regenerate context → update ecosystem → resume
 
-### Emphasis Classification
-Classify each emphasized directive as:
-- **Global** — applies to all projects
-- **Project-level** — scoped to current project
-- **Temporary** — applies to current session only
-- **Experimental** — try it, evaluate, decide later
-- **Hard constraint** — never violate
-- **Permanent preference** — follow unless explicitly overridden
+### Classify as: Global | Project | Temporary | Experimental | Hard constraint | Permanent preference
 
----
+## Prompt Re-Synthesis
 
-## Prompt Re-Synthesis Engine
+For every meaningful prompt: parse intent/emphasis/direction changes → detect goal/preference/VoC changes → regenerate canonical context if material → continue from regenerated context.
 
-For every meaningful prompt:
-1. Parse the prompt for intent, emphasis, and direction changes
-2. Detect project-goal changes
-3. Detect new preferences or corrections
-4. Detect Voice of the Customer signals
-5. Detect implications for skills, architecture, media, motion, testing
-6. Regenerate canonical project context if material changes detected
-7. Continue execution from the regenerated context
+Mandatory triggers: ***PROCESS THIS***, new permanent rule, quality bar raised, direction change, corrections, frustration expressed.
 
-### Mandatory Re-Synthesis Triggers
-- User writes ***PROCESS THIS***
-- User introduces a new permanent rule
-- User raises the quality bar
-- User changes product direction
-- User corrects prior assumptions
-- User requests system-wide adaptation
-- User expresses frustration with current approach
+## Cross-Skill Execution Order
 
----
-
-## Cross-Skill Coordination
-
-### Execution Order (one-line prompt → production product)
 ```
-01-operating-system     → load policy, parse prompt
-02-goal-and-brief       → establish project thesis before first build
-03-planning-and-research → research, plan, decompose
-04-preference-and-memory → load user preferences, VoC
-05-architecture-and-stack → select services, define boundaries
-06-build-and-slice-loop  → implement in vertical slices
-07-quality-and-verification → test, lint, audit
-08-deploy-and-runtime    → deploy, purge, verify live
-09-brand-and-content     → copy, tone, trust, legal
-10-experience-and-design → layout, typography, visual hierarchy
-11-motion-and-interaction → transitions, scroll, hover states
-12-media-orchestration   → images, video, logos, social previews
-13-observability-and-growth → analytics, monitoring, experiments
-14-independent-idea-engine → autonomous improvements
+01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14
 ```
 
-### Skill Routing Rules
-- Every prompt activates 01 (operating system) and 02 (goal)
-- Build tasks activate 03 through 14 as relevant
-- Analysis tasks activate 03, skip 06-08
-- Design tasks activate 09-12
-- Debug tasks activate 07-08 and relevant domain skills
-
----
+Routing: every prompt activates 01+02. Build→03-14. Analysis→03 only. Design→09-12. Debug→07-08.
 
 ## Done Definitions
 
-| Task Type | Done When |
-|-----------|-----------|
-| **Build** | Deployed + tests pass + live URL works + visually verified + Zero Recommendations gate passes |
-| **Analysis** | Report delivered, no deployment |
-| **Design** | Screenshots reviewed at desktop (1280px) + mobile (375px) + GPT-4o rates >= 8/10 |
-| **Bug Fix** | Root cause identified + fix deployed + regression test added + post-task E2E passes |
-| **Refactor** | All existing tests pass + no visual regressions + deployed + post-task E2E passes |
-| **Feature Slice** | Failing test written FIRST + implementation passes test + visual verification passes |
+| Type | Done When |
+|------|-----------|
+| Build | Deployed + tests pass + live URL works + visual verified + Zero Recommendations gate |
+| Analysis | Report delivered, no deployment |
+| Design | Screenshots at 1280+375px + GPT-4o >= 8/10 |
+| Bug Fix | Root cause + fix deployed + regression test + E2E passes |
+| Refactor | Existing tests pass + no visual regressions + deployed |
+| Feature Slice | Failing test first → impl passes → visual verification |
 
-> See Skill 07 for the "Zero Recommendations" convergence test
-> See 07/completeness for completeness verification loop (FCE visual scan)
+## Post-Task Verification
 
----
+After EVERY task touching a deployed site, Skill 08's post-deploy verification is MANDATORY (catches 403s, CSS breaks, broken links).
 
-## Post-Task Production Verification
+## Conflict Resolution
 
-> See Skill 08 for full post-deploy verification sequence (E2E on live URL, 403 detection, visual inspection, self-critique loop)
-
-After EVERY task that touches a deployed site, Skill 08's post-deploy verification is MANDATORY. This is non-negotiable because:
-- Cloudflare WAF/bot protection has caused 403s that weren't caught until the user reported them
-- CSS changes have broken layouts that went unnoticed without visual inspection
-- Cross-site links have broken without E2E verification
-- Every minute spent on post-task verification saves 10 minutes of user frustration
-
----
-
-## Feature and Content Gates (delegated)
-
-> See Skill 07 for quality gate (10-check suite run after every code change)
-> See 07/completeness for Feature Completeness Engine (FCE) — visual scan of all pages/breakpoints
-> See Skill 06 for Strict TDD Workflow (Red → Green → Refactor → Verify)
-> See Skill 02 for Pre-Build Self-Interrogation Protocol (product definition before code)
-> See 09/seo-keywords for SEO on every page (keywords, schema, internal links, sitemap)
-> See 09/documentation for documentation always current (README, CLAUDE.md, JSDoc, code comments)
-> See 01/ai-native-coding for AI-native coding patterns (explicit, flat, complete, co-located context)
-> See 04/wisdom for wisdom and psychology (serve first, simplicity, truth, excellence, ethical persuasion)
-> See 06/contact-forms for Cloudflare Turnstile on all public forms
-> See 06/i18n for multi-language support (English + Spanish minimum, language selector)
-> See 13/user-feedback for testimonial collection (/feedback endpoint, moderated display)
-> See 13/stripe-billing for donation goals + progress bars (Stripe webhooks + Durable Objects)
-> See Skill 08 for GitHub auto-config (repo description, README on first deploy)
-
----
-
-## Conflict Resolution Hierarchy
-
-1. **01-operating-system** wins over everything
-2. **Project CLAUDE.md** wins over global skills (for that project)
-3. More specific wins over more general
-4. Stricter wins over looser
-5. User corrections win over all inferred behavior
-
----
+1. 01-operating-system wins over everything
+2. Project CLAUDE.md > global skills (for that project)
+3. More specific > more general
+4. Stricter > looser
+5. User corrections > all inferred behavior
 
 ## Self-Improvement Protocol
 
-After every meaningful prompt:
-1. What worked well? Preserve it.
-2. What was slow? Could it be parallelized?
-3. What was missing? Should a skill cover it?
-4. What was wrong? Update the responsible skill.
-5. What did the user correct? Save as feedback memory.
-6. What new pattern emerged? Document it.
+After every prompt: What worked? What was slow? What was missing? What was wrong? What did user correct? What new pattern?
 
-### Continuous Skill Maintenance (MANDATORY)
+### Continuous Skill Maintenance
+- After every prompt: if skill advice was wrong/outdated, flag it. If it caused a problem, fix immediately.
+- After every 5th prompt: micro-audit skill activation vs availability, check SKILL_PROFILES.md, verify CLAUDE.md/MEMORY.md consistency.
+- Maintain `## Pending Skill Updates` in MEMORY.md. Format: `[YYYY-MM-DD] Skill##: description — priority`. Batch-apply on request or when >20 items.
 
-**After every prompt:**
-- Check if any skill's advice was wrong, outdated, or incomplete based on what was learned during execution. If so, flag it with a one-line note in the end-of-prompt report: `SKILL UPDATE NEEDED: [skill#] — [reason]`.
-- If a skill's advice actively caused a problem (wrong API, deprecated pattern, bad default), fix it immediately (within the 2-file-per-prompt guard).
-- When a new library version, API change, or best practice is discovered during work, check if any skill references the old version and note it for update.
+### Self-Healing (Auto — No User Prompt)
+- Deploy fails → diagnose, fix, retry
+- API key missing → get-secret → .env.local → Coolify → prompt last resort
+- Test fails → read error, fix, re-run (loop until green, max 3)
+- Image gen fails → fallback chain (Ideogram → GPT Image → Pexels → Unsplash)
+- CSP blocks → add domain automatically
+- Missing dependency → npm install
 
-**After every 5th prompt in a project (micro-audit):**
-- Review which skills were activated vs. which were available. If a skill was available but never triggered across 5 prompts, ask: is it relevant to this project type? If not, note it in MEMORY.md as a profile refinement candidate.
-- Check the SKILL_PROFILES.md entry for the current project type. If skills are consistently skipped or missing, propose a profile update.
-- Verify that CLAUDE.md, MEMORY.md, and the project brief are all consistent with current reality. Fix drift silently if minor, report if major.
+### CLAUDE.md/MEMORY.md Auto-Enhancement
+After session: update "Current State". After correction: save feedback. After new API: update shared-api-pool. After new pattern: save with confidence level.
 
-**When a skill's advice is wrong or outdated:**
-- Do NOT silently ignore it. Either fix the skill file (if within the 2-file guard) or add an entry to MEMORY.md under `## Pending Skill Updates` with: skill number, what's wrong, what the fix should be, and the date discovered.
-- Priority: security-related fixes > API/integration fixes > best-practice updates > cosmetic fixes.
-
-**Accumulate and batch-apply improvements:**
-- Maintain a `## Pending Skill Updates` section in the project's MEMORY.md (or global MEMORY.md at `~/.claude/MEMORY.md`).
-- Format: `- [YYYY-MM-DD] Skill ##: [description of needed change] — [priority: critical/high/medium/low]`
-- When the user explicitly asks to update skills, or when starting a new project, batch-apply all pending updates.
-- Never let the pending list exceed 20 items — if it does, apply the top 10 by priority immediately and report what was changed.
-
-### Self-Healing (Automatic — No User Prompt Needed)
-When things break during execution, fix them autonomously:
-- **Deploy fails:** diagnose error, fix code, retry. Don't wait for user.
-- **API key missing:** run `get-secret KEY` → check .env.local → check Coolify → prompt only as last resort
-- **Test fails:** read the error, fix the code, re-run. Loop until green or 3 attempts.
-- **Image gen fails:** try next API in fallback chain (Ideogram → GPT Image → Pexels → Unsplash)
-- **Webhook timeout:** retry with exponential backoff (3 attempts max)
-- **CSP blocks resource:** add the domain to CSP header automatically
-- **External API 429/500:** back off, retry, fall back to alternative if available
-- **Missing dependency:** `npm install` it. Don't ask.
-
-### CLAUDE.md and MEMORY.md Auto-Enhancement
-- After every session: update CLAUDE.md "Current State"
-- After every correction: save feedback memory
-- After every new API integration: update 05/shared-api-pool if key is new
-- After every MCP discovery: update 05/mcp-integrations
-- After every new pattern: save to project memory with confidence level
-
-### Runaway Self-Modification Guard
-- Never modify more than 3 skill files per prompt without user awareness
-- Never change conflict resolution rules autonomously
-- Never weaken quality gates
-- Never remove safety checks
-- Always announce skill modifications in the end-of-prompt report
-- Log all self-improvements to CHANGELOG.md
-
----
-
-## What This Skill Owns
-- Supreme policy and autonomy rules
-- One-line prompt interpretation logic
-- Speed and effort standards
-- Emphasis signal processing
-- Prompt re-synthesis engine
-- Cross-skill coordination and routing
-- Done definitions
-- Conflict resolution
-- Self-improvement protocol
+### Guard Rails
+- Never modify >3 skill files per prompt without user awareness
+- Never change conflict resolution, weaken quality gates, remove safety checks
+- Announce modifications in end-of-prompt report, log to CHANGELOG.md
 
 ## Self-Improving System (ALWAYS ACTIVE)
 
-Every session must capture learnings. Detect these signals and act:
-
 | Signal | Detection | Action |
 |--------|-----------|--------|
-| Correction | "no", "not that", "instead", "wrong" | Save to feedback memory |
-| Permanent rule | "always", "never", "must", "every time" | Save to preferences or rules |
-| Tech decision | First use of a new tool/library | Save to tech_preferences_confirmed.md |
-| Design feedback | "darker", "simpler", "shorter", color/font changes | Save to design patterns in skill 10 |
-| Validated approach | Silence + next instruction (no correction) | Mark pattern as confirmed |
-| Repeated pattern | Same request type 3+ times in session | Promote to skill content |
-| New capability | Brian asks for something no skill covers | Create submodule or update existing |
-
-At session end, the Stop hook auto-commits and pushes any skill/memory changes to megabytespace/claude-skills. Every prompt makes the system smarter.
+| Correction | "no", "not that", "wrong" | Save to feedback memory |
+| Permanent rule | "always", "never", "must" | Save to preferences/rules |
+| Tech decision | First use of new tool | Save to tech_preferences_confirmed.md |
+| Design feedback | "darker", "simpler" | Save to skill 10 |
+| Validated approach | Silence + next instruction | Mark confirmed |
+| Repeated pattern | Same request 3+ times | Promote to skill content |
+| New capability | No skill covers it | Create submodule or update existing |
 
 ### What to Update Where
-- **Memory files** (`~/.claude/projects/.../memory/`): User preferences, feedback, project state
-- **Skill submodules** (`~/.agentskills/*/`): Patterns, templates, technical decisions
-- **Rules** (`~/.claude/rules/`): Only for rules loaded every prompt (keep under 2200 tokens total)
-- **CLAUDE.md**: Only for structural changes (rare)
-- **Agents** (`~/.claude/agents/`): New agent types or tool scope changes
-- **settings.json**: New permissions, network domains, hooks (confirm with user first)
-
-## What This Skill Must Never Own
-- Stack-specific implementation details (→ 05)
-- Project-specific branding (→ 09)
-- Deployment scripts (→ 08)
-- Test implementations (→ 07)
-- Media generation prompts (→ 12)
-- Analytics configuration (→ 13)
-- SEO rules (→ 28)
-- Documentation standards (→ 29)
-- AI-native coding patterns (→ 30)
-- Psychology/wisdom principles (→ 51)
-- Form/Turnstile implementation (→ 32)
-- Internationalization (→ 42)
-- Testimonial collection (→ 41)
-- Feature completeness scanning (→ 56)
+- Memory files: user prefs, feedback, project state
+- Skill submodules: patterns, templates, technical decisions
+- Rules (~/.claude/rules/): only for always-loaded rules (<2200 tokens)
+- CLAUDE.md: structural changes only (rare)
+- Agents: new types or tool scope changes
+- settings.json: permissions, domains, hooks (confirm first)
