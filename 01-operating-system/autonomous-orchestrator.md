@@ -76,6 +76,26 @@ SKILL MISMATCH (re-route): wrong skill -> re-evaluate via _router.md, conflict -
 
 Recovery: detect -> classify -> fix -> verify -> if 3x same failure escalate one level -> check for regressions.
 
+## Crons vs Completion (***CRITICAL***)
+Crons/loops are for **monitoring live systems** (health checks, deploy status, uptime). They are NEVER for completing work. Work completion uses the Master Process Flow above — one relentless session with phases and loops within phases.
+
+**Wrong:** `/loop 10m improve this` — spawns weak periodic nudges for 7 days
+**Right:** Single deep run → architect → multi-phase build → parallel agents → verify → ship
+
+If the `/loop` or `/schedule` skill is invoked for work completion (not monitoring), warn the user: "This looks like work completion, not monitoring. Crons are wrong for this — I should run a deep single session instead. Proceed with cron anyway?"
+
+## Master Process: Spawn/Kill Pattern
+The master thread:
+1. Decomposes into phases (architect → build → verify → ship)
+2. Within each phase, spawns parallel agents for independent streams
+3. Agents complete their work and return results (they don't persist)
+4. Master thread merges results, runs verification, spawns next phase
+5. On context exhaustion (>60%): save progress.md → spawn ONE fresh agent → "continue from progress.md"
+6. On critical failure (3x): alert brian@megabyte.space via Resend, save state, attempt recovery
+7. DONE only when all Hard Gates pass + Zero Recommendations remain
+
+Agents are ephemeral workers, not long-running daemons. Spawn → work → return → die.
+
 ## Anti-Patterns
 - Asking user to choose when one is clearly better
 - Building skeletons for "next session"
@@ -85,6 +105,8 @@ Recovery: detect -> classify -> fix -> verify -> if 3x same failure escalate one
 - Leaving hardcoded mock data
 - Declaring "done" without visual proof from GPT-4o
 - Ignoring admin sections
+- Using crons/loops to complete work instead of deep single sessions
+- Spawning recurring tasks when the work should finish in one run
 
 ## Trigger/Stop Conditions
 **Trigger:** New project, "build this"/"make this better", returning to project with pending improvements.
