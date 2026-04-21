@@ -20,7 +20,7 @@ Submodules: launch-day-sequence (go-live checklist, sitemap, social), ci-cd-pipe
 **Exceptions:** User says don't, missing credentials (warn), no wrangler.toml.
 
 ## Deploy Sequence
-1. tsc --noEmit 2. eslint (if configured) 3. build (if exists) 4. wrangler deploy 5. purge cache 6. wait 3-5s 7. Playwright E2E 8. visual verify 1280+375px 9. fix if needed, loop.
+1. tsc --noEmit 2. biome check src/ 3. build (if exists) 4. wrangler deploy 5. purge cache 6. wait 3-5s 7. Playwright E2E 8. visual verify 1280+375px 9. fix if needed, loop.
 
 ## Cache Strategy
 Purge everything after every deploy. Static: max-age=31536000, immutable. HTML: max-age=0, must-revalidate. API: no-store.

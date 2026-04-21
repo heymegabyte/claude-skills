@@ -17,6 +17,9 @@ Shared constants and patterns. Reference instead of re-deriving.
 | Email | hey@megabyte.space |
 | GitHub (products) | HeyMegabyte |
 | GitHub (infra) | ProfessorManhattan |
+| GitHub (skills+templates) | megabytespace |
+| Template repo | megabytespace/saas-starter |
+| Infra configs | ProfessorManhattan/proxmox-configs, coolify-configs |
 
 Dark theme FIRST. "Simpler is better." Purple for cosmic/space only.
 
