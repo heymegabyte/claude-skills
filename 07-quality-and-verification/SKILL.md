@@ -20,6 +20,7 @@ submodules:
   - eval-driven-development.md
   - ui-completeness-sweep.md
   - semgrep-codebase-rules.md
+  - e2e-accumulation.md
 ---
 
 # 07 — Quality and Verification
