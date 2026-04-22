@@ -10,6 +10,7 @@ submodules:
   - ai-technology-integration.md
   - auth-and-session-management.md
   - background-jobs-and-workflows.md
+  - openapi-generation.md
 ---
 
 ## Submodules
@@ -24,6 +25,7 @@ submodules:
 | ai-technology-integration.md | AI APIs/models: GPT-4o vision, Workers AI edge inference, embeddings for RAG. |
 | auth-and-session-management.md | Clerk auth: middleware, webhook sync, RBAC, protected routes, session tokens. |
 | background-jobs-and-workflows.md | Inngest durable jobs, CF Cron Triggers, CF Queues, email drips, fan-out. |
+| openapi-generation.md | @hono/zod-openapi auto-generated specs, Swagger UI, client SDK codegen, versioning. |
 
 # 05 — Architecture and Stack
 
