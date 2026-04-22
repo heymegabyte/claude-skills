@@ -10,14 +10,14 @@ All 14 categories always loaded. Submodules provide specialized reference.
 | 02 | Goal and Brief | — |
 | 03 | Planning and Research | competitive-analysis |
 | 04 | Preference and Memory | wisdom-and-human-psychology |
-| 05 | Architecture and Stack | api-design, shared-api-pool, drizzle-orm, coolify-docker-proxmox, mcp-integrations, ai-technology, clerk-auth, inngest-jobs |
+| 05 | Architecture and Stack | api-design, shared-api-pool, drizzle-orm, coolify-docker-proxmox, mcp-integrations, ai-technology, clerk-auth, inngest-jobs, openapi-generation |
 | 06 | Build and Slice Loop | easter-eggs, domain-provisioning, web-manifest, error-pages, contact-forms, blog-engine, onboarding, site-search, i18n, ai-chat, webhooks, admin, cmd-k, empty-states, notifications, file-uploads, rich-text-editor, data-tables, realtime-websockets, copilot-ai, notification-center |
 | 07 | Quality and Verification | accessibility, performance, security, computer-use, browser-workflows, completeness, visual-inspection, tdd, testing-matrices, adversarial, visual-regression, contract-testing, slop-detection, eval-driven-dev |
-| 08 | Deploy and Runtime | launch-day, ci-cd, uptime-health, changelog, backup-recovery, gh-fix-ci, service-worker |
+| 08 | Deploy and Runtime | launch-day, ci-cd, uptime-health, changelog, backup-recovery, gh-fix-ci, service-worker, font-subsetting, critical-css |
 | 09 | Brand and Content | email-templates, social-automation, seo-keywords, documentation-hygiene |
-| 10 | Experience and Design | — |
+| 10 | Experience and Design | design-tokens |
 | 11 | Motion and Interaction | — |
-| 12 | Media Orchestration | media-prompts, compression-pipeline, og-image-generation |
+| 12 | Media Orchestration | media-prompts, compression-pipeline, og-image-generation, image-optimization |
 | 13 | Observability and Growth | stripe-billing, analytics-config, user-feedback, feature-flags, email-listmonk |
 | 14 | Independent Idea Engine | — |
 
@@ -26,11 +26,11 @@ All 14 categories always loaded. Submodules provide specialized reference.
 | Task | Key Submodules |
 |------|---------------|
 | New project | 05/coolify, 05/clerk-auth, 05/inngest-jobs, 06/domain-provisioning, 06/web-manifest, 09/seo-keywords |
-| Build feature | 06/*, 05/api-design, 05/drizzle-orm, 05/clerk-auth |
+| Build feature | 06/*, 05/api-design, 05/drizzle-orm, 05/clerk-auth, 05/openapi-generation |
 | Fix/debug | 08/gh-fix-ci |
 | Deploy | 08/launch-day, 08/ci-cd, 08/uptime-health |
 | Full project | ALL submodules |
-| Design/visual | 10, 11, 06/easter-eggs, 06/custom-error-pages |
+| Design/visual | 10, 10/design-tokens, 11, 06/easter-eggs, 06/custom-error-pages |
 | SEO/content | 09/seo-keywords, 09/documentation-hygiene, 06/blog-engine, 06/i18n |
 | Billing | 13/stripe-billing, 06/webhook-system, 05/inngest-jobs |
 | File uploads | 06/file-uploads-and-storage, 05/api-design |
@@ -43,6 +43,9 @@ All 14 categories always loaded. Submodules provide specialized reference.
 | Email marketing | 13/email-marketing-and-listmonk, 09/email-templates |
 | Infrastructure | 05/coolify, 05/shared-api-pool, 05/mcp-integrations |
 | Testing/QA | 07/accessibility, 07/performance, 07/security, 07/completeness, 07/visual-regression, 07/contract-testing, 07/slop-detection, 07/eval-driven-dev |
+| API docs | 05/openapi-generation, 05/api-design |
+| Image pipeline | 12/image-optimization, 12/compression-pipeline, 06/file-uploads-and-storage |
+| Performance | 08/font-subsetting, 08/critical-css, 07/performance, 10/design-tokens |
 
 ## By File Pattern
 
