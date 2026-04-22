@@ -9,6 +9,8 @@ submodules:
   - backup-and-disaster-recovery.md
   - gh-fix-ci.md
   - service-worker.md
+  - font-subsetting.md
+  - critical-css.md
 ---
 
 # 08 — Deploy and Runtime Verification
