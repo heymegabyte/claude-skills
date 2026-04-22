@@ -13,11 +13,11 @@ All 14 categories always loaded. Submodules provide specialized reference.
 | 05 | Architecture and Stack | api-design, shared-api-pool, drizzle-orm, coolify-docker-proxmox, mcp-integrations, ai-technology, clerk-auth, inngest-jobs |
 | 06 | Build and Slice Loop | easter-eggs, domain-provisioning, web-manifest, error-pages, contact-forms, blog-engine, onboarding, site-search, i18n, ai-chat, webhooks, admin, cmd-k, empty-states, notifications, file-uploads, rich-text-editor, data-tables, realtime-websockets, copilot-ai, notification-center |
 | 07 | Quality and Verification | accessibility, performance, security, computer-use, browser-workflows, completeness, visual-inspection, tdd, testing-matrices, adversarial, visual-regression, contract-testing, slop-detection, eval-driven-dev |
-| 08 | Deploy and Runtime | launch-day, ci-cd, uptime-health, changelog, backup-recovery, gh-fix-ci |
+| 08 | Deploy and Runtime | launch-day, ci-cd, uptime-health, changelog, backup-recovery, gh-fix-ci, service-worker |
 | 09 | Brand and Content | email-templates, social-automation, seo-keywords, documentation-hygiene |
 | 10 | Experience and Design | — |
 | 11 | Motion and Interaction | — |
-| 12 | Media Orchestration | media-prompts, compression-pipeline |
+| 12 | Media Orchestration | media-prompts, compression-pipeline, og-image-generation |
 | 13 | Observability and Growth | stripe-billing, analytics-config, user-feedback, feature-flags, email-listmonk |
 | 14 | Independent Idea Engine | — |
 

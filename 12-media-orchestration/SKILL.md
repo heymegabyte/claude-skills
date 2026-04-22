@@ -4,11 +4,12 @@ description: "Section-by-section media planning and generation. Image generation
 submodules:
   - media-prompts.md
   - compression-pipeline.md
+  - og-image-generation.md
 ---
 
 # 12 — Media Orchestration
 
-Submodules: media-prompts.md (prompt templates, Ideogram v3 API), compression-pipeline.md (Python code, format tables, CF Image Transforms, CLS, broken image detection).
+Submodules: media-prompts.md (prompt templates, Ideogram v3 API), compression-pipeline.md (Python code, format tables, CF Image Transforms, CLS, broken image detection), og-image-generation.md (Satori edge-rendered OG images, KV/R2 cache, meta-tag helper).
 
 ## Strategy by Section
 Hero: imagegen/Sora. Features: imagegen/SVG. How It Works: imagegen. Testimonials: stock. About: stock/real. Blog: imagegen. Social: imagegen OG 1200x630. Icons: Ideogram+processing.

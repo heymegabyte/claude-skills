@@ -8,11 +8,12 @@ submodules:
   - changelog-and-releases.md
   - backup-and-disaster-recovery.md
   - gh-fix-ci.md
+  - service-worker.md
 ---
 
 # 08 — Deploy and Runtime Verification
 
-Submodules: launch-day-sequence (go-live checklist, sitemap, social), ci-cd-pipeline (GH Actions, PR tests, previews), uptime-and-health (endpoints, UptimeRobot, /status), changelog-and-releases (conventional commits, semver), backup-and-disaster-recovery (D1 export, R2 sync, KV dump, restore), gh-fix-ci (debug failing PR checks).
+Submodules: launch-day-sequence (go-live checklist, sitemap, social), ci-cd-pipeline (GH Actions, PR tests, previews), uptime-and-health (endpoints, UptimeRobot, /status), changelog-and-releases (conventional commits, semver), backup-and-disaster-recovery (D1 export, R2 sync, KV dump, restore), gh-fix-ci (debug failing PR checks), service-worker (Workbox cache strategies, offline fallback, background sync, push notifications).
 
 ## Mandatory Deploy Rule
 
