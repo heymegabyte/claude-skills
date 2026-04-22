@@ -10,7 +10,7 @@ All 14 categories always loaded. Submodules provide specialized reference.
 | 02 | Goal and Brief | — |
 | 03 | Planning and Research | competitive-analysis |
 | 04 | Preference and Memory | wisdom-and-human-psychology |
-| 05 | Architecture and Stack | api-design, shared-api-pool, drizzle-orm, coolify-docker-proxmox, mcp-integrations, ai-technology |
+| 05 | Architecture and Stack | api-design, shared-api-pool, drizzle-orm, coolify-docker-proxmox, mcp-integrations, ai-technology, clerk-auth, inngest-jobs |
 | 06 | Build and Slice Loop | easter-eggs, domain-provisioning, web-manifest, error-pages, contact-forms, blog-engine, onboarding, site-search, i18n, ai-chat, webhooks, admin, cmd-k, empty-states, notifications |
 | 07 | Quality and Verification | accessibility, performance, security, computer-use, browser-workflows, completeness, visual-inspection, tdd, testing-matrices, adversarial |
 | 08 | Deploy and Runtime | launch-day, ci-cd, uptime-health, changelog, backup-recovery, gh-fix-ci |
@@ -25,14 +25,14 @@ All 14 categories always loaded. Submodules provide specialized reference.
 
 | Task | Key Submodules |
 |------|---------------|
-| New project | 05/coolify, 06/domain-provisioning, 06/web-manifest, 09/seo-keywords |
-| Build feature | 06/*, 05/api-design, 05/drizzle-orm |
+| New project | 05/coolify, 05/clerk-auth, 05/inngest-jobs, 06/domain-provisioning, 06/web-manifest, 09/seo-keywords |
+| Build feature | 06/*, 05/api-design, 05/drizzle-orm, 05/clerk-auth |
 | Fix/debug | 08/gh-fix-ci |
 | Deploy | 08/launch-day, 08/ci-cd, 08/uptime-health |
 | Full project | ALL submodules |
 | Design/visual | 10, 11, 06/easter-eggs, 06/custom-error-pages |
 | SEO/content | 09/seo-keywords, 09/documentation-hygiene, 06/blog-engine, 06/i18n |
-| Billing | 13/stripe-billing, 06/webhook-system |
+| Billing | 13/stripe-billing, 06/webhook-system, 05/inngest-jobs |
 | Infrastructure | 05/coolify, 05/shared-api-pool, 05/mcp-integrations |
 | Testing/QA | 07/accessibility, 07/performance, 07/security, 07/completeness |
 
@@ -46,7 +46,9 @@ All 14 categories always loaded. Submodules provide specialized reference.
 | *.css, *.scss | 10, 11 |
 | /blog/*, /posts/* | 06/blog-engine |
 | /admin/* | 06/admin-dashboard |
-| /api/webhooks/* | 06/webhook-system |
+| /api/webhooks/* | 06/webhook-system, 05/clerk-auth |
+| /api/inngest | 05/inngest-jobs |
+| **/middleware/auth* | 05/clerk-auth |
 | /api/stripe* | 13/stripe-billing |
 | .github/workflows/* | 08/ci-cd, 08/gh-fix-ci |
 
@@ -66,4 +68,4 @@ Tool priority: 1. Dedicated MCP → 2. Playwright MCP → 3. Chrome MCP → 4. C
 
 ## Custom Agents (~/.claude/agents/)
 
-architect (opus), code-simplifier (sonnet), completeness-checker (opus), deploy-verifier (sonnet), security-reviewer (opus), test-writer (sonnet), seo-auditor (haiku), visual-qa (opus), computer-use-operator (sonnet)
+architect (opus), code-simplifier (sonnet), completeness-checker (opus), deploy-verifier (sonnet), security-reviewer (opus), test-writer (sonnet), seo-auditor (haiku), visual-qa (opus), computer-use-operator (sonnet), dependency-auditor (sonnet)

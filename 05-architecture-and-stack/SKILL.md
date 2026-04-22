@@ -8,6 +8,8 @@ submodules:
   - coolify-docker-proxmox.md
   - mcp-and-cloud-integrations.md
   - ai-technology-integration.md
+  - auth-and-session-management.md
+  - background-jobs-and-workflows.md
 ---
 
 ## Submodules
@@ -20,6 +22,8 @@ submodules:
 | coolify-docker-proxmox.md | Self-hosted services on Proxmox via Coolify API. Docker containers, env vars. |
 | mcp-and-cloud-integrations.md | All MCP servers, cloud APIs, SaaS integrations. Secret discovery, AI API usage. |
 | ai-technology-integration.md | AI APIs/models: GPT-4o vision, Workers AI edge inference, embeddings for RAG. |
+| auth-and-session-management.md | Clerk auth: middleware, webhook sync, RBAC, protected routes, session tokens. |
+| background-jobs-and-workflows.md | Inngest durable jobs, CF Cron Triggers, CF Queues, email drips, fan-out. |
 
 # 05 — Architecture and Stack
 
