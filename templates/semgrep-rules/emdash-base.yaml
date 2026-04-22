@@ -1,0 +1,97 @@
+rules:
+  # === ARCHITECTURE ===
+  - id: no-raw-fetch
+    pattern: fetch($URL, ...)
+    message: "Use hc<AppType> RPC client for typed API calls, not raw fetch."
+    severity: WARNING
+    languages: [typescript, javascript]
+    paths:
+      include: ["src/**"]
+
+  - id: no-direct-db-outside-repo
+    pattern: c.env.DB.prepare(...)
+    message: "Use repository functions from src/db/. Direct D1 breaks data layer."
+    severity: WARNING
+    languages: [typescript]
+    paths:
+      exclude: ["src/db/**", "src/lib/db/**", "drizzle/**"]
+
+  # === SECURITY ===
+  - id: no-hardcoded-secret
+    pattern-regex: "(sk_live_|pk_live_|sk_test_|Bearer [A-Za-z0-9]{20,}|password\\s*=\\s*['\"][^'\"]{8,})"
+    message: "Hardcoded secret. Use get-secret or wrangler secret put."
+    severity: ERROR
+    paths:
+      exclude: ["**/*.test.*", "**/*.spec.*", "**/*.md"]
+
+  - id: zod-required-on-post
+    patterns:
+      - pattern: |
+          app.post($PATH, async ($C) => {
+            ...
+            const $BODY = await $C.req.json();
+            ...
+          })
+    message: "POST/PUT must use @hono/zod-validator. No raw req.json()."
+    severity: ERROR
+    languages: [typescript]
+
+  # === QUALITY ===
+  - id: no-any-type
+    pattern: "$X: any"
+    message: "Use unknown, not any."
+    severity: ERROR
+    languages: [typescript]
+    paths:
+      exclude: ["**/*.d.ts"]
+
+  - id: no-console-log
+    pattern: console.log(...)
+    message: "Use Sentry breadcrumb or PostHog event, not console.log."
+    severity: WARNING
+    paths:
+      exclude: ["**/*.test.*", "**/*.spec.*", "scripts/**"]
+
+  - id: no-ts-ignore
+    pattern-regex: "@ts-ignore|@ts-nocheck"
+    message: "Fix the type error instead of suppressing it."
+    severity: ERROR
+    languages: [typescript]
+
+  # === ANTI-SLOP ===
+  - id: no-todo-in-code
+    pattern-regex: "\\b(TODO|FIXME|HACK|XXX|TEMP|WIP)\\b"
+    message: "Resolve before committing."
+    severity: WARNING
+    paths:
+      exclude: ["**/*.md", "CHANGELOG*"]
+
+  - id: no-placeholder-content
+    pattern-regex: "(lorem ipsum|coming soon|placeholder|example\\.com|sample data|your .*here)"
+    message: "Replace with real content."
+    severity: ERROR
+    paths:
+      exclude: ["**/*.test.*", "**/*.spec.*", "**/*.md"]
+
+  - id: no-empty-catch
+    pattern: |
+      try { ... } catch($E) { }
+    message: "Empty catch block. Log to Sentry or handle the error."
+    severity: ERROR
+    languages: [typescript, javascript]
+
+  # === HONO PATTERNS ===
+  - id: error-envelope-format
+    patterns:
+      - pattern: "c.json({ message: $MSG }, $STATUS)"
+    message: "Use error envelope: {error: string, code?: string, details?: unknown}"
+    severity: WARNING
+    languages: [typescript]
+    paths:
+      include: ["src/routes/**", "src/api/**"]
+
+  - id: health-endpoint-exists
+    pattern-regex: "app\\.get\\(['\"]\\/(health|healthz)['\"]"
+    message: "Health endpoint found — good."
+    severity: INFO
+    languages: [typescript]

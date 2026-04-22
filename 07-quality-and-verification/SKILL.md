@@ -19,11 +19,12 @@ submodules:
   - slop-detection.md
   - eval-driven-development.md
   - ui-completeness-sweep.md
+  - semgrep-codebase-rules.md
 ---
 
 # 07 — Quality and Verification
 
-Submodules: accessibility-gate (axe-core, focus styling), performance-optimization (CWV, budgets, lazy loading), security-hardening (CSP, OWASP, Zod, Turnstile, rate limiting), computer-use-automation (native macOS), chrome-and-browser-workflows (Chrome/Playwright MCP), completeness-verification (multi-pass AI visual), visual-inspection-loop (screenshot/critique/fix), tdd-verification (10-point journey test), testing-matrices (payment/email/form templates), adversarial-testing (chaos/stress tests), stagehand-ai-testing (AI browser fallback, self-healing selectors), visual-regression (pixelmatch screenshot diffing), contract-testing (Zod validation against live APIs), slop-detection (AI filler/placeholder scanner), eval-driven-development (LLM-as-judge quality evals), ui-completeness-sweep (***MANDATORY*** Playwright+GPT-4o sweep that clicks every button, submits every form, checks every link/image, verifies empty/loading/error states — blocks done until GPT-4o rates ≥8/10 on all pages).
+Submodules: accessibility-gate (axe-core, focus styling), performance-optimization (CWV, budgets, lazy loading), security-hardening (CSP, OWASP, Zod, Turnstile, rate limiting), computer-use-automation (native macOS), chrome-and-browser-workflows (Chrome/Playwright MCP), completeness-verification (multi-pass AI visual), visual-inspection-loop (screenshot/critique/fix), tdd-verification (10-point journey test), testing-matrices (payment/email/form templates), adversarial-testing (chaos/stress tests), stagehand-ai-testing (AI browser fallback, self-healing selectors), visual-regression (pixelmatch screenshot diffing), contract-testing (Zod validation against live APIs), slop-detection (AI filler/placeholder scanner), eval-driven-development (LLM-as-judge quality evals), ui-completeness-sweep (***MANDATORY*** Playwright+GPT-4o sweep that clicks every button, submits every form, checks every link/image, verifies empty/loading/error states — blocks done until GPT-4o rates ≥8/10 on all pages), semgrep-codebase-rules (custom YAML rules the AI creates+evolves per-project — enforces architecture, style, security, anti-slop at AST level. Rules compound across sessions = codebase fingerprint).
 
 ## Verification Pyramid
 
