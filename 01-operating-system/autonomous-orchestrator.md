@@ -38,12 +38,17 @@ Orchestrator scans this inventory BEFORE planning. For every task: "Which combin
 1. ANALYZE — read context (CLAUDE.md, package.json, code), identify current vs desired state, research competitors, generate task list
 2. PLAN — group into parallel streams, identify dependencies, create execution order
 3. EXECUTE (parallel) — spawn agents, build completely, make creative decisions inline, deploy continuously
-4. VERIFY — E2E tests, AI vision audit, Lighthouse, responsive check (375px, 1280px), a11y
-4.5. PROACTIVE FEATURE DISCOVERY:
-   a. grep: 'Coming soon', empty arrays, disabled buttons, TODO, 'placeholder'
-   b. diff frontend API calls vs backend routes -> find gaps
-   c. Screenshot EVERY admin page -> GPT-4o analysis -> actionable items
-   d. Implement ALL findings. Re-verify. Loop until zero.
+4. VERIFY — E2E tests, Lighthouse, a11y (axe-core), responsive check (6 breakpoints)
+4.5. ***UI COMPLETENESS SWEEP (MANDATORY — BLOCKS DONE)***:
+   a. Static scan: grep src/ for 'Coming soon|TODO|placeholder|lorem|not implemented|stub|mock|fake|dummy|TBD|WIP'
+   b. Playwright interactive: click EVERY button (catch disabled/no-handler), submit EVERY form (valid+invalid), check EVERY link (catch 404s), verify EVERY image (catch broken/placeholder)
+   c. Empty state check: render pages with no data — what does user see?
+   d. Loading state check: throttle network — is there a skeleton or blank?
+   e. Error state check: block APIs — does UI handle gracefully or crash?
+   f. Screenshot ALL pages at 6 breakpoints → GPT-4o vision analysis → rate 0-10
+   g. Below 8/10 = NOT DONE. Fix all findings.
+   h. Re-sweep. Loop until GPT-4o rates ALL pages ≥8/10 AND zero findings.
+   i. Log sweep results to ~/.claude/audit/sweep-results.jsonl (Stop hook checks this)
 5. ITERATE — compare vs competitors, fix gaps, re-deploy, continue until exceeds
 6. DOCUMENT — update CLAUDE.md, skills, memories, descriptive commits
 ```
