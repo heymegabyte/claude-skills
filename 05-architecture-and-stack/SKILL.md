@@ -11,6 +11,7 @@ submodules:
   - auth-and-session-management.md
   - background-jobs-and-workflows.md
   - openapi-generation.md
+  - cf-auto-provision.md
 ---
 
 ## Submodules
@@ -26,6 +27,7 @@ submodules:
 | auth-and-session-management.md | Clerk auth: middleware, webhook sync, RBAC, protected routes, session tokens. |
 | background-jobs-and-workflows.md | Inngest durable jobs, CF Cron Triggers, CF Queues, email drips, fan-out. |
 | openapi-generation.md | @hono/zod-openapi auto-generated specs, Swagger UI, client SDK codegen, versioning. |
+| cf-auto-provision.md | Single-function CF project bootstrap: D1+KV+R2+DNS+routes+wrangler.toml+integrations. |
 
 # 05 — Architecture and Stack
 

@@ -23,6 +23,7 @@ submodules:
   - realtime-and-websockets.md
   - copilot-and-ai-features.md
   - notification-center.md
+  - microcopy-library.md
 ---
 
 ## Submodules
@@ -50,6 +51,7 @@ submodules:
 | realtime-and-websockets.md | Durable Objects WebSocket: presence, typing, cursors, hibernation API. |
 | copilot-and-ai-features.md | CopilotKit + Workers AI: in-app AI, actions, embeddings, CoAgents. |
 | notification-center.md | Novu multi-channel: in-app bell, push, email (Resend), SMS, digest/batching. |
+| microcopy-library.md | Brand-voice microcopy dictionary. Eliminates generic AI copy with punchy alternatives. |
 
 # 06 — Build and Slice Loop
 

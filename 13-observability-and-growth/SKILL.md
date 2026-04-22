@@ -7,11 +7,12 @@ submodules:
   - user-feedback-collection.md
   - feature-flags-and-experiments.md
   - email-marketing-and-listmonk.md
+  - sentry-alert-rules.md
 ---
 
 # 13 — Observability and Growth
 
-Submodules: stripe-billing (free+$50/mo, donation presets, auto Products/Prices), analytics-configuration (GA4 14-step, GTM, PostHog, flags, A/B, funnels), user-feedback-collection (5-star widget, /admin/feedback, NPS, testimonials), feature-flags-and-experiments (PostHog flags, A/B tests, gradual rollout, kill switches), email-marketing-and-listmonk (Listmonk on Coolify, campaigns, subscribers, Go templates, double opt-in).
+Submodules: stripe-billing (free+$50/mo, donation presets, auto Products/Prices), analytics-configuration (GA4 14-step, GTM, PostHog, flags, A/B, funnels), user-feedback-collection (5-star widget, /admin/feedback, NPS, testimonials), feature-flags-and-experiments (PostHog flags, A/B tests, gradual rollout, kill switches), email-marketing-and-listmonk (Listmonk on Coolify, campaigns, subscribers, Go templates, double opt-in), sentry-alert-rules (auto-configured alerts at first deploy, Slack integration, deploy silence).
 
 ## Stack
 PostHog (posthog.megabyte.space, self-hosted, cookie-free) | GA4 via GTM | Sentry (sentry.megabyte.space) | GTM (ONLY script loader except Sentry) | Listmonk on Coolify | OneSignal
