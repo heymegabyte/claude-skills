@@ -46,7 +46,8 @@ submodules:
 | Email (marketing) | Listmonk on Coolify | Simple → Resend |
 | Runtime | Bun | Node.js for incompatible |
 | Package Manager | pnpm | Legacy npm |
-| Linting | Biome | Never ESLint+Prettier |
+| Linting (TS) | ESLint + Prettier | Never Biome |
+| Linting (Python) | Ruff + mypy | Never black+isort separately |
 | Testing | Playwright + Vitest | Never Jest/Cypress |
 | Analytics | GA4 via GTM + PostHog | Privacy-first → PostHog only |
 | Errors | Sentry | PostHog errors sufficient |
@@ -60,7 +61,7 @@ submodules:
 | AI Agents | cloudflare/agents SDK (Think on DO) | No agent needed |
 | IaC | Wrangler CLI + wrangler.toml | Multi-cloud → Pulumi |
 
-Key reasoning: Hono over NestJS (native CF Workers), Angular over React (Brian's background), Neon over Supabase (multi-DB, lower cost), Drizzle over Prisma (lighter edge), Biome over ESLint (single Rust tool).
+Key reasoning: Hono over NestJS (native CF Workers), Angular over React (Brian's background), Neon over Supabase (multi-DB, lower cost), Drizzle over Prisma (lighter edge), ESLint over Biome (deeper auto-fix ecosystem, angular-eslint, typescript-eslint, massive plugin library).
 
 ## CF-Only Assumption (***DEFAULT***)
 Every feature MUST try CF-native first. Never reach for external services when CF has an equivalent. Template: megabytespace/saas-starter has stubs for all CF primitives.
