@@ -121,7 +121,7 @@ Model: {freemium|subscription|...} | Target: {$X/mo MRR in Y months}
 - Parallelization: {workstreams}
 
 ## Permanent Constraints
-- Tech: CF Workers+Hono, Angular 19+, Drizzle+D1, Clerk, Stripe
+- Tech: CF Workers+Hono, Angular 20+, Drizzle v1+D1, Clerk, Stripe
 - Brand: #060610 bg | #00E5FF cyan | Sora/Space Grotesk | dark-first
 - Quality: Zero stubs/TODOs | Zero errors | deployed+purged before done
 

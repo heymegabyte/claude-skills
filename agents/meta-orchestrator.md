@@ -3,6 +3,7 @@ name: meta-orchestrator
 description: Master agent coordinating all tools, MCPs, agents, and skills. Plans multi-system workflows by chaining MCPs, spawning specialized agents, and using Computer Use for native apps.
 tools: Read, Bash, Glob, Grep, Agent, mcp__*
 model: opus
+permissionMode: auto
 maxTurns: 40
 memory: user
 effort: max

@@ -3,6 +3,7 @@ name: test-writer
 description: TDD-first test engineer. Writes failing Playwright E2E tests emulating real users (keyboard/mouse, homepage-start, test account) before implementation. Vitest for units.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
+permissionMode: auto
 maxTurns: 30
 skills: ["07-quality-and-verification"]
 memory: project

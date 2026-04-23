@@ -3,6 +3,7 @@ name: code-simplifier
 description: Simplifies code for clarity, consistency, and maintainability. Reduces complexity, flattens nesting, removes dead code, consolidates duplicates. Focuses on recently modified files.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
+permissionMode: auto
 maxTurns: 25
 memory: project
 effort: high

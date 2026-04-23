@@ -12,6 +12,7 @@ submodules:
 |------|-------------|
 | wisdom-and-human-psychology.md | Timeless principles from behavioral psychology, philosophy, and self-help classics applied to product building. Ethical persuasion only. |
 | brian-voc-data.md | Voice of the Customer data from 3,102 ChatGPT conversations — exact language, dissatisfaction signals, interaction velocity, prompt patterns. |
+| brian-decision-model.md | Decision-making patterns: how Brian evaluates tools, services, architecture, and vendors. Weighted criteria, rejection signals. |
 
 # 04 — Preference and Memory
 

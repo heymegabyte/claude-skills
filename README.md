@@ -75,7 +75,7 @@ Every deploy must pass: Playwright E2E 0 failures at 6bp | GPT-4o Vision >= 8/10
 
 ## Stack
 
-Hosting: CF Workers. Backend: Hono RPC. Frontend: Angular 19+Ionic+PrimeNG or vanilla. DB: D1/Neon. Cache: KV/Upstash. Auth: Clerk. Payments: Stripe. Email: Resend+Listmonk. Testing: Playwright+Vitest. Lint: ESLint+Prettier. Runtime: Bun.
+Hosting: CF Workers. Backend: Hono RPC. Frontend: Angular 20+Ionic+PrimeNG or vanilla. DB: D1/Neon. Cache: KV/Upstash. Auth: Clerk. Payments: Stripe. Email: Resend+Listmonk. Testing: Playwright+Vitest. Lint: ESLint+Prettier. Runtime: Bun.
 
 ## Philosophy
 

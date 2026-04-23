@@ -80,7 +80,7 @@ Skip-to-content link, all images alt text, form inputs labeled, contrast >= 4.5:
 Verify: lang attr, skip link exists, landmarks (main/nav/header/footer), keyboard reaches CTA, focus-visible defined (2px thick per 2.4.13), reduced-motion defined, form inputs labeled, buttons named, no same fg/bg colors, target sizes >= 24px, focused element visible (not behind sticky elements).
 
 ## ADA & Standards Landscape
-- **ADA Title II:** Large entities (50K+ pop) April 2027, smaller April 2028 (extended from 2026/2027). Standard: WCAG 2.1 AA.
+- **ADA Title II:** Large entities (50K+ pop) April 2027, smaller April 2028 (extended from 2026/2027). Standard: WCAG 2.2 AA.
 - **Private companies:** No formal deadline, but 5,000+ lawsuits in 2025 (37% increase). Gov contractors contractually required.
 - **WCAG 3.0:** Working draft March 2026, 174 requirements (up from 78 SC), no A/AA/AAA levels, assertions+scoring. Est. W3C Rec 2028-2030, legal adoption 2030+.
 - **axe-core v4.11.3:** Covers WCAG 2.0/2.1/2.2 at A/AA/AAA, Section 508, EN 301 549, RGAA, ADA. ~57% automated detection.
