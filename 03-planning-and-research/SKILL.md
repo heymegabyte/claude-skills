@@ -13,7 +13,7 @@ submodules:
 
 | File | Description |
 |------|-------------|
-| competitive-analysis.md | Before building any product: WebSearch for 3-5 competitors, scrape their homepages and pricing pages, extract features, pricing tiers, design patterns, and copy tone. |
+| competitive-analysis.md | WebSearch 3-5 competitors → Firecrawl/WebFetch scrape homepage+pricing → Playwright screenshots 375+1280px → comparison table → winning patterns. Stagehand for dynamic competitor sites. |
 
 # 03 — Planning and Research
 
@@ -27,22 +27,22 @@ During planning, scan: MCP servers (05/mcp-integrations), API keys (05/shared-ap
 
 ## Research Protocol
 
-**When:** New domain, unfamiliar tech, design decisions, performance optimization, verifiable claims, idea engine needs evidence, GEO/AI-search positioning.
+**When:** New domain, unfamiliar tech, design decisions, performance optimization, verifiable claims, idea engine needs evidence, GEO/AI-search positioning, competitor site analysis.
 
-**Methods:** Web search, documentation, codebase archaeology, API exploration, visual research (competitor screenshots), programmatic SEO keyword analysis.
+**Methods:** WebSearch, documentation, codebase archaeology, API exploration, visual research (competitor screenshots), programmatic SEO keyword analysis, Stagehand for JS-heavy competitor sites, Firecrawl for bulk multi-page scraping.
 
 **Output:** Findings + implications + recommendations + confidence (high/medium/low) + sources. Return ≤200 words from subagents — never raw file dumps.
 
 ## Agent Orchestration for Research
 
-Single agent matches or outperforms multi-agent on 64% of tasks (MASS framework). Use multi-agent only for 4+ independent parallel tasks where fan-out cuts wall-clock time by 75%.
+Single agent matches or outperforms multi-agent on 64% of tasks (MASS framework: optimize agent prompts and topology jointly). Use multi-agent only for 4+ independent parallel tasks where fan-out cuts wall-clock time by 75%.
 
 | Pattern | When to use |
 |---------|-------------|
 | Single agent | Most research tasks, sequential dependencies, context needed across steps |
-| Fan-out/fan-in | 4+ independent parallel tracks (competitor scrape × 5, keyword × 5, screenshot × 5) |
+| Fan-out/fan-in | 4+ independent parallel tracks (competitor scrape ×5, keyword ×5, screenshot ×5) |
 | Writer/reviewer | Fresh-context code review: writer implements, separate reviewer session critiques without bias |
-| Orchestrator-worker | Cross-functional workflows; orchestrator on capable model, workers on cheaper models (40-60% cost reduction) |
+| Orchestrator-worker | Cross-functional workflows; orchestrator on claude-opus-4-6, workers on claude-sonnet-4-6 (40-60% cost reduction) |
 
 Subagents explore in separate context windows and report summaries back — keep main context clean. Use `context: fork` + `agent: Explore` for read-only research (this skill's own setting).
 
@@ -79,8 +79,10 @@ AI search (ChatGPT, Perplexity, Google AI Overviews) surfaces content differentl
 - JSON-LD structured data present? (LLM accuracy jumps 16% → 54% with structured data)
 - Schema types: Organization, WebSite, SoftwareApplication, FAQPage, HowTo, BreadcrumbList
 - Content structured for extraction: question–answer pairs, numbered steps, comparative tables
+- Quotable answer blocks 40-60 words — LLMs cite these directly
 - Citations from authoritative sources (AI search amplifies domain authority signals)
 - Freshness signals: updated dates in schema, changelogs, recent data
+- ai.robots.txt: audit competitor GEO permissions with scanner
 
 ## Programmatic SEO Research Methodology
 
@@ -89,7 +91,7 @@ Identify seed terms with high variation potential → build template library →
 2. Template patterns: `{App} + {Tool} Integration`, `{App} vs {Competitor}`, `{App} for {Industry}`, `How to {Action}`, `{Task} template`
 3. Volume triage: 80% automated pages at 100-1K search volume, 20% cornerstone content at 1K+
 4. Quality floor: every programmatic page needs unique value — conversion alignment + 2+ internal links
-5. Tools: AirOps (AI generation), Surfer SEO (optimization), n8n (data pipelines), FireCrawl (competitor scrape)
+5. Tools: AirOps (AI generation), Surfer SEO (optimization), n8n (data pipelines), Firecrawl (competitor scrape), Stagehand (dynamic sites)
 
 ## Prioritization (MoSCoW)
 
@@ -105,28 +107,31 @@ Must (product broken without) → Should (expected, significant value) → Could
 
 | Tool | Use case |
 |------|----------|
-| WebFetch | Public homepage/pricing/features scrape |
-| FireCrawl (firecrawl.megabyte.space) | Deep crawl, 50-page limit, markdown output |
-| Playwright MCP | Screenshot at 375+1280px, visual analysis |
-| Ahrefs / Semrush | Keyword gap, backlink profile, top pages |
+| WebSearch | Discover competitors, find pricing pages, market research |
+| WebFetch | Public homepage/pricing/features scrape (static sites) |
+| Stagehand | JS-heavy competitor sites, dynamic content, SPA scraping |
+| Firecrawl (firecrawl.megabyte.space) | Deep crawl, 50-page limit, markdown output, 1req/sec/domain |
+| Playwright MCP | Screenshot at 375+1280px, visual analysis, interactive flows |
 | BuiltWith / Wappalyzer | Tech stack detection |
+| Ahrefs / Semrush | Keyword gap, backlink profile, top pages |
 | ai.robots.txt scanner | GEO permissions audit |
 
 ## Pre-Flight Checklist (before EVERY build)
 
 ```
-[ ] Domain → product type inferred
+[ ] Domain → product type inferred (SKILL_PROFILES.md)
 [ ] SKILL_PROFILES.md → correct profile loaded
 [ ] CONVENTIONS.md loaded
 [ ] Previous MEMORY.md scanned for reusable patterns
-[ ] API keys discovered (scripts/discover-secrets.sh)
-[ ] Competitor screenshots (3 min for new products)
+[ ] API keys discovered (scripts/discover-secrets.sh or get-secret)
+[ ] Competitor screenshots (3 min for new products via Stagehand or Playwright)
 [ ] Keyword research (1 primary + 2 longtail per page)
 [ ] GEO schema types identified (4+ JSON-LD per page)
 [ ] Programmatic SEO templates needed? (if content site)
-[ ] Parallel workstreams identified
+[ ] Parallel workstreams identified + worktrees planned
 [ ] Critical path identified → longest-pole starts first
-[ ] Agent count justified: 1 agent unless 4+ independent tracks
+[ ] Agent count justified: 1 unless 4+ independent tracks
+[ ] ToolSearch bulk-load if computer-use tools deferred
 ```
 
 ## Research Output Format

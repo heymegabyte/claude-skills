@@ -1,6 +1,8 @@
 ---
 name: "one-line-saas"
 description: "Execution chain for one-line SaaS prompts. Chains template→scaffold→parallel build→verify→ship."
+version: "2.0.0"
+updated: "2026-04-23"
 ---
 
 # One-Line SaaS Execution Chain

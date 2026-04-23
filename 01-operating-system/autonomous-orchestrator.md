@@ -1,6 +1,8 @@
 ---
 name: "Autonomous Orchestrator"
 description: "Master process that drives entire SaaS projects to completion with minimal user input. Spawns parallel child agents for independent work streams. Makes all creative, technical, and architectural decisions autonomously. Continuously improves until the product exceeds competitors."
+version: "2.0.0"
+updated: "2026-04-23"
 ---
 
 # Autonomous Orchestrator
@@ -77,15 +79,19 @@ Orchestrator scans this inventory BEFORE planning. For every task: "Which combin
 
 ## Team Structure
 ```
-Team Lead (opus) — plans, coordinates
-├── Frontend Agent (sonnet) — UI, design, motion, a11y
-├── Backend Agent (sonnet) — API, DB, auth, webhooks
-├── Quality Agent (sonnet) — tests, security, perf
-├── Content Agent (haiku) — copy, SEO, media, docs
-└── Deploy Agent (haiku) — build, deploy, verify
+Team Lead (claude-opus-4-6) — plans, coordinates
+├── Frontend Agent (claude-sonnet-4-6) — UI, design, motion, a11y
+├── Backend Agent (claude-sonnet-4-6) — API, DB, auth, webhooks
+├── Quality Agent (claude-sonnet-4-6) — tests, security, perf
+├── Content Agent (claude-haiku-4-5-20251001) — copy, SEO, media, docs
+└── Deploy Agent (claude-haiku-4-5-20251001) — build, deploy, verify
 ```
 
 File ownership: frontend owns `src/app/`, backend owns `src/api/`. Test agents never modify app code. Deploy runs AFTER all builds complete.
+
+## ToolSearch Bulk-Loading (***CRITICAL***)
+
+When any computer-use tools are in the deferred list: load ALL in single call — `{ query: "computer-use", max_results: 30 }`. Never load individual tools one-by-one (wastes one round-trip per tool). Same pattern for any deferred tool set: bulk-search by server name prefix, not `select:` for individuals.
 
 Custom agents from `~/.claude/agents/`: deploy-verifier, security-reviewer, test-writer, seo-auditor, visual-qa, computer-use-operator.
 
@@ -118,6 +124,10 @@ Crons=monitoring ONLY (health, uptime, deploy status). Work completion=single de
 
 ## Spawn/Kill Pattern
 Decompose→parallel phases→agents complete+return (ephemeral, not persistent)→master merges→next phase→context>60%: progress.md→fresh agent→3x critical fail: alert brian@megabyte.space via Resend→DONE when all Hard Gates pass+zero recommendations.
+
+Worktree isolation: each parallel agent gets isolated git worktree (`git worktree add ../worktree-frontend emdash/feat-xxx`). Agents cannot clobber each other's files. Merge after phase completion.
+
+SubagentStop hook: `~/.claude/hooks/on-session-end.sh` fires when agent session ends. Auto-commits+pushes skill/memory changes to megabytespace/claude-skills. Checks `~/.claude/audit/sweep-results.jsonl` — if latest sweep <8/10, blocks "done" and re-queues fixes.
 
 ## Anti-Patterns
 Pick best not ask|no skeletons "for next session"|never sequential when parallel-safe|no "good enough"|no "Coming soon"|no mock data|no "done" without AI vision proof|no ignoring admin sections|no crons for work|no recurring tasks for one-run work

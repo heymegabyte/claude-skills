@@ -1,6 +1,8 @@
 ---
 name: "Architecture Thought Loop"
 description: "30-point recursive thinking checklist that runs at every architecture decision. Pre-mortem, inversion, constraint-first, state machines, error-first, cost modeling, MECE decomposition, parallel path exploration. Fractalated — each point can spawn sub-analysis."
+version: "2.0.0"
+updated: "2026-04-23"
 ---
 
 # Architecture Thought Loop (***EVERY ARCHITECTURE DECISION***)

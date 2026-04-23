@@ -46,7 +46,7 @@ Global: `~/.claude/projects/-Users-apple-emdash-projects-megabyte-space/memory/v
 
 | Scope | Storage |
 |-------|---------|
-| Global | `~/.claude/memory/` or project memory dir |
+| Global | `~/.claude/projects/<project>/memory/` |
 | Project | Project CLAUDE.md or brief |
 | Session | In-context only |
 | Experimental | Memory with expiry note |
@@ -73,6 +73,13 @@ Don't capture: one-time debug decisions, derivable tech details, temporary worka
 
 **Storage:** `~/.claude/projects/<project>/memory/` — `<project>` derived from git repo; all worktrees share one directory. Custom: `autoMemoryDirectory` setting (allowed in policy/local/user settings; NOT project settings).
 
+**Memory types:**
+- `user` — global across all projects: `~/.claude/agent-memory/<name>/`
+- `project` — scoped to repo: `.claude/agent-memory/<name>/`
+- `local` — machine-local: `.claude/agent-memory-local/<name>/`
+- `feedback` — corrections/patterns observed from Brian's responses
+- `reference` — factual data, API docs, architecture decisions
+
 **Directory structure:**
 ```
 ~/.claude/projects/<project>/memory/
@@ -98,19 +105,30 @@ First 200 lines or 25KB of each subagent's MEMORY.md loaded at startup. Read/Wri
 
 ## Memory File Format
 
-**MEMORY.md (index):** One-line descriptions linking to topic files. Never dump raw data here.
+**MEMORY.md (index):** One-line descriptions linking to topic files. Never dump raw data here. Brian's MEMORY.md: `~/.claude/projects/-Users-apple-emdash-projects-megabyte-space/memory/MEMORY.md`.
+
 ```markdown
 - [Topic Name](topic-file.md) — one-line description of what's inside
 ```
+
+**Topic file types and paths:**
+- `user_*.md` — Brian's profile, career, community work (personal/universal)
+- `feedback_*.md` — corrections, patterns observed (auto-captured every prompt)
+- `tech_preferences_confirmed.md` — always/never list with mention counts
+- `common_mistakes.md` — response/build/deploy/design/infra/architecture mistakes
+- `project_status.md` — skill architecture, current project states
+- `reference_*.md` — Omi wearable config, external tools, factual reference
 
 **Topic files frontmatter:**
 ```yaml
 ---
 name: "topic-name"
 description: "What this file tracks"
-type: preferences|patterns|mistakes|voc|reference
+type: preferences|patterns|mistakes|voc|reference|feedback|project
 ---
 ```
+
+**MEMORY.md index rules:** Every file gets exactly ONE entry. Entry format: `- [Title](filename.md) — what's inside (≤12 words)`. No sections, no hierarchy — flat list only. Session start: scan index, identify relevant files, load on demand.
 
 **MEMORY.md template sections:**
 ```
@@ -129,6 +147,8 @@ type: preferences|patterns|mistakes|voc|reference
 
 Brian uses Omi AI wearable. Key people: Katie (SJSK), Michael/Mikwel (Penn Station), Nick Buckwick.
 
-When `~/Downloads/omi-export.json` exists: scan for action items (build/create/deploy), product memories, people to feature, new product ideas. Keys in chezmoi; configured in `~/.claude.json`.
+**Config locations:** Keys in chezmoi | configured in `~/.claude.json` | MCP server providing voice memories, calendar events, life facts.
 
-Products used daily: Square Terminal, Omi, Home Assistant, GQ EMF-390, AI coding tools, Cloudflare, Stripe, Resend, Ideogram.
+**When `~/Downloads/omi-export.json` exists:** scan for action items (build/create/deploy), product memories (new ideas mentioned aloud), people to feature (community members), new product ideas. Extract → cross-reference with PORTFOLIO.md → route to appropriate skill. Treat Omi voice data as highest-signal VoC — real-time, unfiltered Brian.
+
+**Products Brian uses daily (signal for integration decisions):** Square Terminal | Omi | Home Assistant | GQ EMF-390 | Cloudflare | Stripe | Resend | Ideogram | AI coding tools (Claude Code primary).

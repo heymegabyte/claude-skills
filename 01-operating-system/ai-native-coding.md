@@ -1,6 +1,8 @@
 ---
 name: "AI-Native Coding"
 description: "Code patterns optimized for AI agents, not human habits. Explicit over implicit, flat over nested, self-documenting names, co-located context. AI should build complete full-stack systems with tight integration across all docs (CLAUDE.md, MEMORY.md, skills). Pushes beyond human coding patterns that limit AI capability."
+version: "2.0.0"
+updated: "2026-04-23"
 ---
 
 # AI-Native Coding
@@ -57,6 +59,7 @@ Schema(D1) -> Validation(Zod shared) -> API(Hono+JSDoc) -> UI(component) -> Test
 2. Reference CONVENTIONS.md (breakpoints, CSP, brand tokens, JSON-LD) — never duplicate
 3. Prefer `file:line` pointers over pasting code blocks
 4. Offload project decisions to MEMORY.md
+5. ToolSearch deferred tools: bulk-load ALL at once (`query:"computer-use", max_results:30`) — never one-by-one; each individual `select:` call costs one full round-trip
 
 ### Deduplication (canonical locations)
 Breakpoints, CSP, Hono starter, error envelope, Turnstile, deploy command, JSON-LD templates -> CONVENTIONS.md

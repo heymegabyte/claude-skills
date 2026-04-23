@@ -15,7 +15,7 @@ model: sonnet
 2. **Target Users** — primary, secondary, anti-persona
 3. **Product Category** — SaaS|marketing|dev-tool|e-commerce|community|content|portfolio|internal|API|mobile|OSS|AI-agent
 4. **Business Model** — free/donation|freemium|subscription|one-time|usage-based|marketplace|ad-supported|OSS+paid
-5. **Revenue Target** — micro-SaaS $10K-$100K/mo | solo-SaaS $50K-$3M/yr | launch timeline 4-12 weeks
+5. **Revenue Target** — micro-SaaS $10K-$100K/mo | solo-SaaS $50K-$3M/yr | launch timeline 4-12 weeks | operating cost $3K-$12K/yr
 6. **Success Criteria** — primary metric, secondary metrics, quality bar
 7. **Non-Goals** — explicit exclusions preventing scope creep
 8. **Programmatic SEO Plan** — page templates: integration|comparison|use-case|tutorial|template-library
@@ -31,7 +31,7 @@ model: sonnet
 
 ## Domain/Signal Inference
 
-`*.megabyte.space`→internal Megabyte Labs tool | `*link/*l.ink`→URL shortener | `install.*`→software distribution | `editor.*`→online editor | `fund*/give*/donate*`→fundraising | `*dash/*admin/*portal`→dashboard SaaS | `*api/*service`→API platform | `*blog/*news`→content | `*chat/*msg`→messaging | `*meet/*cal/*book`→scheduling | `*learn/*course/*edu`→EdTech | `portfolio/*folio`→portfolio | Generic .com/.dev/.space→check README/package.json
+`*.megabyte.space`→internal Megabyte Labs tool | `*link/*l.ink`→URL shortener | `install.*`→software distribution | `editor.*`→online editor | `fund*/give*/donate*`→fundraising | `*dash/*admin/*portal`→dashboard SaaS | `*api/*service`→API platform | `*blog/*news`→content | `*chat/*msg`→messaging | `*meet/*cal/*book`→scheduling | `*learn/*course/*edu`→EdTech | `portfolio/*folio`→portfolio | Generic .com/.dev/.space→check README/package.json. SKILL_PROFILES.md maps domain patterns to skill profiles.
 
 ## Domain-to-Feature Auto-Select
 
@@ -55,22 +55,24 @@ Ambiguous: existing code → README → package.json → ask with default.
 ## Business Model Patterns (2026 Data)
 
 **Micro-SaaS ($10K-$100K/mo):** Single workflow pain point, solo or 1-2 person team, $29-$299/mo tiers, 4-12 week launch, operating cost $3K-$12K/yr.
+**Solo SaaS ($50K-$3M/yr):** One person, AI-accelerated build, distribution-first, real users in week 1, SEO+word-of-mouth before ads at <$10K MRR.
 **Growth levers:** Programmatic SEO (Zapier: 16.2M organic/mo from templates) | integration pages `{App} + {Tool}` | comparison pages `{App} vs {Competitor}` | use-case pages `{App} for {Industry}` | template libraries.
 **Pricing:** Free trial → freemium → paid. Tiered: usage metric + seat count. Usage-based: metered API calls, credit burndown. Hybrid: base + overage.
-**Distribution > technology.** Ship in 4 weeks, iterate from real users. SEO + word-of-mouth > ads at <$10K MRR.
+**Distribution > technology.** Ship in 4 weeks, iterate from real users.
 
 ## Programmatic SEO Planning (Spec in Brief)
 
 Every SaaS brief must include a pSEO plan: seed terms → page type → template → data source → internal link hub.
 Page types: `{App}+{Integration}` | `{App} vs {Competitor}` | `{App} for {Industry}` | `How to {Action} in {App}` | `{Task} templates`.
 Quality gate: unique value per page, conversion-aligned CTA, keyphrase 0.5-3%, title 50-60 chars, meta 120-156 chars, 4+ JSON-LD, 2+ internal links.
+GEO layer: quotable answer blocks 40-60 words, FAQPage+HowTo schema → AI citation rate 16%→54%, structured data for ChatGPT/Perplexity/Google AI Overviews.
 
 ## AI-Native Development Approach
 
 **Spec-driven:** SPEC.md with acceptance criteria + success metrics before any code. Each AC = testable behavior, not implementation detail.
 **Eval-driven:** Failing Playwright test FIRST → implement → pass. Test account: test@megabyte.space. No screenshot = not verified.
-**Agentic:** Decompose into parallel vertical slices. Phase 1 architect (single). Phase 2 build (3-5 parallel: frontend|backend|content|media|tests). Phase 3 verify (parallel: deploy-verifier+seo-auditor+visual-qa).
-**Context hygiene:** SPEC.md+progress.md survive compaction. Subagents summarize in ≤200 words. Main thread orchestrates only.
+**Agentic:** Decompose into parallel vertical slices. Phase 1 architect (single, claude-opus-4-6). Phase 2 build (3-5 parallel: frontend|backend|content|media|tests, claude-sonnet-4-6). Phase 3 verify (parallel: deploy-verifier+seo-auditor+visual-qa).
+**Context hygiene:** SPEC.md+progress.md survive compaction. Subagents summarize in ≤200 words. Main thread orchestrates only — never implements.
 
 ## Brief Evolution Rules
 
@@ -102,11 +104,12 @@ Before major decisions: Aligned with thesis? Target users? Business model? Succe
 ## Category & Model
 Category: {SaaS|marketing|...}
 Model: {freemium|subscription|...} | Target: {$X/mo MRR in Y months}
+Solo SaaS economics: {$10K-$100K/mo micro | $50K-$3M/yr solo} | Launch: {4-12 weeks}
 
 ## Success Criteria
 - Primary: {metric}
 - Secondary: {metric, metric}
-- Quality bar: Lighthouse Perf≥75 | A11y≥95 | Yoast GREEN | E2E 6bp GREEN
+- Quality bar: Lighthouse Perf≥75 | A11y≥95 | Yoast GREEN | E2E 6bp GREEN | WCAG 2.2 AA
 
 ## Non-Goals
 - {explicit exclusion}
@@ -116,16 +119,18 @@ Model: {freemium|subscription|...} | Target: {$X/mo MRR in Y months}
 - Seed terms: {term1, term2}
 - Data source: {DB table|CMS|API}
 - Hub page: {/integrations|/compare|/use-cases}
+- GEO: FAQPage+HowTo schema, quotable 40-60 word blocks
 
 ## AI-Native Dev Approach
-- Spec: SPEC.md with ACs
-- Tests: Playwright E2E, test@megabyte.space
-- Parallelization: {workstreams}
+- Spec: SPEC.md with ACs (AC1→AC2→ACN)
+- Tests: Playwright v1.56+ E2E, test@megabyte.space
+- Parallelization: {workstreams} via worktree isolation
+- Models: opus-4-6 (arch) | sonnet-4-6 (build) | haiku-4-5-20251001 (content)
 
 ## Permanent Constraints
-- Tech: CF Workers+Hono, Angular 20+, Drizzle v1+D1, Clerk, Stripe
+- Tech: CF Workers+Hono v4.12+, Angular 20+, Drizzle v1+D1, Clerk, Stripe
 - Brand: #060610 bg | #00E5FF cyan | Sora/Space Grotesk | dark-first
-- Quality: Zero stubs/TODOs | Zero errors | deployed+purged before done
+- Quality: Zero stubs/TODOs | Zero errors | deployed+purged before done | OWASP 2025
 
 ## Current Truth
 Last updated: {date}

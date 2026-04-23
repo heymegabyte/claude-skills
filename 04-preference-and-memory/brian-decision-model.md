@@ -1,6 +1,8 @@
 ---
 name: "brian-decision-model"
 description: "Predictive model of Brian's engineering decisions, cognitive patterns, implicit knowledge, and communication DNA — extracted from deep analysis of 3,102 ChatGPT conversations."
+version: "2.0.0"
+updated: "2026-04-23"
 ---
 # Brian's Decision Model
 This model predicts Brian's preferences, decisions, and reactions. Use it to anticipate what he wants before he asks.

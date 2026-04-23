@@ -1,6 +1,8 @@
 ---
 name: "Competitive Analysis"
-description: "Before building any product: WebSearch for 3-5 competitors, scrape their homepages and pricing pages via WebFetch, extract features, pricing tiers, design patterns, and copy tone. Summarize in comparison table. Scrape source sites for brand assets during rebuilds. Use FireCrawl (self-hosted) for deep crawling."
+description: "Before building any product: WebSearch for 3-5 competitors, scrape their homepages and pricing pages via WebFetch/Stagehand, extract features, pricing tiers, design patterns, and copy tone. Summarize in comparison table. Scrape source sites for brand assets during rebuilds. Use Firecrawl (self-hosted) for deep crawling."
+version: "2.0.0"
+updated: "2026-04-23"
 ---
 
 # Competitive Analysis
