@@ -25,6 +25,7 @@ submodules:
   - semgrep-codebase-rules.md
   - e2e-accumulation.md
   - evidence-collection.md
+  - agentic-security.md
 ---
 
 # 07 — Quality and Verification

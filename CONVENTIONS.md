@@ -17,16 +17,18 @@ megabyte.space | projectsites.dev | fundl.ink | gitl.ink | deskl.ink | linkbl.in
 
 ## Stack
 
-CF Workers+Hono v4.12+ | Angular 20+Ionic+PrimeNG | Capacitor | D1/Neon | Drizzle v1-beta (passed Prisma in downloads) | Zod | Clerk (SaaS)/Authentik (self-hosted) | Stripe | Resend | Inngest | Bun (Node.js fallback) | Playwright v1.56+ | Vitest | ESLint+Prettier | PostHog | Sentry | GA4/GTM
+CF Workers+Hono v4.12+ | Angular 21+Ionic+PrimeNG | Capacitor | D1/Neon | Drizzle v1-beta | Zod | Clerk Core 3 (SaaS)/Authentik (self-hosted) | Stripe (versioned releases: `2026-03-25.dahlia`) | Resend | Inngest | Bun 1.3 | Playwright v1.59+ | Vitest | ESLint+Prettier | PostHog | Sentry | GA4/GTM
 
-## Angular 20 Key Changes
+## Angular 21 Key Changes
 
-`effect()`+`linkedSignal`+`toSignal` stable | Zoneless change detection (dev preview, no Zone.js) | HttpResource (signal-based reactive HTTP) | `@if`/`@for`/`@switch`/`@defer` control flow replaces `*ngIf`/`*ngFor` (deprecated v20, removed v22) | Incremental hydration stable | Host bindings type-checked
-Standalone-only (no NgModules for new projects) | Signal stores per feature | providedIn:'root' | Angular 20 released May 28 2025
+Angular 21 (Nov 2025): Zoneless by default (CLI scaffolds without Zone.js, `provideZonelessChangeDetection()` no longer needed) | Vitest default test runner (replaces Karma/Jest) | Signal Forms experimental (signal-based reactive forms API) | Angular Aria library dev preview (8 patterns, 13 components, signals-based) | MCP server in CLI for AI-assisted dev
+Angular 20 (May 2025): `effect()`+`linkedSignal`+`toSignal` stable | HttpResource | `@if`/`@for`/`@switch`/`@defer` control flow (deprecated v20, removed v22) | Incremental hydration stable | Host bindings type-checked
+Standalone-only (no NgModules) | Signal stores per feature | providedIn:'root'
 
 ## Drizzle v1 Patterns
 
-`sqliteTable` for D1 | plural snake_case tables (`users`, `blog_posts`) | `$inferSelect`/`$inferInsert` for types | `createInsertSchema`/`createSelectSchema` for Zod | batch API (not `BEGIN` — D1 doesn't support transactions) | prepared statements for repeated queries | Node.js compat polyfill in wrangler.jsonc (`"compatibility_flags": ["nodejs_compat"]`)
+`sqliteTable` for D1 | plural snake_case tables (`users`, `blog_posts`) | `$inferSelect`/`$inferInsert` for types | `createInsertSchema`/`createSelectSchema` for Zod (now `drizzle-orm/zod` — no separate `drizzle-zod` package) | batch API (not `BEGIN` — D1 doesn't support transactions) | prepared statements for repeated queries | Node.js compat polyfill in wrangler.jsonc (`"compatibility_flags": ["nodejs_compat"]`)
+v1 migration: `journal.json` removed, SQL files/snapshots grouped separately — run `drizzle-kit up` to migrate. `drizzle-kit drop` removed. RQBv2: relations defined in one place instead of per-table.
 
 ## CF Workers Limits (2026)
 
@@ -35,7 +37,7 @@ D1 global read replication (beta): routes reads to nearest replica, 40-60% laten
 
 ## CF Agents SDK (Agents Week 2026)
 
-AIChatAgent: streaming chat, auto persistence, resumable streams, tool support | MCPAgent: build MCP servers | Durable Objects: stateful micro-server with SQL DB, WebSockets, scheduling | Dynamic Workers: V8 isolate sandboxing, 100x faster than containers | CF Sandboxes (GA): isolated persistent environments | CF Mesh: private networking for users/nodes/agents/Workers | Flagship: native feature flags sub-ms evaluation | Artifacts: git-compatible versioned storage | Workflows v2: higher concurrency+creation rate
+AIChatAgent: streaming chat, auto persistence, resumable streams, tool support | MCPAgent: build MCP servers | Durable Objects: stateful micro-server with SQL DB, WebSockets, scheduling | Dynamic Workers (GA): V8 isolate sandboxing, 100x faster than containers, DO Facets with isolated SQLite | CF Sandboxes (GA): persistent agent environments with shell+filesystem+background processes, Outbound Workers for zero-trust egress | CF Mesh: private networking for users/nodes/agents/Workers | Flagship (GA): native feature flags sub-ms evaluation via KV+DOs | Agent Memory: managed persistent memory binding | Artifacts: git-compatible versioned storage | Workflows v2: 50K concurrency, 300/s creation rate | Browser Run: CDP access, human-in-the-loop, session recordings, 4x concurrency | CF AI Platform: unified inference binding for 14+ model providers | CF Email Service (beta): native send/receive/process binding | `cf` CLI: unified CLI across entire CF platform (replaces wrangler-only)
 
 ## Workers Builds (Native CI/CD)
 
@@ -145,8 +147,10 @@ Error envelope: `{ error: string, code?: string, details?: unknown }` | Rate lim
 
 A01 Broken Access Control | A02 Security Misconfiguration | A03 Software Supply Chain Failures (NEW, was #9) | A04 Cryptographic Failures | A05 Injection | A06 Insecure Design | A07 Auth Failures | A08 Data Integrity Failures | A09 Logging Failures | A10 Mishandling Exceptional Conditions (NEW)
 
-Must add: `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` | `X-Content-Type-Options: nosniff` | `X-Frame-Options: DENY` | `Referrer-Policy: strict-origin-when-cross-origin` | `Cross-Origin-Opener-Policy: same-origin` | `Cross-Origin-Embedder-Policy: require-corp` | `Cross-Origin-Resource-Policy: same-origin` | `Permissions-Policy: geolocation=(), camera=(), microphone=()`
+Must add: `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` | `X-Content-Type-Options: nosniff` | `X-Frame-Options: DENY` | `Referrer-Policy: strict-origin-when-cross-origin` | `Cross-Origin-Opener-Policy: same-origin` | `Cross-Origin-Embedder-Policy: require-corp` | `Cross-Origin-Resource-Policy: same-origin` | `Permissions-Policy: geolocation=(), camera=(), microphone=()` | `Content-Security-Policy: require-trusted-types-for 'script'` (Trusted Types cross-browser Feb 2026)
 Must remove: `X-XSS-Protection` (CSP replaces it, creates vulns in old browsers) | `Expect-CT` (deprecated) | `Server` | `X-Powered-By`
+
+OWASP Agentic Top 10 (2026): prompt injection|trust boundary failures|tool misuse|excessive permissions|insecure output handling|data poisoning|inadequate sandboxing|supply chain (MCP servers)|logging gaps|uncontrolled agent behavior. Relevant for any app calling LLM APIs.
 
 ## CSP Template
 
@@ -196,11 +200,20 @@ JSON-LD boosts LLM accuracy 16%→54% (AI search visibility for ChatGPT/Perplexi
 
 ## Quality Bar
 
-E2E 0 failures | WCAG 2.2 AA | Lighthouse a11y ≥95 perf ≥75 | CSP | Flesch ≥60 | Yoast GREEN | Images <200KB WebP | No placeholders | No dead forms | ADA Title II: April 2027 (large 50K+ pop) / April 2028 (small)
+E2E 0 failures | WCAG 2.2 AA | Lighthouse a11y ≥95 perf ≥75 | CSP (Trusted Types cross-browser since Feb 2026 — add `require-trusted-types-for 'script'`) | Flesch ≥60 | Yoast GREEN | Images <200KB WebP | No placeholders | No dead forms | ADA Title II (DOJ IFR shifted dates): April 2027 (large 50K+ pop) / April 2028 (small/special districts) | Chrome LNA (v142+): public sites accessing local network need `Access-Control-Allow-Private-Network` header
 
-## Playwright (v1.56+)
+## Clerk Core 3 (Mar 2026 — Breaking)
+
+`@clerk/clerk-react` → `@clerk/react` | `@clerk/clerk-expo` → `@clerk/expo` | `<Protect>/<SignedIn>/<SignedOut>` → unified `<Show when="signed-in|signed-out" />` | `getToken()` now throws `ClerkOfflineError` (was null) | `@clerk/types` deprecated (import from SDK packages) | ~50KB gzipped bundle reduction | Upgrade: `npx @clerk/upgrade` codemod, requires Node 20.9+
+
+## Stripe (Versioned Releases)
+
+Semiannual named releases ("Acacia"→"Dahlia") + monthly additive updates. Pin via `stripe-version` header. Agentic Commerce Suite: AI agents pay on behalf of users. AI billing: markup % on token usage. Adaptive Pricing: local currency in 150+ countries on subscriptions. Decimal quantities on invoices (fractional usage billing).
+
+## Playwright (v1.59+)
 
 6 breakpoints: 375,390,768,1024,1280,1920 | axe-core 0 violations | No sleeps—waitFor/toBeVisible() | data-testid/role/text selectors | Stagehand AI fallback (AOM not DOM) | AI agents: Planner+Generator+Healer | parallel-safe+deterministic | PROD_URL env var
+v1.57: Chrome for Testing default (was Chromium) | `testConfig.webServer.wait` regex | v1.58: Timeline Speedboard, Cmd+F in UI mode/Trace Viewer | MCP server: 20+ tools (browser_click, browser_snapshot, etc.)
 
 ## Claude Code — Skills
 
@@ -208,11 +221,12 @@ Skill locations: managed > personal `~/.claude/skills/` > project `.claude/skill
 
 ## Claude Code — Hooks
 
-27 event types | 5 handler types: command/http/mcp_tool/prompt/agent | Exit 0=success | Exit 2=blocking error fed to Claude | Other non-zero=non-blocking | Hooks > CLAUDE.md (deterministic vs advisory) | `CLAUDE_ENV_FILE` available on SessionStart/CwdChanged/FileChanged only | asyncRewake: runs background, wakes Claude on exit 2 | New events: SubProcess (credential scrubbing), MCPElicitation, StopFailure | `type: "mcp_tool"` chains MCP operations from hook handlers without Bash
+32 event types | 5 handler types: command/http/mcp_tool/prompt/agent | Exit 0=success | Exit 2=blocking error fed to Claude | Other non-zero=non-blocking | Hooks > CLAUDE.md (deterministic vs advisory) | `CLAUDE_ENV_FILE` available on SessionStart/CwdChanged/FileChanged only | asyncRewake: runs background, wakes Claude on exit 2 | Events: SubProcess (credential scrubbing), MCPElicitation, StopFailure, PermissionRequest, PermissionDenied (return `retry:true` for Claude to try alternate approach), PostToolUseFailure, PostToolBatch, ElicitationResult | `type: "mcp_tool"` chains MCP operations from hook handlers without Bash | Conditional `if` field (v2.1.85): permission-rule syntax e.g. `"if": "Bash(git commit *)"` scopes handlers to specific commands
 
 ## Claude Code — Settings Precedence
 
 Managed > CLI args > local project `.claude/settings.local.json` > shared project `.claude/settings.json` > user `~/.claude/settings.json` | Array values merge across scopes | Verify active: `/status` | `$defaults` in autoMode: append custom allow/deny alongside built-ins instead of replacing | `sandbox.network.deniedDomains` for granular network blocking | `cleanupPeriodDays` sweeps tasks/snapshots/backups
+New settings: `effortLevel` (low/medium/high/xhigh) | `attribution.commit`+`attribution.pr` (replaces deprecated `includeCoAuthoredBy`) | `worktree.symlinkDirectories`+`worktree.sparsePaths` | `viewMode` (default/verbose/focus) | `allowedMcpServers`/`deniedMcpServers` | `modelOverrides` (map model IDs to Bedrock ARNs/Vertex) | `availableModels` (restrict model picker) | `managed-settings.d/` drop-in directory for layered policy | `permissions.defaultMode: "auto"` now stable
 
 ## Claude Code — Memory
 
@@ -221,6 +235,7 @@ CLAUDE.md = your rules (loaded every session) | Auto memory `~/.claude/projects/
 ## Claude Code — Agents
 
 Subagent locations: managed > `--agents` CLI > `.claude/agents/` > `~/.claude/agents/` > plugin | Brian's custom agents: `~/.agentskills/agents/` (18 agents, referenced via `--agents` or symlinked) | @ mention invocation with typeahead | `isolation: worktree` auto-cleans if no changes | Agent teams (experimental): `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, 3-5 teammates, 5-6 tasks each | Model resolution: env `CLAUDE_CODE_SUBAGENT_MODEL` > invocation param > frontmatter > main model | Agent frontmatter `mcpServers` loaded for main-thread agents via `--agent` | Agent `hooks:` fire in `--agent` mode | Forked subagents: `CLAUDE_CODE_FORK_SUBAGENT=1` for true process isolation
+Built-in subagents: `Explore` (Haiku, read-only codebase exploration), `Plan` (read-only research+planning), `general-purpose` (full tools) | `initialPrompt` frontmatter: auto-submits first turn on spawn | Agent persistent memory: `~/.claude/agent-memory/` (opt-in per subagent) | `/agents` UI: Running tab (live view+stop) + Library tab (create, color, memory scope) | `Monitor` tool: streams background watcher events as live transcript messages (replaces Bash sleep loops) | Plugin `bin/` added to Bash PATH automatically
 
 ## Prompt Cache Optimization
 
@@ -228,7 +243,7 @@ Subagent locations: managed > `--agents` CLI > `.claude/agents/` > `~/.claude/ag
 
 ## Domain Due Diligence
 
-Payments: PCI (Stripe Checkout), tax, fees, refunds | Health: HIPAA, encryption | Education: COPPA/FERPA | PII: GDPR/CCPA, deletion endpoint | Marketplace: Stripe Connect, disputes | Nonprofit: 501c3, donation receipts
+Payments: PCI DSS v4.0 (mandatory Mar 2025 — script inventory 6.4.3, WAF mandatory, real-time tamper detection 11.6.1), tax, fees, refunds | Health: HIPAA, encryption, HHS May 2026 deadline | Education: COPPA/FERPA | PII: GDPR/CCPA 2026 (dark pattern rules codified, GPC signal mandatory in 12 US states), deletion endpoint | Marketplace: Stripe Connect, disputes | Nonprofit: 501c3, donation receipts | AI features: EU AI Act Art. 50 (Aug 2, 2026 — users must know they're talking to AI, GPAI labeling) | Supply chain: EU CRA SBOM requirement (Sept 2026 enforcement, 24hr vuln reporting)
 
 ## Emergency
 

@@ -16,7 +16,7 @@
 <br/>
 
 <div align="center">
-  <code>14 categories</code> · <code>91 reference docs</code> · <code>18 agents</code> · <code>12 templates</code>
+  <code>14 categories</code> · <code>93 reference docs</code> · <code>18 agents</code> · <code>12 templates</code>
 </div>
 
 <br/>
@@ -83,13 +83,13 @@ git clone https://github.com/megabytespace/claude-skills ~/.agentskills
           │   ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐       │
           │   │ 01  │→ │ 02  │→ │ 03  │→ │ 04  │       │
           │   │ OS  │  │Brief│  │Plan │  │Pref │       │
-          │   │  5  │  │  0  │  │  1  │  │  3  │       │
+          │   │  6  │  │  0  │  │  1  │  │  3  │       │
           │   └─────┘  └─────┘  └─────┘  └─────┘       │
           │                                               │
           │   ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐       │
           │   │ 05  │→ │ 06  │→ │ 07  │→ │ 08  │       │
           │   │Arch │  │Build│  │ QA  │  │Ship │       │
-          │   │ 10  │  │ 23  │  │ 23  │  │  9  │       │
+          │   │ 10  │  │ 23  │  │ 24  │  │  9  │       │
           │   └─────┘  └─────┘  └─────┘  └─────┘       │
           │                                               │
           │   ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐       │
@@ -110,13 +110,13 @@ git clone https://github.com/megabytespace/claude-skills ~/.agentskills
 
 | # | Category | Docs | What It Handles |
 |--:|----------|:----:|-----------------|
-| 01 | **Operating System** | 5 | Core policy, autonomy, parallelization, AI-native coding, output compression |
+| 01 | **Operating System** | 6 | Core policy, autonomy, parallelization, AI-native coding, output compression |
 | 02 | **Goal & Brief** | — | Product thesis from a domain name, business model inference |
 | 03 | **Planning & Research** | 1 | Competitive analysis, task decomposition, parallel workstreams |
 | 04 | **Preference & Memory** | 3 | Voice of Customer data, user preferences, behavioral psychology |
 | 05 | **Architecture & Stack** | 10 | CF Workers, Hono, Drizzle v1, Coolify, MCP, auth, API design |
 | 06 | **Build & Slice Loop** | 23 | Forms, search, blog, i18n, PWA, webhooks, admin, data tables, chat |
-| 07 | **Quality & Verification** | 23 | E2E, a11y, security hardening, perf, visual QA, adversarial, AI testing |
+| 07 | **Quality & Verification** | 24 | E2E, a11y, security hardening, perf, visual QA, adversarial, AI testing |
 | 08 | **Deploy & Runtime** | 9 | CI/CD, launch-day sequence, uptime, backup, changelog, GitHub CI fix |
 | 09 | **Brand & Content** | 4 | SEO engine, copy system, email templates, social automation |
 | 10 | **Design System** | 1 | Anti-slop design, dark-first, bold typography, CSS architecture |

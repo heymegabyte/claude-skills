@@ -6,13 +6,13 @@ Route prompts to smallest useful subset. Load `01-operating-system` FIRST always
 
 | # | Skill | Reference Docs |
 |---|-------|----------------|
-| 01 | Operating System | `ai-native-coding`, `architecture-thought-loop`, `autonomous-orchestrator`, `one-line-saas`, `output-compression` |
+| 01 | Operating System | `ai-native-coding`, `architecture-thought-loop`, `autonomous-orchestrator`, `one-line-saas`, `output-compression`, `context-engineering` |
 | 02 | Goal and Brief | — |
 | 03 | Planning and Research | `competitive-analysis` |
 | 04 | Preference and Memory | `brian-decision-model`, `brian-voc-data`, `wisdom-and-human-psychology` |
 | 05 | Architecture and Stack | `ai-technology-integration`, `api-design-and-documentation`, `auth-and-session-management`, `background-jobs-and-workflows`, `cf-auto-provision`, `coolify-docker-proxmox`, `drizzle-orm-and-migrations`, `mcp-and-cloud-integrations`, `openapi-generation`, `shared-api-pool` |
 | 06 | Build and Slice Loop | `admin-dashboard`, `ai-chat-widget`, `blog-and-content-engine`, `chat-native-dashboard`, `contact-forms-and-endpoints`, `copilot-and-ai-features`, `custom-error-pages`, `data-tables`, `domain-provisioning`, `easter-eggs`, `empty-states-and-loading`, `file-uploads-and-storage`, `internationalization`, `keyboard-shortcuts-and-command-palette`, `microcopy-library`, `notification-center`, `notification-system`, `onboarding-and-first-run`, `realtime-and-websockets`, `rich-text-editor`, `site-search`, `web-manifest-system`, `webhook-system` |
-| 07 | Quality and Verification | `accessibility-gate`, `adversarial-testing`, `audio-video-sync`, `chrome-and-browser-workflows`, `completeness-verification`, `computer-use-automation`, `contract-testing`, `e2e-accumulation`, `eval-driven-development`, `evidence-collection`, `performance-optimization`, `picovoice-eagle-biometric`, `security-hardening`, `semgrep-codebase-rules`, `slop-detection`, `spec-driven-development`, `stagehand-ai-fallback`, `stagehand-ai-testing`, `tdd-verification`, `testing-matrices`, `ui-completeness-sweep`, `visual-inspection-loop`, `visual-regression` |
+| 07 | Quality and Verification | `accessibility-gate`, `adversarial-testing`, `agentic-security`, `audio-video-sync`, `chrome-and-browser-workflows`, `completeness-verification`, `computer-use-automation`, `contract-testing`, `e2e-accumulation`, `eval-driven-development`, `evidence-collection`, `performance-optimization`, `picovoice-eagle-biometric`, `security-hardening`, `semgrep-codebase-rules`, `slop-detection`, `spec-driven-development`, `stagehand-ai-fallback`, `stagehand-ai-testing`, `tdd-verification`, `testing-matrices`, `ui-completeness-sweep`, `visual-inspection-loop`, `visual-regression` |
 | 08 | Deploy and Runtime | `backup-and-disaster-recovery`, `changelog-and-releases`, `ci-cd-pipeline`, `critical-css`, `font-subsetting`, `gh-fix-ci`, `launch-day-sequence`, `service-worker`, `uptime-and-health` |
 | 09 | Brand and Content | `documentation-and-codebase-hygiene`, `email-templates`, `seo-and-keywords`, `social-automation` |
 | 10 | Experience and Design | `design-tokens` |
@@ -42,7 +42,7 @@ Route prompts to smallest useful subset. Load `01-operating-system` FIRST always
 | Evidence / screenshots | `07/evidence-collection`, `07/visual-inspection-loop` |
 | Infra / self-hosted | `05/coolify-docker-proxmox`, `05/cf-auto-provision`, `08/uptime-and-health` |
 | Skills / config | `01`, `04` |
-| Security audit | `07/security-hardening`, `07/semgrep-codebase-rules` |
+| Security audit | `07/agentic-security`, `07/security-hardening`, `07/semgrep-codebase-rules` |
 
 ## File Hints
 

@@ -11,6 +11,7 @@ submodules:
   - one-line-saas.md
   - architecture-thought-loop.md
   - output-compression.md
+  - context-engineering.md
 ---
 
 ## Submodules
@@ -21,6 +22,8 @@ submodules:
 | autonomous-orchestrator.md | Master process: architect→parallel phases→spawn/kill agents→verify→ship. Ralph Loop, Spawn/Kill pattern, SubagentStop hooks, completion gates. |
 | one-line-saas.md | One-line prompt to production SaaS. Domain→category→users→model→features→stack→5-phase parallel execution→deploy. |
 | architecture-thought-loop.md | 30-point recursive thinking checklist: pre-mortem, inversion, MECE, state machines, error-first, cost modeling, STRIDE, parallel paths. Fractalated. |
+| output-compression.md | Token-efficient output patterns: pipe-delimited formats, symbol compression, density matching. Reduce output tokens 40-60% without losing information. |
+| context-engineering.md | Context engineering patterns from Anthropic research: JIT retrieval, structured note-taking, tool result clearing, hybrid architecture, 3-tier multi-agent model, caching strategy. |
 
 # 01 — Operating System
 
