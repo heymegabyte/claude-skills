@@ -14,7 +14,7 @@
 
 <br/>
 
-> 14 categories | 83 reference docs | 18 agents | 12 templates
+> 14 categories | 89 reference docs | 18 agents | 12 templates
 
 ## Install
 
@@ -31,18 +31,18 @@ ln -sf ~/.agentskills ~/.claude/skills
 
 | # | Category | Sub | Handles |
 |---|----------|:---:|---------|
-| 01 | Operating System | 3 | Policy, autonomy, parallelization, AI-native patterns |
+| 01 | Operating System | 4 | Policy, autonomy, parallelization, AI-native patterns |
 | 02 | Goal & Brief | 0 | Product thesis from domain name, business model inference |
 | 03 | Planning & Research | 1 | Competitor analysis, task decomposition, parallel workstreams |
 | 04 | Preference & Memory | 3 | Voice of Customer, user preferences, behavioral psych |
 | 05 | Architecture & Stack | 10 | CF Workers, Hono, Drizzle, Coolify, MCP, auth, API design |
-| 06 | Build & Slice Loop | 22 | Forms, search, blog, i18n, PWA, webhooks, admin, data tables |
-| 07 | Quality & Verification | 19 | E2E, a11y, security, perf, visual QA, adversarial, AI testing |
+| 06 | Build & Slice Loop | 23 | Forms, search, blog, i18n, PWA, webhooks, admin, data tables |
+| 07 | Quality & Verification | 23 | E2E, a11y, security, perf, visual QA, adversarial, AI testing |
 | 08 | Deploy & Runtime | 9 | CI/CD, launch day, uptime, backup, changelog, GitHub CI |
 | 09 | Brand & Content | 4 | SEO engine, copy system, email templates, social automation |
 | 10 | Design System | 1 | Anti-slop design, dark-first, bold typography, CSS patterns |
 | 11 | Motion & Interaction | 0 | CSS scroll animations, View Transitions, reduced-motion |
-| 12 | Media Orchestration | 4 | Image/video gen, prompts, compression pipeline, social previews |
+| 12 | Media Orchestration | 5 | Image/video gen, prompts, compression pipeline, social previews |
 | 13 | Growth & Observability | 6 | Stripe billing, analytics, Sentry, email, experiments, feedback |
 | 14 | Idea Engine | 0 | Autonomous research, evidence-backed improvement proposals |
 
@@ -56,11 +56,11 @@ ln -sf ~/.agentskills ~/.claude/skills
 | computer-use-operator | Sonnet | Native macOS app automation via Computer Use MCP |
 | accessibility-auditor | Haiku | Accessibility audits, WCAG checks, and remediation guidance |
 | changelog-generator | Haiku | Release notes and changelog drafting from git history |
-| content-writer | Sonnet | Copy, microcopy, alt text, SEO content |
+| content-writer | Haiku | Copy, microcopy, alt text, SEO content |
 | cost-estimator | Haiku | Infra and API-cost forecasting for product decisions |
 | dependency-auditor | Sonnet | Package security, license compliance, update strategy |
 | deploy-verifier | Sonnet | Post-deploy smoke tests at 6 breakpoints |
-| incident-responder | Opus | Production incident triage, rollback, post-mortem |
+| incident-responder | Sonnet | Sentry-triggered incident response, auto-fix PRs |
 | meta-orchestrator | Opus | Cross-agent coordination, task graph execution |
 | migration-agent | Sonnet | Framework/DB/API migration with rollback safety |
 | performance-profiler | Sonnet | CWV analysis, bundle audit, runtime profiling |

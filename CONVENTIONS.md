@@ -196,7 +196,7 @@ JSON-LD boosts LLM accuracy 16%→54% (AI search visibility for ChatGPT/Perplexi
 
 ## Quality Bar
 
-E2E 0 failures | WCAG 2.2 AA | Lighthouse a11y ≥95 perf ≥75 | CSP | Flesch ≥60 | Yoast GREEN | Images <200KB WebP | No placeholders | No dead forms | ADA compliance deadline: April 2026 (Title II) / 2027 (Title III small business)
+E2E 0 failures | WCAG 2.2 AA | Lighthouse a11y ≥95 perf ≥75 | CSP | Flesch ≥60 | Yoast GREEN | Images <200KB WebP | No placeholders | No dead forms | ADA Title II: April 2027 (large 50K+ pop) / April 2028 (small)
 
 ## Playwright (v1.56+)
 
@@ -220,7 +220,7 @@ CLAUDE.md = your rules (loaded every session) | Auto memory `~/.claude/projects/
 
 ## Claude Code — Agents
 
-Subagent locations: managed > `--agents` CLI > `.claude/agents/` > `~/.claude/agents/` > plugin | @ mention invocation with typeahead | `isolation: worktree` auto-cleans if no changes | Agent teams (experimental): `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, 3-5 teammates, 5-6 tasks each | Model resolution: env `CLAUDE_CODE_SUBAGENT_MODEL` > invocation param > frontmatter > main model
+Subagent locations: managed > `--agents` CLI > `.claude/agents/` > `~/.claude/agents/` > plugin | Brian's custom agents: `~/.agentskills/agents/` (18 agents, referenced via `--agents` or symlinked) | @ mention invocation with typeahead | `isolation: worktree` auto-cleans if no changes | Agent teams (experimental): `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, 3-5 teammates, 5-6 tasks each | Model resolution: env `CLAUDE_CODE_SUBAGENT_MODEL` > invocation param > frontmatter > main model
 
 ## Prompt Cache Optimization
 
