@@ -1,6 +1,7 @@
 ---
 name: "TDD Verification"
 description: "Full-application test user simulation. 10-point journey test that proves everything works. Completion-driven execution workflow and assumption protocol for blocking decisions."
+---
 # TDD Verification (Test User Simulation)
 ## The Test User
 Every application has a synthetic "test user" that walks through the ENTIRE product:

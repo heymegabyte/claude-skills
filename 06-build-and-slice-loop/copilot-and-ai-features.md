@@ -1,6 +1,7 @@
 ---
 name: "Copilot and AI Features"
-description: "CopilotKit for AI-powered UX with useCopilotReadable, useCopilotAction, CopilotTextarea, and CoAgents. Workers AI for edge inference and embeddings. Patterns for in-app AI assistants, AI-assisted text input, context-aware suggestions, and intelligent automation."---
+description: "CopilotKit for AI-powered UX with useCopilotReadable, useCopilotAction, CopilotTextarea, and CoAgents. Workers AI for edge inference and embeddings. Patterns for in-app AI assistants, AI-assisted text input, context-aware suggestions, and intelligent automation."
+---
 
 # Copilot and AI Features
 ## CopilotKit Setup (Angular/React-compatible)

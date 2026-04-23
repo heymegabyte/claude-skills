@@ -1,6 +1,7 @@
 ---
 name: "Testing Matrices"
 description: "Auto-generated test templates for payment flows, email deliverability, graceful degradation, form validation, breakpoint coverage, and content integrity checks."
+---
 # Testing Matrices
 ## Payment Flow Testing Matrix (auto-generate for every Stripe integration)
 For EVERY payment/donation flow, generate these tests:

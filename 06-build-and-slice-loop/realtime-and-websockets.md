@@ -1,6 +1,7 @@
 ---
 name: "Realtime and WebSockets"
-description: "Cloudflare Durable Objects for WebSocket-based realtime features. DO class with session handling, broadcast, presence tracking, typing indicators, live cursors. Client reconnection with exponential backoff. Hibernation API for cost optimization on idle connections."---
+description: "Cloudflare Durable Objects for WebSocket-based realtime features. DO class with session handling, broadcast, presence tracking, typing indicators, live cursors. Client reconnection with exponential backoff. Hibernation API for cost optimization on idle connections."
+---
 
 # Realtime and WebSockets
 ## Durable Object WebSocket Handler

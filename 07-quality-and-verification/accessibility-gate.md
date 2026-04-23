@@ -1,6 +1,7 @@
 ---
 name: "Accessibility Gate"
-description: "Automated WCAG AA accessibility audit via axe-core + Playwright on every deployment. Beautiful focus styling (2px solid cyan, 3px offset). Checks: skip-to-content link, alt text, input labels, 4.5:1 contrast, keyboard navigation, ARIA landmarks, lang attribute, prefers-reduced-motion, and screen reader compatibility."---
+description: "Automated WCAG AA accessibility audit via axe-core + Playwright on every deployment. Beautiful focus styling (2px solid cyan, 3px offset). Checks: skip-to-content link, alt text, input labels, 4.5:1 contrast, keyboard navigation, ARIA landmarks, lang attribute, prefers-reduced-motion, and screen reader compatibility."
+---
 
 # Accessibility Gate
 

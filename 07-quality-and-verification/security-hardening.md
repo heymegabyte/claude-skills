@@ -3,6 +3,7 @@ name: "Security Hardening"
 description: "Canonical owner of CSP headers, OWASP Top 10 prevention, Zod validation at all boundaries, Turnstile CAPTCHA integration, KV-based rate limiting, secret rotation, dependency scanning, and XSS/CSRF/injection prevention. Every deploy is secure by default."
 always-load: false---
 
+---
 # Security Hardening
 
 ## Security Headers (MANDATORY every Worker)

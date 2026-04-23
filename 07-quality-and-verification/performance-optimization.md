@@ -3,6 +3,7 @@ name: "Performance Optimization"
 description: "Canonical owner of Core Web Vitals, JS/CSS budgets, image optimization, lazy loading, font loading strategy, preconnect/prefetch, code splitting, tree shaking, and compression. Ensures every deploy meets performance thresholds before shipping."
 always-load: false---
 
+---
 # Performance Optimization
 
 ## Core Web Vitals Targets

@@ -1,6 +1,7 @@
 ---
 name: "Wisdom and Human Psychology"
-description: "Foundational skill encoding timeless principles from behavioral psychology, philosophy, holy books, and self-help classics — applied to product building. Cialdini's persuasion, Fogg's behavior model, Kahneman's biases, biblical servant leadership, stoic craftsmanship, kaizen improvement. Every product should embody the spirit of what the greats taught. Ethical persuasion only — never dark patterns."---
+description: "Foundational skill encoding timeless principles from behavioral psychology, philosophy, holy books, and self-help classics — applied to product building. Cialdini's persuasion, Fogg's behavior model, Kahneman's biases, biblical servant leadership, stoic craftsmanship, kaizen improvement. Every product should embody the spirit of what the greats taught. Ethical persuasion only — never dark patterns."
+---
 
 # Wisdom and Human Psychology
 

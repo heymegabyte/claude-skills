@@ -1,6 +1,7 @@
 ---
 name: "Site Search"
-description: "Cloudflare AI Search-powered site search for projectsites.dev: hybrid semantic + keyword search, multi-tenant via folder-prefix filtering or dedicated namespaces, built-in MCP endpoint for AI agents, Cmd+K modal UI, and auto-indexing at deploy time."---
+description: "Cloudflare AI Search-powered site search for projectsites.dev: hybrid semantic + keyword search, multi-tenant via folder-prefix filtering or dedicated namespaces, built-in MCP endpoint for AI agents, Cmd+K modal UI, and auto-indexing at deploy time."
+---
 
 # Site Search (Cloudflare AI Search)
 

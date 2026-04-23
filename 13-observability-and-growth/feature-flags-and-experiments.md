@@ -1,6 +1,7 @@
 ---
 name: "Feature Flags and Experiments"
-description: "PostHog feature flags and A/B testing. Server-side flag evaluation in Hono middleware, Angular directive for client-side flags, experiment setup with control/variants and statistical significance, gradual rollout patterns, and kill switches."---
+description: "PostHog feature flags and A/B testing. Server-side flag evaluation in Hono middleware, Angular directive for client-side flags, experiment setup with control/variants and statistical significance, gradual rollout patterns, and kill switches."
+---
 
 # Feature Flags and Experiments
 ## PostHog Server-Side Flags (Hono Middleware)

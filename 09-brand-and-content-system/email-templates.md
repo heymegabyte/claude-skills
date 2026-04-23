@@ -1,6 +1,7 @@
 ---
 name: "Email Templates"
-description: "Branded HTML email templates for all transactional email: dark gradient header with logo, clean body, light footer. Covers contact confirmations, newsletter welcome, donation receipts, volunteer signups, partnerships. Dark mode support. Sent via Resend with verified megabyte.space domain. Use when any project sends email."---
+description: "Branded HTML email templates for all transactional email: dark gradient header with logo, clean body, light footer. Covers contact confirmations, newsletter welcome, donation receipts, volunteer signups, partnerships. Dark mode support. Sent via Resend with verified megabyte.space domain. Use when any project sends email."
+---
 
 # Email Templates
 ## Design Principles (Source: Litmus, Really Good Emails)

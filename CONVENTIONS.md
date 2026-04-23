@@ -52,11 +52,11 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/purge_cache"
 
 ```bash
 get-secret SECRET_NAME  # chezmoi, 182 encrypted secrets
-# Central: /Users/apple/emdash-projects/worktrees/rare-chefs-film-8op/.env.local (50+ keys)
+# Shared env: use `CLAUDE_ENV_FILE` when set, otherwise the active project's `.env.local`
 # Config: ~/.config/emdash/ (coolify-token, gcp-service-account.json)
 ```
 
-All MCP secrets in `.env.local` — grep KEY_NAME. get-secret checks env vars first, then chezmoi.
+All MCP secrets should live in the active project's env file or be fetched via `get-secret`. Check env vars first, then chezmoi.
 
 ## Infrastructure
 
@@ -98,7 +98,7 @@ WebP photo 80% <200KB | WebP illustration 90% <150KB | PNG logo lossless <50KB |
 
 ## Linting
 
-Biome (Rust) instead of ESLint+Prettier. `npx @biomejs/biome check --write src/`
+ESLint + Prettier for TypeScript/JavaScript. Prefer `npx eslint . --max-warnings=0` and `npx prettier --check .` in CI; use `--fix` / `--write` locally.
 
 ## CF Credentials
 

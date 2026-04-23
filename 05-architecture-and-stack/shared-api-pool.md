@@ -1,6 +1,7 @@
 ---
 name: "Shared API Pool"
-description: "185 API keys across 27 categories in chezmoi+age encrypted store. Auto-discovery via get-secret. Every project auto-integrates with available services. Full catalog in ~/.claude/research/api-library.md (150+ APIs with free tiers, env vars, MCP availability, and integration examples)."---
+description: "185 API keys across 27 categories in chezmoi+age encrypted store. Auto-discovery via get-secret. Every project auto-integrates with available services. Full catalog in ~/.claude/research/api-library.md (150+ APIs with free tiers, env vars, MCP availability, and integration examples)."
+---
 
 # Shared API Key Pool
 ## Rule

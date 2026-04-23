@@ -1,33 +1,39 @@
-# Skill Profiles (14-Category Architecture)
+# Skill Profiles
 
-All 14 categories always loaded. Profiles indicate which submodules to reference.
+Use `01-operating-system` as the policy layer, then pull the smallest profile that matches the repo or prompt. Do not preload every reference doc.
 
 ## Domain → Profile
 
 | Pattern | Profile |
 |---------|---------|
-| *-foundation, *-mission, *-charity, donate-*, give-* | Nonprofit |
-| *-api, *-service, api.*, *-sdk | API Service |
-| *-cli, *-tool, *-lib, *-plugin | Developer Tool |
-| *-app, *-dashboard, *-portal, *-hub | SaaS |
-| Everything else | Marketing Site |
+| `*-foundation`, `*-mission`, `*-charity`, `donate-*`, `give-*` | Nonprofit |
+| `*-api`, `api.*`, `*-service`, `*-sdk` | API Service |
+| `*-cli`, `*-tool`, `*-lib`, `*-plugin` | Developer Tool |
+| `*-app`, `*-dashboard`, `*-portal`, `*-hub` | SaaS |
+| everything else | Marketing Site |
 
-Ambiguous? Has Angular → SaaS/DevTool. Only wrangler.toml → Marketing/API. Has schema/Drizzle → SaaS. Empty → Marketing (default).
+Ambiguous repos: Angular or auth/billing flows usually mean SaaS. `wrangler.toml` plus minimal routes usually means Marketing Site or API Service. DB schema + background jobs usually means SaaS.
 
 ## Marketing Site
-06/easter-eggs, 06/web-manifest, 06/contact-forms, 06/custom-error-pages, 06/i18n, 09/seo-keywords, 09/email-templates
+
+Load `02-goal-and-brief`, `03-planning-and-research`, `06-build-and-slice-loop/contact-forms-and-endpoints`, `custom-error-pages`, `domain-provisioning`, `easter-eggs`, `internationalization`, `web-manifest-system`, `09-brand-and-content-system/seo-and-keywords`, `email-templates`, `10-experience-and-design-system`, `11-motion-and-interaction-system`, `12-media-orchestration`.
 
 ## SaaS Application
-ALL submodules. Especially: 05/api-design, 05/drizzle-orm, 05/mcp-integrations, 05/clerk-auth, 05/inngest-jobs, 06/onboarding, 06/webhook-system, 06/admin-dashboard, 06/site-search, 06/ai-chat, 06/keyboard-shortcuts, 06/empty-states, 06/notifications, 06/file-uploads-and-storage, 06/rich-text-editor, 06/data-tables, 06/realtime-and-websockets, 06/copilot-and-ai-features, 06/notification-center, 07/accessibility, 07/security, 07/performance, 08/ci-cd, 08/backup-recovery, 09/seo-keywords, 09/documentation-hygiene, 13/stripe-billing, 13/analytics-config, 13/user-feedback, 13/feature-flags-and-experiments, 13/email-marketing-and-listmonk
+
+Load all core categories plus these references first: `05-architecture-and-stack/api-design-and-documentation`, `auth-and-session-management`, `background-jobs-and-workflows`, `drizzle-orm-and-migrations`, `mcp-and-cloud-integrations`, `06-build-and-slice-loop/admin-dashboard`, `ai-chat-widget`, `data-tables`, `empty-states-and-loading`, `file-uploads-and-storage`, `keyboard-shortcuts-and-command-palette`, `notification-center`, `onboarding-and-first-run`, `realtime-and-websockets`, `rich-text-editor`, `site-search`, `webhook-system`, `07-quality-and-verification/accessibility-gate`, `performance-optimization`, `security-hardening`, `08-deploy-and-runtime-verification/ci-cd-pipeline`, `backup-and-disaster-recovery`, `uptime-and-health`, `09-brand-and-content-system/documentation-and-codebase-hygiene`, `seo-and-keywords`, `13-observability-and-growth/analytics-configuration`, `feature-flags-and-experiments`, `stripe-billing`, `user-feedback-collection`.
 
 ## Nonprofit
-06/contact-forms, 06/easter-eggs, 06/web-manifest, 06/blog-engine, 06/i18n, 06/ai-chat, 09/seo-keywords, 09/email-templates, 09/social-automation, 13/stripe-billing (donations), 13/user-feedback
+
+Load `02-goal-and-brief`, `03-planning-and-research`, `06-build-and-slice-loop/blog-and-content-engine`, `contact-forms-and-endpoints`, `domain-provisioning`, `easter-eggs`, `internationalization`, `web-manifest-system`, `09-brand-and-content-system/email-templates`, `seo-and-keywords`, `social-automation`, `13-observability-and-growth/stripe-billing`, `user-feedback-collection`.
 
 ## API Service
-05/api-design, 05/drizzle-orm, 05/coolify, 05/shared-api-pool, 05/clerk-auth, 05/inngest-jobs, 06/webhook-system, 06/realtime-and-websockets, 07/security, 07/performance, 08/uptime-health, 08/backup-recovery, 08/ci-cd, 08/changelog-releases, 13/feature-flags-and-experiments
+
+Load `03-planning-and-research`, `05-architecture-and-stack/api-design-and-documentation`, `auth-and-session-management`, `background-jobs-and-workflows`, `drizzle-orm-and-migrations`, `mcp-and-cloud-integrations`, `openapi-generation`, `shared-api-pool`, `06-build-and-slice-loop/realtime-and-websockets`, `webhook-system`, `07-quality-and-verification/performance-optimization`, `security-hardening`, `08-deploy-and-runtime-verification/backup-and-disaster-recovery`, `changelog-and-releases`, `ci-cd-pipeline`, `uptime-and-health`, `13-observability-and-growth/feature-flags-and-experiments`.
 
 ## Developer Tool
-05/api-design, 07/security, 08/ci-cd, 08/changelog-releases, 09/documentation-hygiene, 09/seo-keywords, 06/blog-engine, 06/keyboard-shortcuts
+
+Load `03-planning-and-research`, `05-architecture-and-stack/api-design-and-documentation`, `mcp-and-cloud-integrations`, `07-quality-and-verification/security-hardening`, `semgrep-codebase-rules`, `08-deploy-and-runtime-verification/changelog-and-releases`, `ci-cd-pipeline`, `09-brand-and-content-system/documentation-and-codebase-hygiene`, `seo-and-keywords`, `12-media-orchestration`.
 
 ## Micro-SaaS
-05/api-design, 05/drizzle-orm, 05/clerk-auth, 05/inngest-jobs, 06/contact-forms, 06/custom-error-pages, 06/webhook-system, 06/file-uploads-and-storage, 06/notification-center, 07/security, 07/performance, 09/seo-keywords, 13/stripe-billing, 13/feature-flags-and-experiments, 13/email-marketing-and-listmonk
+
+Load the SaaS profile, then trim to `05-architecture-and-stack/api-design-and-documentation`, `auth-and-session-management`, `drizzle-orm-and-migrations`, `06-build-and-slice-loop/contact-forms-and-endpoints`, `custom-error-pages`, `file-uploads-and-storage`, `notification-center`, `site-search`, `webhook-system`, `07-quality-and-verification/performance-optimization`, `security-hardening`, `09-brand-and-content-system/seo-and-keywords`, `13-observability-and-growth/email-marketing-and-listmonk`, `feature-flags-and-experiments`, `stripe-billing`.

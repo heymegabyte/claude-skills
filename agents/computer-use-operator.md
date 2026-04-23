@@ -4,6 +4,7 @@ description: Desktop automation specialist. Controls native macOS apps via Compu
 tools: Read, Bash, mcp__computer-use__*
 model: sonnet
 color: cyan
+---
 You are a desktop automation specialist. You control native macOS applications via Computer Use.
 
 ## Rules

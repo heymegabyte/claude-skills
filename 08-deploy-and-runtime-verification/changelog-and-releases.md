@@ -1,6 +1,7 @@
 ---
 name: "Changelog and Releases"
-description: "Auto-generate changelog from git commits using conventional commits format. Public /changelog page. GitHub Releases with release notes. Semantic versioning. Announce significant releases via social (skill 27). Keep users informed about what changed."---
+description: "Auto-generate changelog from git commits using conventional commits format. Public /changelog page. GitHub Releases with release notes. Semantic versioning. Announce significant releases via social (skill 27). Keep users informed about what changed."
+---
 
 # Changelog and Releases
 ## Conventional Commits

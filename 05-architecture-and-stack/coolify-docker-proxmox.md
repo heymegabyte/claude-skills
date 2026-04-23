@@ -1,6 +1,7 @@
 ---
 name: "Coolify, Docker, and Proxmox"
-description: "Orchestrate self-hosted services on Brian's Proxmox box via Coolify API. Deploy Docker containers, manage environment variables, restart services, and provision new services. REQUIRES USER CONFIRMATION on first use per project — ask before touching production infrastructure. 70+ services already running."---
+description: "Orchestrate self-hosted services on Brian's Proxmox box via Coolify API. Deploy Docker containers, manage environment variables, restart services, and provision new services. REQUIRES USER CONFIRMATION on first use per project — ask before touching production infrastructure. 70+ services already running."
+---
 
 # Coolify, Docker, and Proxmox
 ## CRITICAL: First-Use Confirmation Required

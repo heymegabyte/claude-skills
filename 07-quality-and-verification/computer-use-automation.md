@@ -2,6 +2,7 @@
 name: "Computer Use Automation"
 description: "Desktop automation via Anthropic Computer Use MCP. Native macOS app control, visual QA workflows, screenshot-verify loops, cross-app orchestration. Teaches Claude when and how to use Computer Use vs dedicated MCPs."
 allowed-tools: "mcp__computer-use__*, Read, Bash"
+---
 # Computer Use Automation
 ## Tool Selection Hierarchy (MANDATORY)
 Before using Computer Use, check this priority order:

@@ -1,6 +1,7 @@
 ---
 name: "Drizzle ORM and Migrations"
-description: "Drizzle ORM as the database abstraction layer for D1 (SQLite) and Neon (PostgreSQL). Schema-first design with auto-generated migrations, type-safe queries, and the Drizzle → D1/Neon setup pattern. Covers schema conventions, relation patterns, migration workflow, and seed data."---
+description: "Drizzle ORM as the database abstraction layer for D1 (SQLite) and Neon (PostgreSQL). Schema-first design with auto-generated migrations, type-safe queries, and the Drizzle → D1/Neon setup pattern. Covers schema conventions, relation patterns, migration workflow, and seed data."
+---
 
 # Drizzle ORM and Migrations
 ## Why Drizzle

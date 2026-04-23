@@ -1,6 +1,7 @@
 ---
 name: "brian-voc-data"
 description: "Voice of the Customer data for Brian Zalewski extracted from 3,102 ChatGPT conversations. Exact language, dissatisfaction signals, aspiration signals, and interaction velocity patterns."
+---
 # Brian's VoC Data (from 10,255 messages)
 ## Exact Language (use these words, not synonyms)
 - "re-write" not "revise" or "edit"

@@ -1,6 +1,7 @@
 ---
 name: "Auth and Session Management"
-description: "Clerk as the auth layer for all SaaS projects. Middleware patterns for Hono on CF Workers, webhook sync to D1, RBAC with org-scoped roles, protected route patterns, and session token handling. Covers signup/login flows, user metadata sync, impersonation, and MFA enforcement."---
+description: "Clerk as the auth layer for all SaaS projects. Middleware patterns for Hono on CF Workers, webhook sync to D1, RBAC with org-scoped roles, protected route patterns, and session token handling. Covers signup/login flows, user metadata sync, impersonation, and MFA enforcement."
+---
 
 # Auth and Session Management (Clerk)
 
