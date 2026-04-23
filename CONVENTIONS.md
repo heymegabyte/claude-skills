@@ -26,16 +26,20 @@ Standalone-only (no NgModules for new projects) | Signal stores per feature | pr
 
 ## Drizzle v1 Patterns
 
-`sqliteTable` for D1 | plural snake_case tables (`users`, `blog_posts`) | `$inferSelect`/`$inferInsert` for types | `createInsertSchema`/`createSelectSchema` for Zod | batch API (not `BEGIN` — D1 doesn't support transactions) | prepared statements for repeated queries | Node.js compat polyfill in wrangler.jsonc
+`sqliteTable` for D1 | plural snake_case tables (`users`, `blog_posts`) | `$inferSelect`/`$inferInsert` for types | `createInsertSchema`/`createSelectSchema` for Zod | batch API (not `BEGIN` — D1 doesn't support transactions) | prepared statements for repeated queries | Node.js compat polyfill in wrangler.jsonc (`"compatibility_flags": ["nodejs_compat"]`)
 
 ## CF Workers Limits (2026)
 
-Free: 100K req/day, 10ms CPU | Paid: unlimited req, 5min CPU (30s default) | Memory: 128MB/isolate | Worker size: 3MB free / 10MB paid | Subrequests: 50 free / 10K paid | Static assets: 20K free / 100K paid | WebSocket msg: 32MiB | D1 storage: 250GB→1TB (paid) | Cron: 5 free / 250 paid
+Free: 100K req/day, 10ms CPU | Paid: unlimited req, 30s CPU default / 5min max | Memory: 128MB/isolate | Worker size: 3MB free / 10MB paid | Subrequests: 50 free / 10K paid | Static assets: 20K free / 100K paid | WebSocket msg: 32MiB | D1 storage: 250GB→1TB (paid) | Cron: 5 free / 250 paid
 D1 global read replication (beta): routes reads to nearest replica, 40-60% latency decrease
 
 ## CF Agents SDK (Agents Week 2026)
 
-AIChatAgent: streaming chat, auto persistence, resumable streams, tool support | MCPAgent: build MCP servers | Durable Objects: stateful micro-server with SQL DB, WebSockets, scheduling | Dynamic Workers: V8 isolate sandboxing, 100x faster than containers | CF Sandboxes (GA): isolated persistent environments | CF Mesh: private networking for users/nodes/agents/Workers | Flagship: native feature flags sub-ms evaluation | Artifacts: git-compatible versioned storage | Workflows v2: higher concurrency
+AIChatAgent: streaming chat, auto persistence, resumable streams, tool support | MCPAgent: build MCP servers | Durable Objects: stateful micro-server with SQL DB, WebSockets, scheduling | Dynamic Workers: V8 isolate sandboxing, 100x faster than containers | CF Sandboxes (GA): isolated persistent environments | CF Mesh: private networking for users/nodes/agents/Workers | Flagship: native feature flags sub-ms evaluation | Artifacts: git-compatible versioned storage | Workflows v2: higher concurrency+creation rate
+
+## Workers Builds (Native CI/CD)
+
+Workers Builds = native CI/CD replacing GitHub Actions deploy steps. Connects to GitHub repo, auto-deploys on push, supports preview URLs per branch. Enable in CF dashboard → Workers → project → Settings → Git. `wrangler deploy` still preferred for Brian's direct deploys. Branch preview URLs: `<branch>.<worker>.workers.dev`. Build cache: Bun install cached between builds. Use GH Actions only for E2E tests + Lighthouse — not for deploy.
 
 ## Pricing Defaults
 
@@ -83,7 +87,7 @@ Coolify coolify.megabyte.space | Authentik (SSO) | Healthchecks | Open WebUI | B
 
 ## MCP Servers
 
-Cloudflare (OAuth) | Playwright (stdio) | Sentry (HTTP/OAuth) | PostHog (SSE/OAuth) | Gmail/Calendar/Drive (OAuth) | Stripe (OAuth) | Canva (OAuth) | GitHub (HTTP) | Coolify (stdio) | Firecrawl (stdio) | n8n (stdio) | Home Assistant (stdio) | DeepSeek (stdio) | Postiz (HTTP) | Notion (stdio) | Supermemory (HTTP) | WordPress (stdio) | Plane (stdio) | Omi (Docker) | Sequential Thinking (stdio) | Computer Use (native)
+Cloudflare (OAuth) | Playwright (stdio) | Sentry (HTTP/OAuth) | PostHog (SSE/OAuth) | Gmail/Calendar/Drive (OAuth) | Stripe (OAuth) | Slack (OAuth) | Canva (OAuth) | GitHub (HTTP) | Coolify (stdio) | Firecrawl (stdio) | n8n (stdio) | Home Assistant (stdio) | DeepSeek (stdio) | Postiz (HTTP) | Notion (stdio) | Supermemory (HTTP) | WordPress (stdio) | Plane (stdio) | Omi (Docker) | Context7 (stdio) | Sequential Thinking (stdio) | Computer Use (native)
 
 ## MCP Rate Limits
 
@@ -119,37 +123,51 @@ const BREAKPOINTS = [
 
 ```typescript
 import { Hono } from 'hono';
+import { createFactory } from 'hono/factory';
 import { secureHeaders } from 'hono/secure-headers';
 import { cors } from 'hono/cors';
 type Env = { DB: D1Database; KV: KVNamespace; AI: Ai; VECTORIZE: VectorizeIndex; AI_SEARCH: AiSearch; TURNSTILE_SECRET: string; SITE_NAME: string; SITE_DESCRIPTION: string; };
 const app = new Hono<{ Bindings: Env }>();
 app.use('*', secureHeaders());
 app.use('/api/*', cors({ origin: ['https://domain.com'] }));
+// Method chaining (preserves RPC type inference — never split into controllers)
+app.get('/api/items', authMiddleware, handler).post('/api/items', authMiddleware, createHandler);
+// Reusable middleware chains: const factory = createFactory<{ Bindings: Env }>(); const authChain = factory.createMiddleware(authMiddleware);
 export default app;
 ```
 
-## Security Headers (OWASP 2025)
+## Hono Patterns
 
-OWASP Top 10:2025 — A01 Broken Access Control | A02 Security Misconfiguration | A03 Software Supply Chain Failures (NEW, was #9) | A04 Cryptographic Failures | A05 Injection | A06 Insecure Design | A07 Auth Failures | A08 Data Integrity Failures | A09 Logging Failures | A10 Mishandling Exceptional Conditions (NEW)
+`createFactory<{ Bindings: Env }>()` for reusable typed middleware chains | Method chaining `app.use().get().post()` preserves RPC type inference — never separate controller files | `hc<AppType>(BASE_URL)` for typed client | `@hono/zod-validator` on all bodies | `app.onError()+app.notFound()` centralized | Split large apps: `app.route('/path', subApp)`
+Error envelope: `{ error: string, code?: string, details?: unknown }` | Rate limit public endpoints: KV-based per-IP | Turnstile on all forms | `GET /health` returns `{status, version, timestamp}`
 
-Must add: `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` | `X-Content-Type-Options: nosniff` | `X-Frame-Options: DENY` | `Referrer-Policy: strict-origin-when-cross-origin` | `Cross-Origin-Opener-Policy: same-origin` | `Permissions-Policy: geolocation=(), camera=(), microphone=()` | `Cross-Origin-Embedder-Policy: require-corp`
+## Security Headers (OWASP Top 10:2025)
+
+A01 Broken Access Control | A02 Security Misconfiguration | A03 Software Supply Chain Failures (NEW, was #9) | A04 Cryptographic Failures | A05 Injection | A06 Insecure Design | A07 Auth Failures | A08 Data Integrity Failures | A09 Logging Failures | A10 Mishandling Exceptional Conditions (NEW)
+
+Must add: `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload` | `X-Content-Type-Options: nosniff` | `X-Frame-Options: DENY` | `Referrer-Policy: strict-origin-when-cross-origin` | `Cross-Origin-Opener-Policy: same-origin` | `Cross-Origin-Embedder-Policy: require-corp` | `Cross-Origin-Resource-Policy: same-origin` | `Permissions-Policy: geolocation=(), camera=(), microphone=()`
 Must remove: `X-XSS-Protection` (CSP replaces it, creates vulns in old browsers) | `Expect-CT` (deprecated) | `Server` | `X-Powered-By`
 
 ## CSP Template
 
 ```
-default-src 'self'; script-src 'self' 'unsafe-inline' googletagmanager.com challenges.cloudflare.com *.posthog.com;
+default-src 'self'; script-src 'self' 'nonce-{NONCE}' 'strict-dynamic' googletagmanager.com challenges.cloudflare.com *.posthog.com;
 style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com;
-img-src 'self' data: images.unsplash.com images.pexels.com *.stripe.com;
-connect-src 'self' google-analytics.com *.posthog.com *.sentry.io challenges.cloudflare.com;
+img-src 'self' data: images.unsplash.com images.pexels.com *.stripe.com *.sentry.io;
+connect-src 'self' google-analytics.com *.posthog.com *.sentry.io challenges.cloudflare.com *.inngest.com;
 frame-src youtube.com js.stripe.com challenges.cloudflare.com;
+report-uri /api/csp-report;
 ```
 
-Prefer nonce-based or hash-based CSP with `strict-dynamic`. Test with `Content-Security-Policy-Report-Only` first.
+Prefer nonce-based strict CSP with `strict-dynamic`. Test with `Content-Security-Policy-Report-Only` first.
+
+## Inngest Patterns
+
+Setup: `app.on(['GET','PUT','POST'], '/api/inngest', serve({ client: inngest, functions }))` | Step functions: `step.run('id', fn)` (each step idempotent, retried independently) | Delays: `step.sleep('id', '1 day')` | External triggers: `step.waitForEvent('id', { event: 'stripe/paid', timeout: '7d' })` | Fan-out: `step.sendEvent('id', items.map(...))` | Cron: `{ cron: '0 9 * * *' }` | Concurrency: `{ concurrency: { limit: 5 } }` | Retries: `{ retries: 3 }` default exponential backoff | Max duration: 2hr (Inngest Cloud) | Local dev: `npx inngest-cli dev`
+Dedup: Inngest auto-deduplicates by event ID within 24h. Use D1 UNIQUE constraint for external side effects. `onFailure` callback → Sentry + Slack.
 
 ## Patterns
 
-Error envelope: `{ error: string, code?: string, details?: unknown }`
 Zod: `Schema.safeParse(input)` → if !success return 400 with error.flatten()
 Turnstile: `<div class="cf-turnstile" data-sitekey="${SITE_KEY}" data-theme="dark">` + server POST to siteverify
 Stripe webhook: verify sig → deduplicate via KV (`webhook:${event.id}`) → process → set TTL 604800
@@ -214,11 +232,11 @@ Payments: PCI (Stripe Checkout), tax, fees, refunds | Health: HIPAA, encryption 
 
 ## Emergency
 
-Site down→`wrangler deployments list`→rollback | D1 corrupt→export | Secret leaked→rotate `wrangler secret put` | CI stuck→`gh run cancel` | Cache poisoned→purge all
+Site down→`wrangler deployments list`→`wrangler rollback` | D1 corrupt→`wrangler d1 time-travel restore --database-id DB_ID --timestamp TIMESTAMP` (30-day PIT) | D1→R2 for long-term backup | Secret leaked→`wrangler secret put KEY` | CI stuck→`gh run cancel RUN_ID` | Cache poisoned→purge all
 
 ## Common Failures
 
-`binding not found`→add to wrangler.toml | Turnstile invalid-input→check TURNSTILE_SECRET | ERR_BLOCKED_BY_CSP→add domain to CSP | Playwright flaky→replace sleep with waitFor | D1 "no such table"→`wrangler d1 migrations apply` | Angular SSR on Workers→use @angular/ssr CF adapter | Hono RPC type loss→use method chaining not separate controllers
+`binding not found`→add to wrangler.toml/wrangler.jsonc | Turnstile invalid-input→check TURNSTILE_SECRET | ERR_BLOCKED_BY_CSP→add domain to CSP | Playwright flaky→replace sleep with waitFor | D1 "no such table"→`wrangler d1 migrations apply` | Angular SSR on Workers→use @angular/ssr CF adapter | Hono RPC type loss→use method chaining not separate controllers | CPU exceeded→split into ctx.waitUntil() | Memory exceeded→stream instead of buffer
 
 ## Linting
 
