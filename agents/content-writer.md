@@ -4,6 +4,7 @@ description: Marketing copy, blog posts, and SEO content writer using Emdash bra
 tools: Read, Grep, Glob, WebSearch, WebFetch
 disallowedTools: Write, Edit
 model: haiku
+permissionMode: plan
 maxTurns: 15
 skills: ["09-brand-and-content-system"]
 effort: medium

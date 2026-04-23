@@ -10,7 +10,7 @@ description: "LLM-as-judge pattern for automated quality evaluation. Generate ou
 Generate output → Send to LLM judge (Haiku) → Score 1-10 → Pass if ≥ threshold → Fail with reasoning
 ```
 
-Cost: ~$0.01/eval with claude-3-5-haiku. Run hundreds of evals for pennies. Treat evals like tests — they run in CI, they block merges, they catch regressions.
+Cost: ~$0.01/eval with claude-haiku-4-5. Run hundreds of evals for pennies. Treat evals like tests — they run in CI, they block merges, they catch regressions.
 
 ## Eval Runner
 ```typescript
@@ -36,7 +36,7 @@ interface EvalCase {
 
 async function runEval(evalCase: EvalCase): Promise<EvalResult> {
   const response = await client.messages.create({
-    model: 'claude-3-5-haiku-latest',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 500,
     messages: [{
       role: 'user',

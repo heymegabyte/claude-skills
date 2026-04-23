@@ -4,6 +4,7 @@ description: Desktop automation specialist. Controls native macOS apps via Compu
 tools: Read, Bash, mcp__computer-use__*
 disallowedTools: Write, Edit
 model: sonnet
+permissionMode: auto
 maxTurns: 30
 effort: high
 color: cyan
