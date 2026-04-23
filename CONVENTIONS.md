@@ -21,7 +21,7 @@ CF Workers+Hono v4.12+ | Angular 20+Ionic+PrimeNG | Capacitor | D1/Neon | Drizzl
 
 ## Angular 20 Key Changes
 
-`effect()`+`linkedSignal`+`toSignal` stable | Zoneless change detection (dev preview, no Zone.js) | HttpResource (signal-based reactive HTTP) | `@if`/`@for` control flow replaces `*ngIf`/`*ngFor` | Incremental hydration stable | Host bindings type-checked
+`effect()`+`linkedSignal`+`toSignal` stable | Zoneless change detection (dev preview, no Zone.js) | HttpResource (signal-based reactive HTTP) | `@if`/`@for`/`@switch`/`@defer` control flow replaces `*ngIf`/`*ngFor` (deprecated v20, removed v22) | Incremental hydration stable | Host bindings type-checked
 Standalone-only (no NgModules for new projects) | Signal stores per feature | providedIn:'root' | Angular 20 released May 28 2025
 
 ## Drizzle v1 Patterns
