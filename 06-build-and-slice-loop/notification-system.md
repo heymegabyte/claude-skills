@@ -1,6 +1,7 @@
 ---
 name: "Notification System"
-description: "OneSignal web push notifications for product updates, donation milestones, and new content. In-app notification bell for SaaS products with unread count badge. Notification preferences per user. Stored in D1, delivered via push + email fallback. Use when product has returning users who benefit from updates."---
+description: "OneSignal web push notifications for product updates, donation milestones, and new content. In-app notification bell for SaaS products with unread count badge. Notification preferences per user. Stored in D1, delivered via push + email fallback. Use when product has returning users who benefit from updates."
+---
 
 # Notification System
 ## When to Include

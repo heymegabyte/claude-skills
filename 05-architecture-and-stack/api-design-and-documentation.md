@@ -3,6 +3,7 @@ name: "API Design and Documentation"
 description: "Canonical owner of Hono RPC mode, error envelope format, rate limiting patterns, pagination, OpenAPI spec generation, API versioning, webhook signature verification, and API documentation. Every API endpoint is type-safe, validated, documented, and production-ready."
 always-load: false---
 
+---
 # API Design and Documentation
 
 ## Canonical Definitions

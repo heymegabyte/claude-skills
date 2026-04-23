@@ -1,6 +1,7 @@
 ---
 name: "Service Worker and Offline"
-description: "Workbox (Google) for service worker generation with configurable cache strategies per route type. CacheFirst for static assets (30-day TTL), NetworkFirst for API/HTML, offline fallback page, precaching critical shell, background sync for failed form submissions, push notifications via Novu, Angular @angular/service-worker integration, and CF Workers edge+client SW coordination."---
+description: "Workbox (Google) for service worker generation with configurable cache strategies per route type. CacheFirst for static assets (30-day TTL), NetworkFirst for API/HTML, offline fallback page, precaching critical shell, background sync for failed form submissions, push notifications via Novu, Angular @angular/service-worker integration, and CF Workers edge+client SW coordination."
+---
 
 # Service Worker and Offline
 ## Workbox Configuration (workbox-config.js)

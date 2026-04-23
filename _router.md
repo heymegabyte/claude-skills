@@ -1,87 +1,56 @@
-# Skill Router (v2 — 14-Category Architecture)
+# Skill Router
 
-All 14 categories always loaded. Submodules provide specialized reference.
+Route prompts to the smallest useful subset. Load `01-operating-system` first, then add categories and reference docs that match the task. Prefer on-demand references over eager loading.
 
-## The 14 Categories
+## Category Map
 
-| # | Category | Submodules |
-|---|----------|-----------|
-| 01 | Operating System | ai-native-coding, autonomous-orchestrator, one-line-saas |
+| # | Skill | Reference Docs |
+|---|-------|----------------|
+| 01 | Operating System | `ai-native-coding`, `architecture-thought-loop`, `autonomous-orchestrator`, `one-line-saas` |
 | 02 | Goal and Brief | — |
-| 03 | Planning and Research | competitive-analysis |
-| 04 | Preference and Memory | wisdom-and-human-psychology |
-| 05 | Architecture and Stack | api-design, shared-api-pool, drizzle-orm, coolify-docker-proxmox, mcp-integrations, ai-technology, clerk-auth, inngest-jobs, openapi-generation |
-| 06 | Build and Slice Loop | easter-eggs, domain-provisioning, web-manifest, error-pages, contact-forms, blog-engine, onboarding, site-search, i18n, ai-chat, webhooks, admin, cmd-k, empty-states, notifications, file-uploads, rich-text-editor, data-tables, realtime-websockets, copilot-ai, notification-center |
-| 07 | Quality and Verification | accessibility, performance, security, computer-use, browser-workflows, completeness, visual-inspection, tdd, testing-matrices, adversarial, visual-regression, contract-testing, slop-detection, eval-driven-dev |
-| 08 | Deploy and Runtime | launch-day, ci-cd, uptime-health, changelog, backup-recovery, gh-fix-ci, service-worker, font-subsetting, critical-css |
-| 09 | Brand and Content | email-templates, social-automation, seo-keywords, documentation-hygiene |
-| 10 | Experience and Design | design-tokens |
-| 11 | Motion and Interaction | — |
-| 12 | Media Orchestration | media-prompts, compression-pipeline, og-image-generation, image-optimization |
-| 13 | Observability and Growth | stripe-billing, analytics-config, user-feedback, feature-flags, email-listmonk |
+| 03 | Planning and Research | `competitive-analysis` |
+| 04 | Preference and Memory | `brian-decision-model`, `brian-voc-data`, `wisdom-and-human-psychology` |
+| 05 | Architecture and Stack | `ai-technology-integration`, `api-design-and-documentation`, `auth-and-session-management`, `background-jobs-and-workflows`, `cf-auto-provision`, `coolify-docker-proxmox`, `drizzle-orm-and-migrations`, `mcp-and-cloud-integrations`, `openapi-generation`, `shared-api-pool` |
+| 06 | Build and Slice Loop | `admin-dashboard`, `ai-chat-widget`, `blog-and-content-engine`, `contact-forms-and-endpoints`, `copilot-and-ai-features`, `custom-error-pages`, `data-tables`, `domain-provisioning`, `easter-eggs`, `empty-states-and-loading`, `file-uploads-and-storage`, `internationalization`, `keyboard-shortcuts-and-command-palette`, `microcopy-library`, `notification-center`, `notification-system`, `onboarding-and-first-run`, `realtime-and-websockets`, `rich-text-editor`, `site-search`, `web-manifest-system`, `webhook-system` |
+| 07 | Quality and Verification | `accessibility-gate`, `adversarial-testing`, `chrome-and-browser-workflows`, `completeness-verification`, `computer-use-automation`, `contract-testing`, `e2e-accumulation`, `eval-driven-development`, `performance-optimization`, `security-hardening`, `semgrep-codebase-rules`, `slop-detection`, `spec-driven-development`, `stagehand-ai-testing`, `tdd-verification`, `testing-matrices`, `ui-completeness-sweep`, `visual-inspection-loop`, `visual-regression` |
+| 08 | Deploy and Runtime Verification | `backup-and-disaster-recovery`, `changelog-and-releases`, `ci-cd-pipeline`, `critical-css`, `font-subsetting`, `gh-fix-ci`, `launch-day-sequence`, `service-worker`, `uptime-and-health` |
+| 09 | Brand and Content System | `documentation-and-codebase-hygiene`, `email-templates`, `seo-and-keywords`, `social-automation` |
+| 10 | Experience and Design System | `design-tokens` |
+| 11 | Motion and Interaction System | — |
+| 12 | Media Orchestration | `compression-pipeline`, `image-optimization`, `media-prompts`, `og-image-generation` |
+| 13 | Observability and Growth | `analytics-configuration`, `email-marketing-and-listmonk`, `feature-flags-and-experiments`, `sentry-alert-rules`, `stripe-billing`, `user-feedback-collection` |
 | 14 | Independent Idea Engine | — |
 
-## By Task Type
+## Task Routing
 
-| Task | Key Submodules |
-|------|---------------|
-| New project | 05/coolify, 05/clerk-auth, 05/inngest-jobs, 06/domain-provisioning, 06/web-manifest, 09/seo-keywords |
-| Build feature | 06/*, 05/api-design, 05/drizzle-orm, 05/clerk-auth, 05/openapi-generation |
-| Fix/debug | 08/gh-fix-ci |
-| Deploy | 08/launch-day, 08/ci-cd, 08/uptime-health |
-| Full project | ALL submodules |
-| Design/visual | 10, 10/design-tokens, 11, 06/easter-eggs, 06/custom-error-pages |
-| SEO/content | 09/seo-keywords, 09/documentation-hygiene, 06/blog-engine, 06/i18n |
-| Billing | 13/stripe-billing, 06/webhook-system, 05/inngest-jobs |
-| File uploads | 06/file-uploads-and-storage, 05/api-design |
-| Rich text | 06/rich-text-editor, 06/blog-engine |
-| Data grids | 06/data-tables, 05/api-design, 05/drizzle-orm |
-| Realtime | 06/realtime-and-websockets, 05/architecture |
-| AI features | 06/copilot-and-ai-features, 06/ai-chat |
-| Notifications | 06/notification-center, 06/notification-system |
-| Feature flags | 13/feature-flags-and-experiments |
-| Email marketing | 13/email-marketing-and-listmonk, 09/email-templates |
-| Infrastructure | 05/coolify, 05/shared-api-pool, 05/mcp-integrations |
-| Testing/QA | 07/accessibility, 07/performance, 07/security, 07/completeness, 07/visual-regression, 07/contract-testing, 07/slop-detection, 07/eval-driven-dev |
-| API docs | 05/openapi-generation, 05/api-design |
-| Image pipeline | 12/image-optimization, 12/compression-pipeline, 06/file-uploads-and-storage |
-| Performance | 08/font-subsetting, 08/critical-css, 07/performance, 10/design-tokens |
+| Task | Load |
+|------|------|
+| New project | `02-goal-and-brief`, `03-planning-and-research`, `05-architecture-and-stack`, `06-build-and-slice-loop`, `09-brand-and-content-system` |
+| Build feature | `05-architecture-and-stack`, `06-build-and-slice-loop`, `07-quality-and-verification` |
+| Debug / CI failure | `07-quality-and-verification`, `08-deploy-and-runtime-verification`, especially `gh-fix-ci` and `spec-driven-development` |
+| Deploy / launch | `08-deploy-and-runtime-verification`, plus `09-brand-and-content-system` if SEO/content changed |
+| Design / frontend polish | `09-brand-and-content-system`, `10-experience-and-design-system`, `11-motion-and-interaction-system`, `12-media-orchestration` |
+| SEO / copy | `09-brand-and-content-system`, plus `06-build-and-slice-loop/blog-and-content-engine` or `13-observability-and-growth/analytics-configuration` when relevant |
+| Billing / auth | `05-architecture-and-stack/auth-and-session-management`, `06-build-and-slice-loop/webhook-system`, `13-observability-and-growth/stripe-billing` |
+| File uploads / admin / data grids | `06-build-and-slice-loop/file-uploads-and-storage`, `admin-dashboard`, `data-tables` |
+| Realtime / AI features | `05-architecture-and-stack/ai-technology-integration`, `06-build-and-slice-loop/realtime-and-websockets`, `ai-chat-widget`, `copilot-and-ai-features` |
+| Growth / analytics | `13-observability-and-growth`, plus `09-brand-and-content-system/social-automation` when publishing content |
 
-## By File Pattern
+## File Hints
 
-| Pattern | Submodule |
-|---------|-----------|
-| *.spec.ts, *.test.ts | 07 |
-| wrangler.toml | 05, 08 |
-| drizzle/*, schema.ts | 05/drizzle-orm |
-| *.css, *.scss | 10, 11 |
-| /blog/*, /posts/* | 06/blog-engine |
-| /admin/* | 06/admin-dashboard |
-| /api/webhooks/* | 06/webhook-system, 05/clerk-auth |
-| /api/inngest | 05/inngest-jobs |
-| **/middleware/auth* | 05/clerk-auth |
-| /api/stripe* | 13/stripe-billing |
-| /api/uploads/* | 06/file-uploads-and-storage |
-| /api/realtime/* | 06/realtime-and-websockets |
-| /api/copilot/* | 06/copilot-and-ai-features |
-| /api/notifications/* | 06/notification-center |
-| /api/newsletter/* | 13/email-marketing-and-listmonk |
-| .github/workflows/* | 08/ci-cd, 08/gh-fix-ci |
+| File Pattern | Load |
+|--------------|------|
+| `wrangler.toml`, `wrangler.jsonc` | `05-architecture-and-stack`, `08-deploy-and-runtime-verification` |
+| `schema.ts`, `drizzle/**` | `05-architecture-and-stack/drizzle-orm-and-migrations` |
+| `.github/workflows/**` | `08-deploy-and-runtime-verification/ci-cd-pipeline`, `gh-fix-ci` |
+| `*.spec.ts`, `*.test.ts` | `07-quality-and-verification` |
+| `*.css`, `*.scss` | `10-experience-and-design-system`, `11-motion-and-interaction-system` |
+| `blog/**`, `posts/**` | `06-build-and-slice-loop/blog-and-content-engine`, `09-brand-and-content-system/seo-and-keywords` |
+| `api/webhooks/**` | `06-build-and-slice-loop/webhook-system` |
+| `api/stripe*` | `13-observability-and-growth/stripe-billing` |
+| `api/uploads/**` | `06-build-and-slice-loop/file-uploads-and-storage` |
+| `api/realtime/**` | `06-build-and-slice-loop/realtime-and-websockets` |
 
-## Parallel Agent Distribution
+## Agent Library
 
-| Agent | Categories |
-|-------|-----------|
-| Frontend | 01, 06, 09, 10, 11, 12 |
-| Backend | 01, 05, 06, 07, 13 |
-| Content | 01, 09, 12 |
-| Quality | 01, 07, 08 |
-| Deploy | 01, 08, 09 |
-
-## Computer Use & Browser Automation
-
-Tool priority: 1. Dedicated MCP → 2. Playwright MCP → 3. Chrome MCP → 4. Computer Use (native macOS only)
-
-## Custom Agents (~/.claude/agents/)
-
-architect (opus), code-simplifier (sonnet), completeness-checker (opus), deploy-verifier (sonnet), security-reviewer (opus), test-writer (sonnet), seo-auditor (haiku), visual-qa (opus), computer-use-operator (sonnet), dependency-auditor (sonnet), meta-orchestrator (opus), migration-agent (sonnet), content-writer (haiku), performance-profiler (sonnet), incident-responder (sonnet), accessibility-auditor (haiku), cost-estimator (haiku), changelog-generator (haiku)
+Custom agents live in `~/.claude/agents/`. Current library: `architect`, `code-simplifier`, `completeness-checker`, `computer-use-operator`, `deploy-verifier`, `security-reviewer`, `seo-auditor`, `test-writer`, `visual-qa`, `dependency-auditor`, `meta-orchestrator`, `migration-agent`, `content-writer`, `performance-profiler`, `incident-responder`, `accessibility-auditor`, `cost-estimator`, `changelog-generator`.

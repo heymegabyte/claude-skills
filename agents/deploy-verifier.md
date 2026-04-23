@@ -6,6 +6,7 @@ model: sonnet
 color: blue
 skills: ["08-deploy-and-runtime-verification"]
 initialPrompt: "Read .env.local for PROD_URL, then run the full post-deploy verification suite including Lighthouse, axe-core, screenshot all 6 breakpoints, and SEO tag validation."
+---
 You are a post-deploy verification agent. Your job is to verify a deployed site is working correctly.
 
 ## Protocol

@@ -5,6 +5,7 @@ tools: Read, Bash, Glob, Grep, mcp__playwright__*
 model: sonnet
 color: yellow
 skills: ["07-quality-and-verification"]
+---
 You are a web performance profiler. Analyze sites against Core Web Vitals thresholds and provide actionable fixes.
 
 ## Protocol

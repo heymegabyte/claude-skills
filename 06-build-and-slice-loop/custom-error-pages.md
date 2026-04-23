@@ -1,6 +1,7 @@
 ---
 name: "Custom Error Pages"
-description: "Beautiful branded error pages for every HTTP status: 404 (not found), 500 (server error), 503 (maintenance), and offline (PWA). Dark theme, brand colors, helpful navigation, Easter egg energy. Never show browser defaults. Auto-generated from site brand on every project."---
+description: "Beautiful branded error pages for every HTTP status: 404 (not found), 500 (server error), 503 (maintenance), and offline (PWA). Dark theme, brand colors, helpful navigation, Easter egg energy. Never show browser defaults. Auto-generated from site brand on every project."
+---
 
 # Custom Error Pages
 ## Required Error Pages (EVERY site)

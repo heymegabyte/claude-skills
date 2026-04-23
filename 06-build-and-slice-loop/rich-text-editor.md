@@ -1,6 +1,7 @@
 ---
 name: "Rich Text Editor"
-description: "Editor.js (@editorjs/editorjs) integration with Angular. Block-based JSON output, core plugins (header, list, image, embed, table, code, quote), Angular wrapper with lifecycle management, saving/loading JSON to D1, and server-side block rendering for SEO."---
+description: "Editor.js (@editorjs/editorjs) integration with Angular. Block-based JSON output, core plugins (header, list, image, embed, table, code, quote), Angular wrapper with lifecycle management, saving/loading JSON to D1, and server-side block rendering for SEO."
+---
 
 # Rich Text Editor
 ## Angular Editor.js Wrapper

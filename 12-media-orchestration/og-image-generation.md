@@ -1,6 +1,7 @@
 ---
 name: "OG Image Generation"
-description: "Satori (@vercel/og) for edge-rendered OG images from HTML/JSX templates. CF Worker route /api/og?title=X&desc=Y → Satori renders HTML to SVG → resvg converts to PNG → cache in KV/R2. Dark brand template (1200x630), dynamic per-route generation, social platform sizes, meta-tag helper integration."---
+description: "Satori (@vercel/og) for edge-rendered OG images from HTML/JSX templates. CF Worker route /api/og?title=X&desc=Y → Satori renders HTML to SVG → resvg converts to PNG → cache in KV/R2. Dark brand template (1200x630), dynamic per-route generation, social platform sizes, meta-tag helper integration."
+---
 
 # OG Image Generation
 ## Worker Route (Hono)

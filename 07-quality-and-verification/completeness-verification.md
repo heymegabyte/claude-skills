@@ -1,6 +1,7 @@
 ---
 name: "Completeness Verification"
-description: "Continuously loop through AI-powered visual inspection of every page, every breakpoint, every interaction state until the AI finds zero remaining issues. This is the done detector that prevents premature completion."---
+description: "Continuously loop through AI-powered visual inspection of every page, every breakpoint, every interaction state until the AI finds zero remaining issues. This is the done detector that prevents premature completion."
+---
 
 # Completeness Verification Loop
 

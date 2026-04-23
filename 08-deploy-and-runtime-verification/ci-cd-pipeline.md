@@ -1,6 +1,7 @@
 ---
 name: "CI/CD Pipeline"
-description: "GitHub Actions for auto-deploy on push to main, E2E tests on PR, branch preview deploys. Not relied on (Brian deploys live from CLI), but set up for future users and as safety net. Includes Playwright in CI, Lighthouse audit, and auto-merge for passing PRs."---
+description: "GitHub Actions for auto-deploy on push to main, E2E tests on PR, branch preview deploys. Not relied on (Brian deploys live from CLI), but set up for future users and as safety net. Includes Playwright in CI, Lighthouse audit, and auto-merge for passing PRs."
+---
 
 # CI/CD Pipeline
 ## Note on Usage
@@ -29,7 +30,8 @@ jobs:
         with: { node-version: '22' }
       - run: npm ci
       - run: npx tsc --noEmit
-      - run: npx @biomejs/biome check src/
+      - run: npx eslint . --max-warnings=0
+      - run: npx prettier --check .
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
       - name: Run E2E tests

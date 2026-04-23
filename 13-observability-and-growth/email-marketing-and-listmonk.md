@@ -1,6 +1,7 @@
 ---
 name: "Email Marketing and Listmonk"
-description: "Listmonk on Coolify for newsletters and campaigns. REST API for subscriber management and campaign creation, Go template system, webhook integration with Hono for subscription events, double opt-in flow, unsubscribe handling, and Neon PostgreSQL backend."---
+description: "Listmonk on Coolify for newsletters and campaigns. REST API for subscriber management and campaign creation, Go template system, webhook integration with Hono for subscription events, double opt-in flow, unsubscribe handling, and Neon PostgreSQL backend."
+---
 
 # Email Marketing and Listmonk
 ## Coolify Deployment

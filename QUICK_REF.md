@@ -8,7 +8,7 @@ npx wrangler deploy && curl -sX POST "https://api.cloudflare.com/client/v4/zones
 ## Test
 ```
 PROD_URL=https://domain.com npx playwright test
-npx tsc --noEmit && npx @biomejs/biome check --write src/
+npx tsc --noEmit && npx eslint . --max-warnings=0 && npx prettier --check .
 ```
 
 ## Secrets
@@ -32,7 +32,7 @@ CF Workers + Hono | Angular 19 + Ionic | D1/Neon | Clerk | Stripe | Resend | Zod
 E2E 0 failures | WCAG AA | CSP | Flesch >=60 | Yoast pass | Images <200KB WebP | No placeholders | No dead forms
 
 ## Decision Shortcuts
-New project → all 14 loaded, ref 05/coolify, 06/domain-provisioning. Bug → 07+08 (08/gh-fix-ci). Design → 10+11. "What else?" → 14 Idea Engine.
+New project → 01+02+03, then ref 05/coolify-docker-proxmox and 06/domain-provisioning. Bug → 07+08 (08/gh-fix-ci). Design → 10+11. "What else?" → 14 Idea Engine.
 
 ## Domain Due Diligence
 Payments: PCI (Stripe Checkout), tax, fees, refunds. Health: HIPAA, encryption. Education: COPPA/FERPA. PII: GDPR/CCPA, deletion endpoint. Marketplace: Stripe Connect, disputes. Nonprofit: 501c3, donation receipts.

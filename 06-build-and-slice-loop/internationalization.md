@@ -1,6 +1,7 @@
 ---
 name: "Internationalization"
-description: "Multi-language support via URL parameter (?lang=es) or dropdown. Minimum English + Spanish on every site. AI translates all content at deploy time. Includes SEO hreflang tags, locale-aware structured data, RTL support detection, and language selector in navbar. Stored in KV for fast edge delivery."---
+description: "Multi-language support via URL parameter (?lang=es) or dropdown. Minimum English + Spanish on every site. AI translates all content at deploy time. Includes SEO hreflang tags, locale-aware structured data, RTL support detection, and language selector in navbar. Stored in KV for fast edge delivery."
+---
 
 # Internationalization (i18n)
 ## Architecture

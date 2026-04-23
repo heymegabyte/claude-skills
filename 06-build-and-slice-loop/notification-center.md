@@ -1,6 +1,7 @@
 ---
 name: "Notification Center"
-description: "Novu for multi-channel notifications: in-app bell, push, email (via Resend), SMS. Notification center component, preference management, workflow triggers from Hono, subscriber management, template variables, digest/batching, and Angular integration."---
+description: "Novu for multi-channel notifications: in-app bell, push, email (via Resend), SMS. Notification center component, preference management, workflow triggers from Hono, subscriber management, template variables, digest/batching, and Angular integration."
+---
 
 # Notification Center
 ## Novu Setup (Server-Side)

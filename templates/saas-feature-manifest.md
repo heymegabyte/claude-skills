@@ -242,7 +242,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] CLAUDE.md in project root (project-specific context)
 - [ ] README.md (install.doctor template, shields.io badges, dividers)
 - [ ] TypeScript strict mode
-- [ ] Biome auto-formatting
+- [ ] ESLint + Prettier auto-formatting
 - [ ] JSDoc on all exported functions
 - [ ] E2E tests for every feature (~1min per file, 6 breakpoints)
 - [ ] CI/CD via GitHub Actions (deploy on push to main)

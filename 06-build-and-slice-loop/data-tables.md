@@ -1,6 +1,7 @@
 ---
 name: "Data Tables"
-description: "AG Grid (ag-grid-angular) for complex data tables with server-side row model, Hono API pagination, column definitions, filtering, sorting, cell renderers, infinite scroll for 100K+ rows, and CSV/Excel export. Covers Angular standalone integration and virtual scrolling."---
+description: "AG Grid (ag-grid-angular) for complex data tables with server-side row model, Hono API pagination, column definitions, filtering, sorting, cell renderers, infinite scroll for 100K+ rows, and CSV/Excel export. Covers Angular standalone integration and virtual scrolling."
+---
 
 # Data Tables
 ## Angular AG Grid Setup

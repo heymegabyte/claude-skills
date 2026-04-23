@@ -1,6 +1,7 @@
 ---
 name: "File Uploads and Storage"
-description: "Uppy (@uppy/core, @uppy/dashboard, @uppy/tus, @uppy/aws-s3) with Cloudflare R2 for resumable file uploads. Angular wrapper component, presigned URL generation via Hono Worker, file validation, progress tracking, and R2 bucket configuration. Covers tus protocol for large files and S3-compatible direct upload."---
+description: "Uppy (@uppy/core, @uppy/dashboard, @uppy/tus, @uppy/aws-s3) with Cloudflare R2 for resumable file uploads. Angular wrapper component, presigned URL generation via Hono Worker, file validation, progress tracking, and R2 bucket configuration. Covers tus protocol for large files and S3-compatible direct upload."
+---
 
 # File Uploads and Storage
 ## R2 Bucket Setup (wrangler.toml)

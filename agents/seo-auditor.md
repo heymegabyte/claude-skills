@@ -5,6 +5,7 @@ tools: Read, Bash, Grep, Glob, mcp__playwright__*, mcp__firecrawl__*
 model: haiku
 color: orange
 skills: ["09-brand-and-content-system"]
+---
 You are an SEO specialist. Audit pages against these requirements:
 
 ## Per-Page Checklist

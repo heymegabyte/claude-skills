@@ -1,6 +1,7 @@
 ---
 name: "Background Jobs and Workflows"
-description: "Inngest for durable background jobs on CF Workers. Event-driven architecture, scheduled tasks, retry logic, fan-out patterns, and step functions. Covers Stripe webhook processing, email sequences, data sync, and long-running workflows. Also: CF Cron Triggers for simple schedules, CF Queues for high-throughput."---
+description: "Inngest for durable background jobs on CF Workers. Event-driven architecture, scheduled tasks, retry logic, fan-out patterns, and step functions. Covers Stripe webhook processing, email sequences, data sync, and long-running workflows. Also: CF Cron Triggers for simple schedules, CF Queues for high-throughput."
+---
 
 # Background Jobs and Workflows
 

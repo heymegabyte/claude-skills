@@ -1,6 +1,7 @@
 ---
 name: "User Feedback Collection"
-description: "In-app feedback widget: 5-star rating + text comment, stored in D1, reviewed at /admin/feedback. NPS survey at day 7 and day 30 via PostHog. Testimonial collection at /feedback for moderated display. Tracks satisfaction trends over time."---
+description: "In-app feedback widget: 5-star rating + text comment, stored in D1, reviewed at /admin/feedback. NPS survey at day 7 and day 30 via PostHog. Testimonial collection at /feedback for moderated display. Tracks satisfaction trends over time."
+---
 
 # User Feedback Collection
 ## Feedback Widget (In-App)

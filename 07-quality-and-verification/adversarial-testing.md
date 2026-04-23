@@ -1,6 +1,7 @@
 ---
 name: "Adversarial Testing"
 description: "Stress tests that actively try to break the application. Rapid navigation, resize storms, network offline resilience, Unicode bombs, back-button edge cases, and chaos testing checklist."
+---
 # Adversarial Testing
 ## Edge Case Generator
 ```typescript
