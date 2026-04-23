@@ -41,6 +41,8 @@ Route prompts to smallest useful subset. Load `01-operating-system` FIRST always
 | Microcopy / UX writing | `06/microcopy-library`, `09` |
 | Evidence / screenshots | `07/evidence-collection`, `07/visual-inspection-loop` |
 | Infra / self-hosted | `05/coolify-docker-proxmox`, `05/cf-auto-provision`, `08/uptime-and-health` |
+| Skills / config | `01`, `04` |
+| Security audit | `07/security-hardening`, `07/semgrep-codebase-rules` |
 
 ## File Hints
 
@@ -64,6 +66,8 @@ Route prompts to smallest useful subset. Load `01-operating-system` FIRST always
 | `sw.ts`, `service-worker*` | `08/service-worker` |
 | `semgrep/**`, `.semgrepignore` | `07/semgrep-codebase-rules` |
 | `coolify/**`, `docker-compose*` | `05/coolify-docker-proxmox` |
+| `CLAUDE.md`, `.claude/**` | `01` |
+| `package.json`, `tsconfig.json` | `05` |
 
 ## Agent Library
 

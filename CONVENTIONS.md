@@ -87,7 +87,7 @@ Coolify coolify.megabyte.space | Authentik (SSO) | Healthchecks | Open WebUI | B
 
 ## MCP Servers
 
-Cloudflare (OAuth) | Playwright (stdio) | Sentry (HTTP/OAuth) | PostHog (SSE/OAuth) | Gmail/Calendar/Drive (OAuth) | Stripe (OAuth) | Slack (OAuth) | Canva (OAuth) | GitHub (HTTP) | Coolify (stdio) | Firecrawl (stdio) | n8n (stdio) | Home Assistant (stdio) | DeepSeek (stdio) | Postiz (HTTP) | Notion (stdio) | Supermemory (HTTP) | WordPress (stdio) | Plane (stdio) | Omi (Docker) | Context7 (stdio) | Sequential Thinking (stdio) | Computer Use (native)
+Cloudflare (OAuth) | CF Code Mode (2 tools: search+execute, ~1K tokens for entire CF API) | Playwright (stdio) | Sentry (HTTP/OAuth) | PostHog (SSE/OAuth) | Gmail/Calendar/Drive (OAuth) | Stripe (OAuth) | Slack (OAuth) | Canva (OAuth) | GitHub (HTTP) | Coolify (stdio) | Firecrawl (stdio) | n8n (stdio) | Home Assistant (stdio) | DeepSeek (stdio) | Postiz (HTTP) | Notion (stdio) | Supermemory (HTTP) | WordPress (stdio) | Plane (stdio) | Omi (Docker) | Context7 (stdio) | Sequential Thinking (stdio) | Computer Use (native)
 
 ## MCP Rate Limits
 
@@ -204,15 +204,15 @@ E2E 0 failures | WCAG 2.2 AA | Lighthouse a11y ≥95 perf ≥75 | CSP | Flesch �
 
 ## Claude Code — Skills
 
-Skill locations: managed > personal `~/.claude/skills/` > project `.claude/skills/` > plugin | Description auto-invocation truncated at 1536 chars | After compaction: most recent invocation re-attached up to 5000 tokens each, 25K budget total | Live change detection: file edits take effect in current session | `disable-model-invocation: true` = user-only, NOT in description context | Dynamic injection: `` !`command` `` syntax runs before skill loads
+Skill locations: managed > personal `~/.claude/skills/` > project `.claude/skills/` > plugin | Description auto-invocation truncated at 1536 chars | After compaction: most recent invocation re-attached up to 5000 tokens each, 25K budget total | Live change detection: file edits take effect in current session | `disable-model-invocation: true` = user-only, NOT in description context | Dynamic injection: `` !`command` `` syntax runs before skill loads | Path-scoped rules: use `globs:` format (not `paths:` — known bugs), triggers on Read only not Write
 
 ## Claude Code — Hooks
 
-27 event types | 5 handler types: command/http/mcp_tool/prompt/agent | Exit 0=success | Exit 2=blocking error fed to Claude | Other non-zero=non-blocking | Hooks > CLAUDE.md (deterministic vs advisory) | `CLAUDE_ENV_FILE` available on SessionStart/CwdChanged/FileChanged only | asyncRewake: runs background, wakes Claude on exit 2
+27 event types | 5 handler types: command/http/mcp_tool/prompt/agent | Exit 0=success | Exit 2=blocking error fed to Claude | Other non-zero=non-blocking | Hooks > CLAUDE.md (deterministic vs advisory) | `CLAUDE_ENV_FILE` available on SessionStart/CwdChanged/FileChanged only | asyncRewake: runs background, wakes Claude on exit 2 | New events: SubProcess (credential scrubbing), MCPElicitation, StopFailure | `type: "mcp_tool"` chains MCP operations from hook handlers without Bash
 
 ## Claude Code — Settings Precedence
 
-Managed > CLI args > local project `.claude/settings.local.json` > shared project `.claude/settings.json` > user `~/.claude/settings.json` | Array values merge across scopes | Verify active: `/status`
+Managed > CLI args > local project `.claude/settings.local.json` > shared project `.claude/settings.json` > user `~/.claude/settings.json` | Array values merge across scopes | Verify active: `/status` | `$defaults` in autoMode: append custom allow/deny alongside built-ins instead of replacing | `sandbox.network.deniedDomains` for granular network blocking | `cleanupPeriodDays` sweeps tasks/snapshots/backups
 
 ## Claude Code — Memory
 
@@ -220,7 +220,7 @@ CLAUDE.md = your rules (loaded every session) | Auto memory `~/.claude/projects/
 
 ## Claude Code — Agents
 
-Subagent locations: managed > `--agents` CLI > `.claude/agents/` > `~/.claude/agents/` > plugin | Brian's custom agents: `~/.agentskills/agents/` (18 agents, referenced via `--agents` or symlinked) | @ mention invocation with typeahead | `isolation: worktree` auto-cleans if no changes | Agent teams (experimental): `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, 3-5 teammates, 5-6 tasks each | Model resolution: env `CLAUDE_CODE_SUBAGENT_MODEL` > invocation param > frontmatter > main model
+Subagent locations: managed > `--agents` CLI > `.claude/agents/` > `~/.claude/agents/` > plugin | Brian's custom agents: `~/.agentskills/agents/` (18 agents, referenced via `--agents` or symlinked) | @ mention invocation with typeahead | `isolation: worktree` auto-cleans if no changes | Agent teams (experimental): `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, 3-5 teammates, 5-6 tasks each | Model resolution: env `CLAUDE_CODE_SUBAGENT_MODEL` > invocation param > frontmatter > main model | Agent frontmatter `mcpServers` loaded for main-thread agents via `--agent` | Agent `hooks:` fire in `--agent` mode | Forked subagents: `CLAUDE_CODE_FORK_SUBAGENT=1` for true process isolation
 
 ## Prompt Cache Optimization
 

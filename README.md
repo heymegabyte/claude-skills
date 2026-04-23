@@ -16,7 +16,7 @@
 <br/>
 
 <div align="center">
-  <code>14 categories</code> · <code>89 reference docs</code> · <code>18 agents</code> · <code>12 templates</code>
+  <code>14 categories</code> · <code>89 reference docs</code> · <code>18 agents</code> · <code>13 templates</code>
 </div>
 
 <br/>
@@ -95,7 +95,7 @@ git clone https://github.com/megabytespace/claude-skills ~/.agentskills
           │   ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐       │
           │   │ 09  │→ │ 10  │→ │ 11  │→ │ 12  │       │
           │   │Brand│  │ UX  │  │Motn │  │Media│       │
-          │   │  4  │  │  1  │  │  0  │  │  5  │       │
+          │   │  4  │  │  1  │  │  0  │  │  4  │       │
           │   └─────┘  └─────┘  └─────┘  └─────┘       │
           │                                               │
           │          ┌─────┐  ┌─────┐                    │
@@ -121,7 +121,7 @@ git clone https://github.com/megabytespace/claude-skills ~/.agentskills
 | 09 | **Brand & Content** | 4 | SEO engine, copy system, email templates, social automation |
 | 10 | **Design System** | 1 | Anti-slop design, dark-first, bold typography, CSS architecture |
 | 11 | **Motion & Interaction** | — | Scroll-driven animations, View Transitions, reduced-motion |
-| 12 | **Media Orchestration** | 5 | Image/video generation, AI prompts, compression, OG previews |
+| 12 | **Media Orchestration** | 4 | Image/video generation, AI prompts, compression, OG previews |
 | 13 | **Growth & Observability** | 6 | Stripe billing, analytics, Sentry alerts, email, experiments |
 | 14 | **Idea Engine** | — | Autonomous research, evidence-backed improvement proposals |
 
@@ -228,11 +228,12 @@ Every deploy must clear all gates. No exceptions. No overrides.
 | `saas-feature-manifest.md` | Complete SaaS feature matrix |
 | `session-learning.md` | Post-session knowledge extraction |
 | `starter-scaffold.md` | New project scaffolding guide |
+| `semgrep-rules/` | Custom Semgrep rules for codebase enforcement |
 | `task-graph.json` | Parallelizable task decomposition |
 
 ## Task Routing
 
-The router loads the smallest useful subset per task — never the full 89 docs.
+The router loads the smallest useful subset per task — never the full 89 docs. See [`_router.md`](_router.md) for the complete routing table.
 
 | When you say... | Skills loaded |
 |-----------------|---------------|
