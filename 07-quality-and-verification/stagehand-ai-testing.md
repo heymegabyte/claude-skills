@@ -1,12 +1,32 @@
 ---
 name: "Stagehand AI Testing"
-description: "AI-powered browser testing fallback using @browserbasehq/stagehand. Natural language act/extract/observe primitives on top of Playwright. Self-healing selectors that survive redesigns. Use for dynamic content, broken selectors, and visual verification."
+version: "2.0.0"
+updated: "2026-04-23"
+description: "AI browser testing: Stagehand (act/extract/observe/agent on a11y tree) + Playwright v1.56 AI agents (Planner/Generator/Healer). MCP-based testing on accessibility tree, not screenshots. Self-healing selectors. Multi-agent testing pattern."
 ---
 
 # Stagehand AI Testing
 
 ## What Is Stagehand
 Open-source AI browser automation SDK (browserbase/stagehand, 22K+ stars, MIT). Four primitives -- `act()`, `extract()`, `observe()`, `agent()` -- that resolve natural language instructions against the accessibility tree at runtime. Selectors self-heal when pages change. Uses Vercel AI SDK under the hood, supports OpenAI/Anthropic/Gemini. 10-100x faster than vision-based approaches because it reads the a11y tree, not screenshots.
+
+## Playwright AI Agents (v1.56+)
+Three built-in AI agents complement Stagehand:
+- **Planner:** Explores apps, designs test plans from natural language descriptions
+- **Generator:** Creates executable test code from plans
+- **Healer:** Auto-fixes broken tests when UI changes
+
+Pattern: static Playwright specs for stable tests. AI agents for flaky/new tests. Run agents only on failed tests in second pass (70% token savings). Reserve AI for UI-churn areas.
+
+## MCP-Based Testing
+Playwright MCP operates on **accessibility tree**, not screenshots. Returns structured snapshots: hierarchy of roles, names, states. Target "Role: button, Name: Checkout" — 10x more stable than CSS selectors. AOM-reasoning > DOM-scraping.
+
+## Multi-Agent Testing Pattern (2026)
+Run four agents in parallel per deploy:
+- **Functional Agent:** Happy path clicks, form submissions, navigation flows
+- **Security Agent:** XSS probing, auth bypass attempts, injection testing
+- **Accessibility Agent:** WCAG 2.2 compliance, axe-core integration
+- **Performance Agent:** CWV measurement, bundle size checks
 
 ## Install
 ```bash

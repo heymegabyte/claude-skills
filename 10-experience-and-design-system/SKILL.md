@@ -51,7 +51,7 @@ Body min 16px (prefer 18). Line-height: 1.6 body (or `calc(2px + 2ex + 2px)` for
 Never #000 (use #060610 — pure black causes visual vibration, halation, eye strain). Never #fff (use #f0f0f5). Cyan: primary CTAs. Blue: secondary. Gradients on buttons only. 6% borders. Subtle glow on primary interactive.
 Dark-first architecture: elevation via lightness not shadows. Background hierarchy: base->surface 1->surface 2->surface 3. Text hierarchy: primary->secondary->tertiary. Status colors: desaturate 10-20% from light-mode equivalents. Sans-serif fonts perform best in dark mode; use `-webkit-font-smoothing:antialiased` to mitigate halo effects.
 Theme implementation: `color-scheme:light dark` declaration, `data-theme="dark|light"` attributes for user override, `localStorage` for persistence, `prefers-color-scheme` as system default. Always provide toggle.
-Modern color: OKLCH perceptually uniform, `color-mix()` for blending without precomputed palettes, relative colors `oklch(from var(--brand) l c calc(h + 30))`, `light-dark()` for theme-aware values. Contrast: 4.5:1 normal text, 3:1 large text/UI components (WCAG 2.1 AA).
+Modern color: OKLCH perceptually uniform, `color-mix()` for blending without precomputed palettes, relative colors `oklch(from var(--brand) l c calc(h + 30))`, `light-dark()` for theme-aware values. Contrast: 4.5:1 normal text, 3:1 large text/UI components (WCAG 2.2 AA). Target size minimum 24x24 CSS px (2.5.8). Focus indicators 2px thick, 3:1 contrast (2.4.13).
 
 ## CSS Architecture (2026)
 ```css

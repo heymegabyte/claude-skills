@@ -1,11 +1,15 @@
 ---
 name: architect
-description: Spawns BEFORE implementation to analyze the project structure, generate a repo-map, design the task graph, and identify architectural seams. Produces artifacts that guide all subsequent agents.
+description: Pre-implementation architecture agent. Analyzes project structure, generates repo-map, designs task graph, identifies architectural seams and parallel workstreams.
 tools: Read, Glob, Grep, Bash
+disallowedTools: Write, Edit
 model: opus
-color: purple
+permissionMode: plan
+maxTurns: 30
 skills: ["05-architecture-and-stack", "03-planning-and-research"]
+memory: project
 effort: max
+color: purple
 ---
 You are a software architect. You run BEFORE any implementation begins.
 

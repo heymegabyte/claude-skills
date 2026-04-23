@@ -1,8 +1,9 @@
 ---
 name: "Performance Optimization"
-description: "Canonical owner of Core Web Vitals, JS/CSS budgets, image optimization, lazy loading, font loading strategy, preconnect/prefetch, code splitting, tree shaking, and compression. Ensures every deploy meets performance thresholds before shipping."
-always-load: false---
-
+version: "2.0.0"
+updated: "2026-04-23"
+description: "CWV with LCP 4-phase and INP 3-phase optimization. JS/CSS budgets, image optimization (AVIF/WebP), font loading, preconnect/prefetch, code splitting, tree shaking, compression. 47% of sites pass all three CWV. content-visibility for off-screen."
+always-load: false
 ---
 # Performance Optimization
 
@@ -67,8 +68,17 @@ test('Core Web Vitals', async ({ page }) => {
 });
 ```
 
+## LCP Optimization (4 Phases)
+Phase 1 TTFB: edge computing (CF Workers), streaming SSR, CDN aggressive caching. Phase 2 Resource Load Delay: preload LCP image `fetchpriority="high"`, NEVER lazy-load LCP image (2x slower), never CSS background-image for LCP, inline critical CSS. Phase 3 Resource Load Duration: WebP/AVIF, responsive srcset, image CDN. Phase 4 Element Render Delay: minimize render-blocking, defer non-critical JS, SSR critical content.
+
+## INP Optimization (3 Phases)
+Phase 1 Input Delay: break long tasks (>50ms) with `setTimeout`/`requestIdleCallback`/Scheduler API, code splitting, defer non-essential JS. Phase 2 Processing Duration: lightweight event handlers, debounce/throttle, Web Workers for heavy computation, avoid layout thrashing. Phase 3 Presentation Delay: reduce DOM size, `content-visibility: auto` for off-screen, virtualize long lists, CSS containment `contain: layout style paint`.
+
+## CLS Prevention
+Explicit `width`+`height` on img/video. `aspect-ratio` CSS. Reserve space for dynamic content. `font-display: optional` or `swap` with size-adjust. Preload web fonts. Never insert content above existing content.
+
 ## Checklist
-Lighthouse >= 90, LCP <2.5s on 4G, INP <200ms, CLS <0.1, no render-blocking resources, font-display swap, images WebP/AVIF+lazy+dimensions, JS <150KB gz, CSS <50KB gz, preconnect critical origins, cache headers correct, Worker CPU <50ms p99, no layout shifts from dynamic content, third-party async via GTM, Server-Timing header.
+LCP <2.5s on 4G (4-phase optimized), INP <200ms (3-phase optimized), CLS <0.1, no render-blocking resources, font-display swap, images WebP/AVIF+lazy+dimensions, JS <150KB gz, CSS <50KB gz, preconnect critical origins, cache headers correct, Worker CPU <50ms p99, no layout shifts from dynamic content, third-party async via GTM, Server-Timing header, content-visibility on off-screen sections.
 
 ## Ownership
 **Owns:** CWV measurement, bundle budgets, image optimization, lazy loading, font strategy, resource hints, code splitting, tree shaking, cache headers, Worker CPU monitoring, compression, regression detection.

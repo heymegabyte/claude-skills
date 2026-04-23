@@ -1,8 +1,9 @@
 ---
 name: "Security Hardening"
-description: "Canonical owner of CSP headers, OWASP Top 10 prevention, Zod validation at all boundaries, Turnstile CAPTCHA integration, KV-based rate limiting, secret rotation, dependency scanning, and XSS/CSRF/injection prevention. Every deploy is secure by default."
-always-load: false---
-
+version: "2.0.0"
+updated: "2026-04-23"
+description: "CSP nonce-based, OWASP Top 10:2025 (supply-chain #3, exceptional conditions #10), Zod all boundaries, Turnstile, KV rate limiting, secret rotation, dependency scanning, XSS/CSRF/injection prevention. Remove X-XSS-Protection/Expect-CT/HPKP."
+always-load: false
 ---
 # Security Hardening
 
@@ -36,19 +37,21 @@ const CSP = [
 ].join('; ');
 ```
 
-## OWASP Top 10 Prevention
+## OWASP Top 10:2025 Prevention
 | # | Vulnerability | Prevention |
 |---|--------------|------------|
-| A01 | Broken Access | Clerk JWT on protected routes |
-| A02 | Crypto Failures | HTTPS-only, wrangler secrets |
-| A03 | Injection | Zod + Drizzle parameterized queries |
-| A04 | Insecure Design | Threat modeling at architecture phase |
-| A05 | Misconfiguration | Security headers on every response |
-| A06 | Vulnerable Components | `npm audit` in CI, Dependabot |
-| A07 | Auth Failures | Clerk, rate limit login |
-| A08 | Data Integrity | Webhook sig verification, SRI |
-| A09 | Logging Failures | Sentry captures all errors |
-| A10 | SSRF | No user-controlled URLs in server fetch without allowlist |
+| A01 | Broken Access Control | Clerk JWT on protected routes |
+| A02 | Security Misconfiguration | Security headers on every response |
+| A03 | Supply Chain Failures (NEW) | `npm audit` in CI, Dependabot, lockfile audit, SRI |
+| A04 | Cryptographic Failures | HTTPS-only, wrangler secrets |
+| A05 | Injection | Zod + Drizzle parameterized queries |
+| A06 | Insecure Design | Threat modeling at architecture phase |
+| A07 | Authentication Failures | Clerk, rate limit login |
+| A08 | Software/Data Integrity | Webhook sig verification, SRI |
+| A09 | Security Logging/Alerting | Sentry captures all errors |
+| A10 | Exceptional Conditions (NEW) | try/catch all, onError handler, graceful degradation |
+
+Notable 2025 changes: Supply chain elevated to #3. Exceptional condition handling added at #10. Misconfiguration moved to #2.
 
 ## Rules
 1. Zod on ALL input (body, query, params, headers). No unvalidated input touches logic.
@@ -107,6 +110,12 @@ function requireAuth() {
 
 ## Secret Rotation (Every 90 days)
 Rotate: STRIPE_API_KEY, TURNSTILE_SECRET, CLERK_SECRET_KEY. Verify npm audit 0 critical/high. Review Dependabot. Check CF WAF.
+
+## Headers to REMOVE
+X-XSS-Protection (creates XSS vulns in older browsers, CSP replaces)|Expect-CT (deprecated per Mozilla)|Public-Key-Pins/HPKP (deprecated)|Server (prevents fingerprinting)|X-Powered-By (exposes stack)|X-AspNet-Version (exposes framework).
+
+## CSP Best Practices (2025+)
+Nonce-based or hash-based strict CSP preferred over allowlist. `strict-dynamic` trusts scripts created by trusted scripts. `form-action` at least `'self'`. `frame-ancestors: 'none'` replaces X-Frame-Options. CSP is second layer, not primary XSS defense. Send on ALL responses. Test with `Content-Security-Policy-Report-Only` first.
 
 ## Security Audit Quick Scan
 ```bash

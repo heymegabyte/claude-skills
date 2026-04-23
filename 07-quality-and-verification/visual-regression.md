@@ -1,12 +1,17 @@
 ---
 name: "Visual Regression Testing"
-description: "Pixel-level screenshot diffing with pixelmatch. Baseline capture → compare on next run → fail if diff exceeds threshold. Integrates with visual-qa agent and CI pipelines."
+version: "2.0.0"
+updated: "2026-04-23"
+description: "Three-tier visual regression: Percy AI Visual Review Agent (CI, 3x review reduction, 40% false positive filtering) + Chromatic (component-level via Storybook+Playwright) + pixelmatch (local/lightweight). Baseline capture → compare → AI-classify diffs."
 ---
 
 # Visual Regression Testing
 
-## Core Tool
-pixelmatch (npm) — lightweight, zero-dependency PNG diffing. ~150 lines, no native bindings. Input: two PNG buffers + options. Output: diff count + diff image.
+## Tool Hierarchy
+1. **Percy AI Visual Review Agent (2025+):** CI integration, 3x review reduction, 40% false positive filtering, OCR for text-shift elimination. 5K screenshots/month free tier. Best for: full-page regression in CI.
+2. **Chromatic:** Pixel-perfect detection built around Storybook, now supports Playwright. Best for: component-level regression, design system changes.
+3. **pixelmatch:** Lightweight zero-dependency PNG diffing for local CI. ~150 lines, no native bindings. Best for: fast local checks, custom thresholds.
+Best combo: Percy (CI integration) + Chromatic (component-level) together. pixelmatch for local dev loop.
 
 ## Baseline Workflow
 ```

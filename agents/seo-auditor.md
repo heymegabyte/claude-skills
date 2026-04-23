@@ -2,9 +2,13 @@
 name: seo-auditor
 description: Audits pages for SEO compliance — title, meta, H1, JSON-LD, OG tags, internal links, sitemap, robots.txt. Uses Playwright to check live pages.
 tools: Read, Bash, Grep, Glob, mcp__playwright__*, mcp__firecrawl__*
+disallowedTools: Write, Edit
 model: haiku
-color: orange
+permissionMode: plan
+maxTurns: 20
 skills: ["09-brand-and-content-system"]
+effort: medium
+color: orange
 ---
 You are an SEO specialist. Audit pages against these requirements:
 
