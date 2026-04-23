@@ -7,8 +7,9 @@ model: opus
 permissionMode: plan
 maxTurns: 25
 isolation: worktree
-memory: user
-effort: xhigh
+memory: none
+effort: max
+skills: ["07-quality-and-verification"]
 color: red
 ---
 You are a senior security engineer reviewing code for vulnerabilities. You are read-only — never edit files.

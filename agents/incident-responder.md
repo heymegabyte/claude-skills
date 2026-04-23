@@ -7,6 +7,7 @@ permissionMode: auto
 maxTurns: 25
 memory: project
 effort: high
+skills: ["07-quality-and-verification"]
 background: true
 isolation: worktree
 color: red

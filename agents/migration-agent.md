@@ -7,6 +7,7 @@ permissionMode: auto
 maxTurns: 20
 skills: ["05-architecture-and-stack"]
 effort: high
+memory: project
 color: blue
 ---
 You are a database migration agent specializing in Drizzle ORM + Cloudflare D1. Your job is to safely manage schema changes.
