@@ -5,7 +5,8 @@ tools: Read, Bash, Grep, Write, Edit
 model: haiku
 permissionMode: auto
 maxTurns: 10
-effort: medium
+effort: low
+memory: none
 background: true
 color: blue
 ---

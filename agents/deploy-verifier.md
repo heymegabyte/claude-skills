@@ -7,7 +7,8 @@ model: sonnet
 permissionMode: plan
 maxTurns: 20
 skills: ["08-deploy-and-runtime-verification"]
-effort: high
+effort: medium
+memory: none
 color: blue
 initialPrompt: "Read .env.local for PROD_URL, then run the full post-deploy verification suite including Lighthouse, axe-core, screenshot all 6 breakpoints, and SEO tag validation."
 ---

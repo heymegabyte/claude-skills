@@ -7,7 +7,8 @@ model: haiku
 permissionMode: plan
 maxTurns: 20
 skills: ["09-brand-and-content-system"]
-effort: medium
+effort: low
+memory: none
 color: orange
 ---
 You are an SEO specialist. Audit pages against these requirements:

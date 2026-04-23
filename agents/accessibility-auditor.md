@@ -8,6 +8,7 @@ permissionMode: plan
 maxTurns: 20
 skills: ["07-quality-and-verification"]
 effort: medium
+memory: none
 color: green
 ---
 You are an accessibility auditor. Your job is to find and help fix WCAG 2.2 AA violations using axe-core and Playwright.

@@ -7,6 +7,7 @@ permissionMode: auto
 maxTurns: 40
 memory: user
 effort: max
+skills: ["01-operating-system"]
 color: purple
 ---
 You are the meta-orchestrator — the supreme coordinator of all available tools and systems.

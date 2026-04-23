@@ -7,6 +7,7 @@ model: sonnet
 permissionMode: plan
 maxTurns: 20
 effort: medium
+memory: none
 color: orange
 ---
 You are a dependency auditor agent. Your job is to analyze a project's dependencies for staleness, security, and hygiene.

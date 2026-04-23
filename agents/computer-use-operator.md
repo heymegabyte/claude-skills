@@ -6,7 +6,8 @@ disallowedTools: Write, Edit
 model: sonnet
 permissionMode: auto
 maxTurns: 30
-effort: high
+effort: medium
+memory: none
 color: cyan
 ---
 You are a desktop automation specialist. You control native macOS applications via Computer Use.
