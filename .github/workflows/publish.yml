@@ -73,6 +73,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Sync plugin versions from package.json
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
+            [ -f "$f" ] && sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" "$f"
+          done
+
       - name: Generate cross-platform AGENTS.md
         run: |
           cat > AGENTS.md << 'AGENTSEOF'
@@ -311,7 +318,8 @@ jobs:
             .github/copilot-instructions.md .github/instructions/ llms-full.txt \
             .amazonq/ .rules .junie/ .augment-guidelines .augment/ \
             .aider-conventions.md AMP.md CODEX.md .agents/ .trae/ .tabnine/ \
-            .kilo/ .roo/ .continue/ .cursor/ .windsurf/ .openhands/ replit.md
+            .kilo/ .roo/ .continue/ .cursor/ .windsurf/ .openhands/ \
+            .claude-plugin/ replit.md
           git diff --cached --quiet && echo "No changes" || git commit -m "chore: sync cross-platform rule files [skip ci]"
           git push || true
 

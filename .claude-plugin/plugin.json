@@ -1,7 +1,7 @@
 {
   "name": "claude-skills",
-  "description": "14-category autonomous product-building OS with 18 specialized agents for Claude Code. One-line prompts to production on Cloudflare Workers, Angular, Hono, D1, Stripe. 58 submodule capabilities.",
-  "version": "7.0.0",
+  "description": "14-category autonomous product-building OS with 18 agents for 30+ AI coding tools. One-line prompts to production on Cloudflare Workers. 94 reference docs, 24 platform variants.",
+  "version": "7.2.1",
   "author": {
     "name": "Brian Zalewski",
     "url": "https://megabyte.space"

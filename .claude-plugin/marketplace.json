@@ -2,7 +2,7 @@
   "name": "claude-skills",
   "displayName": "Emdash Skills",
   "description": "14-category autonomous product-building OS. One-line prompts to deployed SaaS on Cloudflare Workers. 94 reference docs, 18 specialized agents, 12 templates.",
-  "version": "7.0.0",
+  "version": "7.2.1",
   "author": "Brian Zalewski",
   "repository": "https://github.com/megabytespace/claude-skills",
   "homepage": "https://megabyte.space",
