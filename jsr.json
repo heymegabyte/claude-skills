@@ -50,6 +50,8 @@
       ".kiro/**",
       ".void/**",
       ".bolt/**",
+      ".devin/**",
+      ".goose/**",
       "QODO.MD",
       ".github/copilot-instructions.md",
       ".github/instructions/**",

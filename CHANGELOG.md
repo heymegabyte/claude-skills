@@ -2,7 +2,7 @@
 
 ## 2026-04-24 — v7.2.1 Cross-Platform Ecosystem
 
-### Platform Variants (24 total)
+### Platform Variants (32+ total)
 - Added 5 modern format directories: `.cursor/rules/` (MDC), `.windsurf/rules/` (trigger frontmatter), `.augment/rules/` (type frontmatter), `.github/instructions/` (applyTo), `.openhands/microagents/`
 - Total 32 platform variants auto-generated on push to master (includes Devin + Goose)
 - Previous: Roo Code, Continue.dev, Trae, Tabnine, Kilo, Replit variants added in v7.2.0
