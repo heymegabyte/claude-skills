@@ -12,6 +12,16 @@
     "url": "https://github.com/megabytespace/claude-skills.git"
   },
   "license": "SEE LICENSE IN LICENSE",
+  "bin": {
+    "emdash-cost-check": "bin/emdash-cost-check",
+    "emdash-quick-lint": "bin/emdash-quick-lint",
+    "emdash-secret-scan": "bin/emdash-secret-scan"
+  },
+  "exports": {
+    ".": "./_router.md",
+    "./conventions": "./CONVENTIONS.md",
+    "./profiles": "./SKILL_PROFILES.md"
+  },
   "keywords": [
     "claude-code",
     "claude-skills",

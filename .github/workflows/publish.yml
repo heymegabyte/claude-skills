@@ -85,7 +85,7 @@ jobs:
           cat > AGENTS.md << 'AGENTSEOF'
           # Emdash Skills — Agent Instructions
 
-          This repository contains 14 skill categories and 94 reference docs for autonomous product building.
+          This repository contains 14 skill categories, 18 agents, and 94 reference docs for autonomous product building.
 
           ## Stack
           CF Workers + Hono | Angular 21 + Ionic 8 + PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry

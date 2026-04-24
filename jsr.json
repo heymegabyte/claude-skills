@@ -50,6 +50,7 @@
       ".void/**",
       ".bolt/**",
       "QODO.MD",
+      ".github/copilot-instructions.md",
       ".github/instructions/**",
       "GEMINI.md",
       "AMP.md",
