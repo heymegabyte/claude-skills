@@ -1,5 +1,46 @@
 # Skills System Changelog
 
+## 2026-04-24 — v7.2.1 Cross-Platform Ecosystem
+
+### Platform Variants (24 total)
+- Added 5 modern format directories: `.cursor/rules/` (MDC), `.windsurf/rules/` (trigger frontmatter), `.augment/rules/` (type frontmatter), `.github/instructions/` (applyTo), `.openhands/microagents/`
+- Total 24 platform variants auto-generated on push to master
+- Previous: Roo Code, Continue.dev, Trae, Tabnine, Kilo, Replit variants added in v7.2.0
+
+### CI/CD
+- Auto-publish to npm, JSR, GitHub Releases, Continue Hub, GitHub Skills on tag push
+- Auto-version-sync: plugin.json + marketplace.json now sync from package.json in CI
+- Actions upgraded v4→v6 (Node.js 20 deprecation avoidance)
+
+### Packaging
+- All 24 platform variants included in npm + JSR packages
+- bin/ scripts + .claude-plugin/ included in distribution
+- npm badge + JSR badge added to README
+
+### README
+- Complete cross-platform support table (24 variants with file paths and format notes)
+- Install methods: Claude plugin, npm, JSR, Codex, manual
+- Fixed doc count 93→94
+- Updated description: "30+ AI coding tools" (was "Claude Code")
+
+### Community
+- Submitted to 9 awesome-list repos for discoverability
+- PR template with quality checklist + auto-labeling by file path
+
+## 2026-04-23 — v7.0 Comprehensive Linting + CI
+
+### Linting
+- Comprehensive linting pipeline: validate-skills.sh with frontmatter, link, router/profile cross-reference, and SKILL.md size checks
+- Pre-commit: trailing whitespace, EOF, merge conflict, large files, secret detection
+
+### Publishing
+- 5-target publish pipeline: npm, JSR, GitHub Releases, Continue Hub, GitHub Skills
+- Codex .agents/skills/ directory auto-generated from SKILL.md files
+
+### Content
+- llms.txt + llms-full.txt for LLM discovery (links to all 94 docs + 18 agents)
+- AGENTS.md for Linux Foundation AAIF standard compliance
+
 ## 2026-04-20 — v5.1 14-Category Re-Architecture
 
 ### Architecture
