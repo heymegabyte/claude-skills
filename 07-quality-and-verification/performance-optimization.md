@@ -54,7 +54,7 @@ WebP photo 80% <200KB, AVIF 65% <150KB (with WebP fallback), PNG logo <50KB, SVG
 
 **Resource Hints:** Preconnect critical origins, dns-prefetch less-critical, prefetch next likely nav.
 
-**Code Splitting (Angular 20):** Lazy-load routes with `loadComponent: () => import(...)`.
+**Code Splitting (Angular 21):** Lazy-load routes with `loadComponent: () => import(...)`.
 
 **Worker Timing:** Middleware logs `Server-Timing: worker;dur=X` header. Warn if >50ms.
 

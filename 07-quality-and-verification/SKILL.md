@@ -2,7 +2,7 @@
 name: "quality-and-verification"
 version: "2.0.0"
 updated: "2026-04-23"
-description: "5-level verification pyramid: static→unit→Playwright E2E (homepage-first, 6bp)→AI visual→post-deploy. 8-check quality gate. Multi-agent testing (functional/security/a11y/performance). Playwright v1.56 AI agents (Planner/Generator/Healer). WCAG 2.2 AA via axe-core v4.11. Percy+Chromatic visual regression. ADA Title II 2027/2028 deadlines."
+description: "5-level verification pyramid: static→unit→Playwright E2E (homepage-first, 6bp)→AI visual→post-deploy. 8-check quality gate. Multi-agent testing (functional/security/a11y/performance). Playwright v1.59+ AI agents (Planner/Generator/Healer). WCAG 2.2 AA via axe-core v4.11. Percy+Chromatic visual regression. ADA Title II 2027/2028 deadlines."
 token_budget: "5K"
 submodules:
   - accessibility-gate.md
@@ -37,10 +37,10 @@ Submodules: accessibility-gate (axe-core v4.11, WCAG 2.2 AA, focus-not-obscured,
 
 ## Verification Pyramid
 
-L5: Post-Deploy (08). L4: Visual (screenshots+AI). L3: E2E (Playwright v1.56). L2: Integration (API/DB). L1: Static (lint/typecheck).
+L5: Post-Deploy (08). L4: Visual (screenshots+AI). L3: E2E (Playwright v1.59+). L2: Integration (API/DB). L1: Static (lint/typecheck).
 Every code change: L1-L3. Every deploy: L4-L5.
 
-### Playwright AI Agents (v1.56+)
+### Playwright AI Agents (v1.59+)
 Planner: explores app, designs test plans from natural language. Generator: creates executable test code. Healer: auto-fixes broken tests. Pattern: static specs for stable tests, AI agents for flaky/new. Run agents only on failed tests in second pass (70% token savings).
 
 ### MCP-Based Testing
@@ -68,7 +68,7 @@ TypeScript (tsc --noEmit), ESLint flat config, Prettier. Fix all. Suppress lines
 ## L2: Unit/Integration (Vitest)
 100% on new functions. Happy+error+edge+auth paths. Don't test: framework internals, 3rd-party, CSS, simple getters.
 
-## L3: E2E (Playwright v1.56)
+## L3: E2E (Playwright v1.59+)
 Homepage-first. No sleeps (waitFor, toBeVisible, waitForResponse). Stable selectors: data-testid→role→text→Stagehand AI fallback. Parallel-safe, deterministic, production URLs. 6bp: 375/390/768/1024/1280/1920.
 
 ## L4: Visual

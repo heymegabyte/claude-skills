@@ -42,7 +42,7 @@ submodules:
 | Hosting | CF Workers + Static Assets | Never |
 | Backend | Hono v4.12.x on Workers | Complex GraphQL → Yoga |
 | Frontend (simple) | Vanilla HTML/CSS/JS | >3 interactive pages |
-| Frontend (complex) | Angular 20 + Ionic + PrimeNG + Nx | Simple marketing site |
+| Frontend (complex) | Angular 21 + Ionic + PrimeNG + Nx | Simple marketing site |
 | DB (simple) | D1 (SQLite, global read replication) | Joins >3 tables |
 | DB (complex) | Neon PostgreSQL | D1 sufficient |
 | Cache | KV / Upstash Redis | Atomic ops → D1 |
@@ -56,7 +56,7 @@ submodules:
 | Package Manager | pnpm | Legacy npm |
 | Linting (TS) | ESLint + Prettier | Never Biome |
 | Linting (Python) | Ruff + mypy | Never black+isort separately |
-| Testing | Playwright v1.56+ + Vitest | Never Jest/Cypress |
+| Testing | Playwright v1.59+ + Vitest | Never Jest/Cypress |
 | Analytics | GA4 via GTM + PostHog | Privacy-first → PostHog only |
 | Errors | Sentry | PostHog errors sufficient |
 | Validation | Zod | — |
@@ -94,7 +94,7 @@ AI→Workers AI (not OpenAI). Cache→KV/Cache API (not Redis). DB→D1 (not Pos
 
 **Marketing Site:** Worker(Hono) → Static Assets + R2 images + KV config + GA4+GTM + Turnstile + Resend
 
-**SaaS App:** Workers Static Assets(Angular 20+Ionic) → Workers API(Hono) → D1(global replicas)/Neon + R2 + KV + Queues + DO + Clerk + Stripe + Resend + Listmonk + Flagship + PostHog+Sentry+GA4 + Playwright+Vitest
+**SaaS App:** Workers Static Assets(Angular 21+Ionic) → Workers API(Hono) → D1(global replicas)/Neon + R2 + KV + Queues + DO + Clerk + Stripe + Resend + Listmonk + Flagship + PostHog+Sentry+GA4 + Playwright+Vitest
 
 **API Service:** Worker(Hono) → D1/Neon + KV(rate limit/cache) + R2 + Queues + Workers AI + Sentry + PostHog
 

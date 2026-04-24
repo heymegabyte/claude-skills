@@ -2,7 +2,7 @@
 name: "Rich Text Editor"
 version: "2.0.0"
 updated: "2026-04-23"
-description: "Editor.js (@editorjs/editorjs) integration with Angular 20. Block-based JSON output, core plugins (header, list, image, embed, table, code, quote), Angular wrapper with signals, saving/loading JSON to D1 (Drizzle v1), and server-side block rendering for SEO."
+description: "Editor.js (@editorjs/editorjs) integration with Angular 21. Block-based JSON output, core plugins (header, list, image, embed, table, code, quote), Angular wrapper with signals, saving/loading JSON to D1 (Drizzle v1), and server-side block rendering for SEO."
 ---
 
 # Rich Text Editor

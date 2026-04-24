@@ -132,7 +132,7 @@ export { realtime };
 
 ## Client Reconnection with Exponential Backoff
 ```typescript
-// realtime.service.ts — Angular 20 signals
+// realtime.service.ts — Angular 21 signals
 import { Injectable, OnDestroy, signal, computed } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })

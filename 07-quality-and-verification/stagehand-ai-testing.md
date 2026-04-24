@@ -2,7 +2,7 @@
 name: "Stagehand AI Testing"
 version: "2.0.0"
 updated: "2026-04-23"
-description: "AI browser testing: Stagehand (act/extract/observe/agent on a11y tree) + Playwright v1.56 AI agents (Planner/Generator/Healer). MCP-based testing on accessibility tree, not screenshots. Self-healing selectors. Multi-agent testing pattern."
+description: "AI browser testing: Stagehand (act/extract/observe/agent on a11y tree) + Playwright v1.59+ AI agents (Planner/Generator/Healer). MCP-based testing on accessibility tree, not screenshots. Self-healing selectors. Multi-agent testing pattern."
 ---
 
 # Stagehand AI Testing
@@ -10,7 +10,7 @@ description: "AI browser testing: Stagehand (act/extract/observe/agent on a11y t
 ## What Is Stagehand
 Open-source AI browser automation SDK (browserbase/stagehand, 22K+ stars, MIT). Four primitives -- `act()`, `extract()`, `observe()`, `agent()` -- that resolve natural language instructions against the accessibility tree at runtime. Selectors self-heal when pages change. Uses Vercel AI SDK under the hood, supports OpenAI/Anthropic/Gemini. 10-100x faster than vision-based approaches because it reads the a11y tree, not screenshots.
 
-## Playwright AI Agents (v1.56+)
+## Playwright AI Agents (v1.59+)
 Three built-in AI agents complement Stagehand:
 - **Planner:** Explores apps, designs test plans from natural language descriptions
 - **Generator:** Creates executable test code from plans

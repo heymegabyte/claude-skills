@@ -170,18 +170,19 @@ export const subscriptions = sqliteTable('subscriptions', {
   "dependencies": {
     "hono": "^4",
     "@hono/zod-validator": "^0.4",
-    "drizzle-orm": "^0.36",
-    "zod": "^3.23",
-    "@clerk/backend": "^1",
-    "stripe": "^17",
+    "drizzle-orm": "^1.0",
+    "zod": "^3.24",
+    "@clerk/backend": "^2",
+    "stripe": "^18",
     "inngest": "^3",
     "resend": "^4"
   },
   "devDependencies": {
     "wrangler": "^4",
-    "drizzle-kit": "^0.28",
-    "@biomejs/biome": "^1.9",
-    "@playwright/test": "^1.49",
+    "drizzle-kit": "^1.0",
+    "eslint": "^9",
+    "prettier": "^3",
+    "@playwright/test": "^1.59",
     "typescript": "^5.7"
   }
 }

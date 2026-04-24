@@ -173,7 +173,7 @@ Every deploy must clear all gates. No exceptions. No overrides.
 
 | Gate | Threshold | Tool |
 |------|:---------:|------|
-| E2E Tests | 0 failures @ 6 breakpoints | Playwright v1.56+ |
+| E2E Tests | 0 failures @ 6 breakpoints | Playwright v1.59+ |
 | Visual QA | ≥ 8/10 | AI vision (GPT-4o) |
 | Accessibility | ≥ 95 | Lighthouse |
 | A11y Violations | 0 | axe-core |
@@ -201,7 +201,7 @@ Every deploy must clear all gates. No exceptions. No overrides.
 |-------|------------|
 | Hosting | Cloudflare Workers |
 | Backend | Hono RPC + `@hono/zod-validator` |
-| Frontend | Angular 20 + Ionic + PrimeNG (or vanilla) |
+| Frontend | Angular 21 + Ionic 8 + PrimeNG 21 (or vanilla) |
 | Database | D1 (edge) / Neon (Postgres) |
 | ORM | Drizzle v1 + Zod |
 | Cache | KV / Upstash Redis |
@@ -209,7 +209,7 @@ Every deploy must clear all gates. No exceptions. No overrides.
 | Payments | Stripe |
 | Email | Resend + Listmonk |
 | Jobs | Inngest |
-| Testing | Playwright v1.56+ + Vitest |
+| Testing | Playwright v1.59+ + Vitest |
 | Lint | ESLint + Prettier |
 | Runtime | Bun |
 | Monitoring | PostHog + Sentry + GA4/GTM |

@@ -2,7 +2,7 @@
 name: "E2E Test Accumulation"
 version: "2.0.0"
 updated: "2026-04-23"
-description: "Append-only parallel journey chunks. Each feature = new spec file ≤30s. Cross-page nav via clicks. 100% feature coverage matrix. Never delete tests. Playwright v1.56 Healer auto-fixes broken tests."
+description: "Append-only parallel journey chunks. Each feature = new spec file ≤30s. Cross-page nav via clicks. 100% feature coverage matrix. Never delete tests. Playwright v1.59+ Healer auto-fixes broken tests."
 ---
 
 # E2E Accumulation

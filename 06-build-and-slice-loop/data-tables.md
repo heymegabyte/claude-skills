@@ -2,7 +2,7 @@
 name: "Data Tables"
 version: "2.0.0"
 updated: "2026-04-23"
-description: "AG Grid (ag-grid-angular) for complex data tables with server-side row model, Hono API pagination, column definitions, filtering, sorting, cell renderers, infinite scroll for 100K+ rows, and CSV/Excel export. Angular 20 standalone + signals integration."
+description: "AG Grid (ag-grid-angular) for complex data tables with server-side row model, Hono API pagination, column definitions, filtering, sorting, cell renderers, infinite scroll for 100K+ rows, and CSV/Excel export. Angular 21 standalone + signals integration."
 ---
 
 # Data Tables

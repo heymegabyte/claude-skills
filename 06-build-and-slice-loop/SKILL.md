@@ -64,7 +64,7 @@ E2E test first→data layer (Drizzle)→API (Hono+Zod)→UI→wire→test→fix 
 ### Hono v4.12 Patterns
 Inline handlers (type inference). Factory pattern: `createFactory()` from `hono/factory` for reusable middleware. Method chaining for RPC: `const app = new Hono().get(...).post(...)`. Export `AppType` for `hc<AppType>()`. `app.route('/path', subApp)` for splitting. `@hono/zod-validator` all bodies. Never destructure `c` (breaks ctx). Use `c.executionCtx.waitUntil()` for background work. Stream responses with `c.stream()` or `c.streamText()`.
 
-### Angular 20 Patterns
+### Angular 21 Patterns
 Standalone-only (no NgModules). Signals: `signal()`, `computed()`, `effect()` (all stable). `linkedSignal()` for derived state with bidirectional binding. `resource()` / `HttpResource` for signal-based async data. `viewChild()`, `contentChildren()` signal queries (stable). `input()` signal inputs (stable). Zoneless change detection (developer preview). `@if`/`@for` control flow (not `*ngIf`/`*ngFor`). `inject()` over constructor injection. `providedIn:'root'` for tree-shakeable services. PrimeNG with design tokens. OnPush change detection on all components.
 
 ### Drizzle v1.0 + D1

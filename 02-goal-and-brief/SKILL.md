@@ -123,12 +123,12 @@ Solo SaaS economics: {$10K-$100K/mo micro | $50K-$3M/yr solo} | Launch: {4-12 we
 
 ## AI-Native Dev Approach
 - Spec: SPEC.md with ACs (AC1→AC2→ACN)
-- Tests: Playwright v1.56+ E2E, test@megabyte.space
+- Tests: Playwright v1.59+ E2E, test@megabyte.space
 - Parallelization: {workstreams} via worktree isolation
 - Models: opus-4-6 (arch) | sonnet-4-6 (build) | haiku-4-5-20251001 (content)
 
 ## Permanent Constraints
-- Tech: CF Workers+Hono v4.12+, Angular 20+, Drizzle v1+D1, Clerk, Stripe
+- Tech: CF Workers+Hono v4.12+, Angular 21+, Drizzle v1+D1, Clerk, Stripe
 - Brand: #060610 bg | #00E5FF cyan | Sora/Space Grotesk | dark-first
 - Quality: Zero stubs/TODOs | Zero errors | deployed+purged before done | OWASP 2025
 
