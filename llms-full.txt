@@ -2,7 +2,7 @@
 
 > 14 top-level skills, 94 reference docs, 18 agents, and 12 templates for Emdash’s product-building workflow.
 
-> This is the full unabridged version. For the summary, see [llms.txt](llms.txt).
+> For the full unabridged version, see [llms-full.txt](llms-full.txt).
 
 ## Supporting Docs
 
