@@ -121,6 +121,9 @@ jobs:
       - name: Generate .windsurfrules
         run: cp .cursorrules .windsurfrules
 
+      - name: Generate .clinerules
+        run: cp .cursorrules .clinerules
+
       - name: Generate GEMINI.md
         run: sed 's/for Cursor/for Gemini/' .cursorrules > GEMINI.md
 
@@ -141,6 +144,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add AGENTS.md .cursorrules .windsurfrules GEMINI.md .github/copilot-instructions.md llms-full.txt
+          git add AGENTS.md .cursorrules .windsurfrules .clinerules GEMINI.md .github/copilot-instructions.md llms-full.txt
           git diff --cached --quiet && echo "No changes" || git commit -m "chore: sync cross-platform rule files [skip ci]"
           git push || true
