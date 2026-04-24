@@ -306,6 +306,57 @@ jobs:
           sed 's/for Cursor/for Bolt/' .cursorrules > .bolt/promptfile
           # Cursor BugBot
           sed 's/for Cursor/for Cursor BugBot/' .cursorrules > .cursor/BUGBOT.md
+          # Devin
+          mkdir -p .devin/skills/emdash
+          cat > .devin/skills/emdash/SKILL.md << 'DEVINEOF'
+          ---
+          name: "emdash-skills"
+          description: "14-category product-building OS. CF Workers+Hono, Angular, D1, Drizzle, Clerk, Stripe. 94 reference docs, 18 agents."
+          ---
+          # Emdash Skills for Devin
+
+          Load CONVENTIONS.md for stack defaults. Load _router.md for skill routing.
+          14 categories (01-14), 94 reference docs, 18 agents.
+
+          ## Stack
+          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+
+          ## Rules
+          - TypeScript strict, never `any`, prefer `interface` over `type`
+          - Hono inline handlers for RPC type inference
+          - Zod validation on all inputs
+          - TDD: failing test first, Playwright 6 breakpoints
+          - Dark-first design, #060610 bg, #00E5FF accent
+          - Deploy to CF Workers, purge CDN after every deploy
+
+          See CONVENTIONS.md for full patterns.
+          DEVINEOF
+          # Goose
+          mkdir -p .goose/recipes
+          cat > .goose/recipes/emdash-skills.yaml << 'GOOSEEOF'
+          name: emdash-skills
+          description: "14-category product-building OS. CF Workers+Hono, Angular, D1, Drizzle, Clerk, Stripe."
+          version: "2.0.0"
+
+          instructions: |
+            Load CONVENTIONS.md for stack defaults. Load _router.md for skill routing.
+            14 categories (01-14), 94 reference docs, 18 agents.
+
+            Stack: CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+
+            Rules:
+            - TypeScript strict, never `any`, prefer `interface` over `type`
+            - Hono inline handlers for RPC type inference
+            - Zod validation on all inputs
+            - TDD: failing test first, Playwright 6 breakpoints
+            - Dark-first design, #060610 bg, #00E5FF accent
+            - Deploy to CF Workers, purge CDN after every deploy
+
+          context_files:
+            - CONVENTIONS.md
+            - _router.md
+            - SKILL_PROFILES.md
+          GOOSEEOF
 
       - name: Generate llms-full.txt
         run: |
@@ -338,7 +389,7 @@ jobs:
             .aider-conventions.md AMP.md CODEX.md .agents/ .trae/ .tabnine/ \
             .kilo/ .roo/ .continue/ .cursor/ .windsurf/ .openhands/ \
             .aiassistant/ .kiro/ .void/ .bolt/ QODO.MD \
-            .claude-plugin/ replit.md
+            .claude-plugin/ replit.md .devin/ .goose/
           git diff --cached --quiet && echo "No changes" || git commit -m "chore: sync cross-platform rule files [skip ci]"
           git push || true
 
@@ -408,10 +459,9 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v6
-      - name: Publish via gh skill (if available)
+      - name: Publish via gh skill
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh extension install github/gh-skill 2>/dev/null || true
-          gh skill publish 2>/dev/null || echo "gh skill publish not available yet"
-        continue-on-error: true
+          gh skill publish

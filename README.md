@@ -7,9 +7,9 @@
 </div>
 
 <div align="center">
+  <a href="https://github.com/megabytespace/claude-skills"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/megabytespace/claude-skills?logo=github&logoColor=white&style=for-the-badge&color=060610" /></a>
   <a href="https://megabyte.space"><img alt="Homepage" src="https://img.shields.io/website?down_color=%23FF4136&down_message=Down&label=Homepage&logo=home-assistant&logoColor=white&up_color=%232ECC40&up_message=Up&url=https%3A%2F%2Fmegabyte.space&style=for-the-badge" /></a>
   <a href="https://github.com/megabytespace/claude-skills/blob/master/LICENSE"><img alt="License: Rutgers" src="https://img.shields.io/badge/License-Rutgers-7C3AED?logo=open-source-initiative&logoColor=white&style=for-the-badge" /></a>
-  <a href="https://github.com/megabytespace/claude-skills"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/megabytespace/claude-skills?logo=github&logoColor=white&style=for-the-badge&color=060610" /></a>
   <a href="https://github.com/megabytespace/claude-skills/issues"><img alt="Issues" src="https://img.shields.io/github/issues/megabytespace/claude-skills?logo=github&logoColor=white&style=for-the-badge&color=00E5FF" /></a>
   <a href="https://www.npmjs.com/package/@megabytespace/claude-skills"><img alt="npm" src="https://img.shields.io/npm/v/@megabytespace/claude-skills?logo=npm&logoColor=white&style=for-the-badge&color=50AAE3" /></a>
   <a href="https://jsr.io/@megabytespace/claude-skills"><img alt="JSR" src="https://img.shields.io/jsr/v/@megabytespace/claude-skills?logo=jsr&logoColor=white&style=for-the-badge&color=7C3AED" /></a>
@@ -32,7 +32,7 @@
 | **API / backend** | 01-OS → 05-Arch → 06-Build → 08-Deploy → 13-Observability | `npm i @megabytespace/claude-skills` |
 | **Marketing site** | 01-OS → 09-Brand → 10-Design → 11-Motion → 12-Media | `npm i @megabytespace/claude-skills` |
 | **Features on existing project** | 01-OS → 06-Build → 07-QA (skill router auto-selects from context) | `claude plugin install megabytespace/claude-skills` |
-| **Just rules for your AI tool** | No skills — use a platform variant file directly | See [30 variants](#cross-platform-support-30-variants) below |
+| **Just rules for your AI tool** | No skills — use a platform variant file directly | See [32 variants](#cross-platform-support-32-variants) below |
 
 ## How It Works
 
@@ -80,10 +80,13 @@
 ## Install
 
 ```bash
-# Claude Code plugin (recommended)
+# GitHub Skills (recommended)
+gh skill install megabytespace/claude-skills
+
+# Claude Code plugin
 claude plugin install megabytespace/claude-skills
 
-# npm (includes all 30 platform variants)
+# npm (includes all 30+ platform variants)
 npm i @megabytespace/claude-skills
 
 # JSR
@@ -96,9 +99,9 @@ git clone https://github.com/megabytespace/claude-skills ~/.codex/skills
 git clone https://github.com/megabytespace/claude-skills ~/.agentskills
 ```
 
-## Cross-Platform Support (30 variants)
+## Cross-Platform Support (32 variants)
 
-Auto-generated on every push to master. Modern formats use native frontmatter for each tool.
+Auto-generated on every push to master. Each format uses native frontmatter for its tool.
 
 | Format | Path | Notes |
 |--------|------|-------|
@@ -118,6 +121,8 @@ Auto-generated on every push to master. Modern formats use native frontmatter fo
 | **Gemini CLI** | `GEMINI.md` | Plain markdown |
 | **Amp** | `AMP.md` | Plain markdown |
 | **Replit** | `replit.md` | Plain markdown |
+| **Devin** | `.devin/skills/emdash/SKILL.md` | SKILL.md with frontmatter |
+| **Goose** | `.goose/recipes/emdash-skills.yaml` | YAML recipe format |
 | **AGENTS.md** | `AGENTS.md` | Devin, Jules, Copilot, OpenHands |
 | **Amazon Q** | `.amazonq/rules/` | Directory format |
 | **JetBrains Junie** | `.junie/guidelines.md` | Plain markdown |
