@@ -18,3 +18,5 @@ Load skills on demand via the skill router (`_router.md`). Each category has a `
 This repo is compatible with the agentskills.io open standard. Skills work in Claude Code, OpenAI Codex, Cursor, GitHub Copilot, VS Code, Gemini CLI, and 30+ other tools.
 
 Install: `claude plugin install megabytespace/claude-skills`
+Codex: Clone into `~/.codex/skills/` or `.agents/skills/`
+npm: `npm i @megabytespace/claude-skills`
