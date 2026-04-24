@@ -36,9 +36,13 @@ for path in sorted(root.rglob("*.md")):
     if "templates" in path.parts:
         continue
 
-    for match in re.finditer(r"\[[^\]]+\]\(([^)#]+)(?:#[^)]+)?\)", text):
+    # Strip fenced code blocks and inline code before checking links
+    stripped = re.sub(r"```[^`]*```", "", text, flags=re.DOTALL)
+    stripped = re.sub(r"`[^`]+`", "", stripped)
+
+    for match in re.finditer(r"\[[^\]]+\]\(([^)#]+)(?:#[^)]+)?\)", stripped):
         ref = match.group(1)
-        if ref.startswith(("http://", "https://", "/")):
+        if ref.startswith(("http://", "https://", "/", "mailto:")):
             continue
         target = (path.parent / ref).resolve()
         try:
