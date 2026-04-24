@@ -277,7 +277,7 @@ JSON-LD boosts LLM accuracy 16%→54% (AI search visibility for ChatGPT/Perplexi
 
 ## Quality Bar
 
-E2E 0 failures | WCAG 2.2 AA | Lighthouse a11y ≥95 perf ≥75 | CSP (Trusted Types cross-browser since Feb 2026 — add `require-trusted-types-for 'script'`) | Flesch ≥60 | Yoast GREEN | Images <200KB WebP | No placeholders | No dead forms | ADA Title II: April 24, 2026 (state/local gov 50K+ pop — EFFECTIVE NOW) / April 2028 (small/special districts). WCAG 2.1 AA mandatory | Chrome LNA (v142+): public sites accessing local network need `Access-Control-Allow-Private-Network` header
+E2E 0 failures | WCAG 2.2 AA | Lighthouse a11y ≥95 perf ≥75 | CSP (Trusted Types cross-browser since Feb 2026 — add `require-trusted-types-for 'script'`) | Flesch ≥60 | Yoast GREEN | Images <200KB WebP | No placeholders | No dead forms | ADA Title II: April 24, 2026 (state/local gov 50K+ pop — EFFECTIVE NOW) / April 2028 (small/special districts). WCAG 2.2 AA mandatory | Chrome LNA (v142+): public sites accessing local network need `Access-Control-Allow-Private-Network` header
 
 ## Bun 1.3 Native Clients
 
