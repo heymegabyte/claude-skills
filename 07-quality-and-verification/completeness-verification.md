@@ -10,21 +10,23 @@ related: visual-inspection-loop.md (3-round per-page), ui-completeness-sweep.md 
 
 **A project is NOT complete until vision AI examines every page and finds nothing to improve.**
 
-## The Loop (runs until convergence)
+## The Loop (max 3 iterations, $5 budget cap)
 ```
 REPEAT {
   1. Enumerate all routes
   2. For each route:
-     a. Screenshot at 6 breakpoints (375, 390, 768, 1024, 1280, 1920)
-     b. Screenshot interaction states (hover, focus, error, loading, empty, success)
-     c. Send to GPT-4o vision (fallback: Claude vision)
-     d. Parse recommendations -> actionable items
+     a. Playwright MCP a11y tree snapshot (FREE — preferred for functional/a11y)
+     b. axe-core scan (FREE — catches 57% of WCAG issues)
+     c. Screenshot at 2 key breakpoints (375, 1280) — detail:low (85 tokens)
+     d. GPT-4o vision ONLY for aesthetic issues a11y tree can't catch
+     e. Parse recommendations -> actionable items
   3. Implement ALL recommendations
-  4. Re-screenshot changed pages
-  5. Re-analyze
-  6. New issues -> CONTINUE. Zero issues -> mark VERIFIED.
-} UNTIL all routes VERIFIED
+  4. Re-check changed pages (a11y tree first, vision only if aesthetic)
+  5. New issues -> CONTINUE. Zero issues -> mark VERIFIED.
+} UNTIL all routes VERIFIED OR 3 iterations complete OR $5 spent
 ```
+
+**Cost discipline:** a11y tree is FREE and catches layout/functional/a11y issues. GPT-4o vision ONLY for: color harmony, visual hierarchy, brand consistency, "does it look good?" — things pixels reveal that DOM can't. Never send 6 breakpoints to GPT-4o when 2 (mobile+desktop) suffice for aesthetic checks.
 
 ## Vision Analysis Prompt
 Categories: LAYOUT, TYPOGRAPHY, COLOR, CONTENT, INTERACTION, ACCESSIBILITY, POLISH, COMPLETENESS
@@ -33,9 +35,11 @@ Production ready: `{"status": "verified", "issues": []}`
 Needs work: `{"status": "needs_fixes", "issues": [...]}`
 
 ## Provider Priority
-1. OpenAI GPT-4o (primary for visual inspection)
-2. Anthropic Claude (fallback when GPT-4o fails/rate-limited)
-NEVER use Anthropic as primary for vision.
+1. Playwright MCP a11y tree (FREE — functional, a11y, layout structure)
+2. axe-core via Playwright (FREE — WCAG violations)
+3. OpenAI GPT-4o detail:low (aesthetic-only, $0.01/shot — 2 breakpoints max)
+4. Anthropic Claude vision (fallback when GPT-4o fails/rate-limited)
+Vision is the LAST resort, not the first. A11y tree catches 80% of issues at zero cost.
 
 ## Breakpoints
 ```typescript
@@ -76,8 +80,10 @@ Serves actual user need, clear conversion path (CTA visible, value above fold), 
 
 **Failure protocol:** Fix -> re-deploy -> re-run failed pass + all subsequent passes. Never skip.
 
-## Cost
-~120 screenshots/iteration x $0.02 = ~$2.40/iteration. Max 10 iterations = $24 total.
+## Cost (***HARD CAP $5***)
+A11y tree + axe-core: FREE. GPT-4o vision (2 breakpoints × detail:low): ~$0.02/route/iteration.
+Max 3 iterations. 10 routes × 2bp × $0.02 × 3 = ~$1.20. Budget ceiling: $5 absolute max.
+Previous uncapped approach ($24/run) burned $100 in 9 hours — NEVER again.
 
 ## Trigger Conditions
 User says "verify"/"check everything"/"is it done?", after deploy, after design changes affecting multiple pages.

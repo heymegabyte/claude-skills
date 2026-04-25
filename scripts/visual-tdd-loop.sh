@@ -6,7 +6,7 @@ set -euo pipefail
 source "$HOME/.claude/hooks/style.sh" 2>/dev/null || true
 
 URL="${1:?Usage: visual-tdd-loop.sh <URL> [max_iterations]}"
-MAX_ITER="${2:-5}"
+MAX_ITER="${2:-2}"
 SCREENSHOT_DIR=".playwright-screenshots"
 ENV_LOCAL="/Users/apple/emdash-projects/worktrees/rare-chefs-film-8op/.env.local"
 
@@ -18,12 +18,8 @@ fi
 mkdir -p "$SCREENSHOT_DIR"
 
 BREAKPOINTS=(
-  "375:667:iPhone-SE"
-  "390:844:iPhone-14"
-  "768:1024:iPad"
-  "1024:768:iPad-Landscape"
-  "1280:720:Laptop"
-  "1920:1080:Desktop"
+  "375:667:Mobile"
+  "1280:720:Desktop"
 )
 
 screenshotAllBreakpoints() {
@@ -52,7 +48,7 @@ analyzeScreenshot() {
         \"role\": \"user\",
         \"content\": [
           {\"type\": \"text\", \"text\": \"Senior UI/UX engineer visual QA. Report ONLY actual problems. Check: layout breaks, text overflow, broken images, misalignment, poor contrast, missing content, horizontal scroll, touch targets <44px. Format: JSON array [{severity,element,description,fix}]. Return [] if clean.\"},
-          {\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/png;base64,$base64_image\"}}
+          {\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/png;base64,$base64_image\", \"detail\": \"low\"}}
         ]
       }]
     }" | python3 -c "import sys,json; r=json.load(sys.stdin); print(r['choices'][0]['message']['content'])" 2>/dev/null

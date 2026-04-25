@@ -95,24 +95,45 @@ Every image in assets/ MUST appear on the site. Every fact must come from resear
 ### Conditional Features
 {{#if business_email}}
 - Contact form POSTing to https://projectsites.dev/api/contact-form/{{slug}}
-- Fields: name, email, phone, message | Success/error animations
+- Fields: name (required), email (required, validated), phone (optional), service dropdown (from _domain_features.json services), message (required, 500 char max)
+- Turnstile invisible widget (data-appearance="interaction-only") on submit
+- Success: green checkmark animation + "We'll respond within 24 hours" + fade to thank-you state
+- Error: inline field validation (red border + helper text), network error toast with retry
+- Zod schema validation client-side before submit
+- Accessible: aria-describedby on all fields, focus ring, label association, error announcements via aria-live
 {{else}}
-- "Get in Touch" section with phone, address, social links (no form)
+- "Get in Touch" section with phone (tel: link), address (Maps link), social links (verified only), full NAP
+- Click-to-call button styled as primary CTA on mobile
 {{/if}}
 
 {{#if lat_lng}}
-- Google Maps embed: <iframe src="https://www.google.com/maps/embed/v1/place?key={{GOOGLE_MAPS_KEY}}&q={{lat}},{{lng}}&maptype=roadmap" ...>
+- Google Maps embed: <iframe src="https://www.google.com/maps/embed/v1/place?key={{GOOGLE_MAPS_KEY}}&q={{lat}},{{lng}}&maptype=roadmap" width="100%" height="400" style="border:0;border-radius:12px" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+- "Get Directions" button → https://www.google.com/maps/dir/?api=1&destination={{encoded_address}}
+- Address card with opening hours (from _places.json) beside map
+- Dark map style via &style=feature:all|element:geometry|color:0x1a1a2e (brand-matched)
+- Mobile: map collapses to 250px with "Expand Map" tap target
 {{/if}}
 
 {{#if google_rating}}
-- "{{rating}}/5 stars from {{review_count}} reviews" with star SVGs
-- JSON-LD aggregateRating
-- 3 real review quotes
+- Hero trust badge: "{{rating}}/5 stars from {{review_count}} reviews" with animated star SVGs (fill animation on scroll)
+- Dedicated testimonials section: 3 real review quotes in glassmorphism cards with reviewer initial avatar, star rating, relative date
+- JSON-LD aggregateRating on LocalBusiness schema
+- Review carousel on mobile (swipe gesture), grid on desktop
 {{/if}}
 
 {{#if videos}}
-- Video section with YouTube embeds or Pexels player
+- Video hero section: YouTube embed with custom play button overlay (brand-colored), lazy iframe load on click (performance)
+- Video gallery: thumbnail grid, lightbox playback, category tabs if >3 videos
+- Pexels B-roll: muted autoplay background loops (max 2MB each, poster frame)
 {{/if}}
+
+### Multimedia Enhancement (***ALWAYS***)
+- Hero: parallax background with gradient overlay (brand primary → transparent), floating geometric SVG accents
+- Gallery: masonry grid with lightbox (Dialog component), image count badge, swipe on mobile
+- Before/after slider (if applicable): CSS clip-path with drag handle for service showcases
+- Testimonial cards: quote marks SVG, reviewer photo/initial, animated border glow on hover
+- Stats counter: animated number counting (IntersectionObserver triggered), with unit labels
+- Trust badges section: payment icons, certifications, "Serving {{city}} since {{year}}" with verified year
 
 ### Domain-Specific Features
 Read _domain_features.json and implement ALL listed features for this business category.

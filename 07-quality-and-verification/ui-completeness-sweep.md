@@ -100,13 +100,14 @@ Rate completeness 0-10. List every finding with exact location.
 
 ### Phase 4: Fix Loop
 ```
-findings = sweep()
-while findings.length > 0 AND round < 5:
+findings = sweep()  // a11y tree + axe-core first (FREE), GPT-4o detail:low 2bp only for aesthetics
+while findings.length > 0 AND round < 3:
   for finding in findings:
     implement_fix(finding)
   deploy()
-  findings = sweep()  // re-run the entire sweep
+  findings = sweep()  // re-sweep: a11y tree first, vision only if aesthetic issues remain
   round++
+// $5 vision budget cap. a11y tree catches 80% at zero cost.
 ```
 
 ## What Specifically to Catch

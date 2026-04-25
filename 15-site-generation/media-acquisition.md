@@ -35,7 +35,7 @@ Priority: 1. User upload 2. Scrape from existing site header/footer/og:image 3. 
 
 **Logo font extraction:** When logo found, use GPT-4o vision to identify the font → reuse in site design. Logo graphic elements and colors influence ENTIRE site design.
 
-**AI logo generation (if none found):** Ideogram v3 preferred for text-heavy logos. Generate 4-6 variants (2 lockup, 2 icon, 1 wordmark, 1 creative). A/B via GPT-4o (rate 1-10). Best <7: regenerate (max 3 rounds). Style: clean, modern, text-based with geometric accent. Brand colors + bold display font.
+**AI logo generation (if none found):** Ideogram v3 preferred for text-heavy logos. Generate exactly 3 variants: A=lockup, B=icon, C=wordmark. Single GPT-4o detail:low call rates all 3 (1-10), picks winner. Winner <7: regenerate losing slot only (max 2 rounds). Cost: ~$0.05 total. Style: clean, modern, text-based with geometric accent. Brand colors + bold display font.
 
 ## Favicon Set (from logo)
 

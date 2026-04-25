@@ -57,9 +57,10 @@ Orchestrator scans this inventory BEFORE planning. For every task: "Which combin
    c. Empty state check: render pages with no data — what does user see?
    d. Loading state check: throttle network — is there a skeleton or blank?
    e. Error state check: block APIs — does UI handle gracefully or crash?
-   f. Screenshot ALL pages at 6 breakpoints → GPT-4o vision analysis → rate 0-10
-   g. Below 8/10 = NOT DONE. Fix all findings.
-   h. Re-sweep. Loop until GPT-4o rates ALL pages ≥8/10 AND zero findings.
+   f. Playwright a11y tree snapshot ALL pages (FREE) → axe-core scan (FREE) → fix a11y/functional issues
+   g. Screenshot 2 key breakpoints (375+1280) → GPT-4o detail:low for aesthetic-only issues → rate 0-10
+   h. Below 8/10 = NOT DONE. Fix all findings. Max 3 rounds, $5 vision budget cap.
+   i. Re-sweep. Loop until ALL pages ≥8/10 AND zero findings OR budget exhausted.
    i. Log sweep results to ~/.claude/audit/sweep-results.jsonl (Stop hook checks this)
 5. ITERATE — compare vs competitors, fix gaps, re-deploy, continue until exceeds
 6. DOCUMENT — update CLAUDE.md, skills, memories, descriptive commits

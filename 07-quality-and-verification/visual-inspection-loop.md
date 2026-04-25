@@ -14,20 +14,24 @@ temp:0|json_object format|evidence field in every claim (anti-hallucination)|det
 ## Dual Strategy
 AI vision: layout, brand, hierarchy, aesthetics (~57% a11y). axe-core+Playwright a11y tree: ARIA, screen reader, focus (43%). Never vision alone for WCAG.
 
-## Loop (3-round max)
+## Loop (3-round max, $5 budget cap)
 ```
 1. Deploy to production
-2. Take Playwright screenshots at all 6 breakpoints
-3. Send to GPT-4o (scripts/gpt4o-vision-analyze.sh) — structured JSON response
-4. Parse issues, fix them, re-deploy
-5. Re-screenshot, re-analyze (round 2)
-6. If still issues → fix → final round (round 3)
-7. After round 3: report remaining issues but don't block deployment
+2. Playwright a11y tree snapshot ALL pages (FREE — catches layout/functional/a11y)
+3. axe-core scan ALL pages (FREE — catches 57% WCAG issues)
+4. Fix a11y/functional issues from steps 2-3
+5. Screenshot at 2 key breakpoints (375+1280) → GPT-4o detail:low for aesthetic-only
+6. Parse aesthetic issues, fix them, re-deploy
+7. Re-check (a11y tree first, vision only if aesthetic issues remain) — round 2
+8. If still issues → fix → final round (round 3)
+9. After round 3: report remaining issues but don't block deployment
 ```
+**Cost discipline:** a11y tree is FREE and catches 80% of issues. GPT-4o vision ONLY for: color harmony, visual hierarchy, brand consistency, "does it look good?" — things DOM can't reveal. 2 breakpoints × detail:low = ~$0.02/page/round. Budget cap $5 total.
 
 ## Screenshot Capture Template
 ```typescript
-const BREAKPOINTS = [
+// Full 6bp for Playwright a11y tree (FREE), 2bp for GPT-4o vision (PAID)
+const ALL_BREAKPOINTS = [
   { name: 'iPhone-SE', width: 375, height: 667 },
   { name: 'iPhone-14', width: 390, height: 844 },
   { name: 'iPad', width: 768, height: 1024 },
@@ -35,8 +39,12 @@ const BREAKPOINTS = [
   { name: 'Laptop', width: 1280, height: 720 },
   { name: 'Desktop', width: 1920, height: 1080 },
 ];
+const VISION_BREAKPOINTS = [
+  { name: 'Mobile', width: 375, height: 667 },
+  { name: 'Desktop', width: 1280, height: 720 },
+];
 
-// Capture ALL pages at ALL breakpoints
+// a11y tree at ALL breakpoints (FREE), screenshots at 2 only (PAID)
 async function captureAllScreenshots(page: Page, pages: string[], outputDir: string) {
   for (const route of pages) {
     await page.goto(`${PROD_URL}${route}`);
@@ -145,7 +153,7 @@ async function aiVisualCritique(screenshotPath: string): Promise<CritiqueResult>
         role: 'user',
         content: [
           { type: 'text', text: VISUAL_CRITIQUE_PROMPT },
-          { type: 'image_url', image_url: { url: `data:image/png;base64,${imageData}` } },
+          { type: 'image_url', image_url: { url: `data:image/png;base64,${imageData}`, detail: 'low' } },
         ],
       }],
       response_format: { type: 'json_object' },

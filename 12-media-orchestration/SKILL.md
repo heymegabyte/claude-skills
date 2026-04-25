@@ -41,7 +41,7 @@ GPT Image 1.5 preferred (best quality). GPT Image 1 for speed. GPT Image 1-mini 
 ## Logo (NON-NEGOTIABLE)
 **Discovery:** Logo.dev, Brandfetch, scrape header, Google Images, favicon, social. High quality: use. Low: AI-enhance. Favicon only: upscale.
 
-**Generation (if none):** 4-6 Ideogram v3 variants (2 lockup, 2 icon, 1 wordmark, 1 creative). A/B via GPT-4o (rate 1-10). Best <7: regenerate (max 3 rounds).
+**Generation (if none):** 3 Ideogram v3 variants (A=lockup, B=icon, C=wordmark). Single GPT-4o call rates all 3 (1-10). Winner <7: regenerate losing slot only (max 2 rounds). Cost: ~$0.05 total (3 Ideogram + 1 GPT-4o detail:low).
 
 **Assets:** favicon.ico (16+32+48), 16/32/180/192/512 PNGs, logo-header, logo-mark, og-image 1200x630.
 
