@@ -14,7 +14,7 @@ temp:0|json_object format|evidence field in every claim (anti-hallucination)|det
 ## Dual Strategy
 AI vision: layout, brand, hierarchy, aesthetics (~57% a11y). axe-core+Playwright a11y tree: ARIA, screen reader, focus (43%). Never vision alone for WCAG.
 
-## Loop (3-round max, $5 budget cap)
+## Loop (3-round max, ***$1 HARD CAP***)
 ```
 1. Deploy to production
 2. Playwright a11y tree snapshot ALL pages (FREE — catches layout/functional/a11y)
@@ -26,7 +26,8 @@ AI vision: layout, brand, hierarchy, aesthetics (~57% a11y). axe-core+Playwright
 8. If still issues → fix → final round (round 3)
 9. After round 3: report remaining issues but don't block deployment
 ```
-**Cost discipline:** a11y tree is FREE and catches 80% of issues. GPT-4o vision ONLY for: color harmony, visual hierarchy, brand consistency, "does it look good?" — things DOM can't reveal. 2 breakpoints × detail:low = ~$0.02/page/round. Budget cap $5 total.
+**Cost discipline:** a11y tree is FREE and catches 80% of issues. GPT-4o vision ONLY for: color harmony, visual hierarchy, brand consistency, "does it look good?" — things DOM can't reveal. 2 breakpoints × detail:low = ~$0.02/page/round. ***$1 HARD CAP per prompt.***
+**Homepage/ATF priority:** spend vision budget on homepage above-the-fold FIRST (most important real estate). Other pages get a11y tree only unless homepage passes AND budget remains. Most local business sites: ~$0.10-0.20 total vision cost.
 
 ## Screenshot Capture Template
 ```typescript

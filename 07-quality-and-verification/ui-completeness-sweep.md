@@ -107,7 +107,7 @@ while findings.length > 0 AND round < 3:
   deploy()
   findings = sweep()  // re-sweep: a11y tree first, vision only if aesthetic issues remain
   round++
-// $5 vision budget cap. a11y tree catches 80% at zero cost.
+// $1 vision budget cap. Homepage/ATF gets vision priority. a11y tree catches 80% at zero cost.
 ```
 
 ## What Specifically to Catch

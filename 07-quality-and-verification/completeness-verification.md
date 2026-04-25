@@ -10,7 +10,7 @@ related: visual-inspection-loop.md (3-round per-page), ui-completeness-sweep.md 
 
 **A project is NOT complete until vision AI examines every page and finds nothing to improve.**
 
-## The Loop (max 3 iterations, $5 budget cap)
+## The Loop (max 3 iterations, ***$1 HARD CAP***)
 ```
 REPEAT {
   1. Enumerate all routes
@@ -23,7 +23,7 @@ REPEAT {
   3. Implement ALL recommendations
   4. Re-check changed pages (a11y tree first, vision only if aesthetic)
   5. New issues -> CONTINUE. Zero issues -> mark VERIFIED.
-} UNTIL all routes VERIFIED OR 3 iterations complete OR $5 spent
+} UNTIL all routes VERIFIED OR 3 iterations complete OR $1 spent
 ```
 
 **Cost discipline:** a11y tree is FREE and catches layout/functional/a11y issues. GPT-4o vision ONLY for: color harmony, visual hierarchy, brand consistency, "does it look good?" — things pixels reveal that DOM can't. Never send 6 breakpoints to GPT-4o when 2 (mobile+desktop) suffice for aesthetic checks.
@@ -80,9 +80,10 @@ Serves actual user need, clear conversion path (CTA visible, value above fold), 
 
 **Failure protocol:** Fix -> re-deploy -> re-run failed pass + all subsequent passes. Never skip.
 
-## Cost (***HARD CAP $5***)
-A11y tree + axe-core: FREE. GPT-4o vision (2 breakpoints × detail:low): ~$0.02/route/iteration.
-Max 3 iterations. 10 routes × 2bp × $0.02 × 3 = ~$1.20. Budget ceiling: $5 absolute max.
+## Cost (***HARD CAP $1***)
+A11y tree + axe-core: FREE — use for ALL functional/a11y/layout checks. GPT-4o vision (2bp × detail:low): ~$0.02/page.
+**Homepage/ATF priority:** spend vision budget on homepage above-the-fold FIRST. Only vision-check other pages if homepage passes AND budget remains.
+Budget math: homepage 2bp × 3 rounds = ~$0.06. Remaining ~$0.94 for other critical pages. Most sites: 4-6 pages × 2bp × 1 round = ~$0.12 total.
 Previous uncapped approach ($24/run) burned $100 in 9 hours — NEVER again.
 
 ## Trigger Conditions

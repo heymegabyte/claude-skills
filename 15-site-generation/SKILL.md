@@ -97,4 +97,6 @@ R2 credentials: CF_API_TOKEN, CF_ACCOUNT_ID, R2_BUCKET_NAME, SITE_SLUG, SITE_VER
 
 ## Credit Discipline (***NON-NEGOTIABLE***)
 
-Never waste API credits on speculative builds. If error: reduce to simplest reproducible state first. Fix issues as separate minimal tests. Only trigger full builds when pipeline proven working. Each Claude Code prompt ~$0.50-2.00. Each full build ~$5-15. Treat credits as scarce.
+Never waste API credits on speculative builds. If error: reduce to simplest reproducible state first. Fix issues as separate minimal tests. Only trigger full builds when pipeline proven working. Each Claude Code prompt ~$0.50-2.00. Each full build ~$3-8. Treat credits as scarce.
+
+**GPT-4o vision budget: ***$1 HARD CAP per local business site.*** Breakdown: image profiling ~$0.15 (batch 5/call), logo A/B/C selection ~$0.05, inspect.js in-container ~$0.03/round, post-deploy visual QA ~$0.10-0.20. Total ~$0.35-0.45 typical. Homepage/ATF gets vision priority — other pages use FREE a11y tree + axe-core. Never exceed $1 total GPT-4o spend per site build.

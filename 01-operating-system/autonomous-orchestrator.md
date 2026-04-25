@@ -59,7 +59,7 @@ Orchestrator scans this inventory BEFORE planning. For every task: "Which combin
    e. Error state check: block APIs — does UI handle gracefully or crash?
    f. Playwright a11y tree snapshot ALL pages (FREE) → axe-core scan (FREE) → fix a11y/functional issues
    g. Screenshot 2 key breakpoints (375+1280) → GPT-4o detail:low for aesthetic-only issues → rate 0-10
-   h. Below 8/10 = NOT DONE. Fix all findings. Max 3 rounds, $5 vision budget cap.
+   h. Below 8/10 = NOT DONE. Fix all findings. Max 3 rounds, $1 vision budget cap. Homepage/ATF gets vision priority.
    i. Re-sweep. Loop until ALL pages ≥8/10 AND zero findings OR budget exhausted.
    i. Log sweep results to ~/.claude/audit/sweep-results.jsonl (Stop hook checks this)
 5. ITERATE — compare vs competitors, fix gaps, re-deploy, continue until exceeds
