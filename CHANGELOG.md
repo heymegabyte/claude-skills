@@ -1,5 +1,20 @@
 # Skills System Changelog
 
+## 2026-04-24 — v8.0.0 Site Generation Skill
+
+### New Skill: 15-site-generation
+- End-to-end AI website generation pipeline extracted from projectsites.dev
+- 6 submodules: research-pipeline, media-acquisition, build-prompts, quality-gates, domain-features, template-system
+- Supports 15+ business types: local business, SaaS, portfolio, non-profit, government
+- Single Claude Code prompt architecture with pre-digested research context
+- 12+ API media sourcing strategy (Unsplash, Pexels, Pixabay, Foursquare, Yelp, Google CSE, GPT Image, Ideogram, etc.)
+- GPT-4o visual inspection loop with 10-dimension quality scoring
+- Category-specific features: restaurant menus, salon booking, medical compliance, non-profit donations, SaaS pricing
+- Container architecture: CF Workers Containers with pre-baked skills + template + upload script
+- Router updated with site generation task routing and file hints
+- Wired orphan refs: heartbeat-polling→05, pre-digested-builds→06, image-profiling→12
+- Total: 15 categories, 103 reference docs, 18 agents
+
 ## 2026-04-24 — v7.2.1 Cross-Platform Ecosystem
 
 ### Platform Variants (32+ total)

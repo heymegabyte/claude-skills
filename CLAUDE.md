@@ -1,6 +1,6 @@
 # Emdash Skills v7.2
 
-14-category skill system (01-OS→14-Ideas) with 94 reference docs, 18 agents, 32 platform variants. Used by Claude Code, Cursor, Codex, OpenHands, Windsurf, Goose, Devin, and others.
+15-category skill system (01-OS→15-SiteGen) with 103 reference docs, 18 agents, 32 platform variants. Used by Claude Code, Cursor, Codex, OpenHands, Windsurf, Goose, Devin, and others.
 
 ## Loading
 `01-operating-system` loads EVERY prompt. Route via `_router.md` Category Map + Task Routing + File Hints. Load smallest useful subset — never preload all. Deterministic order: 01→02→...→14 (prompt cache optimization, 5min TTL).
