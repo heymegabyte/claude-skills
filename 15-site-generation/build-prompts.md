@@ -67,7 +67,15 @@ Parse _scraped_content.json for all original URL paths. Every original URL must 
 - Same path → actual page (preferred): `/about-us` → About page at `/about-us`
 - Different path → 301 redirect: if original `/our-team` merges into `/about`, add redirect
 - Blog posts: preserve exact slug `/blog/2024/summer-event` → same route
-- Generate `_redirects` file (Cloudflare Pages format) or server-side redirect map
+- Generate `public/_redirects` file in Cloudflare Pages format:
+  ```
+  # Cloudflare Pages _redirects format: FROM TO STATUS
+  /old-about-us /about 301
+  /our-team /about#team 301
+  /news/2023/post-title /blog/post-title 301
+  /services/old-service /services#old-service 301
+  ```
+  One redirect per line. `FROM` is the original path, `TO` is the new path, `STATUS` is 301 (permanent). For SPAs with client-side routing, also add a catch-all `/* /index.html 200` as the LAST line (Cloudflare Pages SPA fallback). Redirects are evaluated top-to-bottom, first match wins.
 - Validate: every URL from original sitemap.xml returns 200 or 301 — never 404
 - Build gate: compare original sitemap URLs vs new sitemap + redirects, fail if any URL unaccounted
 

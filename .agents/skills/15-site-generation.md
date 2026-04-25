@@ -85,9 +85,9 @@ The container receives ONE prompt that encompasses all build phases. The prompt 
 
 ## Container Architecture
 
-Container is a stateless Claude Code executor on CF Workers Containers. Pre-bakes: `@anthropic-ai/claude-code`, `~/.agentskills` (this repo), `~/template-local` (megabytespace/template.projectsites.dev), `~/template-saas` (megabytespace/saas-starter), `~/upload-to-r2.mjs` (R2 upload script). Runs as non-root `cuser` with `--dangerously-skip-permissions`.
+Container is a stateless Claude Code executor on CF Workers Containers. Pre-bakes: `@anthropic-ai/claude-code`, `~/.agentskills` (this repo), `~/template-local` (megabytespace/template.projectsites.dev), `~/template-saas` (megabytespace/saas-starter), `~/upload-to-r2.mjs` (R2 upload script), `~/inspect.js` (visual QA), `~/validate-urls.js` (URL preservation validator). Runs as non-root `cuser` with `--dangerously-skip-permissions`.
 
-The container entrypoint: HTTP server on 8080. POST /build → select template from `_form_data.json.category` (local→`~/template-local`, saas→`~/template-saas`) → copy to `~/build/` → write context files → write CLAUDE.md → run single `claude -p` → on completion, run `npm run build` → run `node ~/upload-to-r2.mjs` → return status. GET /status → poll job. GET /result → return metadata.
+The container entrypoint: HTTP server on 8080. POST /build → select template from `_form_data.json.category` (local→`~/template-local`, saas→`~/template-saas`) → copy to `~/build/` → write context files → write CLAUDE.md → run single `claude -p` → on completion, run `npm run build` → run `node ~/validate-urls.js` (fail if original URLs unaccounted) → run `node ~/inspect.js dist/index.html` → run `node ~/upload-to-r2.mjs` → return status. GET /status → poll job. GET /result → return metadata.
 
 **R2 upload script** runs inside the container after build. Uses CF REST API (`api.cloudflare.com/client/v4/accounts/{acctId}/r2/buckets/{bucket}/objects/{key}`). Detects Vite projects via dist/ prefix. dist/ files → `sites/{slug}/{version}/`. Source → `sites/{slug}/{version}/_src/`. Writes `_manifest.json`. Credentials passed as env vars.
 
@@ -96,6 +96,8 @@ The container entrypoint: HTTP server on 8080. POST /build → select template f
 API keys passed from Worker → container: ANTHROPIC_API_KEY, OPENAI_API_KEY, UNSPLASH_ACCESS_KEY, PEXELS_API_KEY, PIXABAY_API_KEY, YOUTUBE_API_KEY, LOGODEV_TOKEN, BRANDFETCH_API_KEY, FOURSQUARE_API_KEY, YELP_API_KEY, GOOGLE_PLACES_API_KEY, GOOGLE_CSE_KEY, GOOGLE_CSE_CX, IDEOGRAM_API_KEY, REPLICATE_API_TOKEN, STABILITY_API_KEY, GOOGLE_MAPS_API_KEY, CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, MAPBOX_TOKEN.
 
 R2 credentials: CF_API_TOKEN, CF_ACCOUNT_ID, R2_BUCKET_NAME, SITE_SLUG, SITE_VERSION.
+
+Donation/payment: STRIPE_PAYMENT_LINK_URL (for DonationForm component, nonprofit/church sites).
 
 ## Site Types Supported
 

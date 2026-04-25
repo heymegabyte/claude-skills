@@ -111,6 +111,16 @@ Local business sites need components SaaS templates don't have. These are pre-bu
 
 **RSSFeed:** Not a component — generated as `public/feed.xml` during build. Atom 2.0 format. Includes all blog posts with title, link, published date, summary, author. `<link rel="alternate" type="application/atom+xml">` in index.html `<head>`.
 
+## Blog Routing (React Router)
+
+Template App.tsx includes catch-all blog routes:
+```tsx
+<Route path="/blog" element={<BlogListPage />} />
+<Route path="/blog/:slug" element={<BlogPostPage />} />
+<Route path="/blog/:year/:slug" element={<BlogPostPage />} />
+```
+During build, Claude Code generates page components for each blog post from `_scraped_content.json`. Posts with date-based original URLs (e.g., `/blog/2024/summer-event`) use the `:year/:slug` pattern. Posts without dates use flat `/blog/:slug`. BlogListPage imports all posts as a static array and renders BlogList component with pagination. Each BlogPostPage resolves its post from the slug param.
+
 ## PWA & Print (***EVERY SITE***)
 
 **PWA manifest:** `public/site.webmanifest` with business name, brand colors, icons (192+512). `<link rel="manifest">` in index.html. Favicon set: ico (16+32+48), apple-touch-icon (180), android-chrome (192+512). Meta theme-color matches brand primary.

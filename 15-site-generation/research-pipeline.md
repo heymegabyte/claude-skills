@@ -50,6 +50,8 @@ Priority order for primary color: logo dominant color → header/nav background 
 
 **Color source tracking (***CRITICAL***):** Every color must have `color_source`: extracted_from_logo|extracted_from_website|extracted_from_assets|derived_from_primary|contrast_calculated|generated. NEVER guess colors from business category. The njsk.org burgundy incident: system guessed "warm soup kitchen colors" instead of extracting their actual burgundy brand. `background` is derived by darkening primary by 80-90% lightness in OKLCH. `foreground` is calculated for WCAG AA contrast against background.
 
+**New business fallback (no web presence):** If business has no website, no logo, and no social media: 1. Google Places photos → extract dominant color from storefront/signage images. 2. Google Street View screenshot → extract from building facade, awning, signage. 3. Industry-neutral defaults as LAST RESORT: primary=#2563EB (accessible blue), secondary=#1E293B (slate), accent=#F59E0B (amber). Mark `color_source: "fallback_default"` with confidence 0.40. Flag in `_brand.json.warnings[]`: "No brand assets found — using neutral defaults. Business owner should provide logo/colors." NEVER skip to category-based guessing.
+
 ## Phase 0e: Confidence Scoring
 
 Every data point gets `Conf<T>`: `{ value: T, confidence: number (0-1), sources: Source[] }`. Source types: google_places, llm_inference, user_provided, web_scrape, social_verify. Merge rule: higher confidence wins, corroboration boosts +0.1 (capped at 0.99). UI policy: prominent >=0.85, standard 0.70-0.84, deemphasize 0.50-0.69, hide <0.50.
