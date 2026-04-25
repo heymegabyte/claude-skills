@@ -73,6 +73,26 @@ Every image in assets/ MUST appear on the site. Every fact must come from resear
 - No external image URLs (hotlinking blocked)
 - All images: lazy loading (except hero), width/height attributes, descriptive alt text
 
+### Image Optimization Pipeline (***NON-NEGOTIABLE — skill 12***)
+Every image in assets/ MUST be processed before build:
+1. Generate responsive variants: 320w, 640w, 1280w, 1920w (skip if source narrower)
+2. Convert to WebP (quality 80) + AVIF (quality 70) for each variant
+3. Generate PNG fallback at 1280w for legacy browsers
+4. Generate 20px blur placeholder (base64 WebP) per image
+5. Extract dominant color per image for CSS placeholder
+6. Store all variants alongside originals in assets/
+
+Use `<ResponsiveImage>` component from `src/components/local/ResponsiveImage`:
+```html
+<ResponsiveImage src="assets/hero.jpg" alt="Business exterior" eager />
+```
+Renders `<picture>` with AVIF→WebP→fallback, srcset 320-1920w, blur placeholder.
+
+Hero image: `eager` + `fetchpriority="high"` + preload link in `<head>`.
+All other images: `loading="lazy"` + `decoding="async"`.
+Max single optimized image: 200KB. Total page images: <500KB.
+Original PNG/JPG kept as source, never served to browser.
+
 ### Interactions
 - Every button: hover (scale + glow), active (press), focus (ring)
 - Every link: hover (color change + underline animation)
@@ -135,6 +155,17 @@ Every image in assets/ MUST appear on the site. Every fact must come from resear
 - Testimonial cards: quote marks SVG, reviewer photo/initial, animated border glow on hover
 - Stats counter: animated number counting (IntersectionObserver triggered), with unit labels
 - Trust badges section: payment icons, certifications, "Serving {{city}} since {{year}}" with verified year
+
+### Offline Mode (***EVERY SITE — service worker***)
+Service worker (`public/sw.js`) pre-installed in template. Caches:
+- App shell: index.html, CSS, JS bundles, manifest, fonts
+- Images: cache-first, max 200 items (all gallery/hero/service images)
+- HTML pages: network-first with cache fallback
+- EXCLUDES: analytics scripts (posthog, gtag, gtm)
+
+Registration in main.tsx (production only, skips dev).
+Critical for: rural businesses with poor connectivity, in-store kiosk displays, repeat visitors.
+After site build, verify: disconnect network → refresh → site loads from cache.
 
 ### Local Conversion Components (***ALWAYS FOR LOCAL BUSINESS***)
 - NAPFooter: schema.org microdata, tel:/mailto:/Maps links, hours with today highlighted, social icons

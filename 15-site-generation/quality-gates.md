@@ -92,6 +92,10 @@ Universal rules applied to ALL generated sites:
 
 **Core Web Vitals (***NON-NEGOTIABLE***):** LCP <= 2.5s (hero image preloaded, `fetchpriority="high"`). CLS <= 0.1 (all images have width/height/aspect-ratio). INP <= 200ms (no blocking event handlers). Fonts preconnected + `font-display:swap`. CSS `<link>` in `<head>`, JS deferred.
 
+**Image Optimization (***BUILD-BREAKING***):** Every image in assets/ must have WebP+AVIF variants at 320/640/1280/1920w. No raw PNG/JPG served to browser. `<picture>` with srcset on all `<img>` elements. Blur placeholder (base64) on below-fold images. Hero: eager+preload+fetchpriority=high. Max single image: 200KB optimized. Total page: <500KB images. Verify: no `<img src="*.jpg">` or `<img src="*.png">` in dist/ HTML (must be inside `<picture>` with WebP source).
+
+**Offline Capability:** Service worker registered in production. After build: simulate offline in DevTools → verify site loads from cache. Contact info (phone, address, hours) available offline. Gallery images cached. Analytics gracefully degrade (no errors when offline).
+
 **Analytics Verification:** PostHog snippet present with `persistence:'memory'`. GTM container snippet in head + noscript. Local conversion events wired: `tel:` → phone_click, Maps → direction_click, form → form_submit. Verify all three fire on page load (PostHog, GA4, GTM).
 
 **Structured Data Validation:** JSON-LD LocalBusiness with: @type, name, address (PostalAddress), telephone, geo (GeoCoordinates), openingHoursSpecification, image, sameAs[], aggregateRating (if reviews exist), priceRange, areaServed, hasMenu (restaurants). FAQPage schema on FAQ sections. BreadcrumbList on sub-pages. Validate with Google Rich Results Test.
