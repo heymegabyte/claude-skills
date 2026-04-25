@@ -25,6 +25,7 @@ Read ALL _ prefixed files in this directory for context:
 - _domain_features.json — category-specific requirements
 
 Read ~/.agentskills/15-site-generation/ for full methodology.
+Cross-reference skills: 09 (brand extraction, copy rules), 10 (design system, local business patterns), 11 (animation, prefers-reduced-motion), 12 (media orchestration, image generation), 07 (quality verification, accessibility), 13 (analytics auto-provision, local conversion tracking).
 
 ## Your Mission
 Transform this Vite+React+Tailwind+shadcn/ui project into the most gorgeous website

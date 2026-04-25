@@ -46,7 +46,8 @@ Deploy this skeleton on first prompt. Folder name = domain. All bindings pre-wir
 │   └── health.spec.ts        # Health endpoint test
 ├── wrangler.toml             # CF Workers config with all bindings
 ├── drizzle.config.ts
-├── biome.json
+├── eslint.config.ts          # ESLint flat config + typescript-eslint
+├── .prettierrc               # Prettier formatting config
 ├── package.json
 ├── tsconfig.json
 └── CLAUDE.md                 # Project-specific instructions

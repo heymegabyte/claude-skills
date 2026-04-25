@@ -88,6 +88,18 @@ Universal rules applied to ALL generated sites:
 
 **Safety:** No inappropriate content. Privacy notice on forms. Footer compliance links. rel="noopener noreferrer" on external links. COPPA compliance if child-facing. ProjectSites.dev attribution in FAQ.
 
+**Animation & Motion (skill 11):** `prefers-reduced-motion: reduce` on ALL @keyframes and transitions. View Transitions API with `@supports` gate. `@starting-style` for modal/toast entry. No animation longer than 300ms. Parallax only via `animation-timeline: scroll()` (off main thread).
+
+**Core Web Vitals (***NON-NEGOTIABLE***):** LCP <= 2.5s (hero image preloaded, `fetchpriority="high"`). CLS <= 0.1 (all images have width/height/aspect-ratio). INP <= 200ms (no blocking event handlers). Fonts preconnected + `font-display:swap`. CSS `<link>` in `<head>`, JS deferred.
+
+**Analytics Verification:** PostHog snippet present with `persistence:'memory'`. GTM container snippet in head + noscript. Local conversion events wired: `tel:` → phone_click, Maps → direction_click, form → form_submit. Verify all three fire on page load (PostHog, GA4, GTM).
+
+**Structured Data Validation:** JSON-LD LocalBusiness with: @type, name, address (PostalAddress), telephone, geo (GeoCoordinates), openingHoursSpecification, image, sameAs[], aggregateRating (if reviews exist), priceRange, areaServed, hasMenu (restaurants). FAQPage schema on FAQ sections. BreadcrumbList on sub-pages. Validate with Google Rich Results Test.
+
+**Cross-Browser:** Test in Chrome + Safari (80%+ local business visitors). Safari-specific: `-webkit-` prefixes for backdrop-filter, scroll-snap. No Firefox-only CSS features without fallback.
+
+**Cookie Consent / GDPR:** If site targets EU: cookie banner with accept/reject. PostHog `persistence:'memory'` = no cookies (compliant by default). Google Analytics requires consent mode v2 (`gtag('consent', 'default', {analytics_storage:'denied'})` until accepted).
+
 ## Domain-Specific Quality Rules
 
 **Restaurant:** Menu must have prices. Food photos must look appetizing (well-lit, styled). Hours prominently displayed. Online ordering CTA if platform exists.

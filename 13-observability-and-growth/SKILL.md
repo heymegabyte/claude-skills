@@ -109,5 +109,23 @@ After 1+ day: Sentry errors (auto-fix via Inngest), PostHog bounce (suggest UX),
 ## Custom Events
 donate_click, newsletter_signup, scroll_depth (25/50/75/100), video_play, external_link_click. Scroll: track thresholds once with passive listener.
 
+## Local Business Conversion Events (***NOT SAAS***)
+Local businesses don't have trial-to-paid funnels. Track physical-world intent signals:
+
+| Event | Trigger | Priority |
+|-------|---------|----------|
+| phone_click | `tel:` link clicked | Primary — highest intent |
+| direction_click | Google Maps directions clicked | Primary — visit intent |
+| form_submit | Contact/booking form submitted | Primary |
+| booking_click | External booking CTA (OpenTable, Calendly) | Primary |
+| email_click | `mailto:` link clicked | Secondary |
+| chat_open | Live chat widget opened | Secondary |
+| review_click | "Leave a Review" CTA clicked | Secondary |
+| menu_download | PDF menu/brochure downloaded | Micro |
+| coupon_claim | Special offer clicked | Micro |
+| social_click | Social media profile link clicked | Micro |
+
+Local funnel: `Visit → Engagement (scroll 50%+) → Micro (menu/gallery) → Macro (call/directions/form/booking)`. Typical: 3-8% macro conversion. Alert if rate drops >20% WoW. Auto-inject tracking on all `tel:` and Maps links in generated sites (see skill 15 build-prompts.md).
+
 ## Key Discovery
 1. Project .env.local 2. Shared pool 3. Coolify env 4. ~/.config/emdash/ 5. Prompt once, store permanently.

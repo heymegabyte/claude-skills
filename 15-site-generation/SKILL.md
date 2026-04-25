@@ -66,9 +66,11 @@ The container receives ONE prompt that encompasses all build phases. The prompt 
 
 **SEO:** JSON-LD LocalBusiness with ALL structured data. OG tags with hero image. Twitter cards. Canonical URL. robots.txt + sitemap.xml. Primary keyword in H1+title+meta+first paragraph. FAQ section with FAQPage schema. Breadcrumbs with BreadcrumbList schema.
 
-**Brand:** Extract colors from LOGO first → website → signage in photos. Never guess from category. Use ALL original content from scraped site. Logo must appear in every header. Brand fonts influence entire design.
+**Brand:** Extract colors from LOGO first → website → signage in photos (see skill 09 brand-from-signage). Never guess from category. Use ALL original content from scraped site. Logo must appear in every header. Brand fonts influence entire design.
 
-**Tech:** Vite+React+Tailwind+shadcn/ui. React Router for multi-page nav. IntersectionObserver for scroll animations. Lucide React icons (verified names only). `npm run build` must compile zero errors.
+**Tech:** Vite+React+Tailwind+shadcn/ui. React Router for multi-page nav. IntersectionObserver for scroll animations. Lucide React icons (verified names only). `npm run build` must compile zero errors. `prefers-reduced-motion` on ALL animations (see skill 11). Local business components from template-system.md (see skill 10 local design patterns).
+
+**Analytics (***NON-NEGOTIABLE — skill 13***):** PostHog snippet (`persistence:'memory'`, cookie-free) + GA4/GTM container + local conversion tracking (phone_click, direction_click, form_submit, booking_click). See skill 13 conversion-optimization.md for event taxonomy. Every `tel:` link fires phone_click. Every Maps link fires direction_click. Every form submit fires form_submit.
 
 ## Container Architecture
 

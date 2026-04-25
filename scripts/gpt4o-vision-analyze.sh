@@ -10,10 +10,15 @@ source "$HOME/.claude/hooks/style.sh" 2>/dev/null || true
 IMAGE_PATH="${1:?Usage: gpt4o-vision-analyze.sh <image_path> [prompt] [detail]}"
 CUSTOM_PROMPT="${2:-}"
 DETAIL="${3:-low}"  # low=85 tokens (triage), high=85+170/tile (fine analysis)
-ENV_LOCAL="/Users/apple/emdash-projects/worktrees/rare-chefs-film-8op/.env.local"
-
-if [ -f "$ENV_LOCAL" ]; then
-  OPENAI_API_KEY=$(grep '^OPENAI_API_KEY=' "$ENV_LOCAL" | cut -d= -f2)
+# Dynamic .env.local discovery
+for _env in ".env.local" "../.env.local" "$HOME/.env.local"; do
+  if [ -f "$_env" ] && grep -q '^OPENAI_API_KEY=' "$_env" 2>/dev/null; then
+    OPENAI_API_KEY=$(grep '^OPENAI_API_KEY=' "$_env" | cut -d= -f2)
+    break
+  fi
+done
+if [ -z "${OPENAI_API_KEY:-}" ] && [ -n "${CLAUDE_ENV_FILE:-}" ] && [ -f "$CLAUDE_ENV_FILE" ]; then
+  OPENAI_API_KEY=$(grep '^OPENAI_API_KEY=' "$CLAUDE_ENV_FILE" | cut -d= -f2)
 fi
 : "${OPENAI_API_KEY:?OPENAI_API_KEY not found}"
 

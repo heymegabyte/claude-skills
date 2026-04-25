@@ -24,8 +24,12 @@ fi
 mkdir -p "$SCREENSHOT_DIR"
 
 BREAKPOINTS=(
-  "375:667:Mobile"
+  "375:667:Mobile-Small"
+  "390:844:Mobile"
+  "768:1024:Tablet"
+  "1024:768:Tablet-Landscape"
   "1280:720:Desktop"
+  "1920:1080:Desktop-Wide"
 )
 
 screenshotAllBreakpoints() {
@@ -60,7 +64,7 @@ analyzeScreenshot() {
     }" | python3 -c "import sys,json; r=json.load(sys.stdin); print(r['choices'][0]['message']['content'])" 2>/dev/null
 }
 
-emdash_header "🔍 Visual TDD Loop" "$(gum style --foreground "$BLUE" "$URL  •  max $MAX_ITER iterations")"
+emdash_header "🔍 Visual TDD Loop" "$(gum style --foreground "${BLUE:-33}" "$URL  •  max $MAX_ITER iterations  •  ${#BREAKPOINTS[@]} breakpoints")"
 
 for ((i=1; i<=MAX_ITER; i++)); do
   gum style --foreground "$CYAN" --bold "━━━ Iteration $i/$MAX_ITER ━━━" >&2
