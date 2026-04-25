@@ -27,49 +27,45 @@ Want me to go ahead?
 ## Infrastructure Overview
 ### Proxmox Host (361 conversations about Proxmox in ChatGPT history)
 Brian's Proxmox box runs Coolify as the PaaS layer. Coolify manages 70+ Docker services.
-- Hardware: Bare metal Proxmox with ZFS (rpool) storage + Intel Optane SLOG/SPECIAL
+- Hardware: Bare metal Proxmox with ZFS storage
 - VMs: OPNsense, Ubuntu Desktop, macOS, Windows 11, Home Assistant OS, Coolify server
-- Backup: Daily ZFS snapshots -> zstd compress -> R2 via custom zfs-r2 script
-- Secondary: PBS -> R2 + Wasabi (3-2-1 pattern)
-- Network: VLAN segmentation (172.20.x.x), 10+ VLANs
+- Backup: Daily ZFS snapshots → R2 (3-2-1 pattern)
+- Network: VLAN segmentation, 10+ VLANs
 
 ### OPNsense (250 conversations)
 - Virtualized on Proxmox as primary firewall/router
-- VPN: NordVPN + Mullvad (WireGuard), ProtonVPN (OpenVPN), Cloudflare WARP
-- DNS: Unbound with DNSSEC + DNS-over-TLS to Cloudflare
+- VPN: Multi-provider WireGuard + OpenVPN + Cloudflare WARP
+- DNS: Unbound with DNSSEC + DNS-over-TLS
 - ACME: Let's Encrypt via Cloudflare DNS challenge for *.megabyte.space
 - Authentik LDAP integration for authentication
-- Headscale for mesh VPN coordination
+- Mesh VPN coordination via Headscale
 
 ### Coolify Access (136 mentions — THE hub)
-- **URL:** https://coolify.megabyte.space
-- **API:** https://coolify.megabyte.space/api/v1/
+- **URL:** `{service}.megabyte.space` pattern (behind CF Tunnel + Authentik)
+- **API:** `{coolify-url}/api/v1/`
 - **Token:** `~/.config/emdash/coolify-token`
 - Behind: Cloudflare tunnel (cloudflared) for zero-trust access
 - Reverse proxy: Traefik with Authentik forward-auth middleware
 - Docker-compose conventions: SERVICE_FQDN_*, SERVICE_URL_* magic variables
 
 ### Already-Running Services (ranked by usage from 3,102 ChatGPT conversations)
-| Service | URL | Usage Rank | Status |
-|---------|-----|-----------|--------|
-| **Authentik** | authentik.megabyte.space | #1 (64x) | SSO for everything |
-| **Healthchecks** | healthchecks.megabyte.space | #2 (41x) | Uptime monitoring |
-| **OpenWebUI** | openwebui.megabyte.space | #3 (38x) | AI chat interface |
-| **Bolt.diy** | bolt.megabyte.space | #4 (35x) | AI website builder |
-| **Dify** | dify.megabyte.space | #5 (32x) | AI app builder |
-| **Postiz** | postiz.megabyte.space | #6 (32x) | Social automation |
-| **n8n** | n8n.megabyte.space | #7 (27x) | Workflow automation |
-| **NocoDB** | nocodb.megabyte.space | #8 (25x) | Database UI |
-| **Windmill** | windmill.megabyte.space | #9 (24x) | Dev automation |
-| **Chatwoot** | chatwoot.megabyte.space | #10 (18x) | Customer chat |
-| **Sentry** | sentry.megabyte.space | Mandatory | Error tracking |
-| **PostHog** | posthog.megabyte.space | Mandatory | Product analytics |
-| **Netdata** | netdata.megabyte.space | - | Server monitoring |
-| **FireCrawl** | firecrawl.megabyte.space | - | Web scraping |
-| **Listmonk** | listmonk.megabyte.space | - | Email marketing |
-| **SearXNG** | searxng.megabyte.space | - | Self-hosted search |
-| **Browserless** | browserless.megabyte.space | - | Headless Chrome |
-| **Home Assistant** | (internal) | - | Smart home |
+| Service | Pattern | Role |
+|---------|---------|------|
+| **Authentik** | `{service}.megabyte.space` | SSO for everything |
+| **Healthchecks** | same pattern | Uptime monitoring |
+| **OpenWebUI** | same pattern | AI chat interface |
+| **Bolt.diy** | same pattern | AI website builder |
+| **Dify** | same pattern | AI app builder |
+| **Postiz** | same pattern | Social automation |
+| **n8n** | same pattern | Workflow automation |
+| **Sentry** | same pattern | Error tracking (mandatory) |
+| **PostHog** | same pattern | Product analytics (mandatory) |
+| **FireCrawl** | same pattern | Web scraping |
+| **Listmonk** | same pattern | Email marketing |
+| **Browserless** | same pattern | Headless Chrome |
+| **Home Assistant** | (internal) | Smart home |
+
+All services follow `{service}.megabyte.space` pattern. Discoverable via Coolify API.
 
 ### Common Coolify Problems (from debugging sessions)
 1. Healthcheck failures in Docker compose (10+ conversations)

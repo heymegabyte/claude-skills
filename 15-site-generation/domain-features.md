@@ -1,16 +1,97 @@
 ---
 name: "domain-features"
-description: "Category-specific feature requirements for 15+ business types. Loaded by build prompt to add domain-appropriate sections, schema, and functionality."
-updated: "2026-04-24"
+description: "Category-specific features for 15+ business types PLUS universal features included in every generated site at near-zero cost. Domain-specific schema, sections, interactive elements. Universal: PWA, RSS, structured data, reviews, booking, analytics, accessibility, legal pages, performance."
+updated: "2026-04-25"
 ---
 
 # Domain Features
 
-Each business category gets specific sections, schema types, and interactive elements beyond the base template. Features loaded from D1 `domain_features` table or hardcoded fallback below.
+Two layers: universal features (every site gets these) + category-specific features (loaded by business type).
+
+## Universal Features (EVERY GENERATED SITE)
+
+These cost near-zero to add and dramatically increase value. Include ALL of these in every build.
+
+### SEO & Discovery
+- **Sitemap.xml** — auto-generated from all pages, `lastmod` dates
+- **robots.txt** — allow all crawlers, reference sitemap
+- **JSON-LD schema** — minimum 4 types: Organization/LocalBusiness, WebSite with SearchAction, WebPage, BreadcrumbList + category-specific
+- **FAQ section + FAQPage schema** — AI-generated from research (rich snippets in Google)
+- **Open Graph + Twitter Card meta** — per page, 1200x630 OG image
+- **Canonical URLs** — prevent duplicate content
+- **Internal linking** — every page links 2+ other pages with keyword-rich anchors
+- **Structured breadcrumbs** — with BreadcrumbList schema
+- **AI search optimization (GEO)** — quotable 40-60 word answer blocks, entity definitions, structured data
+
+### PWA & Installability
+- **Web App Manifest** — `site.webmanifest` with name, icons (192+512), theme_color, display: standalone
+- **Favicon complete set** — favicon.ico (16+32+48), favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png (180), android-chrome-192x192.png, android-chrome-512x512.png
+- **Meta theme-color** — matches brand primary
+- **Apple mobile web app capable** — fullscreen on iOS
+
+### Trust & Social Proof
+- **Google Reviews widget** — pull rating + top reviews from Places API, display with stars
+- **Review count badge** — "4.8★ from 127 reviews" in hero/header
+- **Social media links** — verified from research, icons in header/footer
+- **Trust badges section** — years in business, certifications, awards (from research)
+- **Testimonial section** — real reviews from Google/Yelp, carousel or grid
+
+### Contact & Conversion
+- **Contact form** — with Turnstile invisible captcha, Zod validation, Resend delivery
+- **Click-to-call button** — `tel:` link, prominent on mobile
+- **Click-to-directions** — Google Maps directions URL with encoded address
+- **WhatsApp/SMS button** — `wa.me/` link if phone available, floating on mobile
+- **Google Maps embed** — with exact address marker, directions link
+- **Business hours display** — from Places API, with open/closed status indicator
+- **Email signup** — newsletter form (connects to Listmonk or stores in D1)
+- **Social share buttons** — per page, uses OG meta
+
+### Legal & Compliance
+- **Privacy Policy page** — AI-generated from business type + jurisdiction, GDPR/CCPA compliant
+- **Terms of Service page** — AI-generated, covers website usage
+- **Accessibility statement page** — WCAG 2.2 AA commitment, contact info for issues
+- **Cookie consent banner** — lightweight, GDPR-compliant, stores preference
+- **ADA compliance** — meets Title II requirements (effective April 2026)
+
+### Performance & Analytics
+- **PostHog snippet** — cookie-free (`persistence:'memory'`), autocapture, pageview, pageleave
+- **GA4 via GTM** — container snippet, custom dimensions
+- **Sentry error tracking** — client-side, catches JS errors
+- **Image lazy loading** — native `loading="lazy"` below fold, `fetchpriority="high"` on hero
+- **Blur placeholders** — CSS gradient or tiny base64 for images
+- **Preconnect hints** — for Google Fonts, analytics domains
+- **Print stylesheet** — `@media print` for contact/about pages (useful for directories)
+
+### UX Enhancements
+- **Dark/light mode** — CSS `prefers-color-scheme` + manual toggle, saves preference
+- **Back to top button** — smooth scroll, appears after 300px
+- **Smooth scroll anchors** — for single-page sections
+- **404 error page** — branded, animated, recovery links
+- **500 error page** — branded, contact info, correlation ID
+- **Skip to content link** — accessibility, hidden until focused
+- **Reduced motion** — `prefers-reduced-motion` disables all animations
+- **Focus visible outlines** — WCAG 2.4.11 Focus Appearance
+
+### Content Enrichment
+- **Blog/news section** — AI-generated 3-5 initial posts from research + scraped content, with RSS feed
+- **RSS feed** — `/feed.xml` or `/rss.xml`, auto-generated from blog posts (AI search crawlers consume this)
+- **Reading time estimates** — on blog posts
+- **QR code** — SVG QR code for print materials linking to site URL (downloadable from about page)
+- **Multi-language** — detect via `Accept-Language`, translate key pages via Workers AI (if content justifies it)
+
+### Booking & Scheduling
+- **Cal.com embed** — free tier, embeddable scheduling widget (if no existing booking system)
+- **Appointment request form** — for businesses needing human confirmation (medical, legal)
+- **Booking CTA** — links to existing system (OpenTable, Resy, Calendly, etc.) if discovered in research
+
+### Communication
+- **Live chat widget** — Chatwoot embed (self-hosted on Coolify) for businesses with support needs
+- **Notification bar** — dismissible announcement banner at top (for specials, events, COVID updates)
+- **Exit-intent email capture** — triggered on desktop mouse-leave, offers value (coupon, guide, consultation)
 
 ## Category→Feature Map
 
-**Restaurant/Cafe:** Menu with categories+prices+dietary icons (V/VG/GF/DF) | OpenTable/Resy reservation widget or built-in form | Hours with holiday exceptions | Photo gallery (food-first, min 8 dishes) | Chef/team bios | Catering inquiry form | JSON-LD: Restaurant+Menu+FAQPage | Special: daily specials section, happy hour callout
+**Restaurant/Cafe:** Menu with categories+prices+dietary icons (V/VG/GF/DF) | OpenTable/Resy reservation widget or built-in form | Hours with holiday exceptions | Photo gallery (food-first, min 8 dishes) | Chef/team bios | Catering inquiry form | JSON-LD: Restaurant+Menu+FAQPage | Special: daily specials section, happy hour callout, online ordering link
 
 **Salon/Spa:** Service menu with duration+price+description | Online booking CTA (link to existing system or built-in form) | Before/after gallery (side-by-side layout) | Stylist/therapist profiles with specialties | Product recommendations section | Gift card CTA | JSON-LD: HealthAndBeautyBusiness+PriceSpecification | Special: loyalty program highlight
 
@@ -34,16 +115,22 @@ Each business category gets specific sections, schema types, and interactive ele
 
 **Retail:** Product highlights (featured, not full catalog) | Store locator if multi-location | Brand story section | Loyalty program CTA | Instagram/social shop link | Events/workshops calendar | JSON-LD: Store+Product | Special: link to existing ecommerce, don't rebuild catalog
 
-**Non-Profit:** Donation CTA (prominent, 3+ placements, suggested amounts) | Impact metrics (animated counters) | Programs/services list | Volunteer signup form | Events calendar | Newsletter signup | Partner/sponsor logos | Annual report highlights | JSON-LD: NGO+DonateAction | Special: mission statement hero, 501(c)(3) EIN in footer
+**Non-Profit:** Donation CTA (prominent, 3+ placements, suggested amounts $10/$25/$50/$100/$250) | Impact metrics (animated counters) | Programs/services list | Volunteer signup form | Events calendar | Newsletter signup | Partner/sponsor logos | Annual report highlights | JSON-LD: NGO+DonateAction | Special: mission statement hero, 501(c)(3) EIN in footer
 
 **Government/Institutional:** Service finder (search/filter) | Department directory | Document library (PDFs, organized by category) | News/press releases | Meeting calendar with agendas | Multi-language toggle | Accessibility statement page | JSON-LD: GovernmentOrganization | Special: WCAG AAA target, plain language
 
 **SaaS/Tech:** Feature comparison table (3-tier) | Interactive demo/video hero | Pricing toggle (monthly/annual) | Integration logos grid | API documentation link | Changelog/status page link | Trust badges (SOC2/GDPR/HIPAA) | Free trial CTA with email capture | JSON-LD: SoftwareApplication+Product | Special: dark theme default, code snippets section
 
+**Church/Religious:** Service times (weekly schedule) | Sermon archive (audio/video embeds) | Event calendar | Small groups directory | Online giving (Stripe donation) | Prayer request form | Staff/leadership directory | Visitor welcome section | JSON-LD: Church+Event | Special: livestream embed, warm welcoming tone
+
+**Pet Services:** Services (grooming/boarding/training) with pricing | Pet gallery | Staff profiles with certifications | Online booking | Vaccination requirements | Emergency vet referral | JSON-LD: PetStore+AnimalShelter | Special: friendly playful design, pet safety badges
+
+**Wedding/Events:** Portfolio gallery (by event type) | Package pricing comparison | Availability calendar | Vendor partnerships | Testimonials with event photos | Planning timeline | JSON-LD: EventVenue+LocalBusiness | Special: romantic elegant design, lead capture form
+
 ## Schema Priority
 
-Every site gets: LocalBusiness (or subtype), FAQPage, BreadcrumbList, WebSite with SearchAction. Category-specific schema layered on top. All schema validated against Google Rich Results Test before deploy.
+Every site gets: Organization or category-specific subtype, FAQPage, BreadcrumbList, WebSite with SearchAction. Category-specific schema layered on top. All schema validated against Google Rich Results Test before deploy.
 
 ## Feature Loading
 
-Build prompt checks `_form_data.json.category` → loads matching feature set → injects into build instructions. Unknown categories default to generic LocalBusiness with: about, services, gallery, testimonials, contact, FAQ.
+Build prompt checks business category → loads matching feature set → injects into build instructions. Unknown categories default to generic LocalBusiness with: about, services, gallery, testimonials, contact, FAQ + all universal features.

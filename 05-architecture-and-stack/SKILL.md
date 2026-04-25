@@ -122,9 +122,9 @@ Schema in TypeScript, type-safe queries, auto migrations. RQBv2 (363 commits, 9K
 
 ## API Keys
 
-All keys: `/Users/apple/emdash-projects/worktrees/rare-chefs-film-8op/.env.local`
-GCP: `/Users/apple/.config/emdash/gcp-service-account.json`
-CF Global: blzalewski@gmail.com / ***REDACTED_CF_KEY***
+All keys: project `.env.local` or `get-secret KEY` (chezmoi+age encrypted)
+GCP: `~/.config/emdash/gcp-service-account.json`
+CF: `get-secret CLOUDFLARE_EMAIL` / `get-secret CLOUDFLARE_API_TOKEN` / `get-secret CLOUDFLARE_ACCOUNT_ID`
 
 | Service | Env Var | Free Tier |
 |---------|---------|-----------||
@@ -147,7 +147,7 @@ Error handler: `app.onError()` → log + Sentry + JSON envelope. Retry: idempote
 
 ## CF Infrastructure
 
-Zone (megabyte.space): 75a6f8d5e441cd7124552976ba894f83. Deploy+purge always together (see CONVENTIONS.md).
+Zone (megabyte.space): `get-secret CLOUDFLARE_ZONE_ID`. Deploy+purge always together (see CONVENTIONS.md).
 
 | Product | Free Limit | Paid Limit |
 |---------|-----------|------------|

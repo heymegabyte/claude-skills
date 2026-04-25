@@ -77,7 +77,7 @@ npx tsc --noEmit && npx eslint . --max-warnings=0 && npx prettier --check .
 ## Secrets
 
 ```bash
-get-secret SECRET_NAME  # chezmoi, 185 age-encrypted secrets (hostname: bitter-grass-c4c4)
+get-secret SECRET_NAME  # chezmoi, 185 age-encrypted secrets
 # Shared env: use `CLAUDE_ENV_FILE` when set, otherwise the active project's `.env.local`
 # Config: ~/.config/emdash/ (coolify-token, gcp-service-account.json)
 ```
@@ -86,7 +86,7 @@ All MCP secrets: active project env file or `get-secret`. Check env vars first, 
 
 ## CF Credentials
 
-blzalewski@gmail.com | `get-secret CLOUDFLARE_API_TOKEN` | `get-secret CLOUDFLARE_ACCOUNT_ID`
+`get-secret CLOUDFLARE_EMAIL` | `get-secret CLOUDFLARE_API_TOKEN` | `get-secret CLOUDFLARE_ACCOUNT_ID`
 
 ## Infrastructure
 
@@ -94,7 +94,7 @@ Proxmox+ZFS | OPNsense | CF Tunnels (tunnel-first, no SSH) | WireGuard+Mullvad (
 
 ## Self-Hosted (70+ on Coolify)
 
-Coolify coolify.megabyte.space | Authentik (SSO) | Healthchecks | Open WebUI | Bolt.diy | Dify | Postiz | n8n | NocoDB | Home Assistant | Windmill | Chatwoot | Sentry sentry.megabyte.space | Netdata | Firecrawl | Listmonk | PostHog posthog.megabyte.space | Browserless | Grafana | LiteLLM ai.megabyte.space | SearXNG | Backrest | Code Server | Directus | Langflow | MetaMCP | Plane | Paymenter
+70+ services on Coolify follow `{service}.megabyte.space` pattern behind CF Tunnels + Authentik SSO. Key services: Coolify (PaaS) | Authentik (SSO) | Sentry (errors) | PostHog (analytics) | Listmonk (email) | n8n (workflows) | Firecrawl (scraping) | Browserless (headless Chrome) | Home Assistant (smart home). Full list via Coolify API.
 
 ## MCP Servers
 
@@ -111,7 +111,7 @@ WebP photo 80% <200KB | WebP illustration 90% <150KB | PNG logo lossless <50KB |
 
 ## Analytics
 
-GA4/GTM: `~/.config/emdash/gcp-service-account.json` | PostHog: posthog.megabyte.space | Sentry: sentry.megabyte.space
+GA4/GTM: `~/.config/emdash/gcp-service-account.json` | PostHog: `{service}.megabyte.space` pattern | Sentry: same pattern
 
 ## Key Integrations
 
