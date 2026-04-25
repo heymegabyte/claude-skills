@@ -45,11 +45,11 @@ Events: page_view, cta_click, form_submit, signup_start/complete, feature_used, 
 
 **Feature flags best practices:** phased rollout 1%→10%→50%→100% with cohorts. Positive booleans (`is_premium_user` not `is_not_premium_user`). Target <20-30 active flags per service (>50 = flag sprawl). Flag at 100% with no targeting = remove and hardcode. Sticky flags for experiment consistency. Integration with product analytics = see feature impact on conversion/retention/revenue directly.
 
-## Sentry
+## Sentry (***AUTO-PROVISION — EVERY PROJECT***)
 ```typescript
 Sentry.init({ dsn: 'https://KEY@sentry.megabyte.space/ID', environment: 'production', tracesSampleRate: 0.1, replaysOnErrorSampleRate: 1.0 });
 ```
-Worker: app.onError() + toucan-js. Transaction sampling 20% controls costs. Prioritize issues by endpoint failure count on core user journeys.
+**Auto-provision mandate:** Any project missing @sentry/cloudflare (Workers) or @sentry/node (Node) → install SDK + wrap entry point + create Sentry project via `mcp__sentry__create_project` (org: megabyte-labs, team: megabyte-labs, platform: javascript) → set SENTRY_DSN via `wrangler secret put`. Never leave a project without Sentry. Full-stack traces: Sentry.init with tracesSampleRate, app.onError()→Sentry.captureException with route+userId tags, breadcrumbs before risky ops, SENTRY_RELEASE env for deploy tracking. Workers: withSentry() wrapper from @sentry/cloudflare. Node/Bun: @sentry/hono or @sentry/node instrument.ts. Transaction sampling 20% controls costs. Prioritize issues by endpoint failure count on core user journeys.
 
 ## Incident Auto-Remediation
 Sentry alerts → webhook → Inngest function. Auto-classify severity (P1-P4). P1: auto-rollback + Slack alert + SMS to Brian. P2-P3: auto-create GitHub issue + Slack notification. P4: log and batch report. Post-incident: auto-generate timeline from Sentry + deploy logs.
