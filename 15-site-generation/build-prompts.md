@@ -69,6 +69,23 @@ Every image in assets/ MUST appear on the site. Every fact must come from resear
 - Additional pages: create a page for EVERY distinct page in _scraped_content.json. Content-rich originals get rebuilt as full pages. Thin pages may be merged but MUST get 301 redirects
 - Nav must include ALL pages — never hide pages that exist on the original site. If nav gets crowded, use dropdown menus
 
+### Page Enrichment Patterns (***AUTO-APPLY ON FIRST BUILD***)
+These patterns must be applied automatically — not as a follow-up. Every page should ship with these features on the first prompt.
+
+**Video Heroes:** Every major page gets a `<video autoPlay muted loop playsInline>` background behind the hero section at 20% opacity with a gradient overlay. Source: download 2-3 Pexels videos (SD 640x360, ~600KB each) matching the business type. Search Pexels for "{business_type}" + "volunteer" + "community meal" etc. Store in `public/videos/`. Fallback: photo hero with gradient if no video available. Use `aria-hidden="true"` on video elements.
+
+**Contact Forms (***WHEREVER EMAIL IS MENTIONED***):** Any page that tells users to "email X" or "call to get started" MUST include an inline contact form pointing to that email via the projectsites.dev contact API or Resend. The form replaces the friction of copy-pasting an email. Fields: name, email, message (minimum). For volunteer pages: add organization and group size fields. For donation inquiries: add amount range. Always include Turnstile invisible widget. Show fallback email/phone below the form.
+
+**Partner/Client Logo Strips:** When the site mentions corporate partners, sponsors, or collaborators by name, download their logos and display a grayscale logo strip with hover-to-color effect (`grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all`). Major corporations (Fortune 500) have logos on logo.wine, Wikimedia Commons, or companieslogo.com. Smaller orgs: extract from their website headers. Store in `public/images/partners/`. Consistent height (h-12 sm:h-16), object-contain, max-w-[160px].
+
+**Full-Width Maps:** Any page showing a physical address (especially church/schedule pages, contact pages) should include a full-width Google Maps embed — not just a sidebar map. Use `width="100%" height="450"` with no border, outside any max-width container. The map IS the visual for location pages.
+
+**Photo Galleries:** Pages with 4+ related images should include a grid gallery section. Use `grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4` with `aspect-square object-cover rounded-lg`. Volunteer pages should show a "Volunteers in Action" gallery reusing blog post images. Services pages should show partner photos in a grid under Community Partnerships.
+
+**Contextual CTAs:** Every page ends with a relevant CTA section. Services→"Need a Meal?" + directions. About→"Join Our Mission" + donate/volunteer. Blog→"Support Our Mission" + donate/volunteer. Volunteer→"Can't Volunteer?" + donate. Match the CTA to what makes sense for the page topic.
+
+**The njsk.org enrichment incident:** The first build shipped pages with plain text heroes, no contact forms (just "email us" text), no partner logos (just name-drops), and sidebar-only maps. All of these should have been first-build features, not follow-up additions.
+
 ### Content Migration (***NEVER DISCARD CONTENT***)
 The original site's content is the business's accumulated SEO equity and institutional knowledge. Treat it as sacred.
 - Migrate ALL text content from _scraped_content.json — rewrite for quality but preserve substance
