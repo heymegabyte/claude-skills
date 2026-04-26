@@ -121,6 +121,20 @@ Media enrichment is NOT optional. Whether running in container, via prompt, or i
 
 **For non-profit/church sites specifically:** Extract volunteer group photos from blog posts (these are often the most emotionally compelling images), download event photos, kitchen/dining hall interior shots. These organizations rely on emotional connection — text-only sites kill donations.
 
+### Per-Page Image Extraction (***MANDATORY — EVERY PAGE GETS ITS IMAGES***)
+Images are not a site-wide pool — they belong to specific pages. When scraping the original site, associate EVERY image with the page it appeared on. This is critical for blog posts, service pages, and event recaps where photos are the primary content.
+
+**Process:**
+1. **Scrape every page individually:** For each page in _scraped_content.json or original sitemap, WebFetch the page and extract ALL `<img>` src URLs from the page body (not nav/footer chrome)
+2. **Download with page association:** Save images to `public/images/{section}/{slug}-{index}.jpg` (e.g., `public/images/blog/federal-reserve-bank-1.jpg`, `public/images/services/dining-hall-1.jpg`). Maintain a mapping of page→image paths
+3. **Data model integration:** Every page's data structure MUST include an `images: string[]` field with local paths. Blog posts: `blogPosts[].images`. Services: `services[].images`. Team members: `team[].photo`. This is NOT optional metadata — it's a required field
+4. **Featured image:** First image in the array (`images[0]`) is the featured/hero image — displayed in listing cards, OG tags, and page hero sections
+5. **Gallery rendering:** Pages with 2+ images render a photo grid/gallery below the primary content. Use `grid-cols-1 sm:grid-cols-2` with `object-cover aspect-[4/3]` for consistent presentation
+6. **CMS URL patterns:** Squarespace uses `images.squarespace-cdn.com/content/v1/{site-id}/{hash}/{filename}`. WordPress uses `wp-content/uploads/{year}/{month}/{filename}`. Wix uses `static.wixstatic.com/media/{hash}`. Always download and host locally — never hotlink to CMS CDN (the original site may go offline)
+7. **Hard gate:** Every blog post that had images on the original site MUST have images on the new site. Every service page that had photos MUST have photos. Zero-image blog posts on a site where other posts have images = build incomplete
+
+**The njsk.org blog image incident:** Blog posts were migrated as text-only even though every post on njsk.org had 1-19 associated photos (volunteer group photos, event shots, donation images). These photos ARE the content for a non-profit blog — without them, posts are meaningless stubs.
+
 ### Design System (***skill 10 — MANDATORY***)
 Read ~/.agentskills/10-experience-and-design-system/SKILL.md for full design system.
 Apply ALL patterns from "Local Business Design Patterns (SITE GENERATION)" section.
