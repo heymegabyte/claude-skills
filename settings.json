@@ -1,0 +1,417 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Bash",
+      "WebFetch",
+      "WebSearch",
+      "Skill(*)",
+      "Agent(*)",
+      "mcp__*",
+      "NotebookEdit",
+      "EnterWorktree",
+      "ExitWorktree"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf $HOME)",
+      "Bash(> /dev/sda*)",
+      "Bash(mkfs*)",
+      "Bash(dd if=*of=/dev/*)",
+      "Bash(chmod -R 777 /)"
+    ],
+    "defaultMode": "auto",
+    "additionalDirectories": [
+      "/Users/apple/.agentskills",
+      "/Users/apple/emdash-projects"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/session-start.sh",
+            "timeout": 10,
+            "statusMessage": "Loading Emdash environment..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/auto-value-extract.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "BLOCKED=$(echo \"$CLAUDE_TOOL_INPUT\" | grep -iE 'rm -rf[[:space:]]*/|rm -rf[[:space:]]*~/|rm -rf[[:space:]]*\\$HOME|git push --force.*main|git push -f.*main|git reset --hard|DROP TABLE|DROP DATABASE|DROP SCHEMA|TRUNCATE TABLE' 2>/dev/null); if [ -n \"$BLOCKED\" ]; then echo 'BLOCKED: Dangerous command detected.' >&2; exit 2; fi; exit 0",
+            "timeout": 5
+          },
+          {
+            "type": "prompt",
+            "prompt": "Is this bash command destructive to filesystem, database, or git history in a way that cannot be easily reversed? Only answer 'BLOCK' if genuinely dangerous. Command: $ARGUMENTS",
+            "model": "claude-haiku-4-5-20251001",
+            "timeout": 5,
+            "if": "Bash(DROP *)|Bash(TRUNCATE *)|Bash(git push --force *)|Bash(rm -rf *)"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__computer-use__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/computer-use-safety.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/format-on-save.sh",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/audit-log.sh",
+            "timeout": 3,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/pre-compact-save.sh",
+            "timeout": 5,
+            "statusMessage": "Saving critical state..."
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/post-compact.sh",
+            "timeout": 5,
+            "statusMessage": "Re-injecting critical context..."
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/on-failure.sh",
+            "timeout": 3,
+            "asyncRewake": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/on-notification.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/teammate-idle.sh",
+            "timeout": 3,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/auto-learn-stop.sh",
+            "timeout": 30,
+            "statusMessage": "Analyzing session, syncing skills, notifying Slack..."
+          }
+        ]
+      }
+    ],
+    "FileChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/on-file-changed.sh",
+            "timeout": 3,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "CwdChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/on-cwd-changed.sh",
+            "timeout": 3,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "InstructionsLoaded": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/on-instructions-loaded.sh",
+            "timeout": 3,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/on-stop-failure.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/on-session-end.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "ConfigChange": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/audit-config-change.sh",
+            "timeout": 3,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/hooks/permission-auto-approve.sh",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "Setup": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p .claude/plans .claude/rules && echo '{\"setup\":true}' > /dev/null",
+            "timeout": 5,
+            "once": true
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_EFFORT_LEVEL": "xhigh",
+    "CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY": "12",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80",
+    "CLAUDE_CODE_ENABLE_TASKS": "1",
+    "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "1",
+    "CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS": "30000",
+    "MAX_MCP_OUTPUT_TOKENS": "100000",
+    "SLASH_COMMAND_TOOL_CHAR_BUDGET": "12000"
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "excludedCommands": ["docker *", "wrangler *", "gh *", "bun *"],
+    "network": {
+      "allowedDomains": ["*"],
+      "allowLocalBinding": true,
+      "allowAllUnixSockets": true
+    },
+    "enableWeakerNestedSandbox": true,
+    "filesystem": {
+      "denyRead": [
+        "/Users/apple/.ssh",
+        "/Users/apple/.gnupg",
+        "/Users/apple/.config/age"
+      ],
+      "allowWrite": [
+        "/Users/apple/.claude",
+        "/Users/apple/.agentskills",
+        "/Users/apple/emdash-projects"
+      ]
+    }
+  },
+  "worktree": {
+    "symlinkDirectories": ["node_modules", ".angular", ".nx", ".turbo", "dist", ".wrangler", ".cache", ".vite", ".parcel-cache", ".next"],
+    "sparsePaths": ["src/", "tests/", "package.json", "tsconfig.json", "wrangler.toml", "pyproject.toml", "angular.json", ".claude/", "drizzle/", "e2e/"]
+  },
+  "attribution": {
+    "commit": "Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>",
+    "pr": "Generated with [Claude Code](https://claude.com/claude-code)"
+  },
+  "alwaysThinkingEnabled": true,
+  "autoUpdatesChannel": "latest",
+  "language": "en",
+  "respectGitignore": true,
+  "autoDreamEnabled": true,
+  "autoCompactWindow": 200000,
+  "defaultView": "transcript",
+  "plansDirectory": ".claude/plans",
+  "enableAllProjectMcpServers": true,
+  "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true,
+  "skipWebFetchPreflight": true,
+  "outputStyle": "concise",
+  "cleanupPeriodDays": 14,
+  "proactive": {
+    "autoEnable": true
+  },
+  "channelsEnabled": true,
+  "showThinkingSummaries": true,
+  "statusLine": {
+    "type": "command",
+    "command": "B=$(git branch --show-current 2>/dev/null || echo '-'); P=$(basename $(pwd)); C=$(git log --oneline --since='4h ago' 2>/dev/null | wc -l | tr -d ' '); M=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' '); echo \"$B | $P | ${C}c ${M}m | 14sk 18ag\"",
+    "refreshInterval": 30
+  },
+  "spinnerVerbs": {
+    "mode": "append",
+    "verbs": ["orchestrating", "deploying", "auditing", "optimizing", "scanning", "chaining MCPs", "spawning agents", "verifying"]
+  },
+  "spinnerTipsOverride": {
+    "excludeDefault": false,
+    "tips": [
+      "Ctrl+C interrupts the current operation",
+      "Ctrl+T toggles the task list",
+      "Ctrl+O toggles the transcript",
+      "Ctrl+E opens the external editor",
+      "Agent teams: spawn 3-5 parallel agents for independent streams",
+      "meta-orchestrator agent chains MCPs across 19+ services",
+      "Every edit gets auto-reviewed by Haiku for critical bugs",
+      "PreCompact saves your state — PostCompact restores it",
+      "Use /agents to inspect and edit the custom agent library",
+      "/schedule creates cron-triggered remote agents",
+      "12 concurrent tool calls — decompose and parallelize everything"
+    ]
+  },
+  "voiceEnabled": false,
+  "voice": {
+    "enabled": false,
+    "mode": "hold"
+  },
+  "sshConfigs": [
+    {
+      "id": "proxmox-homelab",
+      "name": "Proxmox Homelab",
+      "sshHost": "proxmox.local",
+      "sshPort": 22,
+      "startDirectory": "~"
+    }
+  ],
+  "fileSuggestion": {
+    "type": "command",
+    "command": "git ls-files --cached --others --exclude-standard 2>/dev/null | head -100"
+  },
+  "autoMode": {
+    "environment": [
+      "Local macOS development machine with Proxmox homelab",
+      "Cloudflare Workers deployment target (wrangler deploy)",
+      "Git repos under ~/emdash-projects/",
+      "Self-hosted services on coolify.megabyte.space",
+      "Full autonomy: unrestricted access to all MCPs, APIs, Computer Use, and tools"
+    ],
+    "allow": [
+      "Deploy to Cloudflare Workers/Pages and run wrangler commands",
+      "Run all tests (Playwright E2E, Vitest unit, visual verification)",
+      "Install packages, run builds, execute any dev tooling",
+      "Git operations: commit, push, branch, worktree, gh CLI (PRs/issues)",
+      "Spawn background agents, subagents, and agent teams",
+      "Read/write files anywhere in emdash-projects and ~/.agentskills",
+      "All MCP operations: Slack, Airtable, Notion, Plane, Figma, Coolify, Gmail, Calendar, Drive, IFTTT, Firecrawl, Stripe, Resend, WordPress, PostHog, Sentry",
+      "Computer Use for any native macOS application",
+      "Docker commands for local services",
+      "API calls via curl, webhooks, and external integrations"
+    ],
+    "soft_deny": [
+      "Irreversible financial transactions (Stripe charges, wire transfers)",
+      "Modifying system-level configurations outside project scope"
+    ]
+  }
+}

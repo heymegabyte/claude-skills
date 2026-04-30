@@ -1,0 +1,6 @@
+# Prompt Cache Optimization
+Skills MUST load in deterministic order: 01→02→03→04→05→06→07→08→09→10→11→12→13→14. Static content (CLAUDE.md, rules, skill descriptions) at conversation start = cacheable prefix. Dynamic content (conversation, tool output) after. Anthropic prompt caching saves 90% on repeated prefixes — random skill activation order defeats it.
+Rules: always load in alphabetical order (always→auto-meta-work→brian-preferences→code-style→...). Never reorder mid-session. Skills: description always in context, full content only on activation. Submodules: load on demand, never preload all.
+Cache mechanics: min 1024 tokens for cacheable block. TTL: 5min (default, free refresh on hit), extended to 1hr with frequent access. Breakpoints: set at natural boundaries (end of system prompt, end of rules, end of tool definitions). Tools→system→rules→skills→conversation = optimal ordering.
+Invalidation triggers: any rule/skill edit invalidates that block's cache. Batch edits (multiple files in one prompt) = single invalidation. Avoid editing rules mid-conversation — do it at session start or end.
+Subagent caching: fill subagents with 900K relevant context (skills, research, code) — they get their own cache. Return ≤200 word summary to main thread.

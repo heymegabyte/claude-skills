@@ -1,0 +1,6 @@
+# Hono API Rules
+Inline handlers for type inference (not separate controller files). RPC mode: export type AppType = typeof app; client uses hc<AppType>. Middleware: global logger→route-group CORS→route-specific auth. @hono/zod-validator on ALL request bodies. Centralized error handler: app.onError()+app.notFound(). Split large apps: app.route('/path',subApp).
+Error envelope: {error:string, code?:string, details?:unknown}. Rate limit public endpoints: KV-based per-IP counters. Turnstile verification on all form submissions. Health endpoint: GET /health returns {status,version,timestamp}. Drizzle ORM (v1) for all database access. Webhooks: verify signature, deduplicate, route, handle.
+Factory pattern: createFactory() for reusable middleware chains with shared context. Method chaining: app.use(cors()).get('/api/items',handler).post('/api/items',handler).
+D1 patterns: batch API (db.batch([stmt1,stmt2])) not BEGIN/COMMIT (D1 has no transactions). Global read replication auto. Time Travel 30-day PIT recovery. 1TB storage limit. D1→R2 backup for long-term.
+Workers patterns: CPU limit 50ms (free)/30s (paid). Use ctx.waitUntil() for async post-response work. ctx.passThroughOnException() for graceful degradation. Bindings typed via Env interface.
