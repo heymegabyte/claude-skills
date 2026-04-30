@@ -8,6 +8,62 @@ updated: "2026-04-24"
 
 The container runs ONE comprehensive Claude Code prompt. This prompt encompasses all build phases. The prompt is dynamically assembled from form data + research results. Claude Code reads pre-written context files (`_research.json`, `_brand.json`, `_assets.json`, etc.) and customizes the pre-installed template.
 
+## njsk.org Quality Bar (***THE FLOOR***)
+
+Reference build: `~/emdash-projects/njsk.org` (live https://njsk-org.manhattan.workers.dev/). Every one-line prompt must produce a site at this level. Full gap analysis: `~/emdash-projects/projectsites.dev/apps/project-sites/NJSK_LESSONS.md`.
+
+**Mandatory inclusions in every generated site:**
+
+1. **Motion kit (9 utilities, ALL gated by `prefers-reduced-motion`):**
+   - `.hero-rise > *:nth-child(n)` — stepped 80/240/400/560ms delays, translateY(12px)→0 + blur(4px)→0 + opacity 0→1, 0.7s cubic-bezier(0.22,1,0.36,1) both
+   - `.text-sheen` — `linear-gradient(110deg, currentColor 40%, var(--brand-200) 50%, currentColor 60%)` background-clip:text, 3s infinite shimmer
+   - `.heading-underline::after` — 4px gradient bar that scaleX 0→1 on `.reveal-visible` toggle, 0.6s ease
+   - `.card-lift:hover` — translateY(-4px) scale(1.01) + shadow lift, 0.3s ease
+   - `.link-wipe::after` — width 0→100% via transform:scaleX, 0.4s ease
+   - `.float-bob` — translateY(-3px)↔(0px), 3s ease-in-out infinite alternate
+   - `.badge-pop` — scale(0.9→1) opacity 0→1, 0.3s spring
+   - `.scroll-progress` — `position:fixed top:0 height:3px`, scaleX driven by `@supports (animation-timeline: scroll())`
+   - `.reveal[data-reveal]` paired with IntersectionObserver toggling `.reveal-visible`; children stagger via `--i` custom prop
+
+2. **Stylized hand-drawn SVG map (NEVER Google Maps iframe).** Inline 500–800px wide SVG with brand-colored streets, landmark blocks, business pin. Below map: `Get Directions →` link to `https://www.google.com/maps/dir/?api=1&destination={url-encoded-address}` target=_blank. Reference pattern: `~/emdash-projects/njsk.org/src/components/stylized-map.tsx`. Iframes are slow, ugly, and leak data to Google.
+
+3. **Lightbox (document-level click listener):** Auto-open any `<img>` ≥200×200 not inside `a|button|header|footer|[data-no-zoom]`. Render via `createPortal(modal, document.body)`. Body-scroll-lock: `body.style.position='fixed'; body.style.top='-${scrollY}px'; body.style.width='100%'; body.style.overflow='hidden'`. Use `100dvh` not `100vh`. Arrow keys + Escape + counter `{n}/{total}` + caption from `alt`. Auto-mark eligible imgs with `cursor:zoom-in` via `setInterval(markZoomable, 1500)`. Reference: `~/emdash-projects/njsk.org/src/components/lightbox.tsx`.
+
+4. **WCAG 2.2 AA (NOT 2.1):** 24×24px min targets (2.5.8). Focus appearance `outline:2px solid var(--brand-500); outline-offset:2px` (2.4.11). Focus-not-obscured (2.4.12). Consistent help (3.2.6). Redundant entry (3.3.7). Skip-link to `#main` first element in body.
+
+5. **Two Google Fonts when `formality≥0.6`:** serif heading (Fraunces/Playfair/DM Serif) + sans body (Inter/DM Sans). Single sans for casual. preconnect+preload. Font-loaded gate: `<style>html:not(.fonts-loaded) body{opacity:0}</style>` + `document.fonts.ready.then(()=>document.documentElement.classList.add('fonts-loaded'))`.
+
+6. **11-stop palette `--brand-50…--brand-950`** via OKLCH lightness ramp from `brand_json.colors.primary`. Surfaces 50/100, text/accents 600/700/800, dark hero overlays 900/950.
+
+7. **Drop-cap on first paragraph:** `.lead::first-letter{float:left;font-size:4em;line-height:0.9;padding:0.1em 0.1em 0 0;font-family:var(--font-heading);color:var(--brand-700)}`.
+
+8. **≥4 JSON-LD blocks:** Organization + LocalBusiness + WebSite + (FAQPage if FAQ present) + (BreadcrumbList if multi-page).
+
+9. **Banned-word grep — regenerate if any occurrence:** `revolutionize|leverage|seamless|robust|cutting-edge|world-class|empower|game-changing|unleash|supercharge|harness|foster|bolster|paradigm|holistic|ecosystem|next-generation|best-in-class|turnkey|synergy|disrupt|elevate|streamline|cornerstone|pivotal|myriad|plethora|transform|reimagine|redefine|transcend|boundless`. Each occurrence -0.1 to professionalism+brand_consistency.
+
+10. **Ken-Burns slow-zoom on every hero bg image:** `transform: scale(1.0→1.08)` 8s alternate.
+
+11. **md5 image dedup before render** — never ship same hash twice. Source-code refs use FULL canonical filenames.
+
+12. **Editorial typed-blocks for imported corpora:** Run any imported content (Squarespace export, scraped CMS, manual paste) through `clean_content` prompt FIRST. Output: `{ posts: [{ title, slug, excerpt(120-180ch), keywords[4-8], blocks: [{type:"lead|heading|paragraph|quote|callout", text, level?}], publishedAt, image }], related_map: {slug:[siblingSlugs]} }`. Strip Squarespace residue. NEVER alter direct quotes, names, dates, or factual claims.
+
+13. **Multi-page expansion when `complexity≥mid`:** Run `generate_routes` prompt to plan 5–14 routes. Internal-link graph: every page → 3–5 contextual anchors with VARIED anchor text. BreadcrumbList JSON-LD on every non-home route. Sitemap.xml with priority+changefreq+lastmod per route.
+
+**Pipeline order (`apps/project-sites/src/workflows/site-generation.ts`):**
+```
+import → strip_cms_residue → ai_block_typing(lead/heading/paragraph/quote/callout)
+→ md5_image_dedup → keyword_extract → excerpt_120_180 → related_score
+→ generate_routes(if mid+) → generate_website → score_website
+→ structural_validator(local grep for motion classes, JSON-LD count, banned words)
+→ regen_if_below_0.6 → publish
+```
+
+Runtime prompts registered in `apps/project-sites/src/services/ai_workflows.ts`:
+- `generate_website@2` — full motion kit + lightbox + stylized SVG map + WCAG 2.2 AA
+- `score_website@1` — 10-dim scoring including motion + typography + banned_words_found[]
+- `clean_content@1` — typed-block editorial pass
+- `generate_routes@1` — multi-page router for complexity≥mid
+
 ## Master Prompt Template
 
 ```
