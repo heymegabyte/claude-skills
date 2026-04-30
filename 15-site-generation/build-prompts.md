@@ -582,3 +582,28 @@ The Worker builds this prompt dynamically:
 ## Prompt Evolution
 
 Every successful build → analyze output quality. Patterns that improve quality get folded into this prompt template. Criticism from users → generalized into rules added to quality-gates.md. The prompt chain gets better with every iteration.
+
+## Blog Import & Editorial Pipeline (***NON-NEGOTIABLE***)
+
+Any time the build imports long-form blog content (Squarespace, WordPress, Medium, custom CMS), a two-stage pipeline runs:
+
+**Stage 1 — Cleanup (`clean-blog-corpus.mjs` pattern):** strip CMS residue (Squarespace `#block-yui_*`, `.sqs-*`, `.margin-wrapper`, raw `<style>` blocks), AI-restructure flat HTML into typed blocks (`lead | heading | paragraph | quote | callout`), generate SEO keywords + 120-180-char excerpt per post, deduplicate images by md5 hash, delete orphan media with `--delete-orphans`. Direct quotes preserved verbatim. Names/dates/facts never rewritten.
+
+**Stage 2 — Editorial pass (`enhance-blog-posts.mjs` — see reference script in this skill dir):** GPT-4o-mini editorial pass over every cleaned post. Mandates:
+
+1. **Grammar/spelling/professional tone** — fix without altering author voice or factual content.
+2. **Quote preservation** — anything in `quote` blocks or `"..."` strings stays verbatim.
+3. **Interlinking** — inject 2-5 contextual `[label](/path)` markdown links per post: other blog posts (`/blog/{slug}`) AND site sections (`/about`, `/services`, `/team`, `/volunteer`, `/donate`, `/we-need`, `/contact`, `/faq`, plus any domain-specific pages). Pass the full slug list and section list into the system prompt so the model picks relevant anchors.
+4. **Contact hyperlinks** — wherever these strings appear in body copy, wrap them as anchors:
+   - `volunteer@{org}` → `mailto:volunteer@{org}`
+   - `info@{org}` / generic email → `mailto:{email}`
+   - `(NNN) NNN-NNNN` phone numbers → `tel:+{e164}`
+   - Full street address → `/contact`
+5. **Block-typed JSON output** — model must return the same `{ type, text }` block array shape, never raw HTML or markdown blob.
+6. **Renderer support** — body renderer must handle inline markdown links via a `renderInline` regex (`/\[([^\]]+)\]\(([^)]+)\)/g`) that splits text into `<a>` + plain spans. Without this, links render as raw `[label](/path)` strings.
+
+**Operations:** concurrency 5-8 against OpenAI (`OPENAI_API_KEY` env). CLI flags: `--only=slug` (single post), `--limit=N` (truncate corpus), `--concurrency=N`. Idempotent — re-running on already-enhanced posts produces near-identical output. Failures surface per-slug (`console.warn(\`FAIL ${slug}: ${err}\`)`) — never silently swallow.
+
+**Hard gate:** after enhancement, every post must have ≥2 outbound interlinks, and there must be zero raw occurrences of the org's contact strings (email, phone, address) without an anchor wrapper. Run a regex sweep on the serialized `blog-posts.ts` to enforce.
+
+**Reference implementation:** `/Users/apple/.agentskills/15-site-generation/enhance-blog-posts.mjs` (copied from njsk.org build, 2026-04-30). Adapt SITE_SECTIONS array + contact hyperlink table per project. Keep the system prompt's "preserve quotes verbatim" clause unchanged.
