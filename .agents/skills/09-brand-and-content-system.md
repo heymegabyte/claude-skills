@@ -28,8 +28,9 @@ Psychology: reciprocity (teach), social proof near CTAs, authority (depth/number
 
 1. Screenshot existing (Wayback if down). Extract logo/colors/fonts/tone. Never discard equity.
 2. **Color extraction (NON-NEGOTIABLE):** Screenshot with Playwright, GPT-4o extracts hex (logo priority), cross-ref logo, build palette, validate WCAG AA. NEVER invent, NEVER use Emdash defaults for clients, NEVER infer from category.
-3. **Logo (NON-NEGOTIABLE):** Every project needs premium logo. See Skill 12 for full process.
-4. Audit: logo found+rated>=7/10+works 16-512px, colors EXTRACTED, palette WCAG AA, typography+tone+messages identified.
+3. **Logo-luminance drives theme (NON-NEGOTIABLE — gates template selection):** Compute logo dominant-color relative luminance (WCAG formula). luminance<0.4 (dark wordmark/serif/non-profit/legal/finance) → `_brand.json.theme="light"` (cream/white/off-white BG, dark text, accent from logo). luminance>0.6 (light/neon logo) → `theme="dark"`. mid (0.4-0.6) → default `dark` but verify logo-on-BG contrast >=4.5:1 in hero/header/footer; if fails, flip to light. Set theme BEFORE template selection. Reject any palette where logo-on-background contrast <4.5:1 (WCAG AA). Logo legibility outranks aesthetic preference. CLAUDE.md "Dark-first" applies to accent-rich Emdash/SaaS brands, NOT logo-driven non-profit/serif clients (njsk.org 2026-04-30 — dark burgundy wordmark invisible on dark BG). Confidence 0.95.
+4. **Logo (NON-NEGOTIABLE):** Every project needs premium logo. See Skill 12 for full process.
+5. Audit: logo found+rated>=7/10+works 16-512px, colors EXTRACTED, palette WCAG AA, typography+tone+messages identified.
 
 ## Brand Extraction from Physical Assets (***LOCAL BUSINESS — NO WEBSITE***)
 
