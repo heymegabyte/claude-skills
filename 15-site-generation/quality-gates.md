@@ -167,3 +167,139 @@ Universal rules applied to ALL generated sites:
 ## Generalization Principle
 
 When any specific criticism is received about a generated site, it MUST be generalized into a rule that applies to ALL future builds. Example: "njsk.org colors are wrong" → "NEVER guess colors from business category; ALWAYS extract from logo/website." The criticism registry grows with every user feedback cycle.
+
+## Automated Build Gates (***RUN POST-BUILD, FAIL HARD***)
+
+Every projectsites.dev build MUST pass these automated gates before R2 upload. Wired in `package.json` `gate` script: `node scripts/validate-assets.mjs dist && node scripts/validate-meta.mjs dist && node scripts/validate-citations.mjs dist && node scripts/validate-h1.mjs dist && lhci autorun && playwright test --grep @gate`.
+
+| Gate | Tool | Threshold | Fail Action |
+|------|------|-----------|-------------|
+| Asset existence | `validate-assets.mjs` (skill 15) | 9 mandatory files + every ref resolves | exit 1 |
+| Meta length | `validate-meta.mjs` | title 50–60ch, desc 120–156ch | exit 1 |
+| H1 in shell | `validate-h1.mjs` | `<h1>` present before `<script>` in raw HTML | exit 1 |
+| Citations | `validate-citations.mjs` | every `\d+%`/`\$\d+[MBK]`/`\d+x` cited APA | exit 1 |
+| URL preservation | `validate-urls.mjs` | every original URL → 200 or 301 | exit 1 |
+| Source parity | `compare-source.ts` | new word count ≥ original × 1.0, image count ≥ original × 1.4 | exit 1 |
+| Lighthouse | `@lhci/cli` v0.15+ | Perf≥75, A11y≥95, BestPractices≥95, SEO≥95 | exit 1 |
+| Accessibility | `@axe-core/playwright` v4.11+ | 0 WCAG 2.2 AA violations | exit 1 |
+| Visual regression | Percy AI Visual Review / pixelmatch | <0.1% pixel diff vs baseline | warn → review |
+| Image budget | `validate-image-budgets.mjs` | single ≤200KB, total ≤500KB | exit 1 |
+| Cross-browser smoke | Playwright Chrome+Safari | homepage loads, no console errors at 6 breakpoints | exit 1 |
+
+## Lighthouse CI (***NON-NEGOTIABLE***)
+
+`.lighthouserc.json` config:
+```json
+{
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:4173/", "http://localhost:4173/about", "http://localhost:4173/services", "http://localhost:4173/contact"],
+      "numberOfRuns": 3,
+      "settings": { "preset": "desktop", "throttling": { "cpuSlowdownMultiplier": 1 } }
+    },
+    "assert": {
+      "preset": "lighthouse:no-pwa",
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.75 }],
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:best-practices": ["error", { "minScore": 0.95 }],
+        "categories:seo": ["error", { "minScore": 0.95 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
+        "interaction-to-next-paint": ["error", { "maxNumericValue": 200 }],
+        "uses-text-compression": "error",
+        "uses-responsive-images": "error",
+        "modern-image-formats": "error",
+        "uses-optimized-images": "error",
+        "render-blocking-resources": ["warn", { "maxNumericValue": 200 }]
+      }
+    },
+    "upload": { "target": "filesystem", "outputDir": "./.lighthouseci" }
+  }
+}
+```
+
+Mobile preset additionally enforced via second LHCI run with `"preset": "mobile"`. Both must pass.
+
+For full-site coverage at scale, `unlighthouse` (single binary, parallel-crawls every route in sitemap, generates HTML report). Run on every PR via GitHub Action.
+
+## Accessibility — axe-core via Playwright (***WCAG 2.2 AA, ZERO VIOLATIONS***)
+
+`tests/accessibility.spec.ts`:
+```typescript
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+const ROUTES = ['/', '/about', '/services', '/contact', '/blog', '/privacy', '/terms'];
+const BREAKPOINTS = [375, 390, 768, 1024, 1280, 1920];
+
+for (const route of ROUTES) {
+  for (const width of BREAKPOINTS) {
+    test(`a11y: ${route} @ ${width}px @gate`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(route);
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+        .disableRules(['color-contrast-enhanced'])  // AAA, not required
+        .analyze();
+      expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
+    });
+  }
+}
+```
+
+Zero violations across all routes × all breakpoints = pass. WCAG 2.2 introduces 9 new criteria: focus appearance (2.4.11), focus not obscured min/enhanced (2.4.12/2.4.13), dragging movements (2.5.7), target size 24px (2.5.8), consistent help (3.2.6), redundant entry (3.3.7), accessible auth min/enhanced (3.3.8/3.3.9). axe-core v4.11+ checks all of these. ADA compliance deadline: 2027 state/local, 2028 federal.
+
+## Source-Parity Diff (***FOR REBUILDS — `compare-source.ts`***)
+
+When source URL provided, compare original vs new:
+
+```typescript
+const original = await crawl(sourceUrl, { maxPages: 1000 });
+const newSite = await crawl(deployUrl, { maxPages: 1000 });
+
+assert(newSite.wordCount >= original.wordCount * 1.0, `Word count regression: ${original.wordCount} → ${newSite.wordCount}`);
+assert(newSite.imageCount >= original.imageCount * 1.4, `Image count below augmentation floor`);
+assert(newSite.routes.length >= original.routes.length, `Route count dropped: ${original.routes.length} → ${newSite.routes.length}`);
+for (const r of original.routes) {
+  const res = await fetch(deployUrl + r);
+  assert(res.status === 200 || (res.status === 301 && res.headers.get('location')), `Lost URL: ${r}`);
+}
+for (const doc of original.documents) {  // PDFs/DOCs/PPTs
+  const res = await fetch(deployUrl + doc.path);
+  assert(res.ok, `Missing preserved document: ${doc.path}`);
+}
+```
+
+njsk-light.projectsites.dev failure mode (missing blog, missing media, single-page collapse) is exactly what this gate catches. Build fails before R2 upload.
+
+## Visual Regression — 3-Tier Strategy
+
+| Tier | Tool | When | Cost |
+|------|------|------|------|
+| Local dev | `pixelmatch` + golden screenshots | every save | free |
+| PR | Chromatic via Storybook | per-PR per-component | free up to 5K snapshots/mo |
+| Deploy | Percy AI Visual Review | per-deploy full-page 6 breakpoints | free up to 5K snapshots/mo |
+
+Percy AI Visual Review (40% false-positive filtering, 3× faster than legacy Percy) handles the per-deploy gate. For component-level regression, Chromatic via Storybook. For local dev iteration, `pixelmatch` against golden PNGs in `tests/__golden__/`.
+
+## Console-Error Gate (***POST-DEPLOY***)
+
+After every deploy, Playwright loads each route and asserts zero console errors:
+
+```typescript
+test(`console clean: ${route} @gate`, async ({ page }) => {
+  const errors: string[] = [];
+  page.on('console', (msg) => { if (msg.type() === 'error') errors.push(msg.text()); });
+  page.on('pageerror', (err) => errors.push(err.message));
+  await page.goto(route);
+  await page.waitForLoadState('networkidle');
+  expect(errors, errors.join('\n')).toEqual([]);
+});
+```
+
+CSP violations, JS errors, missing resource 404s — all caught here. Fix before marking deploy complete.
+
+## Recommendations Loop (***ZERO-RECOMMENDATIONS GATE***)
+
+After all other gates pass, run `recommendations-checker` agent: GPT-4o detail:high inspects deployed homepage + 3 random sub-pages, returns markdown list of every "could be improved" observation. Loop: implement → redeploy → re-check. Done when checker returns empty list. Max 5 iterations.
