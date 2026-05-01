@@ -82,12 +82,38 @@ When the original site links to a downloadable document (PDF/DOC/PPT/XLS), it's 
 | 4 | Foursquare | FOURSQUARE_API_KEY | Venue-specific photos | — | 65-75 |
 | 5 | Yelp Fusion | YELP_API_KEY | Business listing photos | — | 60-70 |
 | 6 | Google CSE | GOOGLE_CSE_KEY+CX | Web image search | 100/day | 40-70 |
-| 7 | Unsplash | UNSPLASH_ACCESS_KEY | Stock photos (landscape) | 50/hr | 55 |
-| 8 | Pexels | PEXELS_API_KEY | Stock photos + videos | 200/hr | 50 |
+| 7 | Pexels | PEXELS_API_KEY | Stock photos + videos (PRIMARY stock) | 200/hr | 60 |
+| 8 | Unsplash | UNSPLASH_ACCESS_KEY | Stock photos (landscape) | 50/hr | 55 |
 | 9 | Pixabay | PIXABAY_API_KEY | Illustrations, vectors | 100/hr | 45 |
-| 10 | GPT Image 1.5 | OPENAI_API_KEY | AI-generated hero/section | — | 75 |
-| 11 | Ideogram v3 | IDEOGRAM_API_KEY | Logo generation | — | 70 |
-| 12 | Stability AI | STABILITY_API_KEY | Backgrounds, patterns | — | 65 |
+| 10 | Flux 1.1 Pro Ultra | FAL_API_KEY OR REPLICATE_API_TOKEN | Photoreal hero (humans, complex scenes) | — | 85 |
+| 11 | GPT Image 1.5 | OPENAI_API_KEY | Stylized illustrations, sections, OG | — | 80 |
+| 12 | Ideogram 3.0 | IDEOGRAM_API_KEY | Logo + favicon set + text-heavy | — | 80 |
+| 13 | Recraft V3 | RECRAFT_API_KEY | Editable SVG icon sets | — | 75 |
+| 14 | DALL-E 3 HD | OPENAI_API_KEY | Fallback when Flux key absent | — | 75 |
+| 15 | Stability AI SD3 | STABILITY_API_KEY | Backgrounds, patterns, textures | — | 65 |
+| 16 | Sora | OPENAI_API_KEY | 5–10s video loops | — | 70 |
+| 17 | Cloudinary | CLOUDINARY_* | Transform layer (WebP/AVIF, AI-crop) | 25GB free | — |
+
+**2026 image-stack pricing reference (***drives engine selection in research_images prompt***):**
+
+| Engine | Cost/img | Best For | License |
+|--------|----------|----------|---------|
+| Pexels | free | Stock photos + videos, all categories | commercial-OK |
+| Wikimedia Commons | free | Named landmarks, historic, public figures | CC |
+| Flickr CC | free | Niche/hyperlocal photography | CC-licensed-only |
+| Ideogram Turbo | $0.025 | OG cards w/ tagline + logo | commercial-OK |
+| Stability AI SD3 | $0.03 | Textures, patterns, abstract bg | commercial-OK |
+| GPT Image 1.5 | $0.034 | Stylized illustrations, section dividers | commercial-OK |
+| DALL-E 3 HD | $0.04–0.08 | Fallback for Flux when key absent | commercial-OK |
+| Flux 1.1 Pro Ultra | $0.06 | Photoreal hero (humans, complex scenes, 4MP+) | commercial-OK |
+| Recraft V3 | $0.08 | Editable SVG icon sets, brand-style adherence | commercial-OK |
+| Ideogram 3.0 | $0.09 | Logo + favicon set + text-heavy graphics | commercial-OK |
+| Sora | $0.20–0.40 | Short narrative video loops | commercial-OK |
+| Google Street View | $0.007 | Storefront, signage | commercial-OK |
+
+Total typical media spend: $0.50–2.00/site. **Engine selection logic:** photoreal hero → Flux 1.1 Pro Ultra | stylized → GPT Image 1.5 | logo → Ideogram 3.0 | SVG icons → Recraft V3 | OG card → Ideogram Turbo | video → Pexels first, Sora when premium → fallback DALL-E 3 HD when Flux key absent. Brian's stated preference (DALL-E heavy use) preserved as fallback chain entry.
+
+**pHash dedup (***replaces md5 — visually identical but byte-different images dedupe correctly***):** sharp 8×8 DCT → 64-bit hash → hamming distance ≤6 = duplicate. Implementation in `~/.agentskills/15-site-generation/blog-import.mjs::phash()`. md5 only as fallback when sharp unavailable.
 
 ## Google Street View (***LOCAL BUSINESS MUST-HAVE***)
 
