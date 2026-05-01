@@ -18,6 +18,7 @@ submodules:
   - service-worker.md
   - font-subsetting.md
   - critical-css.md
+  - pipeline-health-check.md
 ---
 
 # 08 — Deploy and Runtime Verification
