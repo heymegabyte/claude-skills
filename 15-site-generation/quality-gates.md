@@ -35,6 +35,45 @@ updated: "2026-04-24"
 
 Overall must exceed 0.90 to auto-publish. Below 0.85 any dimension → fix required.
 
+## Universal Build Validators (***BUILD-BREAKING — runs on EVERY site***)
+
+These validators run in `build_validators.ts` between R2 upload and `published` status. They apply to every generated site regardless of category, source, or domain. Each maps to a universal rule in skill 09 / 12 / always.md. New validators land in `report` mode for one build cycle then flip to `strict` once template ships clean.
+
+| Validator | Source rule | Failure code |
+|-----------|-------------|--------------|
+| `validate-color-from-logo.mjs` | skill 09 color-extraction-second-pass | `color.hue_distance_from_logo` |
+| `validate-logo-singularity.mjs` | skill 09 logo-singularity | `logo.multiple_in_container` |
+| `validate-legal-page-consistency.mjs` | skill 09 LegalLayout-consistency | `legal.layout_inconsistent` |
+| `validate-image-prompts.mjs` | skill 12 per-slot-prompts | `image.prompt_generic` |
+| `validate-hero-media.mjs` | skill 12 hero-media-preference-order | `hero.no_media` |
+| `validate-publication-imagery.mjs` | skill 12 publication-imagery | `publication.image_irrelevant` |
+| `validate-lightbox-grouping.mjs` | skill 12 + always.md lightbox-grouping | `lightbox.group_split` / `lightbox.caption_missing` |
+| `validate-social-brand-hex.mjs` | skill 12 social-brand-hex-map | `social.hover_color_wrong` |
+| `validate-cursor.mjs` | always.md custom-cursor + click-ripple | `cursor.ring_missing` |
+| `validate-image-hover.mjs` | always.md image-hover-no-layout-shift | `image.hover_layout_shift` |
+| `validate-google-maps-widget.mjs` | always.md google-maps-widget | `map.embed_missing` / `map.geo_mismatch` |
+
+## Gorgeous-Loop Reinforcement (***FINAL CRITIQUE BEFORE DEPLOY — every site***)
+
+After all functional + structural gates pass, the orchestrator MUST run a final aesthetic critique-and-edit pass on every site: GPT-4o (detail:high) reviews homepage + 2 highest-traffic sub-pages with the prompt "Make this even more gorgeous + beautiful + intuitive + concise + creative + witty + intelligent + confident — list 8-12 concrete edits, then apply them." Max 3 rounds of edit-rebuild-rescreenshot. Each round MUST measurably increase the visual_design + brand_consistency dimension scores by ≥0.03 OR exit early. Output diff written to `_polish_log.json` for criticism-registry feedback.
+
+## Criticism Registry (chronological — generalized rules)
+
+Each entry: user-feedback symptom on a specific site → universal rule that prevents the class of failure on every future build. Rules live in their source skill; this index is for traceability only.
+
+**2026-05-02 cycle** (driven by lone-mountain-global-3.projectsites.dev feedback):
+- Color hallucination (green primary on burgundy/navy/cream logo) → logo-pixel hue-distance verification (skill 09 color-extraction-second-pass)
+- Header rendered icon-mark + wordmark as two adjacent `<img>` tags → logo-singularity (skill 09)
+- /accessibility flat paragraphs while /privacy + /terms used boxed sections → shared `<LegalLayout>` (skill 09)
+- /publications used irrelevant generic stock → journal-logo / paper-figure / generated-only (skill 12 publication-imagery)
+- Hero with no video despite Pexels Video API availability → hero-media preference order (skill 12)
+- Same-topic gallery images split across multiple lightbox groups → `data-gallery` inheritance + caption presence (skill 12 + always.md)
+- Social-button hover used generic accent instead of brand hex → canonical social-brand-hex map (skill 12)
+- Generic AI imagery ("create a hero image") → per-slot purpose-crafted prompts (skill 12)
+- Plain-text address on /contact → "Every address" Google Maps directions href (always.md, pre-existing)
+- No final polish pass → Gorgeous-Loop Reinforcement (this file, above)
+- No embedded interactive map for local-business sites → Google Maps Embed API widget (always.md google-maps-widget)
+
 ## SEO Audit Checklist
 
 - [ ] Title tag 50-60 chars with primary keyword
