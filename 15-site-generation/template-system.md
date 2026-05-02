@@ -228,6 +228,43 @@ export function renderInline(text: string): ReactNode[] {
 ```
 6 lines of logic, auto-detects `mailto:`/`tel:`/`http`/internal. Plain-text mode if no matches.
 
+**Universal underline-hover sweep (global CSS, ships in `src/index.css`) — ***EXACTLY ONE UNDERLINE PER LINK, color follows context***:** every `<a>` in body content gets a single animated underline sweep on hover. Three non-negotiable structural rules: (1) the rule block lives at the END of `index.css` OUTSIDE `@layer components` so `text-decoration: none !important` beats Tailwind's `underline` utility (Tailwind v4 layer order: `base < components < utilities` — components-layer rules lose to utilities even with `!important`). (2) `::after` uses `background: currentColor` NOT a hardcoded brand var, so the sweep matches the link's text color in any context (light hero text → light sweep; dark body text → dark sweep). (3) NEVER set `color` on the auto-apply selector — let the link inherit text color from its parent (`text-maroon-100` on a maroon hero would be defeated by `color: var(--color-maroon-800)` rendering dark-on-dark). Reference incident: njsk.org 2026-05-02 contact hero rendered double-underline + faint dark link on dark maroon bg because the sweep CSS was inside `@layer components` AND set an explicit dark color. Canonical block:
+```css
+/* OUTSIDE @layer components — at end of index.css */
+.underline-hover,
+.blog-paragraph a, .blog-lead a, .blog-heading a, .blog-quote a, .blog-callout a,
+main p a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:has(svg)),
+main li a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:has(svg)),
+main h2 > a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:has(svg)),
+main h3 > a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:has(svg)) {
+  position: relative;
+  text-decoration: none !important;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+.underline-hover::after,
+.blog-paragraph a::after, .blog-lead a::after, .blog-heading a::after, .blog-quote a::after, .blog-callout a::after,
+main p a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:has(svg))::after,
+main li a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:has(svg))::after,
+main h2 > a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:has(svg))::after,
+main h3 > a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:has(svg))::after {
+  content: "";
+  position: absolute; z-index: 1; pointer-events: none;
+  left: 51%; right: 51%; bottom: -2px;
+  background: currentColor;
+  height: 1px; opacity: 0.6;
+  transition: left 0.3s ease-out, right 0.3s ease-out, opacity 0.2s ease;
+}
+.underline-hover:hover::after, .underline-hover:focus-visible::after,
+.blog-paragraph a:hover::after, .blog-paragraph a:focus-visible::after,
+/* …same group for every selector above… */ {
+  left: 0; right: 0; opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .underline-hover::after, .blog-paragraph a::after /* etc */ { transition: none; }
+}
+```
+The `:not(:has(img)):not(:has(svg))` exclusions prevent the sweep from rendering under image/icon links (logo, icon-only social, image cards). The `[data-no-underline]` escape hatch lets per-component opt-out (rare). Hash-link scroll-margin pairs with the sticky header: `[id] { scroll-margin-top: 5.5rem } @media (min-width: 640px) { [id] { scroll-margin-top: 7rem } }` — placed in `@layer base` so anchor jumps land below the sticky nav.
+
 ## DonationForm — Non-Profit /donate Page Spec (***EXPANDED***)
 
 Replaces the prior bare DonationForm. Used by nonprofits at `/donate`, churches at `/give`. Composed sections (top-to-bottom):
