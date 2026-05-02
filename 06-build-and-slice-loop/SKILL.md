@@ -111,14 +111,24 @@ Self-verify: "A user can [action] which [result] because [impl]." Vague=incomple
 [ ] FCE scan zero findings, zero console errors
 ```
 
-## Per-Project Checklist
+## Per-Project Checklist (***BUILD-BREAKING — every checkbox is a deploy gate, not a soft suggestion***)
 ```
 [ ] All features, homepage polished, all nav works, all forms submit
-[ ] Images optimized (WebP/AVIF), JSON-LD (4+), OG images, analytics, error tracking
-[ ] Legal pages, favicon, PWA manifest, robots.txt, sitemap.xml
+[ ] Images optimized (WebP/AVIF), JSON-LD (4+), OG card 1200×630 ≤100KB, analytics (Sentry+PostHog+GA4 trifecta), error tracking
+[ ] Legal pages, favicon kit FULL (skill 12 auto-favicon-pipeline — favicon.ico+favicon.svg+favicon-{16,32,48,96}+apple-touch-icon-180+android-chrome-{192,256,384,512}+maskable-{192,512}), PWA site.webmanifest with screenshots[]+shortcuts[]+icons[]+maskable variants, robots.txt, sitemap.xml (every <url> has <lastmod>), humans.txt, .well-known/security.txt
+[ ] og.jpg|og.png exists in dist/ AND referenced in <head> with og:image+twitter:image+og:image:width=1200+og:image:height=630+og:image:type matching MIME+og:image:alt+twitter:image:alt
 [ ] CSP+HSTS+security headers, Lighthouse>=90, a11y>=95, mobile no breaks at 375px
 [ ] prefers-reduced-motion on all animations, prefers-color-scheme support
+[ ] Per-route metadata validator passes (skill 12 + rules/per-route-metadata.md): unique title 50-60 + meta desc 120-156 + canonical + theme-color + ALL og:* + ALL twitter:* + apple-mobile-web-app-* + ≥1 JSON-LD per route
 ```
+
+## Asset Generation Triggers (***UNIVERSAL — runs on EVERY project, not just rebuilds***)
+The favicon kit + og card + site.webmanifest + robots.txt + sitemap.xml + humans.txt + security.txt MUST exist BEFORE the first `wrangler deploy`. Trigger paths (in priority order):
+1. **Template clone** (`gh repo create --template megabytespace/saas-starter`): template already ships placeholder assets — replace with brand-converged versions in Slice 1 (homepage). NEVER ship the template's placeholder favicon to production.
+2. **One-line prompt** (mode=saas | portfolio | local-business | non-profit | other): Phase 1 architect spawns a media agent in parallel with frontend agent. Media agent runs skill 12 auto-favicon-pipeline + skill 12 OG card generator + skill 12 maskable-icon generator + skill 06 web-manifest-system BEFORE Slice 1 deploys.
+3. **Full rebuild from existing site** (skill 15 site-generation): media-acquisition step extracts source logo (≥7/10 quality preserved per "Every site rebuild" rule in always.md), then runs same skill 12 pipeline.
+4. **Subsequent slices**: validator (`validate-favicon-kit.mjs` + `validate-og-card.mjs`) runs on every `wrangler deploy` — fail blocks deploy.
+Source for favicon: existing logo file (best) > inline SVG component in codebase (extract to source PNG via Playwright render at 1024×1024) > Ideogram v3 generation (skill 12 logo discovery chain). Never ship a missing/default favicon.
 
 ## Completeness Guarantee
 Before done: data layer, API, UI, tests, SEO, analytics, error handling, mobile, docs all complete.
