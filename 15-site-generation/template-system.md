@@ -61,6 +61,39 @@ template/
 
 `fade-up` — translateY(20px)→0, opacity 0→1, 600ms ease-out, IntersectionObserver triggered. `fade-in` — opacity only, 400ms. `slide-left/slide-right` — translateX(±40px)→0, 800ms. `scale-in` — scale(0.95)→1, 500ms. `stagger-children` — each child delays 100ms. All presets respect `prefers-reduced-motion`. Scroll-driven hero parallax via `animation-timeline: scroll()` with `@supports` gate.
 
+### Anti-FOUC reveal gate (***UNIVERSAL — every site with IntersectionObserver reveals***)
+
+IntersectionObserver-driven reveal animations cause a visible→invisible→fade-in twitch on first paint when JS adds the `.reveal` (opacity:0) class AFTER paint. Fix: pre-paint class gate set synchronously inline.
+
+`index.html` — FIRST line inside `<head>`, before any `<link>` or `<style>`:
+```html
+<script>document.documentElement.classList.add('js-reveal-active');</script>
+```
+
+`src/index.css`:
+```css
+html.js-reveal-active main section,
+html.js-reveal-active main [data-reveal] {
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+html.js-reveal-active main section:not(.reveal-visible):not(.no-reveal),
+html.js-reveal-active main [data-reveal]:not(.reveal-visible) {
+  opacity: 0;
+  transform: translateY(24px);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js-reveal-active main section,
+  html.js-reveal-active main [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+```
+
+The `.no-reveal` opt-out is for sections whose own children animate themselves (e.g. `.hero-rise` stagger) so they aren't double-faded by the parent gate. The `js-reveal-active` class is required so the gate only activates when JS will subsequently add `.reveal-visible` — non-JS users see content normally. Reference incident: njsk.org 2026-05-02 sections flashed visible→invisible→fade-in because RevealOnScroll's useEffect added `.reveal` after first paint.
+
 ## inspect.js (Post-Build Validator)
 
 Runs after `npm run build`. Checks: (1) dist/ exists with index.html (2) no SITE_NAME/HERO_HEADLINE/TODO/lorem placeholders remain (3) all images referenced exist in dist/assets/ (4) no console.error/console.warn in source (5) bundle size under 500KB gzip. Exit code 1 on any failure → Claude Code sees error → fixes → rebuilds.
