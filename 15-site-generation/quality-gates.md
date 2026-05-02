@@ -52,6 +52,7 @@ These validators run in `build_validators.ts` between R2 upload and `published` 
 | `validate-cursor.mjs` | always.md custom-cursor + click-ripple | `cursor.ring_missing` |
 | `validate-image-hover.mjs` | always.md image-hover-no-layout-shift | `image.hover_layout_shift` |
 | `validate-google-maps-widget.mjs` | always.md google-maps-widget | `map.embed_missing` / `map.geo_mismatch` |
+| `validate-links.mjs` | always.md zero-broken-links + zero-broken-images | `link.dead_blog_slug` / `link.unknown_route` / `asset.missing` |
 
 ## Gorgeous-Loop Reinforcement (***FINAL CRITIQUE BEFORE DEPLOY — every site***)
 
