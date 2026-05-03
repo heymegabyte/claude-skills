@@ -3,7 +3,9 @@ name: "motion-and-interaction-system"
 description: "Meaning-first animation with 3-tier hierarchy. CSS scroll-driven (animation-timeline: scroll()), View Transitions API, @starting-style DOM-insert, container scroll-state queries, prefers-reduced-motion mandatory on all animations."
 metadata:
   version: "2.1.0"
-  updated: "2026-04-23"
+  updated: "2026-05-03"
+  effort: "medium"
+  model: "sonnet"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"

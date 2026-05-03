@@ -3,7 +3,9 @@ name: "brand-and-content-system"
 description: "Extract real brands (Wayback for rebuilds). Copy system, headline/CTA rules, trust surfaces, legal pages, SEO+structured data, anti-AI-slop, microcopy, DESIGN.md, W3C DTCG tokens, pSEO 5 types, GEO/AI search."
 metadata:
   version: "2.1.0"
-  updated: "2026-04-23"
+  updated: "2026-05-03"
+  effort: "medium"
+  model: "haiku"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"

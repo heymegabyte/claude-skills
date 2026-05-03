@@ -3,7 +3,9 @@ name: "architecture-and-stack"
 description: "Cloudflare-first platform selection. Decision trees for Workers, D1, R2, KV, DO, Queues, Vectorize, Containers, Sandboxes, Flagship, Agent Memory, Workflows v2. Default stack, override conditions, auth, data patterns, reliability."
 metadata:
   version: "2.0.0"
-  updated: "2026-04-23"
+  updated: "2026-05-03"
+  effort: "high"
+  model: "opus"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"

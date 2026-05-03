@@ -18,7 +18,7 @@
 <br/>
 
 <div align="center">
-  <code>14 categories</code> · <code>94 reference docs</code> · <code>18 agents</code> · <code>12 templates</code><br/>
+  <code>15 categories</code> · <code>94 reference docs</code> · <code>18 agents</code> · <code>12 templates</code><br/>
   <a href="https://claude.megabyte.space"><strong>🌐 Showcase Website</strong></a>
 </div>
 
@@ -299,6 +299,7 @@ Every deploy must clear all gates. No exceptions. No overrides.
 
 | Script | Purpose |
 |--------|---------|
+| `bin/check-required-keys.sh` | API Key Gate helper — verifies per-mode required keys present, JSON output + audit log |
 | `bin/emdash-quick-lint` | Staged-file linting (ESLint+Prettier+ShellCheck) |
 | `bin/emdash-secret-scan` | Pre-commit secret detection via `detect-secrets` |
 | `bin/emdash-cost-check` | Quick Cloudflare cost estimate from wrangler.toml |

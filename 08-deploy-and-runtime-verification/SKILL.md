@@ -3,7 +3,9 @@ name: "deploy-and-runtime-verification"
 description: "MANDATORY deploy after every code change. Typecheck → deploy → purge CDN → E2E on production → visual verify → fix-forward loop. Workers Builds native CI/CD, D1 Time Travel PIT recovery, D1→R2 long-term backups, wrangler rollback, wrangler secrets management, structured observability, cross-browser smoke tests, rollback procedures, and GitHub auto-configuration."
 metadata:
   version: "2.2.0"
-  updated: "2026-04-23"
+  updated: "2026-05-03"
+  effort: "high"
+  model: "sonnet"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"

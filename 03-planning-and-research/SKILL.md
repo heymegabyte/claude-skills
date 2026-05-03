@@ -3,9 +3,11 @@ name: "planning-and-research"
 description: "Deep web research, competitor scanning, technology evaluation, and implementation planning. Decomposes work into vertical slices, identifies parallel workstreams, tracks assumptions with confidence levels, and designs the critical path for minimum wall-clock time."
 metadata:
   version: "2.0.0"
-  updated: "2026-04-23"
+  updated: "2026-05-03"
   context: "fork"
   agent: "Explore"
+  effort: "high"
+  model: "opus"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"

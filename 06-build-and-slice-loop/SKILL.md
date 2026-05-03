@@ -3,7 +3,9 @@ name: "build-and-slice-loop"
 description: "Implements features in vertical slices, always starting with homepage. Enforces anti-placeholder rules — no lorem ipsum, no TODO stubs, no gray boxes. Real content, real images, real interactions. TypeScript strict mode, Zod validation, and structured file organization."
 metadata:
   version: "2.0.0"
-  updated: "2026-04-23"
+  updated: "2026-05-03"
+  effort: "high"
+  model: "sonnet"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
