@@ -599,6 +599,80 @@ Place on dedicated /faq page AND inline on relevant service pages.
 ### Domain-Specific Features
 Read _domain_features.json and implement ALL listed features for this business category.
 
+### Universal Polish Rules (***BUILD-BREAKING — 13 rules from 2026-05-02 lonemountainglobal+njsk+nyfb cycle***)
+These rules cascade out of universal feedback gathered across the May 2026 benchmark batch. Every site must ship ALL of them on the first build — never as a follow-up patch. Each maps to a validator in `quality-gates.md` and a template component in `template-system.md`.
+
+**1. Logo Transparent Variant (***BUILD-BREAKING — `validate-logo-transparent-variant.mjs`***):**
+- Phase-0 brand research must produce TWO logo files: `public/logos/logo-light.{webp,png}` (dark logo on transparent BG, for light backgrounds) AND `public/logos/logo-dark.{webp,png}` (light logo on transparent BG, for dark headers/footers/hero scrims). ImageMagick recipe per skill 09 §"Logo Container Contrast"
+- Render via `<picture>` element with `prefers-color-scheme` media query: `<source srcset="logo-dark.webp" media="(prefers-color-scheme: dark)"><source srcset="logo-light.webp" media="(prefers-color-scheme: light)"><img src="logo-light.webp" alt="<brand>">`. Both header AND footer use `<BrandLogo>` component (template-system.md), never raw `<img>`
+- Validator greps dist HTML for raw `<img src=".*logo.*">` outside `<picture>` — fail. Greps for missing `logo-dark.*` or `logo-light.*` files in `public/logos/` — fail
+- Reference: lonemountainglobal.com 2026-05-02 — footer logo on burgundy BG was hotlinked source PNG with white BG box, looked broken. Fix: extract icon-only region with `magick logo.png -fuzz 10% -transparent white logo-icon.png`, generate dark variant with `magick logo-icon.png -channel RGB -negate logo-dark.png`
+
+**2. Address → Google Maps Hyperlink (***BUILD-BREAKING — `validate-address-mapslink.mjs`***):**
+- Every street-address render in body copy, footer, contact card, JSON-LD, blog post bodies MUST be wrapped in `<a href="https://www.google.com/maps/dir/?api=1&destination=<urlencoded-address>" target="_blank" rel="noopener noreferrer">`. NAP consistency rule from rules/always.md applies — same address string everywhere
+- Component: `<MapsLink address="..." />` from template-system.md auto-encodes + adds aria-label. Always use the component, never inline anchors
+- Validator greps dist HTML for `\d+\s+\w+(\s+\w+)?\s+(St|Ave|Blvd|Rd|Ln|Way|Dr|Ct|Pl|Pkwy)\b` text NOT inside `<a>` — fail
+- Reference: njsk.org 2026-05-02 — "115 Olive Street, Newark, NJ 07103" rendered as plain text on /contact + /about + footer; no maps deep-link
+
+**3. Stripe-First Donations (***BUILD-BREAKING — `validate-donation-stripe-first.mjs`***):**
+- Non-profit / give / donate routes use Stripe Connect Standard OAuth onboarding for the org. Account flow: `OAuth start → org connects Stripe account → platform stores stripe_account_id in D1 → Connect destination charges flow with platform fee 2.9%+30¢`
+- UI: GiveDirectly-style preset amounts `[10, 25, 50, 100, 250, 500]` + Custom field. Default frequency = monthly recurring, toggle to one-time. "Cover the fees" checkbox below presets — adds 2.9%+30¢ to total so org receives full amount. PayPal/Donorbox/Network for Good/etc are FORBIDDEN in primary CTA — Stripe is the rail, period
+- Component: `<StripeDonationForm orgConnectId="..." presets={[...]} defaultMonthly={true} />` from template-system.md
+- Validator greps dist HTML/JS for paypal.com|donorbox.org|networkforgood.org|givelively.org|fundraisefor.com on donation routes — fail. Greps for missing `stripe.com/v3` script + missing preset amounts — fail
+- Reference: njsk.org 2026-05-02 — donate page used PayPal-only Smart Button. Lone Mountain — donate page deeplinked to Donorbox iframe. Both miss the platform-fee revenue model + force users into clunky external flows
+- See: `06-build-and-slice-loop/stripe-first-donations.md` for full Connect OAuth implementation
+
+**4. X (formerly Twitter) Icon (***BUILD-BREAKING — `validate-x-not-twitter.mjs`***):**
+- Social-icon barrel-export at `src/components/icons/social.tsx` exports `<XIcon>` (NOT `<TwitterIcon>`). Path: official X logo SVG (post-July-2023 rebrand). Anchor href: `https://x.com/<handle>` (NOT twitter.com — auto-redirects but burns DNS). Brand-color hover hex: `#000000` light theme, `#ffffff` dark theme
+- Validator greps dist for `twitter.com|<TwitterIcon|twitter-icon|fa-twitter|bi-twitter|icon-twitter` — fail. Greps for blue Twitter bird path data (`M23.643 4.937c-.835.37-1.732.62-2.675.733...`) — fail
+- Reference: lonemountainglobal.com 2026-05-02 — footer used Font Awesome `fa-twitter` blue bird icon linked to twitter.com/lonemountainglobal. Brand died in 2023. Use the X cross-bar icon
+
+**5. Full-Bleed Sections (***BUILD-BREAKING — `validate-full-bleed-sections.mjs`***):**
+- Hero, gallery, comparison tables (>1100px viewport), testimonials carousels, CTA banners use full-viewport-width containers via `<FullBleed>` wrapper from template-system.md. Implementation: `width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw)` AND fallback `position: relative; left: 50%; right: 50%; transform: translateX(-50%)` (double-mechanism — Safari 14 ignores the calc form on some flex parents)
+- Inner content uses standard `max-w-7xl mx-auto px-6` for readable width — only the BG/visual extends edge-to-edge
+- Validator screenshots desktop (1280px + 1920px breakpoints), looks for sections that visually stop short of viewport edge with non-bg-color gutters — fail. Also greps for hero/gallery sections nested inside `max-w-*` parents — fail
+- Reference: njsk.org 2026-05-02 — hero photo had 80px white gutters left/right on 1920px monitor because hero `<section>` was inside `<main className="max-w-7xl">`. Fix: hero must escape the wrapper
+
+**6. Expandable Card No-Crop (***BUILD-BREAKING — `validate-expandable-card-no-crop.mjs`***):**
+- Cards with hidden→expanded states use CSS Grid pattern: `display: grid; grid-template-rows: 0fr` collapsed → `grid-template-rows: 1fr` expanded, child wrapper `min-height: 0; overflow: hidden`. On `transitionend` swap `overflow: visible` so dropdowns/tooltips/modals inside the card aren't clipped
+- Component: `<ExpandableCard summary={...} details={...} />` from template-system.md handles the overflow-swap automatically
+- Validator runs Playwright on dist, expands every `[data-expandable]`, asserts `getBoundingClientRect()` of children doesn't exceed parent + checks `overflow: visible` after transition — fail
+- Reference: nyfoldingbox.com 2026-05-02 — "Specs" expandable cards used `max-height` transition, on expand the dropdown specs table got cut off mid-row
+
+**7. R2 Self-Hosting (No CDN Hotlinks) (***BUILD-BREAKING — `validate-no-cdn-hotlinks.mjs`***):**
+- See `media-acquisition.md` "R2 Self-Hosting Pipeline" for full Vite plugin implementation
+- Phase-3 build pass runs `r2AssetRewriter()` Vite plugin (template-system.md) — every `https://*.cdn-host/*` URL in source code rewrites to `/assets/migrated/<sha256-prefix>.<ext>`, batch-downloads with realistic UA, build-cache via `.cdn-rewrite-cache.json`
+- Validator greps dist/ for any URL matching CDN_HOSTS regex (cdn.shopify.com, squarespace-cdn.com, wp.com, wixstatic.com, imgix.net, cloudinary.com, contentful.com, ctfassets.net, sanity.io, prismic.io, akamaized.net, cloudfront.net, fastly.net, etc.) outside excluded list (googletagmanager.com, posthog.com, sentry.io, js.stripe.com, *.youtube.com/embed, *.vimeo.com/video, fonts.googleapis.com) — fail
+- Reference: lonemountainglobal.com 2026-05-02 — footer logo + 8 hero images hotlinked to source WordPress CDN. Source domain rotation/expiry would 404 the rebuilt site
+
+**8. Blog Featured-Image Fallback (***BUILD-BREAKING — `validate-blog-featured-images.mjs`***):**
+- See `media-acquisition.md` "Blog Featured-Image Fallback" for the 5-step chain
+- Every entry in `_corpus.json.posts[]` MUST have `featured_image_url` non-null AND HEAD-200 in dist AND dims ≥800×600. Stored at `public/assets/blog/<post-slug>-hero.<ext>` (slug-named, NOT hash-named — for human-readable diffs). JSON-LD `BlogPosting.image` references this path
+- Component: `<BlogPostHero post={post} />` from template-system.md auto-renders fallback chain at build time
+- Validator iterates `_corpus.json.posts[]`, asserts file exists + HEAD-200 + dims gate — fail on any post without hero
+- Reference: njsk.org 2026-05-02 — 14 of 129 imported blog posts had broken Squarespace CDN hero URLs (404), shipped with `<img src="">` rendering as broken-image icon
+
+**9. Stat Counter Rollup Section (***auto-applied — every site with quantitative impact data***):**
+- Sites with quantitative claims (meals served, donors, years operating, projects completed, partners) get a homepage `<StatRollup>` section with IntersectionObserver-triggered count-up animation (rAF loop, 1500ms duration, ease-out cubic). 4 hero numbers on dark contrast band, large display font, brand-accent color, descriptive label below each
+- Component: `<StatRollup stats={[{value: 5000, label: 'Meals Served Weekly', suffix: '+'}]} />`
+- See: `~/.claude/rules/always.md` skill 11 bundle "Every stat block IO+rAF roll-in counter"
+
+**10. Pointer-Cursor Honesty (***auto-applied***):**
+- Every `<a>`, `<button>`, `[role="button"]`, `[onclick]`, `[data-zoomable]`, `[data-expandable]` element gets `cursor: pointer`. Conversely, decorative elements (cards that LOOK clickable but aren't) MUST get `cursor: default` to avoid lying. Tailwind: `cursor-pointer` on all interactive, audit `tailwind.config.ts` to ensure no global `cursor-default` override
+- See: `~/.claude/rules/always.md` skill 10 bundle "Every clickable element pointer-cursor honesty"
+
+**11. Card Hover No-White-Flash (***auto-applied***):**
+- First-hover white-flicker bug: caused by `transition: all` on cards with `background` rule. Fix: explicitly transition only `transform`, `box-shadow`, `border-color`, `opacity` — NEVER `background` unless using `transition-colors`. Use `will-change: transform` sparingly on hover-heavy cards
+- See: `~/.claude/rules/always.md` skill 11 bundle "Every card hover no white-flash on first hover"
+
+**12. Source-Site Contact Preservation (***auto-applied***):**
+- Phase-0 scrape extracts contact strings (email/phone/address) from source site's footer, contact page, and `mailto:`/`tel:` anchors. Persist to `_brand.json.contact = { email, phone, address }`. Rebuild MUST surface ALL three on /contact + footer + JSON-LD even if user form had blanks — never lose original contact info
+- Reference: nyfoldingbox.com 2026-05-02 — rebuild dropped phone number because user-form skipped the phone field. Source had `(212) 555-0142` in footer the whole time
+
+**13. Anti-FOUC Loader Class (***auto-applied***):**
+- Universal in-viewport fade-in animation MUST run AFTER fonts loaded + initial layout settled. Pattern: `<html class="js-reveal-loading">` → `<script>document.fonts.ready.then(() => document.documentElement.classList.replace('js-reveal-loading', 'js-reveal-active'))</script>`. CSS: `.js-reveal-loading .reveal { opacity: 0 }`, `.js-reveal-active .reveal { transition: opacity 600ms; }`. IntersectionObserver toggles `.is-visible` per element
+- See: `~/.claude/rules/always.md` skill 11 bundle "Every site anti-FOUC + universal in-viewport fadeIn"
+
 ## Phase 2: Build + Inspect + Fix
 
 After customizing all files:
