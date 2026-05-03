@@ -34,6 +34,7 @@ submodules:
   - agentic-security.md
   - picovoice-eagle-biometric.md
   - stagehand-ai-fallback.md
+  - build-breaking-rules.md
 ---
 
 # 07 — Quality and Verification

@@ -15,6 +15,7 @@ submodules:
   - documentation-and-codebase-hygiene.md
   - per-route-metadata.md
   - grammar-audit.md
+  - build-breaking-rules.md
 ---
 
 # 09 — Brand and Content System

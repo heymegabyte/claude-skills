@@ -10,6 +10,7 @@ compatibility:
   agentskills: ">=1.0.0"
 submodules:
   - design-tokens.md
+  - build-breaking-rules.md
 ---
 
 # 10 — Experience and Design System

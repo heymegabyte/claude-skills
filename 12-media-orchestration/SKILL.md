@@ -19,6 +19,7 @@ submodules:
   - lightbox-classifier.md
   - social-brand-hex.md
   - notebooklm-pipeline.md
+  - build-breaking-rules.md
 ---
 
 # 12 -- Media Orchestration

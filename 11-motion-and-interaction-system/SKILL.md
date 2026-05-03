@@ -8,6 +8,8 @@ license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
+submodules:
+  - build-breaking-rules.md
 ---
 
 # 11 — Motion and Interaction System

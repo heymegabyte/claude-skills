@@ -22,6 +22,7 @@ submodules:
   - bolt-artifact-protocol.md
   - blog-import.mjs
   - validate-assets.mjs
+  - build-breaking-rules.md
 ---
 
 # 15 -- Site Generation
