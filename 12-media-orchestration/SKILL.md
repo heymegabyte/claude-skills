@@ -18,11 +18,12 @@ submodules:
   - image-profiling.md
   - lightbox-classifier.md
   - social-brand-hex.md
+  - notebooklm-pipeline.md
 ---
 
 # 12 -- Media Orchestration
 
-Submodules: media-prompts.md (prompt templates, Ideogram v3 API), compression-pipeline.md (Python code, format tables, CF Image Transforms, CLS, broken image detection), og-image-generation.md (Satori edge-rendered OG images, KV/R2 cache, meta-tag helper), image-optimization.md (Sharp processing, responsive srcset, WebP/AVIF, blur placeholders, R2 pipeline), image-profiling.md (GPT-4o vision batch profiling — quality+placement+colors per image, pre-digest for builders), lightbox-classifier.md (per-image eligibility — kind!=logo + ≥1024×768 + score≥7, logo grids → hover-grayscale-to-color), social-brand-hex.md (canonical brand-color map per social platform, hover/focus/active states, per-platform CSS class generation).
+Submodules: media-prompts.md (prompt templates, Ideogram v3 API), compression-pipeline.md (Python code, format tables, CF Image Transforms, CLS, broken image detection), og-image-generation.md (Satori edge-rendered OG images, KV/R2 cache, meta-tag helper), image-optimization.md (Sharp processing, responsive srcset, WebP/AVIF, blur placeholders, R2 pipeline), image-profiling.md (GPT-4o vision batch profiling — quality+placement+colors per image, pre-digest for builders), lightbox-classifier.md (per-image eligibility — kind!=logo + ≥1024×768 + score≥7, logo grids → hover-grayscale-to-color), social-brand-hex.md (canonical brand-color map per social platform, hover/focus/active states, per-platform CSS class generation), notebooklm-pipeline.md (per-site podcast via ElevenLabs Studio + infographic gallery via Vega-Lite/Recraft/GPT-Image-2 + explainer video via HeyGen + Cloudflare Stream embed + RSS feed + JSON-LD + cost ceiling $3.50/site, runs Phase 0 in parallel with Media Slot Manifest, paired with `notebooklm-orchestrator` agent).
 
 ## Strategy by Section
 Hero: GPT Image 1.5/Sora. Features: GPT Image 1.5/SVG. How It Works: GPT Image 1.5. Testimonials: stock. About: stock/real. Blog: GPT Image 1.5. Social: Satori OG 1200x630. Icons: Ideogram v3+processing.
