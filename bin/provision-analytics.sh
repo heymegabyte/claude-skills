@@ -154,23 +154,38 @@ provision_posthog() {
     | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])" 2>/dev/null || true)"
   if [ -z "$org_id" ]; then fail "PostHog auth failed"; return; fi
 
-  existing="$(curl -sf -H "Authorization: Bearer $POSTHOG_TOKEN" \
-    "${POSTHOG_HOST}/api/organizations/${org_id}/projects/" 2>/dev/null \
-    | python3 -c "
+  local all_projects
+  all_projects="$(curl -sf -H "Authorization: Bearer $POSTHOG_TOKEN" \
+    "${POSTHOG_HOST}/api/organizations/${org_id}/projects/" 2>/dev/null || true)"
+
+  existing="$(echo "$all_projects" | python3 -c "
 import sys,json
 d=json.load(sys.stdin)
 for p in d.get('results',[]):
     if p.get('name')=='${DOMAIN}': print(p.get('api_token','')); break" 2>/dev/null || true)"
 
   if [ -n "$existing" ]; then
-    project_key="$existing"; log "PostHog project exists"
+    project_key="$existing"; log "PostHog project exists: ${DOMAIN}"
   else
     log "Creating PostHog project for $DOMAIN"
-    project_key="$(curl -sf -X POST -H "Authorization: Bearer $POSTHOG_TOKEN" -H "Content-Type: application/json" \
+    local create_resp
+    create_resp="$(curl -sS -X POST -H "Authorization: Bearer $POSTHOG_TOKEN" -H "Content-Type: application/json" \
       "${POSTHOG_HOST}/api/organizations/${org_id}/projects/" \
-      -d "{\"name\":\"${DOMAIN}\"}" \
-      | python3 -c "import sys,json; print(json.load(sys.stdin)['api_token'])")"
-    ok "PostHog project key minted"
+      -d "{\"name\":\"${DOMAIN}\"}" 2>/dev/null || true)"
+    project_key="$(echo "$create_resp" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('api_token',''))" 2>/dev/null || true)"
+    if [ -n "$project_key" ]; then
+      ok "PostHog project key minted"
+    else
+      # Free tier — fall back to first existing project, tag events with super-property `project`
+      warn "PostHog project creation blocked (free-tier 1-project cap?) — reusing first existing project"
+      project_key="$(echo "$all_projects" | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+results=d.get('results',[])
+print(results[0].get('api_token','') if results else '')" 2>/dev/null || true)"
+      [ -z "$project_key" ] && { fail "PostHog: no projects available"; return; }
+      log "Reusing PostHog project — tag events with posthog.register({project:'${DOMAIN}'})"
+    fi
   fi
   echo "VITE_POSTHOG_KEY=${project_key}"
   echo "VITE_POSTHOG_HOST=${POSTHOG_HOST}"
