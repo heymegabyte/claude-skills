@@ -13,6 +13,8 @@ description: "Full command palette (Cmd+K) like Linear/Notion for SaaS products.
 - Any product with search (pairs with 06/site-search)
 
 ## Command Palette (Cmd+K)
+**Focus contract (***NON-NEGOTIABLE***):** opening the palette or AI chat via `Meta+K`/`Ctrl+K` MUST focus the text input on the same frame — caret blinking, zero extra clicks. Use `autofocus` on the input AND a programmatic `requestAnimationFrame(()=>input.focus({preventScroll:true}))` after the `hidden=false`/open-state flip (covers React re-render, View Transitions, and `@starting-style` enter). If the modal is already open, re-pressing Cmd+K re-focuses and `input.select()`s existing text. Esc returns focus to the triggering element (a11y). Playwright test: `await page.keyboard.press('Meta+K'); await expect(page.locator('#cmdInput')).toBeFocused();` — failure = build fail.
+
 ### HTML
 ```html
 <div id="cmdPalette" class="cmd-palette" hidden role="dialog" aria-label="Command palette">

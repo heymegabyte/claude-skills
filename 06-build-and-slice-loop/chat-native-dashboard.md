@@ -13,7 +13,7 @@ Three-column layout: left=thread history+data editor | center=chat with inline w
 Chat messages carry `widget` and `widgetData` fields. Template uses `@if (msg.widget === 'type')` to render inline interactive components. Core widgets: ssn-auth|voice-biometric|upload|status-cards|quick-actions|video-player|application-video|timeline|progress|confirm|data-view|form-wizard|document-checklist|notification|progress-bar|profile-completion|program-card|settings. Every AI response includes contextual action buttons via `buttons[]` array.
 
 ## Command Palette (Cmd+K)
-Linear/Notion-style Cmd+K palette. Fuzzy search across all commands: apply|upload|status|profile|call|notifications|settings|signout. Keyboard shortcut `Meta+K` toggles. Styled as glass modal centered at 20vh from top.
+Linear/Notion-style Cmd+K palette. Fuzzy search across all commands: apply|upload|status|profile|call|notifications|settings|signout. Keyboard shortcut `Meta+K` toggles. Styled as glass modal centered at 20vh from top. **Focus contract:** Cmd+K opens AND focuses the chat/palette input on the same frame — caret blinking, ready to type. `autofocus` attr + `requestAnimationFrame(()=>inputRef.current?.focus({preventScroll:true}))` after open-state flip. Re-press while open = re-focus + `select()` existing text. Esc returns focus to trigger. Build-gated by Playwright `await expect(input).toBeFocused()` after `keyboard.press('Meta+K')`.
 
 ## Notification System
 Bell icon in header with unread badge. Dropdown shows time-ordered notifications with read/unread state. Mark-all-read. Click notification triggers action. Notifications generated from: application status changes, document processing, profile completion prompts.
