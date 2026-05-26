@@ -13,7 +13,10 @@ Brian Zalewski. Principal SE, 14yr. Megabyte Labs / HeyMegabyte. Solo AI builder
 - `progress.md` at 60% context → fresh agent.
 - Crons = monitoring ONLY.
 
-## Value Extraction (***EVERY PROMPT***)
+## Value Extraction (***EVERY PROMPT — SUPREME via [[prompt-as-training-signal]]***)
+- Every prompt is a gradient. If the user is prompting at all, the prior turn under-delivered in some dimension. Extract the lesson BEFORE doing the work and write it to the durable layer IN THE SAME TURN. Cross-link from sibling rules.
+- 7 prompt shapes + extraction protocol: `@rules/prompt-as-training-signal.md`.
+
 Scan every prompt and route:
 - Corrections → memory
 - "always/never" → rules
@@ -21,6 +24,8 @@ Scan every prompt and route:
 - Design → skill 10
 - Requirement → SPEC + test
 - 3× repeat → skill
+- Explicit meta ("ensure ___ is in ~/.claude") → highest-priority rule capture
+- Re-issued prompt on same surface → `[[monitor-orchestration]]` § Known shortcomings + `[[prompt-as-training-signal]]`
 
 Routing:
 - Universal → `~/.claude/`
@@ -74,8 +79,11 @@ Routing:
 
 ## Stack
 - **Edge** — CF Workers + Hono
-- **Frontend** — **React 19 + Vite + Tailwind v4** (default for one-line site prompts) OR Angular 21 + Ionic + PrimeNG (SaaS / Brian's own work / signal-heavy) — pick by reliability
-- **Marketing-static** — Astro 5 + React islands
+- **Frontend** — ONLY TWO STACKS ALLOWED for any user-facing surface (see `@rules/frontend-stack.md`):
+  - **React 19 + Vite + SSR/SSG + TanStack Router + Tailwind v4 + shadcn/ui** (default)
+  - **Angular 21 + Ionic + Capacitor + Cordova + PrimeNG + Angular Universal SSR** (when explicitly chosen, native iOS/Android shells, or signal-heavy enterprise)
+- **NEVER** write hand-rolled `public/{page}.html` files for any user-facing content. Even a 1-page site uses the Vite or Angular scaffold.
+- **Marketing-static** — same React+Vite or Angular+Ionic. Do NOT default to Astro / Next.js / Remix / SvelteKit unless explicitly requested.
 - **DB** — D1 (read-replicas, Sessions API) / Neon
 - **Cache** — Upstash
 - **ORM** — Drizzle v1 RQBv2 + Zod
@@ -147,5 +155,5 @@ Preserve: files, tasks, branch, gates, prefs, parallelization, value extraction.
 <context>
 - **Bash** — camelCase fns, UPPER_CASE vars, `gum log` never `echo`, ShellCheck + shfmt.
 - **File format** — human-readable bullets (unordered) or numbered lists when weight matters. Stay concise: one idea per bullet, ≤2 lines, no padding. See `@rules/brian-preferences.md` § Skill/Rule File Format.
-- See `@rules/` for: `code-style`, `brian-preferences`, `always`, `verification-loop`, `error-recovery`, `quality-metrics`, `copy-writing`, `model-routing`, `prompt-cache`, `auto-meta-work`, `full-autonomy`, `computer-use-safety`, `hono-api`, `fetch-defaults`, `citations`, `supreme-polish`, `proactive-improvements`, `monitor-orchestration`, `source-site-enhancement`, `secret-provisioning`, `secret-auto-provisioning`, `image-quality`, `text-contrast`, `logo-contrast`, `timeline-authenticity`, `i18n-by-demographics`, `payments-routing`, `thin-source-amplification`.
+- See `@rules/` for: `prompt-as-training-signal` (SUPREME every-prompt extraction), `code-style`, `brian-preferences`, `always`, `verification-loop`, `error-recovery`, `quality-metrics`, `copy-writing`, `model-routing`, `prompt-cache`, `auto-meta-work`, `full-autonomy`, `computer-use-safety`, `hono-api`, `fetch-defaults`, `citations`, `supreme-polish`, `proactive-improvements`, `extra-mile`, `auto-integrate-recs`, `monitor-orchestration`, `source-site-enhancement`, `secret-provisioning`, `secret-auto-provisioning`, `image-quality`, `text-contrast`, `logo-contrast`, `timeline-authenticity`, `i18n-by-demographics`, `payments-routing`, `thin-source-amplification`.
 </context>
