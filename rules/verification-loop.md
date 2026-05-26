@@ -1,14 +1,104 @@
 # Verification Loop (MANDATORY)
-**(***NON-NEGOTIABLE — EVERY ADD/FIX, NO EXCEPTIONS***)** Any code change to a deployable project = build→deploy→curl/Playwright E2E against the PROD URL targeting the changed pages/routes/endpoints→fix-forward (max 3 redeploys)→only then report DONE. Auth gap (`wrangler whoami` fails, missing CLOUDFLARE_API_TOKEN) is NOT a pass — fetch via `/Users/Apple/.local/bin/get-secret CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (or `CLOUDFLARE_API_KEY`+`CLOUDFLARE_EMAIL`) first, then if both stale ask user to `! npx wrangler login` and resume from deploy. Local typecheck+build passing is NEVER sufficient; "DONE" requires the change verified live. The pages relevant to the add/fix MUST each be HTTP-fetched post-deploy and asserted against (new content present, no 5xx, security headers intact, no CSP/console errors).
-TDD: failing Playwright test FIRST→implement→pass. Real user flows: homepage→navigate via clicks/keyboard→interact→verify. Test account test@megabyte.space (TEST_USER_PASSWORD).
-Code change→SPEC.md→failing tests(PROD_URL)→implement slice-by-slice→deploy+purge→E2E 6bp→screenshot→AI vision→fix→redeploy(max 3)→DONE when all pass.
-Ralph Loop: SPEC.md+progress.md→pick AC→test→build→deploy→verify→mark done→next. Context>60%→save+spawn fresh. All ACs done→recommendations loop→zero remain.
-**Playwright Test Agents** (built-in v1.56+): Planner→Markdown plan|Generator→test code|Healer→auto-fix broken selectors. Init: `npx playwright init-agents --loop=claude`. v1.59+ adds `browser.bind()` for MCP interop + `page.screencast` for video receipts. Use Healer for flaky selector recovery before manual rewrite. MCP a11y tree testing preferred over screenshot-based assertions — more reliable, faster, catches real a11y issues.
-Visual regression: Percy AI Visual Review (3x faster review, 40% OCR-based noise filter) for full-page+flows|Chromatic for component-level via Storybook|pixelmatch (or Playwright `toHaveScreenshot()`) for local deterministic CI. Three-tier: local→PR→deploy.
-INP debugging: PerformanceObserver type:`long-animation-frame` (LoAF, Chrome 123+). For SPA per-route CWV: web-vitals v4+ with `softNavs:true`.
-No screenshot=not verified. No test=not done. No deploy=not shipped. Crons=monitoring ONLY.
-Console errors=not done. After every deploy, check browser console for CSP violations, JS errors, failed resource loads. Fix ALL before marking task complete. Never ship a page with console errors — they indicate broken functionality (blocked scripts, missing resources, CSP mismatches).
-Browser console gate also captures: CSP report-uri violations, Trusted Types violations, deprecation warnings, beforeunload misuse, autoplay blocks, third-party script errors. Each = build fail.
-Gradual deploy verification: 1%→watch error rate 5min→10%→watch 5min→100%. Auto-rollback at p99 error >1% or LCP regression >20%.
-Value extraction every prompt: universal→~/.claude/ | project→./.claude/ (path-scoped). New projects auto-scaffold .claude/+SPEC.md+tests.
-**TDD-First + Total-Coverage (***NON-NEGOTIABLE***)**: every clickable element / form field / nav link / API endpoint / modal / keyboard shortcut / error / empty / loading state has ≥1 Playwright test asserting it works against PROD. Inventory at `e2e/FEATURES.md` + `e2e/COVERAGE.yml`. CI fails if any feature lacks an entry or test. Tests run `fullyParallel: true` × 4-8 workers × 3 browsers × 6 breakpoints. Spawn parallel Playwright Test Agents — one per feature — to autonomously generate tests from feature descriptions. Bug fix = failing-test-first reproducing the bug. Code change = (1) write failing test, (2) implement, (3) `npm run e2e:prod`, (4) screenshot artifacts uploaded to R2. No feature without ≥1 test. No bug fix without ≥1 regression test.
+
+## Deploy + Prod-E2E mandate (***NON-NEGOTIABLE — EVERY ADD/FIX, NO EXCEPTIONS***)
+Any code change to a deployable project follows this loop:
+1. Build
+2. Deploy
+3. curl / Playwright E2E against the PROD URL targeting the changed pages/routes/endpoints
+4. Fix-forward (max 3 redeploys)
+5. Only then report DONE
+
+### Auth fallback chain
+Auth gap (`wrangler whoami` fails, missing `CLOUDFLARE_API_TOKEN`) is NOT a pass:
+1. Fetch via `/Users/Apple/.local/bin/get-secret CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`
+2. Fall back to `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL`
+3. If both stale, ask user to `! npx wrangler login` and resume from deploy
+
+### Done definition
+- Local typecheck + build passing is NEVER sufficient
+- "DONE" requires the change verified live
+- Pages relevant to the add/fix MUST each be HTTP-fetched post-deploy and asserted against (new content present, no 5xx, security headers intact, no CSP/console errors)
+
+## TDD
+- Failing Playwright test FIRST → implement → pass
+- Real user flows: homepage → navigate via clicks/keyboard → interact → verify
+- Test account: `test@megabyte.space` (`TEST_USER_PASSWORD`)
+
+## Code-change flow
+Code change → SPEC.md → failing tests (PROD_URL) → implement slice-by-slice → deploy + purge → E2E 6bp → screenshot → AI vision → fix → redeploy (max 3) → DONE when all pass.
+
+## Ralph Loop
+- SPEC.md + progress.md → pick AC → test → build → deploy → verify → mark done → next
+- Context >60% → save + spawn fresh
+- All ACs done → recommendations loop → zero remain
+
+## Playwright Test Agents (built-in v1.56+)
+- **Planner** → Markdown plan
+- **Generator** → test code
+- **Healer** → auto-fix broken selectors
+- Init: `npx playwright init-agents --loop=claude`
+- v1.59+ adds `browser.bind()` for MCP interop + `page.screencast` for video receipts
+- Use Healer for flaky selector recovery before manual rewrite
+- MCP a11y tree testing preferred over screenshot-based assertions — more reliable, faster, catches real a11y issues
+
+## Visual regression
+- **Percy AI Visual Review** — 3x faster review, 40% OCR-based noise filter — full-page + flows
+- **Chromatic** — component-level via Storybook
+- **pixelmatch** (or Playwright `toHaveScreenshot()`) — local deterministic CI
+- Three-tier: local → PR → deploy
+
+## INP debugging
+- `PerformanceObserver` type:`long-animation-frame` (LoAF, Chrome 123+)
+- For SPA per-route CWV: web-vitals v4+ with `softNavs:true`
+
+## Hard rules
+- No screenshot = not verified
+- No test = not done
+- No deploy = not shipped
+- Crons = monitoring ONLY
+
+## Console-error gate
+- Console errors = not done
+- After every deploy, check browser console for CSP violations, JS errors, failed resource loads
+- Fix ALL before marking task complete
+- Never ship a page with console errors — they indicate broken functionality (blocked scripts, missing resources, CSP mismatches)
+- Browser console gate also captures: CSP report-uri violations, Trusted Types violations, deprecation warnings, beforeunload misuse, autoplay blocks, third-party script errors
+- Each = build fail
+
+## Gradual deploy verification
+1. 1% → watch error rate 5 min
+2. 10% → watch 5 min
+3. 100%
+- Auto-rollback at p99 error >1% or LCP regression >20%
+
+## Value extraction every prompt
+- Universal → `~/.claude/`
+- Project → `./.claude/` (path-scoped)
+- New projects auto-scaffold `.claude/` + SPEC.md + tests
+
+## TDD-First + Total-Coverage (***NON-NEGOTIABLE***)
+Every clickable element / form field / nav link / API endpoint / modal / keyboard shortcut / error / empty / loading state has ≥1 Playwright test asserting it works against PROD.
+
+### Inventory
+- `e2e/FEATURES.md` + `e2e/COVERAGE.yml`
+- CI fails if any feature lacks an entry or test
+
+### Execution
+- Tests run `fullyParallel: true` × 4-8 workers × 3 browsers × 6 breakpoints
+- Spawn parallel Playwright Test Agents — one per feature — to autonomously generate tests from feature descriptions
+
+### Bug + change protocol
+- Bug fix = failing-test-first reproducing the bug
+- Code change:
+  1. Write failing test
+  2. Implement
+  3. `npm run e2e:prod`
+  4. Screenshot artifacts uploaded to R2
+- No feature without ≥1 test
+- No bug fix without ≥1 regression test
+
+## See
+- [[e2e-tdd-organization]] — canonical e2e/ directory layout + hermetic-spec contract + parallel-runner shard knob
+- [[e2e-visual-inspection]] — random snapshot sampling during runs + new-section AI vision pass on first render
+- [[context-spillover]] — when working a feature, also harvest the loaded context for adjacent doc/test/aesthetic gains
+- [[prompt-as-training-signal]] — every "make sure ___ is tested" prompt = signal this rule needs sharpening
