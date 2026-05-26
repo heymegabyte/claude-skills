@@ -121,6 +121,12 @@ export default defineConfig({
 - No console errors / CSP violations / 4xx-5xx network calls
 - New routes registered in `__seen-routes__.json` AND covered by `[[e2e-visual-inspection]]` first-render gate
 
+## Enforcement (deterministic, not aspirational)
+- **PostToolUse hook** at `~/.claude/hooks/enforce-tdd-e2e.py` fires after every `Write|Edit|MultiEdit` on `src/web/components/**`, `src/worker/routes/**`, `src/web/pages/**`, `apps/dashboard/src/app/features/**`. Scans `e2e/` for any spec mentioning the edited file's basename or relative path. If none found, emits a system-reminder feeding back to the model: "TDD-E2E gap on <file>; expected location <prefix>". Hook is non-blocking (exit 2 = warning) so it doesn't stall in-progress edits, but the reminder is loud and persistent.
+- **SessionStart hook** at `~/.claude/hooks/session-start-reminders.py` emits a one-line reminder of the four SUPREME rules ([[e2e-tdd-organization]] · [[e2e-visual-inspection]] · [[context-spillover]] · [[prompt-as-training-signal]]) at the top of every fresh session.
+- Wired in `~/.claude/settings.json` under `hooks.PostToolUse` + `hooks.SessionStart`.
+- Per `[[01-operating-system]]` philosophy `hooks > rules > skills > prompts` — these hooks turn this rule from documentation-I-might-read into enforcement-the-harness-applies.
+
 ## See
 - [[verification-loop]] — deploy + prod-E2E mandate (this rule is the test-organization arm of that)
 - [[e2e-visual-inspection]] — random snapshot + new-section AI vision (run inside every spec here)
