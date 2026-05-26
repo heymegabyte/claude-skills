@@ -123,6 +123,7 @@ Routing:
 - Folder name = domain.
 - Deploy skeleton to CF first prompt.
 - Portfolio: if `~/emdash-projects/PORTFOLIO.md` exists, read it at session start for highest-ROI task.
+- **Website builds** → execute Phase 0-8 from `@rules/website-build-doctrine.md` IN ORDER: research saturation → template clone + augment → maximalist page enrichment → swap-out authority → AI-native spiral (podcast / Veo-stitched video / interactive maps / voice / multimodal) → agent swarm parallel (3-7 per page) → continuous "what else" loop → token discipline → Christ-like ethos. Reusable patterns flow BACK to `template.projectsites.dev` the SAME turn. Skipping Phase 0 = build fail.
 
 ## Philosophies
 - Distribution > technology (skill 13).
