@@ -3,7 +3,7 @@
 ## Mandate
 - Every user-facing surface (marketing sites, web apps, dashboards, admin UIs, generated business sites, landing pages, microsites, blogs) MUST be built with ONE of two stacks:
   - **React 19 + Vite + SSR/SSG + TanStack Router + Tailwind v4** (default)
-  - **Angular 19+ + Ionic + Capacitor + Cordova + PrimeNG + SSR (Angular Universal)** (when explicitly chosen; ProjectSites.dev pinned here)
+  - **Angular 21+ + Nx 20 + Ionic 8 + Capacitor 6 + PrimeNG + SSR (`@angular/ssr` on Cloudflare Workers) + Tailwind v4 + Angular CDK** (when explicitly chosen; ProjectSites.dev pinned here). RxJS-first at every backend edge per [[rxjs-first-angular]].
 - Hand-rolling `public/index.html` + `public/pricing.html` + `public/about.html` etc. is a build failure. Period.
 - No "just one static HTML file" exceptions. Even a 1-page site uses the React+Vite or Angular+Ionic scaffold.
 
@@ -47,13 +47,20 @@
 ## Angular 21 + Ionic + Capacitor + Cordova (***when explicitly chosen***)
 
 ### Core
-- **Angular 21** standalone components + signals
+- **Angular 21** standalone components + signals + **zoneless change detection** (`provideZonelessChangeDetection()` — default in 21, drop Zone.js entirely)
+- **`httpResource()`** (Angular 21 stable) — declarative HTTP→signal bridge for read-only endpoints; pair with full RxJS streams for mutations + WS + SSE per [[rxjs-first-angular]]
+- **Incremental hydration** — `provideClientHydration(withIncrementalHydration())` — hydrate on viewport/interaction only
+- **Nx 20+** workspace + `@nx/angular` generators + Angular CLI MCP wired
 - **Ionic 8+** UI components (cross-platform: web, iOS, Android)
-- **Capacitor 6+** for native iOS / Android wrapping
+- **Capacitor 6+** for native iOS / Android wrapping; **Tauri 2** alongside for macOS/Windows/Linux desktop
 - **Cordova plugins** for any native API not covered by Capacitor
-- **Angular Universal SSR** for marketing surfaces (built-in via `@angular/ssr`)
-- **PrimeNG** when richer enterprise UI needed alongside Ionic
-- **TypeScript 5.9+** with signal-based reactivity
+- **`@angular/ssr` on Cloudflare Workers** — SSR at the edge, same origin as the API
+- **PrimeNG** (latest) for admin density; **Spartan UI** (shadcn-for-Angular) for marketing surfaces
+- **Tailwind v4** (OxIDE engine) + **Angular CDK** for overlays/drag-drop/virtual-scroll/a11y primitives
+- **RxJS-first at every backend edge** per [[rxjs-first-angular]] — observables for HTTP/WS/SSE, `toSignal()` only at the template boundary
+- **TypeScript 5.9+** with `"strict": true`, `"noUncheckedIndexedAccess": true`, `"exactOptionalPropertyTypes": true`
+- **Vitest** as the test runner (replaces Karma) via `@analogjs/vitest-angular`
+- **Transloco** for i18n (replaces `@ngx-translate/core` for new projects)
 
 ### Build output
 - Web: `dist/{app}/browser/` + `dist/{app}/server/`

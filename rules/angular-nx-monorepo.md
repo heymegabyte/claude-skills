@@ -10,12 +10,21 @@ Whenever Angular is the chosen frontend (per Brian's `~/.claude/CLAUDE.md` Front
 - **Typed Reactive Forms** (`FormGroup<T>`, `FormControl<T>`). No template-driven forms.
 - **Lazy-loaded routes** via `loadComponent` / `loadChildren`. Every route lazy.
 - **`@defer` blocks** for below-the-fold and role-conditional rendering.
+- **Zoneless change detection** — `provideZonelessChangeDetection()` (default in Angular 21). Drop Zone.js entirely. Mandatory pairing with signals.
+- **Incremental hydration** — `provideClientHydration(withIncrementalHydration())` (Angular 21 stable). Hydrate on viewport/interaction.
+- **`httpResource()`** (Angular 21 stable) for declarative HTTP→signal bridges on read-only endpoints. Pair with full RxJS streams (HTTP/WS/SSE) per [[rxjs-first-angular]] for mutations, multi-source compose, polling fallback.
 - **`provideHttpClient(withFetch(), withInterceptors([...]))`** with typed interceptors for auth / tenant / role / error handling.
+- **RxJS-first at every backend edge** — every service returns `Observable<T>`; signals bridge only at the template via `toSignal()`. Polling is the floor; SSE/WS the ceiling. Full mandate: [[rxjs-first-angular]].
 - **Angular CDK** for overlays, drag-drop, virtual scrolling, a11y primitives. Wrap in custom design-system components — don't ship raw CDK to users.
-- **Tailwind v4** for styling. Brand tokens via CSS custom properties.
-- **esbuild application builder** (Angular's default since 17). SSR via Angular SSR only when SEO demands it.
-- **ESLint 9 + Prettier + @angular-eslint** with `"strict": true` + `"noUncheckedIndexedAccess": true`.
-- **Vitest** for unit tests. **Playwright** (TDD-RED first per [[e2e-tdd-organization]]) for E2E.
+- **PrimeNG** (latest) for admin density + **Spartan UI** (shadcn-for-Angular) for marketing surfaces. NO Angular Material.
+- **Tailwind v4** for styling (OxIDE engine). Brand tokens via CSS custom properties + OKLCH.
+- **esbuild application builder** (Angular's default since 17). **SSR via `@angular/ssr` on Cloudflare Workers** for marketing surfaces.
+- **Ionic 8** + **Capacitor 6** for mobile (iOS/Android) when the project ships native shells. **Tauri 2** for macOS/Windows/Linux desktop shells.
+- **Transloco** for i18n (replaces `@ngx-translate/core` for new projects — lazy per-locale chunks, signal-native).
+- **ESLint 9 + Prettier + @angular-eslint + eslint-plugin-rxjs** with `"strict": true` + `"noUncheckedIndexedAccess": true` + `"exactOptionalPropertyTypes": true`.
+- **Vitest** for unit tests via `@analogjs/vitest-angular` (Karma is deprecated as of Angular 17). **Playwright** (TDD-RED first per [[e2e-tdd-organization]]) for E2E.
+- **MSW (Mock Service Worker)** for API mocks unified across dev + Storybook + Playwright.
+- **Storybook 8** for the component library with auto-docs + interaction tests.
 
 ## Nx workspace creation (canonical)
 
@@ -186,6 +195,7 @@ For projects still on NgModules: defer to a dedicated migration wave; standalone
 ## See
 - `~/.claude/CLAUDE.md` § Frontend Stack — the original two-stacks rule
 - [[frontend-stack]] (universal rule the user-level override extends)
+- [[rxjs-first-angular]] — SUPREME: every backend call is an observable, signals only at the template boundary. Polling floor + SSE/WS ceiling.
 - [[10-experience-and-design-system]] — design tokens + brand colors apply to Angular apps too
 - [[e2e-tdd-organization]] — Playwright TDD-RED first; Nx's `nx e2e` invokes it
 - [[e2e-visual-inspection]] — random snapshots + new-section AI vision on every Angular feature
