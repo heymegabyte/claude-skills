@@ -2,6 +2,16 @@
 
 The complete AI-native website-build philosophy. Fires before, during, and after every site build/rebuild. Anchors the existing rule + skill mesh into a single executable doctrine.
 
+## Phase -1 — Competitor Research (***SUPREME — gate -1, runs BEFORE Phase 0***)
+- Full protocol: [[competitor-research]]
+- Identify top 5–10 sites the audience would compare to OUR build (org-type aware: peer nonprofits in same NTEE code for nonprofits; Google Maps + Yelp top-10 for local; SimilarWeb/G2 top-rated for SaaS; Awwwards winners for portfolio; etc.)
+- Capture each: full route crawl, screenshots @ 1920×1080 + 390×844, copy via Browser Rendering REST API, Wayback snapshots 1y + 3y ago
+- Score each on a 100-point rubric (10 dimensions × 10pts): visual polish, IA, copy, conversion, SEO+AI-search, performance, a11y, trust, AI-native features, distinctiveness
+- Persist `_competitors/{domain}/` + `_competitor_aggregate.json` (the floor) + `_competitor_directives.md` + `_competitor_inspiration.md` + `_competitor_gaps.md`
+- **Loop termination** ([[website-build-doctrine]] Phase 6) CANNOT exit until OUR build outscores EVERY competitor on EVERY dimension by ≥15% AND ships ≥3 entries from `_competitor_gaps.md` (markets they ignored)
+- Phase -1 outputs are mandatory input to Phase 0, Phase 1, Phase 2 (replacement candidates), Phase 3 (swap-out decisions), Phase 4 (AI-native feature targets)
+- Skipping Phase -1 = "we shipped a guess" = build fail
+
 ## Phase 0 — Context Saturation BEFORE Any Code (***NON-NEGOTIABLE — gate 0***)
 - NO code, NO template clone, NO scaffold until every known public source of information about the website's subject is loaded into context
 - Build fails if Phase 0 was skipped or partial
@@ -152,12 +162,17 @@ After every:
 - **Site complete** → "What feature would make this best-in-class?" Add it. Repeat until [[supreme-polish]] 100-ideas audit returns zero implementable items.
 - **Build complete** → "What pattern can be folded back into template?" Push it to `template.projectsites.dev` THIS turn.
 
-Loop terminates ONLY when:
-- (a) Self-critique filter rejects all remaining candidate ideas, OR
-- (b) Marginal value < 5 min of work, OR
-- (c) Brian explicitly says "ship it"
+Loop terminates ONLY when ALL of these are TRUE (the competitor-beat gate from [[competitor-research]] is the load-bearing condition):
+- (a) **Competitor-beat gate** — OUR per-dimension rubric score ≥ `_competitor_aggregate.json` MAX + 15 points on EVERY of the 10 rubric dimensions (visual polish, IA, copy, conversion, SEO+AI-search, performance, a11y, trust, AI-native features, distinctiveness). Re-score on EVERY loop iteration; the loop is NOT allowed to exit while any competitor outscores us on any dimension
+- (b) **Directives shipped** — every entry in `_competitor_directives.md` has a corresponding implementation cited in the PR/commit, AND ≥3 entries from `_competitor_gaps.md` are shipped (markets competitors ignored that we now own)
+- (c) **AI-vision head-to-head** — our build's same-route screenshot outscores every competitor's same-route screenshot in pairwise AI-vision comparison at 6 viewports
+- (d) [[supreme-polish]] 100-ideas audit returns zero implementable items
+- (e) Self-critique filter rejects all remaining candidate ideas
+- (f) Brian explicitly says "ship it"
 
-Anything less = the build was capped prematurely.
+(a)+(b)+(c) are NON-NEGOTIABLE — the loop CANNOT exit while any competitor still outranks us. (d)–(f) are additional polish gates. The loop is NOT allowed to terminate based on time, token budget, or "good enough" — only when the competitor-beat gate is satisfied. Anything less = the build was capped prematurely = "we shipped a guess" = build fail per [[competitor-research]] § Loop termination.
+
+Per-iteration accounting goes to `_competitor_loop_log.ndjson` — every loop pass writes a row with the per-dimension scores for OUR build, the competitor MAX per dimension, and the gate-check verdict. Auditable history of why the loop ran N iterations.
 
 ## Phase 7 — Token Discipline (***fast completion, no waste***)
 - Skill load order is deterministic per [[prompt-cache]] — never reorder mid-session (defeats prefix caching)

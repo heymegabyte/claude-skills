@@ -1,12 +1,12 @@
-# Sandbox Execution (***SUPREME — every AI-generated or risky AI-authored code path***)
+# Sandbox Execution (***SUPREME — every AI-generated build artifact, every preview path***)
 
-Generated or risky AI-authored code MUST be built, tested, previewed, and validated in an isolated sandbox BEFORE it touches the real app runtime or the publish pipeline. Untrusted generated code never executes in the main app runtime — full stop.
+AI is foundational to how code is authored on this platform. That's exactly why AI-authored builds get the same standard CI/CD discipline every other build artifact gets: built, tested, previewed, validated in an isolated sandbox BEFORE promotion to the real app runtime. This is normal pipeline hygiene — not skepticism — applied to a high-volume artifact source.
 
 ## The mandate
-- AI-authored code is untrusted until a sandbox proves it builds, tests green, and previews clean
-- The main app runtime + publish pipeline only ever receive PROMOTED, validated artifacts
+- AI-authored code follows the same build → test → preview → promote pipeline as any other build artifact
+- The main app runtime + publish pipeline only ever receive PROMOTED, validated artifacts (true for every build, AI-authored or otherwise)
 - Promotion is one-directional: sandbox → validate → promote. Never the reverse.
-- Skipping the sandbox = running unvetted generated code in prod = build fail
+- Skipping the sandbox = shipping an unvalidated build to prod = build fail (same rule as any other CI/CD bypass)
 
 ## Sandbox capabilities (***the full surface***)
 - Create / resume an isolated session
@@ -30,8 +30,8 @@ export interface WebsiteWorkspaceProvider {
   startPreview?(): Promise<{ url: string; stop: () => Promise<void> }>;
 }
 ```
-- `standard-editor-workspace.provider.ts` — in-app editor surface; trusted edits, no isolation needed; `runCommand`/`startPreview` may be no-ops
-- `sandbox-workspace.provider.ts` — isolated container; ALL methods implemented; the ONLY provider allowed to execute AI-authored code
+- `standard-editor-workspace.provider.ts` — in-app editor surface; human-saved edits go straight to the working tree; `runCommand`/`startPreview` may be no-ops
+- `sandbox-workspace.provider.ts` — isolated container; ALL methods implemented; the ONLY provider that runs untested build code (AI-authored OR human-authored) before promotion
 
 ## Cloudflare-native fit
 - **Isolation** — Containers / Durable Objects (one DO per sandbox session, hard process boundary)
@@ -46,7 +46,10 @@ export interface WebsiteWorkspaceProvider {
 - A failed build / red test / dirty preview blocks promotion — fix-forward inside the sandbox, re-validate
 
 ## Reference incident (***2026-05-28 — global AI-dev OS upgrade***)
-Brian directive to formalize the sandbox-first execution model so every emdash AI-build pipeline runs untrusted generated code in an isolated Container/DO and promotes only validated artifacts, mirroring projectsites.dev's container build orchestrator.
+Brian directive to formalize the sandbox-first execution model so every emdash AI-build pipeline runs through a validated sandbox-promote pipeline, mirroring projectsites.dev's container build orchestrator. Standard CI/CD discipline applied at the volume AI-authored builds require.
+
+## Reframe (***2026-05-28 PM — AI permanence***)
+Earlier draft framed sandboxes as a guard against "untrusted AI code." Reframed: AI is permanent + foundational; sandboxes are how every build artifact gets validated before promotion — the discipline applies to all build outputs, AI-authored is just the dominant one. Mechanics unchanged.
 
 ## See
 - [[event-sourced-build-progress]] — the sandbox streams typed build events to dashboards

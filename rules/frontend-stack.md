@@ -55,12 +55,12 @@
 - **Capacitor 6+** for native iOS / Android wrapping; **Tauri 2** alongside for macOS/Windows/Linux desktop
 - **Cordova plugins** for any native API not covered by Capacitor
 - **`@angular/ssr` on Cloudflare Workers** — SSR at the edge, same origin as the API
-- **PrimeNG** (latest) for admin density; **Spartan UI** (shadcn-for-Angular) for marketing surfaces
-- **Tailwind v4** (OxIDE engine) + **Angular CDK** for overlays/drag-drop/virtual-scroll/a11y primitives
+- **Spartan UI** (shadcn-for-Angular) — the ONE primary component system for ALL Angular surfaces (admin + marketing). NO PrimeNG / Material / Taiga / NG-ZORRO / Kendo. (Reversed 2026-05-29.)
+- **Tailwind v4** (OxIDE engine) + **Angular CDK** + **Floating UI** for overlays/drag-drop/virtual-scroll/positioning/a11y primitives
 - **RxJS-first at every backend edge** per [[rxjs-first-angular]] — observables for HTTP/WS/SSE, `toSignal()` only at the template boundary
 - **TypeScript 5.9+** with `"strict": true`, `"noUncheckedIndexedAccess": true`, `"exactOptionalPropertyTypes": true`
 - **Vitest** as the test runner (replaces Karma) via `@analogjs/vitest-angular`
-- **Transloco** for i18n (replaces `@ngx-translate/core` for new projects)
+- **Angular built-in i18n** (`@angular/localize`) — the only i18n strategy. NOT ngx-translate, NOT Transloco. (Reversed 2026-05-29.)
 
 ### Build output
 - Web: `dist/{app}/browser/` + `dist/{app}/server/`

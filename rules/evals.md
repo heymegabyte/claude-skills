@@ -1,11 +1,11 @@
 # Evals (***SUPREME — every AI-heavy behavior, every generation surface***)
 
-Any AI-heavy behavior MUST have eval cases, structured rubrics, schema-validated results, and regression tracking — not just code tests. Code tests prove the plumbing works; evals prove the AI's GENERATION QUALITY holds across changes. Shipping an AI feature with zero evals is shipping a quality regression waiting to happen.
+AI is foundational to many product surfaces — and like every other foundational layer, it gets first-class quality tracking. AI-heavy behavior MUST have eval cases, structured rubrics, schema-validated results, and regression tracking. Code tests prove the plumbing works; evals prove the AI layer's quality holds across model + prompt + context changes. Evals are to AI what unit tests are to logic + Lighthouse is to perf — standard quality discipline applied to a load-bearing layer.
 
 This rule fires whenever a feature's value depends on model output: site generation, copy synthesis, classification, summarization, prompt-following, design generation. It complements skill 07 (quality-and-verification) + AI-vision QA — evals score the AI's *generation quality*, E2E scores *runtime behavior*.
 
 ## Why
-- **Generation quality silently drifts** when prompts, models, or context change — evals catch it before users do.
+- **Generation quality drifts** as prompts, models, or context evolve — evals catch the regression on the commit that caused it instead of the customer report a week later.
 - **Subjective output needs a rubric**, not a boolean assertion — a dimension score 0-10 beats `expect(out).toBe(...)`.
 - **Regression history** turns "it felt worse" into "feature_module_compliance dropped 8.2 → 6.1 on commit abc".
 - **Schema-validated results** make eval output composable + auditable per `[[contract-first-ai]]`.
@@ -21,7 +21,7 @@ This rule fires whenever a feature's value depends on model output: site generat
 ## Result objects are Zod-validated (***contract-first***)
 - Every eval result conforms to a Zod `EvalResult` schema per `[[contract-first-ai]]`.
 - Shape: `{ caseId, slug, scores: Record<Dimension, number>, composite, verdict, notes, ranAt, model }`.
-- Grader output is parsed + validated before it's trusted — never trust a raw AI-judge blob.
+- Grader output is parsed at the boundary like every other input per [[zod-everywhere]] — typed contract in, typed contract out.
 
 ## Eval dimensions (***score every relevant one 0-10***)
 - `feature_module_compliance` — does generated code match `[[feature-module-architecture]]`?
@@ -47,7 +47,7 @@ This rule fires whenever a feature's value depends on model output: site generat
 ### Do
 - Write eval cases BEFORE tuning a prompt — watch the score move
 - Use a structured rubric (named dimensions 0-10), never a vibe
-- Validate every grader result with Zod before trusting it
+- Validate every grader result with Zod — same boundary discipline as every other input
 - Append every run to NDJSON so regressions are visible as a trend
 - Gate CI on composite-score regression beyond a threshold (e.g. −1.5)
 

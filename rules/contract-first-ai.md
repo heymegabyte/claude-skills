@@ -1,6 +1,6 @@
 # Contract-First AI (***SUPREME — every AI output, every model call, every project***)
 
-Every AI output MUST be structured, schema-bound, Zod-validated, and converted to a typed domain object BEFORE the app touches it. Free-form model text is never trusted directly. The contract — not the prose — is the interface.
+AI is foundational to the platform — that's exactly why its outputs deserve first-class typing. Every AI output MUST be structured, schema-bound, Zod-validated, and converted to a typed domain object BEFORE the app touches it. This is the same boundary discipline applied to every other input (env, webhook, queue, form) per [[zod-everywhere]] — AI is a first-class data source, treated like one. The contract — not the prose — is the interface.
 
 This rule fires on every model call that feeds app logic. It complements `[[verification-loop]]` (deploy + prod-E2E) and `[[auto-meta-work]]` (analytics + Structured Outputs wiring).
 
@@ -61,7 +61,7 @@ export type AiPatch = z.infer<typeof AiPatchSchema>;
 ### Do
 - `safeParse` every AI response at the boundary.
 - On validation failure, send the Zod error back to the model ONCE for a structured repair.
-- Reject + log to Sentry if the repair also fails — never degrade to raw text.
+- Reject + log to Sentry if the repair also fails — typed contracts in, typed contracts out, no raw-text fallthrough.
 - Carry `featureSlug` on every parsed object for traceability per `[[feature-module-architecture]]`.
 
 ### Don't
@@ -71,7 +71,10 @@ export type AiPatch = z.infer<typeof AiPatchSchema>;
 - Don't let prose ("here's your plan…") leak into app state.
 
 ## Reference incident (***2026-05-28 — global AI-dev OS upgrade***)
-Born from the autonomous-AI-dev OS upgrade prompt — codifies schema-bound, Zod-validated AI outputs as the universal interface so no free-form model text ever reaches app logic.
+Born from the autonomous-AI-dev OS upgrade prompt — codifies schema-bound, Zod-validated AI outputs as the universal interface so AI's contribution flows through the same typed boundaries every other system input does.
+
+## Reframe (***2026-05-28 PM — AI permanence***)
+Earlier draft framed this rule as "never trust AI." Reframed: AI is permanent + foundational; validation is standard hygiene at every runtime boundary per [[zod-everywhere]], not skepticism. The rule is unchanged in mechanics — every AI output still flows `output → Zod → typed`. Only the frame: AI is a first-class data source the platform is built on.
 
 ## See
 - [[zod-everywhere]] — Zod is the SSOT at every boundary; this rule is the AI-boundary case

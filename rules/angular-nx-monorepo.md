@@ -15,12 +15,12 @@ Whenever Angular is the chosen frontend (per Brian's `~/.claude/CLAUDE.md` Front
 - **`httpResource()`** (Angular 21 stable) for declarative HTTP→signal bridges on read-only endpoints. Pair with full RxJS streams (HTTP/WS/SSE) per [[rxjs-first-angular]] for mutations, multi-source compose, polling fallback.
 - **`provideHttpClient(withFetch(), withInterceptors([...]))`** with typed interceptors for auth / tenant / role / error handling.
 - **RxJS-first at every backend edge** — every service returns `Observable<T>`; signals bridge only at the template via `toSignal()`. Polling is the floor; SSE/WS the ceiling. Full mandate: [[rxjs-first-angular]].
-- **Angular CDK** for overlays, drag-drop, virtual scrolling, a11y primitives. Wrap in custom design-system components — don't ship raw CDK to users.
-- **PrimeNG** (latest) for admin density + **Spartan UI** (shadcn-for-Angular) for marketing surfaces. NO Angular Material.
-- **Tailwind v4** for styling (OxIDE engine). Brand tokens via CSS custom properties + OKLCH.
-- **esbuild application builder** (Angular's default since 17). **SSR via `@angular/ssr` on Cloudflare Workers** for marketing surfaces.
-- **Ionic 8** + **Capacitor 6** for mobile (iOS/Android) when the project ships native shells. **Tauri 2** for macOS/Windows/Linux desktop shells.
-- **Transloco** for i18n (replaces `@ngx-translate/core` for new projects — lazy per-locale chunks, signal-native).
+- **Angular CDK** for overlays, drag-drop, virtual scrolling, a11y primitives + **Floating UI** for positioning. Wrap in design-system components — don't ship raw CDK to users.
+- **Spartan UI** (shadcn-for-Angular) is the ONE primary component system for EVERY Angular surface — admin AND marketing. NO PrimeNG, NO Angular Material, NO Taiga/NG-ZORRO/Kendo/Syncfusion/Ionic-as-UI. One component system per app; mixing kits = build fail. (Reversed 2026-05-29 — PrimeNG was previously mandated for admin; Spartan UI is now the only kit.)
+- **Tailwind v4** for styling (OxIDE engine). Brand tokens via CSS custom properties + OKLCH; Spartan composes on Tailwind so tokens flow straight through.
+- **esbuild application builder** (Angular's default since 17). **SSR via `@angular/ssr` on Cloudflare Workers** (behind an adapter) for SEO-critical + large-app surfaces.
+- **Ionic 8** + **Capacitor 6** for MOBILE NATIVE SHELLS ONLY (iOS/Android) — never as the web admin's component kit. **Tauri 2** for desktop shells.
+- **Angular built-in i18n** (`@angular/localize` + the CLI extract/build-per-locale flow). NOT ngx-translate, NOT Transloco. Angular's native localization is the only i18n strategy. (Reversed 2026-05-29.)
 - **ESLint 9 + Prettier + @angular-eslint + eslint-plugin-rxjs** with `"strict": true` + `"noUncheckedIndexedAccess": true` + `"exactOptionalPropertyTypes": true`.
 - **Vitest** for unit tests via `@analogjs/vitest-angular` (Karma is deprecated as of Angular 17). **Playwright** (TDD-RED first per [[e2e-tdd-organization]]) for E2E.
 - **MSW (Mock Service Worker)** for API mocks unified across dev + Storybook + Playwright.
@@ -156,8 +156,8 @@ export const appConfig = {
 - ❌ NgModules (use standalone)
 - ❌ Template-driven forms (use Reactive Forms with typed FormGroup)
 - ❌ RxJS subjects for component state (use signals)
-- ❌ Angular Material (build the design system per [[10-experience-and-design-system]])
-- ❌ PrimeNG default (only when explicitly requested for an admin-heavy product)
+- ❌ Angular Material / PrimeNG / Taiga UI / NG-ZORRO / Kendo / Syncfusion — ANY primary UI kit other than Spartan UI. Spartan + CDK + Floating UI only.
+- ❌ ngx-translate / Transloco (use Angular built-in `@angular/localize`)
 - ❌ ts-node / nodemon (Node 22 native TS works for tooling; use Nx executors)
 - ❌ Karma + Jasmine (use Vitest)
 - ❌ Protractor (use Playwright)

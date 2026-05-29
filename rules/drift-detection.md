@@ -26,7 +26,7 @@ Architecture drift is the gap between how the system is SUPPOSED to be structure
 - AI-heavy feature missing eval / regression coverage
 
 ## Immediacy rule (***NON-NEGOTIABLE***)
-- See drift → fix drift in the SAME turn. Never log it as a TODO, never punt to next PR.
+- See drift → fix drift in the SAME turn. Drift-class issues never get punted to a TODO or next PR. (TODOs for genuine future work are fine per [[todos-are-roadmap]]; the ban here is scoped to architecture drift specifically.)
 - Fixing drift adjacent to the touched surface is [[context-spillover]]'s triple sweep applied to architecture.
 - If a drift fix needs a design conversation (rare), surface it in Recs; everything else ships inline.
 

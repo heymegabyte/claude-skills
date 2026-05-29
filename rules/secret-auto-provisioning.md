@@ -82,7 +82,7 @@ The most powerful tier: use a high-trust parent credential to mint scoped, least
 - **Pattern**: auto-create sending domain + auto-add DNS records via CF zone API in same script
 
 ### Tier 3 — Computer Use (OAuth-app registration)
-For providers without OAuth-app-management APIs. Launch the macOS Computer Use MCP to drive the browser through the form. Each flow is repeatable + parameterizable.
+For providers without OAuth-app-management APIs. Launch the macOS Computer Use MCP (`mcp__desktop-control__computer`) to drive the user's REAL Chrome via the desktop, NOT a fresh isolated Chromium (Chrome MCP / Playwright MCP have zero session cookies and CANNOT complete OAuth-app registration). The user's daily Chrome already has the vendor sessions live; desktop Computer Use is the only path. Each flow is repeatable + parameterizable.
 
 - **Mailchimp**: `https://us1.admin.mailchimp.com/account/oauth2/` → "Register App" form → redirect URI `https://{project}/api/mcp/mailchimp/callback`
 - **HubSpot**: `https://developers.hubspot.com/get-started` → Create App → Auth tab → scopes

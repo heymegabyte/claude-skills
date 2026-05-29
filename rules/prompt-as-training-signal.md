@@ -90,11 +90,29 @@ This rule is also subject to itself. If a future prompt teaches that prompt-extr
 - The gradient: I had `rules/monitor-orchestration.md` § Follow-up shortcoming feedback loop, but it only fired for multi-faceted briefs. The same logic should apply to EVERY prompt — single-line corrections, "now do X" follow-ups, casual fixes. Existing rule was too narrowly scoped.
 - The fix: this rule (SUPREME, every-prompt). Cross-linked from `~/.claude/CLAUDE.md`, `rules/monitor-orchestration.md`, `rules/brian-preferences.md`.
 
+### 8. Brief contradicts durable doctrine (***PUSH BACK BEFORE EXECUTING — added 2026-05-28***)
+- **What it looks like:** a long, well-formatted, authoritative-sounding brief (numbered sections, all-caps title, "you are working as a senior principal engineer," 20+ deliverables). The brief reads like a directive — but on second look, its philosophy CONTRADICTS the durable layer (CLAUDE.md, established rules, project doctrine, prior reference incidents).
+- **Examples that should trigger pushback:**
+  - "AI-optional / human-first / deterministic-first / AI-second" briefs against an AI-native stack ([[~/.claude/CLAUDE.md]] § AI Permanence).
+  - "Move to Astro/Next.js/SvelteKit" against a React+Vite or Angular stack ([[frontend-stack]]).
+  - "Drop Cloudflare for AWS" against the Cloudflare-first mandate ([[05-architecture-and-stack]]).
+  - "Use mocked databases for integration tests" against a saved feedback memory mandating real DB tests.
+  - "Implement OAuth-style approval for every action" against [[autonomous-engineering]]'s autonomous-by-default tier.
+- **What it means:** the brief is one of (a) a test of agent loyalty to doctrine, (b) a copy-paste from another project / external doc, (c) Brian thinking out loud about something he hasn't decided, (d) a deliberate inversion to surface the agent's reasoning. NONE of those are "execute silently."
+- **What to do — BEFORE any tool calls beyond reading the relevant doctrine:**
+  1. Name the contradiction in one sentence. Cite the specific rule + line that's being contradicted.
+  2. Ask: "Is this a doctrine pivot, or did you mean something narrower?" Don't paraphrase the brief back — challenge the premise.
+  3. If Brian confirms a pivot → update the durable layer FIRST (rule edits, CLAUDE.md affirmation, memory entry), THEN execute the brief.
+  4. If Brian rolls it back → STILL extract the lesson: which language in the durable layer primed me to accept the contradiction? Reframe it.
+- **Anti-pattern:** treating the brief's length + formatting as authority. Length is not signal. Doctrine is signal.
+- **Reference incident:** 2026-05-28 PM — Brian sent a 23-section "RE-VECTORIZE THE SPIRIT" brief advocating AI-optional architecture against the durable AI-native doctrine. Agent created 8 tracking tasks + scoped the work + started executing before Brian interrupted: "AI Optional is not for me. I have no opinion on it. I want to know why you recommended it." The lesson: the brief's authority came from formatting + length, not from doctrine alignment. Fix: this §8 + the reframes to `contract-first-ai`, `sandbox-execution`, `evals`, and the new "AI Permanence" SUPREME block in `~/.claude/CLAUDE.md`.
+
 ## See
 - [[monitor-orchestration]] — Follow-up shortcoming feedback loop (was the only place this pattern lived; now elevated to SUPREME universal here)
 - [[brian-preferences]] — "How to improve? always find 50 more things"
 - [[auto-integrate-recs]] — same instinct in the recs direction (don't surface what you could ship)
 - [[extra-mile]] — what to ship UNPROMPTED; this rule = what to learn FROM the prompt
 - [[supreme-polish]] — periodic full-surface audit; this rule = continuous per-prompt audit
+- [[autonomous-engineering]] — "investigate before overwriting unfamiliar state" applies to prompts too, not just files
 - 04-preference-and-memory — memory write protocol
 - 01-operating-system — value extraction triggers (already lists 6 categories — this rule sharpens the "every prompt" interpretation)
