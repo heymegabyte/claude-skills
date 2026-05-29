@@ -48,6 +48,19 @@ Architecture drift is the gap between how the system is SUPPOSED to be structure
 3. Grep `src/routes/` + `src/services/` for partial implementations to colocate
 4. New capability → scaffold the full module; never scatter handlers in `routes/` without a module
 
+## Agent drift signals (***final reviewers MUST run this checklist***)
+Owned by the `agent-diversity-reviewer` role + the `/drift-check` and `/agent-diversity-review` commands. Run on every multi-agent turn before declaring DONE. Each is a merge-blocker when found.
+- Too many generic agents spawned — undifferentiated "do everything" agents where named specialists exist
+- Agents with overlapping scope — two agents touching the same files / owning the same concern
+- Agents that do not verify their own work — no build / test / E2E / screenshot proof in their report
+- Agents that change files outside their stated scope — edits beyond the Scope/Non-goals they were briefed with
+- Agents that skip tests — no failing-test-first, no regression spec, no `e2e/<feature>/` coverage
+- Agents that ignore user stack preferences — drift from the mandated stack (e.g. wrong frontend framework, banned tool)
+- Agents that fail to update docs — touched a surface but left CLAUDE.md / README / `FEATURES.md` stale
+- Agents that propose global changes but don't implement them — recommend a rule/skill/config edit yet ship nothing
+- Agents that make architectural changes without a review agent — structural edits landed with no completeness/security/code-review pass
+- Agents that defer obvious in-scope work — push <2h ship-able items to Recs instead of integrating them per [[auto-integrate-recs]]
+
 ## Reference incident (***2026-05-28 — global AI-dev OS upgrade***)
 Brian directive to formalize drift-detection as a standalone SUPREME rule so every emdash project enforces the route↔manifest↔flag↔test↔schema↔contract coherence that projectsites.dev's `validate-feature-*.mjs` scripts already check.
 
@@ -58,3 +71,5 @@ Brian directive to formalize drift-detection as a standalone SUPREME rule so eve
 - [[zod-everywhere]] — duplicate / missing schemas are drift
 - [[tool-design-as-api]] — tools without input/output schemas are drift
 - [[verification-loop]] — drift validators run alongside the deploy + prod-E2E gate
+- [[agent-selection]] — the diversity/specialist mandate the agent-drift-signals checklist enforces
+- [[prompt-as-training-signal]] — agent drift surfaced by a follow-up prompt = signal this checklist needs sharpening
