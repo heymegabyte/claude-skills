@@ -50,6 +50,12 @@ Wire a workflow at every meaningful state transition, not just errors:
 ## ProjectSites.dev relevance
 The build pipeline, domain provisioning, AI generation, and billing all have rich state transitions that today surface only as polled UI/toasts. Wave: add `libs/core/notifications/`, a Spartan Inbox in the v2 shell topbar (bell), preferences in settings, Novu triggers on the build/deploy/domain/AI/billing events above.
 
+## First live wiring (***2026-05-30 — projectsites.dev v2***)
+- **Credential split (always):** the Novu **application identifier is PUBLIC** (client-safe by design — hardcode it in the bell component / expose via public config); the **API/secret key is server-only** (push to the worker via `wrangler secret put NOVU_SECRET_KEY`, never in the frontend bundle). Both dual-written to get-secret + chezmoi per [[secret-provisioning]].
+- **Frontend bell:** headless `@novu/js ^3` (no CSS) → `new Novu({ applicationIdentifier, subscriber: { subscriberId } })`; `notifications.list({limit})` → `data.notifications`, `notifications.count({filters:[{read:false}]})` → `data.counts[0].count`, `notifications.read({notificationId})`. Connects to Novu Cloud (`api.novu.co/v1/inbox/{session,notifications,count}`). Render your own Spartan bell + dropdown (defensive field reads: `id`/`_id`, `isRead`/`read`, `body`/`content`). `@novu/js` pulls a CommonJS `event-target-polyfill` → non-fatal esbuild ESM warning.
+- **Server triggers are a separate wave** — the bell shows "all caught up" until worker workflows fire via `@novu/api` (the secret key). Verify the bell by asserting the 3 `api.novu.co/v1/inbox` calls, not by expecting data.
+- Reference: `pages/admin-v2/sections/notif-bell.component.ts`.
+
 ## Reference incident (***2026-05-29***)
 Brian: *"Novu should be integrated across the whole process and fully integrated into the app and all future apps via ~/.agentskills."* Elevated from the wave-2 supervisor stub to this full SUPREME every-app doctrine — Novu is now permanent. Pairs with [[package-preference-registry]] + [[supervisor-skills-index]] #11.
 
