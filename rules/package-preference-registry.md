@@ -23,7 +23,7 @@ The canonical list of PREFERRED packages + the decision discipline. **Listing �
 - ❌ Ionic-as-web-UI — Ionic/Capacitor reserved for native mobile shells only.
 
 ### Tables / data UX
-- ✅ **TanStack Table** — headless smart tables (sort/filter/group/column-vis), Spartan-styled.
+- ✅ **TanStack Table** — headless smart tables (sort/filter/group/column-vis), Spartan-styled. INSTALLED in projectsites.dev v2 (`@tanstack/angular-table ^8`, 2026-05-30): `createAngularTable(() => ({...}))` with signal-bound `state`/`onSortingChange`/`onGlobalFilterChange`; render rows manually from `table.getRowModel().rows` (read `row.original`) so custom cells (helm badges) stay simple — skip FlexRender for text/badge columns. Sortable `<th>` with `getToggleSortingHandler()` + `aria-sort`. Reference: `pages/admin-v2/sections/sites.component.ts`.
 - ⏳ **TanStack Query** — server-state cache; adopt when client-cache complexity warrants (RxJS+signals cover much already).
 - ⏳ **TanStack Virtual** — large lists/virtualized rows.
 - ⏳ **AG Grid Community** — ONLY for heavy enterprise grids (100k+ rows); Community license; master/detail is Enterprise-only.
