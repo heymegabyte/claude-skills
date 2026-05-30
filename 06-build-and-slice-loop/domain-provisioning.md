@@ -6,6 +6,7 @@ description: "Auto-provision new domains with CF Worker, DNS, SSL, and a gorgeou
 ---
 
 # Domain Provisioning
+
 ## Placeholder Requirements
 The placeholder is NOT a placeholder — it's the first impression. It must be:
 
@@ -18,20 +19,20 @@ The placeholder is NOT a placeholder — it's the first impression. It must be:
 - Responsive at 375px and 1280px
 
 ### Functional
-- Newsletter signup form (connected to Listmonk via 13-observability-and-growth)
-- Turnstile captcha on the form (05/shared-api-pool)
-- Contact: brian@megabyte.space (mailto link)
+- Newsletter signup form (connected to Listmonk via `13-observability-and-growth`)
+- Turnstile captcha on the form (`05/shared-api-pool`)
+- Contact — `brian@megabyte.space` (mailto link)
 - Megabyte Labs logo in footer
-- Easter egg (06/easter-eggs — AI chooses what)
-- Language selector (EN + ES minimum, 01-operating-system)
+- Easter egg (`06/easter-eggs` — AI chooses what)
+- Language selector (EN + ES minimum, `01-operating-system`)
 
 ### SEO & Meta
 - Full OG tags (title, description, image)
-- Twitter Card (summary_large_image)
+- Twitter Card (`summary_large_image`)
 - Favicon set (generated via Ideogram, skill 12)
-- JSON-LD: Organization + WebSite
-- robots.txt and sitemap.xml (06/web-manifest-system)
-- site.webmanifest (06/web-manifest-system)
+- JSON-LD — Organization + WebSite
+- `robots.txt` and `sitemap.xml` (`06/web-manifest-system`)
+- `site.webmanifest` (`06/web-manifest-system`)
 
 ### Performance
 - Zero external JS dependencies
@@ -40,6 +41,7 @@ The placeholder is NOT a placeholder — it's the first impression. It must be:
 - LCP < 1 second
 
 ## Setup Steps
+
 ### 1. Initialize Project
 ```bash
 mkdir -p src public
@@ -152,7 +154,7 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/dns_records
 
 ## GitHub Auto-Config (First Deploy)
 After first deploy, automatically:
-1. Set repo description: `gh repo edit --description "Meta description text"`
-2. Set homepage URL: `gh repo edit --homepage "https://domain.com"`
-3. Add topics: `gh repo edit --add-topic "cloudflare,hono,emdash"`
+1. Set repo description — `gh repo edit --description "Meta description text"`
+2. Set homepage URL — `gh repo edit --homepage "https://domain.com"`
+3. Add topics — `gh repo edit --add-topic "cloudflare,hono,emdash"`
 4. Generate README.md from site content

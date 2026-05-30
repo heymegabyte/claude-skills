@@ -5,7 +5,9 @@ updated: "2026-04-23"
 ---
 
 # Email Marketing and Listmonk
+
 ## Coolify Deployment
+
 ```yaml
 # Listmonk on Coolify: Docker compose
 # Image: listmonk/listmonk:latest
@@ -24,6 +26,7 @@ updated: "2026-04-23"
 ```
 
 ## Hono Worker Proxy (CF Worker → Listmonk)
+
 ```typescript
 // src/routes/newsletter.ts
 import { Hono } from 'hono';
@@ -112,6 +115,7 @@ export { newsletter };
 ```
 
 ## Campaign Creation via API
+
 ```typescript
 // Create and send a campaign programmatically
 async function createCampaign(env: Env, opts: {
@@ -149,6 +153,7 @@ async function createCampaign(env: Env, opts: {
 ```
 
 ## Go Template System (Listmonk)
+
 ```html
 <!-- Listmonk uses Go's text/template syntax -->
 <!-- Available variables: .Subscriber, .Campaign, .UnsubscribeURL, .TrackLink -->
@@ -177,10 +182,13 @@ async function createCampaign(env: Env, opts: {
 ```
 
 ## Webhook Integration (Listmonk → Hono)
+
+Listmonk webhook events:
+- `subscriber.created`, `subscriber.modified`, `subscriber.deleted`
+- `campaign.sent`, `campaign.updated`
+
 ```typescript
 // src/routes/webhooks/listmonk.ts
-// Listmonk webhook events: subscriber.created, subscriber.modified, subscriber.deleted
-// campaign.sent, campaign.updated
 
 const listmonkWebhook = new Hono<{ Bindings: Env }>();
 
@@ -216,16 +224,16 @@ export { listmonkWebhook };
 ```
 
 ## Double Opt-In Flow
-```
-1. User submits email → POST /api/newsletter/subscribe
-2. Listmonk creates subscriber (status: unconfirmed)
+
+1. User submits email → `POST /api/newsletter/subscribe`
+2. Listmonk creates subscriber (status: `unconfirmed`)
 3. Listmonk sends confirmation email with unique link
-4. User clicks confirmation link → status: confirmed
+4. User clicks confirmation link → status: `confirmed`
 5. Subscriber receives future campaigns
 6. No confirmation within 72h → auto-cleanup (Listmonk setting)
-```
 
 ## Footer Newsletter Component
+
 ```html
 <!-- Minimal newsletter signup for site footer -->
 <form (submit)="subscribe($event)" class="newsletter-form">
@@ -237,14 +245,13 @@ export { listmonkWebhook };
 ```
 
 ## Listmonk API Quick Reference
-```
-GET  /api/subscribers?query=...&page=1&per_page=50  — search subscribers
-POST /api/subscribers                                 — create subscriber
-PUT  /api/subscribers/:id                             — update subscriber
-PUT  /api/subscribers/:id/blocklist                   — blocklist (unsubscribe)
-GET  /api/lists                                       — list all lists
-POST /api/campaigns                                   — create campaign
-PUT  /api/campaigns/:id/status                        — start/pause/cancel campaign
-GET  /api/campaigns/:id                               — campaign details + stats
-POST /api/tx                                          — send transactional email
-```
+
+- `GET  /api/subscribers?query=...&page=1&per_page=50` — search subscribers
+- `POST /api/subscribers` — create subscriber
+- `PUT  /api/subscribers/:id` — update subscriber
+- `PUT  /api/subscribers/:id/blocklist` — blocklist (unsubscribe)
+- `GET  /api/lists` — list all lists
+- `POST /api/campaigns` — create campaign
+- `PUT  /api/campaigns/:id/status` — start/pause/cancel campaign
+- `GET  /api/campaigns/:id` — campaign details + stats
+- `POST /api/tx` — send transactional email

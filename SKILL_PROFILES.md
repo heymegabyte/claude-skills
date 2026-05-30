@@ -14,32 +14,190 @@
 | `*-micro`, `*-nano`, one-feature repos | Micro-SaaS |
 | everything else | Marketing Site |
 
-Ambiguous: Angular+auth+billing=SaaS | `wrangler.toml`+minimal routes=Marketing or API | DB schema+background jobs=SaaS | single Hono route file=API Service | internal-only auth=Internal Tool.
+### Ambiguous cases
+- Angular + auth + billing → **SaaS**
+- `wrangler.toml` + minimal routes → **Marketing** or **API**
+- DB schema + background jobs → **SaaS**
+- Single Hono route file → **API Service**
+- Internal-only auth → **Internal Tool**
 
 ## Marketing Site
 
-`02`, `03`, `06/contact-forms-and-endpoints`, `custom-error-pages`, `domain-provisioning`, `easter-eggs`, `internationalization`, `web-manifest-system`, `09/seo-and-keywords`, `email-templates`, `10`, `11`, `12`
+- `02`
+- `03`
+- `06/contact-forms-and-endpoints`
+- `06/custom-error-pages`
+- `06/domain-provisioning`
+- `06/easter-eggs`
+- `06/internationalization`
+- `06/web-manifest-system`
+- `09/seo-and-keywords`
+- `09/email-templates`
+- `10`
+- `11`
+- `12`
 
 ## SaaS Application
 
-Core + refs (load first): `05/api-design-and-documentation`, `auth-and-session-management`, `background-jobs-and-workflows`, `drizzle-orm-and-migrations`, `enterprise-multi-tenancy`, `mcp-and-cloud-integrations` | `06/admin-dashboard`, `ai-chat-widget`, `data-tables`, `empty-states-and-loading`, `file-uploads-and-storage`, `keyboard-shortcuts-and-command-palette`, `notification-center`, `onboarding-and-first-run`, `realtime-and-websockets`, `rich-text-editor`, `site-search`, `webhook-system` | `07/accessibility-gate`, `agentic-security`, `performance-optimization`, `security-hardening` | `08/ci-cd-pipeline`, `backup-and-disaster-recovery`, `uptime-and-health` | `09/documentation-and-codebase-hygiene`, `seo-and-keywords` | `13/analytics-configuration`, `conversion-optimization`, `feature-flags-and-experiments`, `stripe-billing`, `user-feedback-collection`
+### Core + refs (load first)
+- `05/api-design-and-documentation`
+- `05/auth-and-session-management`
+- `05/background-jobs-and-workflows`
+- `05/drizzle-orm-and-migrations`
+- `05/enterprise-multi-tenancy`
+- `05/mcp-and-cloud-integrations`
+
+### Build (06)
+- `06/admin-dashboard`
+- `06/ai-chat-widget`
+- `06/data-tables`
+- `06/empty-states-and-loading`
+- `06/file-uploads-and-storage`
+- `06/keyboard-shortcuts-and-command-palette`
+- `06/notification-center`
+- `06/onboarding-and-first-run`
+- `06/realtime-and-websockets`
+- `06/rich-text-editor`
+- `06/site-search`
+- `06/webhook-system`
+
+### Quality (07)
+- `07/accessibility-gate`
+- `07/agentic-security`
+- `07/performance-optimization`
+- `07/security-hardening`
+
+### Deploy (08)
+- `08/ci-cd-pipeline`
+- `08/backup-and-disaster-recovery`
+- `08/uptime-and-health`
+
+### Content (09)
+- `09/documentation-and-codebase-hygiene`
+- `09/seo-and-keywords`
+
+### Growth (13)
+- `13/analytics-configuration`
+- `13/conversion-optimization`
+- `13/feature-flags-and-experiments`
+- `13/stripe-billing`
+- `13/user-feedback-collection`
 
 ## Micro-SaaS
 
-Trimmed SaaS: `05/api-design-and-documentation`, `auth-and-session-management`, `drizzle-orm-and-migrations` | `06/contact-forms-and-endpoints`, `custom-error-pages`, `file-uploads-and-storage`, `notification-center`, `site-search`, `webhook-system` | `07/performance-optimization`, `security-hardening` | `09/seo-and-keywords` | `13/conversion-optimization`, `email-marketing-and-listmonk`, `feature-flags-and-experiments`, `stripe-billing`
+Trimmed SaaS.
+
+### Architecture (05)
+- `05/api-design-and-documentation`
+- `05/auth-and-session-management`
+- `05/drizzle-orm-and-migrations`
+
+### Build (06)
+- `06/contact-forms-and-endpoints`
+- `06/custom-error-pages`
+- `06/file-uploads-and-storage`
+- `06/notification-center`
+- `06/site-search`
+- `06/webhook-system`
+
+### Quality (07)
+- `07/performance-optimization`
+- `07/security-hardening`
+
+### Content (09)
+- `09/seo-and-keywords`
+
+### Growth (13)
+- `13/conversion-optimization`
+- `13/email-marketing-and-listmonk`
+- `13/feature-flags-and-experiments`
+- `13/stripe-billing`
 
 ## Nonprofit
 
-`02`, `03`, `06/blog-and-content-engine`, `contact-forms-and-endpoints`, `domain-provisioning`, `easter-eggs`, `internationalization`, `web-manifest-system` | `09/email-templates`, `seo-and-keywords`, `social-automation` | `13/stripe-billing`, `user-feedback-collection`
+- `02`
+- `03`
+- `06/blog-and-content-engine`
+- `06/contact-forms-and-endpoints`
+- `06/domain-provisioning`
+- `06/easter-eggs`
+- `06/internationalization`
+- `06/web-manifest-system`
+- `09/email-templates`
+- `09/seo-and-keywords`
+- `09/social-automation`
+- `13/stripe-billing`
+- `13/user-feedback-collection`
 
 ## API Service
 
-`03`, `05/api-design-and-documentation`, `auth-and-session-management`, `background-jobs-and-workflows`, `cf-auto-provision`, `drizzle-orm-and-migrations`, `enterprise-multi-tenancy`, `mcp-and-cloud-integrations`, `openapi-generation`, `shared-api-pool` | `06/realtime-and-websockets`, `webhook-system` | `07/agentic-security`, `contract-testing`, `performance-optimization`, `security-hardening` | `08/backup-and-disaster-recovery`, `changelog-and-releases`, `ci-cd-pipeline`, `uptime-and-health` | `13/feature-flags-and-experiments`, `sentry-alert-rules`
+### Architecture (05)
+- `05/api-design-and-documentation`
+- `05/auth-and-session-management`
+- `05/background-jobs-and-workflows`
+- `05/cf-auto-provision`
+- `05/drizzle-orm-and-migrations`
+- `05/enterprise-multi-tenancy`
+- `05/mcp-and-cloud-integrations`
+- `05/openapi-generation`
+- `05/shared-api-pool`
+
+### Planning + Build
+- `03`
+- `06/realtime-and-websockets`
+- `06/webhook-system`
+
+### Quality (07)
+- `07/agentic-security`
+- `07/contract-testing`
+- `07/performance-optimization`
+- `07/security-hardening`
+
+### Deploy (08)
+- `08/backup-and-disaster-recovery`
+- `08/changelog-and-releases`
+- `08/ci-cd-pipeline`
+- `08/uptime-and-health`
+
+### Growth (13)
+- `13/feature-flags-and-experiments`
+- `13/sentry-alert-rules`
 
 ## Developer Tool
 
-`03`, `05/api-design-and-documentation`, `mcp-and-cloud-integrations` | `07/security-hardening`, `semgrep-codebase-rules` | `08/changelog-and-releases`, `ci-cd-pipeline` | `09/documentation-and-codebase-hygiene`, `seo-and-keywords` | `12`
+- `03`
+- `05/api-design-and-documentation`
+- `05/mcp-and-cloud-integrations`
+- `07/security-hardening`
+- `07/semgrep-codebase-rules`
+- `08/changelog-and-releases`
+- `08/ci-cd-pipeline`
+- `09/documentation-and-codebase-hygiene`
+- `09/seo-and-keywords`
+- `12`
 
 ## Internal Tool
 
-`05/api-design-and-documentation`, `auth-and-session-management`, `drizzle-orm-and-migrations`, `enterprise-multi-tenancy` | `06/admin-dashboard`, `chat-native-dashboard`, `data-tables`, `keyboard-shortcuts-and-command-palette`, `notification-center`, `site-search` | `07/accessibility-gate`, `agentic-security`, `security-hardening` | `08/uptime-and-health` | `13/analytics-configuration`, `feature-flags-and-experiments`
+### Architecture (05)
+- `05/api-design-and-documentation`
+- `05/auth-and-session-management`
+- `05/drizzle-orm-and-migrations`
+- `05/enterprise-multi-tenancy`
+
+### Build (06)
+- `06/admin-dashboard`
+- `06/chat-native-dashboard`
+- `06/data-tables`
+- `06/keyboard-shortcuts-and-command-palette`
+- `06/notification-center`
+- `06/site-search`
+
+### Quality (07)
+- `07/accessibility-gate`
+- `07/agentic-security`
+- `07/security-hardening`
+
+### Deploy + Growth
+- `08/uptime-and-health`
+- `13/analytics-configuration`
+- `13/feature-flags-and-experiments`

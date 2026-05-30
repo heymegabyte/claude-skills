@@ -7,37 +7,62 @@ updated: "2026-05-10"
 # Square Payments
 
 ## When Square is the Default (***FIRST DECISION — EVERY PAYMENT FEATURE***)
-**Square defaults:** nonprofits + donations (one-time OR recurring via Square Subscriptions) | small-business e-commerce | restaurant / retail / salon / medical with in-person POS need | event ticketing | sub-$100 average ticket where Stripe's $0.30 fixed is punishing | any client already on Square POS (single source of truth for in-person + online) | NJ/NY local-business rebuilds where Square Retail penetration is high.
-**Stripe overrides:** SaaS subscriptions with seat-based / tiered / usage-based billing | metered billing (Stripe Billing Meters API) | Entitlements feature gating | Stripe Connect (marketplaces, split payments) | Stripe Tax (40+ country auto-collection) | Stripe Atlas formation flows | embedded checkout for agentic commerce (ACP launch partners) | enterprise contracts requiring net-30 invoicing. If ANY of these apply → Stripe; else → Square.
+
+### Square defaults
+- Nonprofits + donations (one-time OR recurring via Square Subscriptions)
+- Small-business e-commerce
+- Restaurant / retail / salon / medical with in-person POS need
+- Event ticketing
+- Sub-$100 average ticket where Stripe's $0.30 fixed is punishing
+- Any client already on Square POS (single source of truth for in-person + online)
+- NJ/NY local-business rebuilds where Square Retail penetration is high
+
+### Stripe overrides
+- SaaS subscriptions with seat-based / tiered / usage-based billing
+- Metered billing (Stripe Billing Meters API)
+- Entitlements feature gating
+- Stripe Connect (marketplaces, split payments)
+- Stripe Tax (40+ country auto-collection)
+- Stripe Atlas formation flows
+- Embedded checkout for agentic commerce (ACP launch partners)
+- Enterprise contracts requiring net-30 invoicing
+
+If ANY of these apply → Stripe; else → Square.
+
 Hybrid is allowed: Square for donations + Stripe for SaaS subscription on the same site. Each integration owns its own webhook + DB tables — never cross-pollinate idempotency keys.
 
 ## Default Pricing Models
-### Nonprofit / Donation (Square default)
-| Preset | Display |
-|--------|---------|
-| $10 | "Feeds a family for a day" |
-| $25 | "Covers supplies for a week" |
-| $50 | "Powers the hotline for a month" |
-| $100 | "Sponsors a full program" |
-| $250 | "Transforms a life" |
-| $500 | "Makes a lasting impact" |
-| Custom | "Choose your amount" |
 
+### Nonprofit / Donation (Square default)
+
+Preset tiers:
+- **$10** — "Feeds a family for a day"
+- **$25** — "Covers supplies for a week"
+- **$50** — "Powers the hotline for a month"
+- **$100** — "Sponsors a full program"
+- **$250** — "Transforms a life"
+- **$500** — "Makes a lasting impact"
+- **Custom** — "Choose your amount"
+
+Rules:
 - One-time as default frequency for small orgs (Square Subscriptions adds setup complexity)
 - Monthly recurring opt-in via Square Subscriptions API + Plans (only when client has staff to manage)
 - Impact labels mandatory — specific + concrete, never vague
 - Progress bar showing goal achievement (optional, requires Durable Object aggregation)
 
 ### Square Nonprofit Discount
-501(c)(3) organizations qualify for reduced processing: 2.2% + $0.30 vs standard 2.6% + $0.10. Apply at squareup.com/help/us/en/article/6358 with EIN + IRS determination letter. For $25 average donation: standard fee = $0.95, nonprofit fee = $0.85 — ~10% per-transaction savings vs Stripe (2.9% + $0.30 = $1.03).
+
+501(c)(3) organizations qualify for reduced processing: **2.2% + $0.30** vs standard **2.6% + $0.10**. Apply at `squareup.com/help/us/en/article/6358` with EIN + IRS determination letter. For $25 average donation: standard fee = $0.95, nonprofit fee = $0.85 — ~10% per-transaction savings vs Stripe (2.9% + $0.30 = $1.03).
 
 ## Web Payments SDK (Browser — Tokenize Card Client-Side)
+
 ```html
 <!-- production -->
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 <!-- sandbox -->
 <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
 ```
+
 ```typescript
 const payments = window.Square.payments(applicationId, locationId);
 const card = await payments.card();
@@ -48,9 +73,15 @@ if (status !== 'OK') throw new Error('Tokenization failed');
 // POST token + amount to your worker — NEVER charge from the browser
 await fetch('/api/donate', { method: 'POST', body: JSON.stringify({ sourceId: token, amountCents: 5000 }) });
 ```
-Optional payment methods: `payments.applePay(paymentRequest)` | `payments.cashAppPay(paymentRequest, { redirectURL })` | `payments.googlePay(paymentRequest)` | `payments.ach({ accountHolderName, plaidLinkToken })`.
+
+Optional payment methods:
+- `payments.applePay(paymentRequest)`
+- `payments.cashAppPay(paymentRequest, { redirectURL })`
+- `payments.googlePay(paymentRequest)`
+- `payments.ach({ accountHolderName, plaidLinkToken })`
 
 ## Server-Side Charge (Cloudflare Worker — vanilla fetch)
+
 ```typescript
 const SQUARE_API_VERSION = '2024-12-18';
 function squareApiBase(env: Env) {
@@ -83,9 +114,11 @@ async function chargeOnce(env: Env, sourceId: string, amountCents: number, email
   return { paymentId: body.payment.id, receiptUrl: body.payment.receipt_url };
 }
 ```
+
 **Idempotency** is mandatory: every charge request MUST include a unique `idempotency_key` (UUID). Retrying with the same key returns the original payment, never double-charges.
 
 ## Webhook Handler (Cloudflare Worker)
+
 ```typescript
 // Verify signature via X-Square-HmacSha256-Signature header
 async function verifySquareSignature(req: Request, env: Env): Promise<boolean> {
@@ -120,7 +153,9 @@ app.post('/api/webhooks/square', async (req, env) => {
 ```
 
 ## Subscriptions (Recurring Donations)
+
 Square Subscriptions requires a Plan + Plan Variation FIRST. Two-step setup:
+
 ```typescript
 // 1. Create catalog plan (once, via wrangler or admin tool)
 await fetch(`${apiBase}/v2/catalog/object`, {
@@ -148,19 +183,21 @@ await fetch(`${apiBase}/v2/subscriptions`, {
   }),
 });
 ```
+
 For most small nonprofits without staff to manage Plans, default to one-time charges + "donate again" CTA in receipt email. Don't add subscription complexity until the client explicitly asks.
 
 ## Environment Toggle
-```
-SQUARE_ACCESS_TOKEN       # secret — sandbox or production
-SQUARE_LOCATION_ID        # secret — receiving location
-SQUARE_APPLICATION_ID     # secret — Web Payments SDK app ID (public-ish, kept as secret for env parity)
-SQUARE_ENVIRONMENT        # "sandbox" (default) or "production"
-SQUARE_WEBHOOK_SIGNATURE_KEY # secret — for webhook HMAC verification
-```
-Sandbox + production accounts are separate dashboards. Get sandbox creds at developer.squareup.com → Sandbox; production creds at developer.squareup.com → Production (requires verified business). Test card in sandbox: `4111 1111 1111 1111` / any future date / any CVV / any ZIP.
+
+- `SQUARE_ACCESS_TOKEN` — secret; sandbox or production
+- `SQUARE_LOCATION_ID` — secret; receiving location
+- `SQUARE_APPLICATION_ID` — secret; Web Payments SDK app ID (public-ish, kept as secret for env parity)
+- `SQUARE_ENVIRONMENT` — `"sandbox"` (default) or `"production"`
+- `SQUARE_WEBHOOK_SIGNATURE_KEY` — secret; for webhook HMAC verification
+
+Sandbox + production accounts are separate dashboards. Get sandbox creds at `developer.squareup.com → Sandbox`; production creds at `developer.squareup.com → Production` (requires verified business). Test card in sandbox: `4111 1111 1111 1111` / any future date / any CVV / any ZIP.
 
 ## CSP Allowances (every site using Square Web Payments SDK)
+
 ```
 script-src 'self' https://web.squarecdn.com https://sandbox.web.squarecdn.com 'unsafe-inline'
 style-src 'self' https://web.squarecdn.com https://sandbox.web.squarecdn.com 'unsafe-inline'
@@ -170,6 +207,7 @@ img-src 'self' https://*.squarecdn.com https://*.squareup.com data:
 ```
 
 ## Donation Page Design (givedirectly.org energy)
+
 ### Layout
 - Hero with cause story + impact stat counter (rAF roll-in, IntersectionObserver-gated)
 - Amount selector grid (6 presets + custom input)
@@ -189,41 +227,44 @@ img-src 'self' https://*.squarecdn.com https://*.squareup.com data:
 5. GA4 event: `purchase` with full e-commerce schema
 
 ## Auto-Detect Square Account
-When provisioning a new site, check if client has existing Square: `GET /v2/locations` returns all locations on account. If single location → auto-use as `SQUARE_LOCATION_ID`. If multi-location → ask which is the receiving location. If no Square account → prompt user to sign up at squareup.com/signup with /agentskills referral link (no affiliate, just direct).
+
+When provisioning a new site, check if client has existing Square: `GET /v2/locations` returns all locations on account.
+- Single location → auto-use as `SQUARE_LOCATION_ID`
+- Multi-location → ask which is the receiving location
+- No Square account → prompt user to sign up at `squareup.com/signup` with `/agentskills` referral link (no affiliate, just direct)
 
 ## Square API Coverage
-| API | Path | Use |
-|-----|------|-----|
-| Payments | `/v2/payments` | One-time charges |
-| Customers | `/v2/customers` | Donor records, repeat-donor lookup |
-| Cards (on file) | `/v2/cards` | Save card for recurring without storing CC |
-| Subscriptions | `/v2/subscriptions` | Recurring donations (requires Plans) |
-| Catalog | `/v2/catalog/object` | Plan + Plan Variation setup |
-| Refunds | `/v2/refunds` | Donor-requested refund within 60 days |
-| Disputes | `/v2/disputes` | Chargeback handling |
-| Locations | `/v2/locations` | Multi-location accounts |
-| Orders | `/v2/orders` | E-commerce line items (when not donation) |
-| Inventory | `/v2/inventory` | Retail-tier sites only |
-| Loyalty | `/v2/loyalty` | Repeat-donor rewards (rare for nonprofits) |
-| Gift Cards | `/v2/gift-cards` | Holiday gift-of-meals campaigns |
+
+- **Payments** — `/v2/payments` — one-time charges
+- **Customers** — `/v2/customers` — donor records, repeat-donor lookup
+- **Cards (on file)** — `/v2/cards` — save card for recurring without storing CC
+- **Subscriptions** — `/v2/subscriptions` — recurring donations (requires Plans)
+- **Catalog** — `/v2/catalog/object` — Plan + Plan Variation setup
+- **Refunds** — `/v2/refunds` — donor-requested refund within 60 days
+- **Disputes** — `/v2/disputes` — chargeback handling
+- **Locations** — `/v2/locations` — multi-location accounts
+- **Orders** — `/v2/orders` — e-commerce line items (when not donation)
+- **Inventory** — `/v2/inventory` — retail-tier sites only
+- **Loyalty** — `/v2/loyalty` — repeat-donor rewards (rare for nonprofits)
+- **Gift Cards** — `/v2/gift-cards` — holiday gift-of-meals campaigns
 
 ## Square vs Stripe Decision Cheat Sheet
-| Need | Pick |
-|------|------|
-| Nonprofit donation page | **Square** (nonprofit-rate discount, simpler UX) |
-| Small biz one-time checkout | **Square** (cheaper for sub-$100 tickets) |
-| Restaurant / salon / retail with POS | **Square** (single source of truth for in-person + online) |
-| SaaS subscriptions with seats/tiers | **Stripe** (Billing API, Entitlements, prorations) |
-| Metered/usage-based AI billing | **Stripe** (Billing Meters API, Metronome) |
-| Marketplace with split payments | **Stripe Connect** |
-| Embedded checkout for AI agents | **Stripe** (ACP launch partner with OpenAI/Perplexity) |
-| Multi-country tax automation | **Stripe Tax** |
-| Net-30 enterprise invoicing | **Stripe** (Invoicing API) |
-| Donor wants to use Cash App | **Square** (native Cash App Pay) |
-| Recurring donations, no subscription complexity | **Square** one-time + "donate again" email |
-| Recurring donations, full retention machine | Either — Stripe Customer Portal is more polished, Square Subscriptions is cheaper |
+
+- **Nonprofit donation page** → **Square** (nonprofit-rate discount, simpler UX)
+- **Small biz one-time checkout** → **Square** (cheaper for sub-$100 tickets)
+- **Restaurant / salon / retail with POS** → **Square** (single source of truth for in-person + online)
+- **SaaS subscriptions with seats/tiers** → **Stripe** (Billing API, Entitlements, prorations)
+- **Metered/usage-based AI billing** → **Stripe** (Billing Meters API, Metronome)
+- **Marketplace with split payments** → **Stripe Connect**
+- **Embedded checkout for AI agents** → **Stripe** (ACP launch partner with OpenAI/Perplexity)
+- **Multi-country tax automation** → **Stripe Tax**
+- **Net-30 enterprise invoicing** → **Stripe** (Invoicing API)
+- **Donor wants to use Cash App** → **Square** (native Cash App Pay)
+- **Recurring donations, no subscription complexity** → **Square** one-time + "donate again" email
+- **Recurring donations, full retention machine** → either — Stripe Customer Portal is more polished, Square Subscriptions is cheaper
 
 ## Conversion Optimization (Research-Backed)
+
 ### Donation Page Best Practices (Source: NextAfter, M+R Benchmarks 2025)
 - Donation page conversion rate median: 17% (NextAfter 2024). Top 10%: 30%+.
 - Suggested amount with social proof: "$25 — most common gift this month" lifts AOV 12%
@@ -239,6 +280,7 @@ When provisioning a new site, check if client has existing Square: `GET /v2/loca
 - Show total prominently before final submit
 
 ## Receipt Email Template (Resend)
+
 ```
 Subject: Thank you, {{firstName}} — your donation to {{orgName}} confirmed
 
@@ -267,5 +309,6 @@ With gratitude,
 ```
 
 ## Ownership
-**Owns:** Square Web Payments SDK integration, Payments API (server-side charge), Subscriptions for recurring donations, webhook signature verification, idempotency-key patterns, nonprofit-rate enrollment, Square POS sync for hybrid online+in-person clients, Cash App Pay + Apple Pay enablement.
-**Never owns:** SaaS subscriptions / metered billing / Entitlements (→13/stripe-billing), email send (→09/email-templates), donor analytics (→13/analytics-configuration), goal-progress aggregation (→05/heartbeat-polling + Durable Objects).
+
+- **Owns** — Square Web Payments SDK integration, Payments API (server-side charge), Subscriptions for recurring donations, webhook signature verification, idempotency-key patterns, nonprofit-rate enrollment, Square POS sync for hybrid online + in-person clients, Cash App Pay + Apple Pay enablement
+- **Never owns** — SaaS subscriptions / metered billing / Entitlements (→ 13/stripe-billing), email send (→ 09/email-templates), donor analytics (→ 13/analytics-configuration), goal-progress aggregation (→ 05/heartbeat-polling + Durable Objects)

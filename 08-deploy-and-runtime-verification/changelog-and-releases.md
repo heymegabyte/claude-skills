@@ -6,8 +6,10 @@ description: "Auto-generate changelog from conventional commits. Public /changel
 ---
 
 # Changelog and Releases
+
 ## Conventional Commits
 All commits should follow conventional commits format:
+
 ```
 feat: add donation progress bar
 fix: contact form validation on mobile
@@ -17,15 +19,13 @@ chore: update dependencies
 ```
 
 ### Commit Types
-| Type | When | Shows in Changelog |
-|------|------|-------------------|
-| `feat` | New feature | Yes — "New" |
-| `fix` | Bug fix | Yes — "Fixed" |
-| `perf` | Performance improvement | Yes — "Improved" |
-| `docs` | Documentation | No |
-| `chore` | Maintenance | No |
-| `refactor` | Code restructure | No |
-| `test` | Tests | No |
+- **`feat`** — New feature — shows in changelog as "New"
+- **`fix`** — Bug fix — shows in changelog as "Fixed"
+- **`perf`** — Performance improvement — shows in changelog as "Improved"
+- **`docs`** — Documentation — NOT in changelog
+- **`chore`** — Maintenance — NOT in changelog
+- **`refactor`** — Code restructure — NOT in changelog
+- **`test`** — Tests — NOT in changelog
 
 ## Auto-Generate Changelog
 ```bash
@@ -64,37 +64,37 @@ EOF
 ```
 
 ## Semantic Versioning
-- **Major** (1.0.0 → 2.0.0): breaking changes, redesign
-- **Minor** (1.0.0 → 1.1.0): new features
-- **Patch** (1.0.0 → 1.0.1): bug fixes
+- **Major** (1.0.0 → 2.0.0) — breaking changes, redesign
+- **Minor** (1.0.0 → 1.1.0) — new features
+- **Patch** (1.0.0 → 1.0.1) — bug fixes
 
 For most Emdash projects: start at 1.0.0, bump minor for features, patch for fixes.
 
 ### Version Bump Rules
-- Multiple `feat` commits since last release → bump minor
-- Only `fix`/`perf` commits since last release → bump patch
-- Any commit with `BREAKING CHANGE:` in body or `!` after type → bump major
-- Pre-release tags: use `-beta.1`, `-rc.1` for staging/preview deploys
+- Multiple `feat` commits since last release → bump **minor**
+- Only `fix` / `perf` commits since last release → bump **patch**
+- Any commit with `BREAKING CHANGE:` in body or `!` after type → bump **major**
+- Pre-release tags — use `-beta.1`, `-rc.1` for staging / preview deploys
 
 ## MCP Tools Available
+
 ### GitHub MCP (`mcp__github-mcp__*`)
-| Tool | Purpose |
-|------|---------|
-| `mcp__github-mcp__list_releases` | List existing releases to determine next version |
-| `mcp__github-mcp__get_latest_release` | Get the latest release tag for version bumping |
-| `mcp__github-mcp__get_release_by_tag` | Fetch a specific release's notes |
-| `mcp__github-mcp__list_tags` | List all tags to check version history |
-| `mcp__github-mcp__get_tag` | Get details of a specific tag |
-| `mcp__github-mcp__list_commits` | Fetch commits since last release for changelog generation |
-| `mcp__github-mcp__get_commit` | Get details of a specific commit |
-| `mcp__github-mcp__create_or_update_file` | Update CHANGELOG.md in the repo |
-| `mcp__github-mcp__push_files` | Push changelog + version bump in one commit |
+- **`list_releases`** — list existing releases to determine next version
+- **`get_latest_release`** — get the latest release tag for version bumping
+- **`get_release_by_tag`** — fetch a specific release's notes
+- **`list_tags`** — list all tags to check version history
+- **`get_tag`** — get details of a specific tag
+- **`list_commits`** — fetch commits since last release for changelog generation
+- **`get_commit`** — get details of a specific commit
+- **`create_or_update_file`** — update `CHANGELOG.md` in the repo
+- **`push_files`** — push changelog + version bump in one commit
 
 ## Automated Changelog Generation from Git Log
-### Step-by-step workflow:
+
+### Step-by-step workflow
 1. **Get latest release tag** — `mcp__github-mcp__get_latest_release` → extract tag name
 2. **List commits since that tag** — `mcp__github-mcp__list_commits` with `sha: main` and filter by date
-3. **Parse conventional commits** — categorize into feat/fix/perf/breaking
+3. **Parse conventional commits** — categorize into `feat` / `fix` / `perf` / `breaking`
 4. **Determine version bump** — apply semver rules above
 5. **Generate changelog entry** — format as markdown grouped by type
 6. **Update CHANGELOG.md** — prepend new entry, push via `mcp__github-mcp__push_files`
@@ -120,13 +120,11 @@ function parseCommits(commits: Array<{ message: string; sha: string; author: str
 ```
 
 ## Acceptance Criteria
-| # | Criterion | Measurement |
-|---|-----------|-------------|
-| 1 | Every `feat`/`fix`/`perf` commit appears in changelog | Diff changelog against git log — zero missing entries |
-| 2 | Version follows semver rules | Parse version string, verify bump type matches commit types |
-| 3 | GitHub Release exists for every minor+ version | `mcp__github-mcp__list_releases` count matches expected releases |
-| 4 | Release notes match changelog entry | Diff release body against CHANGELOG.md section — identical content |
-| 5 | `/changelog` page renders correctly | Playwright screenshot shows formatted entries, no empty state |
-| 6 | Changelog page has valid date ordering | Entries sorted newest-first, no date inversions |
-| 7 | Social announcement fires for minor+ releases | 09/social-automation triggered, post confirmed on at least 2 platforms |
-| 8 | No `docs`/`chore`/`refactor`/`test` commits leak into changelog | Parse changelog — only feat/fix/perf/breaking entries present |
+1. Every `feat` / `fix` / `perf` commit appears in changelog — diff changelog against git log, zero missing entries
+2. Version follows semver rules — parse version string, verify bump type matches commit types
+3. GitHub Release exists for every minor+ version — `mcp__github-mcp__list_releases` count matches expected releases
+4. Release notes match changelog entry — diff release body against `CHANGELOG.md` section, identical content
+5. `/changelog` page renders correctly — Playwright screenshot shows formatted entries, no empty state
+6. Changelog page has valid date ordering — entries sorted newest-first, no date inversions
+7. Social announcement fires for minor+ releases — 09/social-automation triggered, post confirmed on at least 2 platforms
+8. No `docs` / `chore` / `refactor` / `test` commits leak into changelog — parse changelog, only `feat` / `fix` / `perf` / `breaking` entries present

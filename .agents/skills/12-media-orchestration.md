@@ -1,6 +1,6 @@
 ---
 name: "media-orchestration"
-description: "Section-by-section media planning and generation. Image generation (GPT Image 1.5 primary, built-in fallback), logo/icon generation (Ideogram v3 → favicon set), video generation (Sora), social preview images (OG 1200x630 + AI search optimization), stock photo curation (Unsplash, Pexels), critique/remix loops (max 3 rounds), asset compression pipeline, and media performance budgets."
+description: "Section-by-section media planning and generation. Image generation (GPT Image 1.5 primary, built-in fallback), logo/icon generation (Ideogram v3 → favicon set), video generation (Sora), social preview images (OG 1200x630 + AI search optimization), stock photo curation (Pexels, Pixabay), critique/remix loops (max 3 rounds), asset compression pipeline, and media performance budgets."
 metadata:
   version: "2.1.0"
   updated: "2026-04-23"
@@ -60,7 +60,7 @@ PWA screenshots: Playwright on live URL (never mockups). Wide 1920x1080 + narrow
 **AI Search (GEO):** OG images now consumed by ChatGPT, Perplexity, Google AI Overviews. Ensure: descriptive og:title (40-60 words quotable), structured JSON-LD on every page, FAQ sections for AI extraction, clear entity definitions. ChatGPT favors Wikipedia/G2; Perplexity favors Reddit/YouTube; Google AI Overviews favor traditionally ranked pages.
 
 ## Stock
-Unsplash (UNSPLASH_ACCESS_KEY), Pexels (PEXELS_API_KEY). Review 5+, prefer candid/diverse/mood-matching. WebP, alt text.
+Pexels (PEXELS_API_KEY), Pixabay (PIXABAY_API_KEY). Review 5+, prefer candid/diverse/mood-matching. WebP, alt text.
 
 ## Critique Loop (max 3)
 Communicates? Brand-matching? Strong composition? Consistent palette? Legible? Premium? No artifacts? Issues: adjust prompt, regenerate. Score 1-10 on 8 criteria (see templates/PROMPTS.md). Overall <7: regenerate.
@@ -69,8 +69,8 @@ Communicates? Brand-matching? Strong composition? Consistent palette? Legible? P
 Total images <500KB, largest <200KB, hero LCP <2.5s, total media <3MB, requests <15. Hero: eager+preload+fetchpriority=high. Others: lazy. All: decoding=async. WebP+AVIF via CF Image Transforms (format=auto). srcset 320/640/1280/1920w. Inline SVGs <2KB. 1s LCP delay = 7% conversion loss.
 
 ## Fallback Chain
-1. GPT Image 1.5 (scenes/hero/OG -- best quality) 2. Ideogram v3 (logos/icons) 3. GPT Image 1-mini (bulk drafts) 4. Pexels (200/hr) 5. Unsplash (50/hr) 6. Pixabay (100/hr) 7. Replicate (specialty).
+1. GPT Image 1.5 (scenes/hero/OG -- best quality) 2. Ideogram v3 (logos/icons) 3. GPT Image 1-mini (bulk drafts) 4. Pexels (200/hr) 5. Pixabay (100/hr) 6. Replicate (specialty).
 All keys: project .env.local or shared key pool. `~/.claude/.env` for shared keys (OPENAI_API_KEY, etc).
 
 ## Design Phase API Scan (EVERY NEW PROJECT)
-Before first design: scan `get-secret` vault for available media APIs. Check: OPENAI_API_KEY (GPT Image)|PEXELS_API_KEY (stock photos)|UNSPLASH_ACCESS_KEY (stock)|REPLICATE_API_TOKEN (Flux/specialty)|IDEOGRAM_API_KEY (logos). Also scan for: embedded video APIs (YouTube Data API, Vimeo), background video sources (Pexels Video API supports free HD video), high-res content APIs (NASA/APOD for space themes, Giphy for motion). Map available APIs to section needs before generating any media. Always provide exact API key management URLs when prompting user for missing keys.
+Before first design: scan `get-secret` vault for available media APIs. Check: OPENAI_API_KEY (GPT Image)|PEXELS_API_KEY (stock photos)|PIXABAY_API_KEY (stock)|REPLICATE_API_TOKEN (Flux/specialty)|IDEOGRAM_API_KEY (logos). Also scan for: embedded video APIs (YouTube Data API, Vimeo), background video sources (Pexels Video API supports free HD video), high-res content APIs (NASA/APOD for space themes, Giphy for motion). Map available APIs to section needs before generating any media. Always provide exact API key management URLs when prompting user for missing keys.

@@ -6,33 +6,33 @@ description: "Go-live checklist: sitemap → GSC, robots.txt unblock, Postiz soc
 ---
 
 # Launch Day Sequence
+
 ## Pre-Launch Verification
-```
-[ ] All pages return 200
-[ ] All forms submit correctly (8-point test matrix — 06/contact-forms-and-endpoints)
-[ ] All images load (no broken images)
-[ ] No placeholder content (Lorem, TODO, coming soon)
-[ ] Mobile responsive at 375px
-[ ] Desktop looks good at 1280px
-[ ] Accessibility: axe-core 0 violations (07/accessibility-gate)
-[ ] SEO: Yoast checklist passes on all pages (09/seo-and-keywords)
-[ ] Performance: Lighthouse report generated
-[ ] Security: CSP headers, Turnstile on forms
-[ ] Legal: privacy policy + terms present
-[ ] Easter egg: at least one hidden delight (06/easter-eggs)
-[ ] Error pages: branded 404 + 500 (06/custom-error-pages)
-[ ] Contact form: working and tested (06/contact-forms-and-endpoints)
-[ ] Web property completeness (06/web-manifest-system):
-    - site.webmanifest validates in Chrome DevTools (0 warnings)
-    - PWA screenshots taken with Playwright (wide + narrow form_factor)
-    - 4+ JSON-LD blocks per page (Organization, WebSite+SearchAction, WebPage, domain-specific)
-    - OG images at 1200x630, visually verified on Twitter Card Validator + Facebook Debugger
-    - Infrastructure files: humans.txt, security.txt, browserconfig.xml, opensearch.xml
-    - Cross-site alternate links present
-    - Sitemap submitted to Google Search Console
-```
+- [ ] All pages return 200
+- [ ] All forms submit correctly (8-point test matrix — 06/contact-forms-and-endpoints)
+- [ ] All images load (no broken images)
+- [ ] No placeholder content (Lorem, TODO, coming soon)
+- [ ] Mobile responsive at 375px
+- [ ] Desktop looks good at 1280px
+- [ ] Accessibility — axe-core 0 violations (07/accessibility-gate)
+- [ ] SEO — Yoast checklist passes on all pages (09/seo-and-keywords)
+- [ ] Performance — Lighthouse report generated
+- [ ] Security — CSP headers, Turnstile on forms
+- [ ] Legal — privacy policy + terms present
+- [ ] Easter egg — at least one hidden delight (06/easter-eggs)
+- [ ] Error pages — branded 404 + 500 (06/custom-error-pages)
+- [ ] Contact form — working and tested (06/contact-forms-and-endpoints)
+- [ ] Web property completeness (06/web-manifest-system):
+  - `site.webmanifest` validates in Chrome DevTools (0 warnings)
+  - PWA screenshots taken with Playwright (wide + narrow `form_factor`)
+  - 4+ JSON-LD blocks per page (Organization, WebSite + SearchAction, WebPage, domain-specific)
+  - OG images at 1200×630, visually verified on Twitter Card Validator + Facebook Debugger
+  - Infrastructure files — `humans.txt`, `security.txt`, `browserconfig.xml`, `opensearch.xml`
+  - Cross-site alternate links present
+  - Sitemap submitted to Google Search Console
 
 ## Launch Sequence (Automated)
+
 ### Step 1: Final Deploy + Purge
 ```bash
 npx wrangler deploy
@@ -127,10 +127,10 @@ await triggerZapier(env, 'site_launched', { domain, url: `https://${domain}` });
 ```
 
 ### Step 12: Psychology-Optimized Launch (04/wisdom-and-human-psychology)
-- **Peak-End Rule:** The launch announcement IS the peak moment. Make it count.
-- **Social Proof:** Include user count or testimonial in the social post.
-- **Reciprocity:** Share something valuable in the announcement (tip, insight, free tool).
-- **Unity:** Frame as "we built this" not "I built this" — shared identity with community.
+- **Peak-End Rule** — the launch announcement IS the peak moment. Make it count.
+- **Social Proof** — include user count or testimonial in the social post
+- **Reciprocity** — share something valuable in the announcement (tip, insight, free tool)
+- **Unity** — frame as "we built this" not "I built this" — shared identity with community
 
 ### Brand Amplification
 Every launch amplifies the projectsites.dev brand:

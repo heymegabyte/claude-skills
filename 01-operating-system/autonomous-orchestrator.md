@@ -13,10 +13,11 @@ updated: "2026-04-23"
 3. Parallel agent spawning — identify independent streams, coordinate results
 4. Competitive excellence — research competitors, match features, then exceed
 5. AI-native — proactively integrate vision, NLP, embeddings for copy/images/audits
-6. Full tool access — use EVERY available MCP, API, Computer Use, and Browser tool to accomplish the goal. Never self-restrict.
-7. Creative orchestration — chain tools across systems (e.g., Figma→code, Airtable→D1, Slack→notify, Computer Use→native app config). The orchestrator decides HOW, not IF, to use a tool.
+6. Full tool access — use EVERY available MCP, API, Computer Use, and Browser tool; never self-restrict
+7. Creative orchestration — chain tools across systems (Figma→code, Airtable→D1, Slack→notify, Computer Use→native app config); the orchestrator decides HOW, not IF
 
 ## Tool Inventory (Use Aggressively)
+
 | Category | Tools | When |
 |----------|-------|------|
 | Desktop | Computer Use (full control) | Native apps, GUI automation, screenshots |
@@ -34,39 +35,66 @@ updated: "2026-04-23"
 | Calendar | Google Calendar MCP | Scheduling, availability |
 | Storage | Google Drive MCP | Documents, shared files |
 
-Orchestrator scans this inventory BEFORE planning. For every task: "Which combination of tools gets this done fastest?"
+Orchestrator scans this inventory BEFORE planning. For every task ask: "Which combination of tools gets this done fastest?"
 
 ## Master Process Flow
-```
-1. ANALYZE — read context (CLAUDE.md, package.json, code), identify current vs desired state, research competitors, generate task list
-1.5. ***ARCHITECTURE THOUGHT LOOP*** — run 01/architecture-thought-loop.md (30-point checklist):
-   Phase 0: pre-mortem, inversion, boundary, constraints, competitive snapshot
-   Phase 1: user stories, MECE decomposition, user journey, data flow, state machines
-   Phase 2: API-first contract, error-first design, 3 parallel paths, reversibility check
-   Phase 3: simplicity audit (remove 30%), performance budget, STRIDE threat model
-   Phase 4: content-first copy, SEO keyword research
-   Phase 5: cost model, failure modes, migration paths, integration mapping
-   Phase 6: five whys, second-order effects, delete test
-   ~22 min of thinking saves 22 hours of rework. Skip NOTHING.
-2. PLAN — group into parallel streams, identify dependencies, create execution order
-3. EXECUTE (parallel) — spawn agents, build completely, make creative decisions inline, deploy continuously
-4. VERIFY — E2E tests, Lighthouse, a11y (axe-core), responsive check (6 breakpoints)
-4.5. ***UI COMPLETENESS SWEEP (MANDATORY — BLOCKS DONE)***:
-   a. Static scan: grep src/ for 'Coming soon|TODO|placeholder|lorem|not implemented|stub|mock|fake|dummy|TBD|WIP'
-   b. Playwright interactive: click EVERY button (catch disabled/no-handler), submit EVERY form (valid+invalid), check EVERY link (catch 404s), verify EVERY image (catch broken/placeholder)
-   c. Empty state check: render pages with no data — what does user see?
-   d. Loading state check: throttle network — is there a skeleton or blank?
-   e. Error state check: block APIs — does UI handle gracefully or crash?
-   f. Playwright a11y tree snapshot ALL pages (FREE) → axe-core scan (FREE) → fix a11y/functional issues
-   g. Screenshot 2 key breakpoints (375+1280) → GPT-4o detail:low for aesthetic-only issues → rate 0-10
-   h. Below 8/10 = NOT DONE. Fix all findings. Max 3 rounds, $1 vision budget cap. Homepage/ATF gets vision priority.
-   i. Re-sweep. Loop until ALL pages ≥8/10 AND zero findings OR budget exhausted.
-   i. Log sweep results to ~/.claude/audit/sweep-results.jsonl (Stop hook checks this)
-5. ITERATE — compare vs competitors, fix gaps, re-deploy, continue until exceeds
-6. DOCUMENT — update CLAUDE.md, skills, memories, descriptive commits
-```
+
+### 1. ANALYZE
+- Read context (CLAUDE.md, package.json, code)
+- Identify current vs desired state
+- Research competitors
+- Generate task list
+
+### 1.5. ***ARCHITECTURE THOUGHT LOOP***
+Run `01/architecture-thought-loop.md` (30-point checklist):
+- **Phase 0** — pre-mortem, inversion, boundary, constraints, competitive snapshot
+- **Phase 1** — user stories, MECE decomposition, user journey, data flow, state machines
+- **Phase 2** — API-first contract, error-first design, 3 parallel paths, reversibility check
+- **Phase 3** — simplicity audit (remove 30%), performance budget, STRIDE threat model
+- **Phase 4** — content-first copy, SEO keyword research
+- **Phase 5** — cost model, failure modes, migration paths, integration mapping
+- **Phase 6** — five whys, second-order effects, delete test
+
+~22 min of thinking saves 22 hours of rework. Skip NOTHING.
+
+### 2. PLAN
+- Group into parallel streams
+- Identify dependencies
+- Create execution order
+
+### 3. EXECUTE (parallel)
+- Spawn agents
+- Build completely
+- Make creative decisions inline
+- Deploy continuously
+
+### 4. VERIFY
+- E2E tests, Lighthouse, a11y (axe-core)
+- Responsive check (6 breakpoints)
+
+### 4.5. ***UI COMPLETENESS SWEEP (MANDATORY — BLOCKS DONE)***
+a. **Static scan** — grep `src/` for `Coming soon|TODO|placeholder|lorem|not implemented|stub|mock|fake|dummy|TBD|WIP`
+b. **Playwright interactive** — click EVERY button (catch disabled/no-handler), submit EVERY form (valid+invalid), check EVERY link (catch 404s), verify EVERY image (catch broken/placeholder)
+c. **Empty state check** — render pages with no data; what does user see?
+d. **Loading state check** — throttle network; is there a skeleton or blank?
+e. **Error state check** — block APIs; does UI handle gracefully or crash?
+f. Playwright a11y tree snapshot ALL pages (FREE) → axe-core scan (FREE) → fix a11y/functional issues
+g. Screenshot 2 key breakpoints (375 + 1280) → GPT-4o `detail:low` for aesthetic-only issues → rate 0-10
+h. **Below 8/10 = NOT DONE.** Fix all findings. Max 3 rounds, $1 vision budget cap. Homepage/ATF gets vision priority.
+i. Re-sweep. Loop until ALL pages ≥8/10 AND zero findings OR budget exhausted.
+j. Log sweep results to `~/.claude/audit/sweep-results.jsonl` (Stop hook checks this)
+
+### 5. ITERATE
+- Compare vs competitors
+- Fix gaps, re-deploy
+- Continue until exceeds
+
+### 6. DOCUMENT
+- Update CLAUDE.md, skills, memories
+- Descriptive commits
 
 ## Agent Types
+
 | Agent | Purpose |
 |-------|---------|
 | Competitive Researcher | Analyze competitor features |
@@ -88,11 +116,14 @@ Team Lead (claude-opus-4-6) — plans, coordinates
 └── Deploy Agent (claude-haiku-4-5-20251001) — build, deploy, verify
 ```
 
-File ownership: frontend owns `src/app/`, backend owns `src/api/`. Test agents never modify app code. Deploy runs AFTER all builds complete.
+- File ownership: frontend owns `src/app/`, backend owns `src/api/`
+- Test agents never modify app code
+- Deploy runs AFTER all builds complete
 
 ## ToolSearch Bulk-Loading (***CRITICAL***)
-
-When any computer-use tools are in the deferred list: load ALL in single call — `{ query: "computer-use", max_results: 30 }`. Never load individual tools one-by-one (wastes one round-trip per tool). Same pattern for any deferred tool set: bulk-search by server name prefix, not `select:` for individuals.
+- When any computer-use tools are in the deferred list, load ALL in single call — `{ query: "computer-use", max_results: 30 }`
+- Never load individual tools one-by-one (wastes one round-trip per tool)
+- Same pattern for any deferred tool set — bulk-search by server name prefix, not `select:` for individuals
 
 Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer, test-writer, seo-auditor, visual-qa, computer-use-operator.
 
@@ -100,43 +131,56 @@ Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer,
 - All features implemented (no stubs/TODOs)
 - Deployed to production
 - E2E tests pass
-- Lighthouse >= 90
+- Lighthouse ≥90
 - Responsive at 375px and 1280px
 - axe-core 0 violations
 - CLAUDE.md updated
-- grep "Coming soon" returns zero
+- `grep "Coming soon"` returns zero
 - Every data array from real API endpoint
 - Every button has working handler
 - GPT-4o visual verification converged on ALL routes
 
 ## Self-Healing Decision Tree
-```
-TRANSIENT (retry): rate limit -> backoff, timeout -> retry 2s, 503 -> check Coolify, cache stale -> rebuild
-CODE BUG (fix): type error -> fix types, null ref -> add guard, logic -> trace+fix, import -> fix paths
-ARCHITECTURE (reassess): wrong framework -> propose alt, schema mismatch -> redesign, structure wrong -> refactor
-EXTERNAL (degrade): API down -> fallback, deprecated -> replace, credentials expired -> prompt once
-SKILL MISMATCH (re-route): wrong skill -> re-evaluate via _router.md, conflict -> Skill 01 > specific > general
-```
+- **TRANSIENT (retry)** — rate limit → backoff; timeout → retry 2s; 503 → check Coolify; cache stale → rebuild
+- **CODE BUG (fix)** — type error → fix types; null ref → add guard; logic → trace + fix; import → fix paths
+- **ARCHITECTURE (reassess)** — wrong framework → propose alt; schema mismatch → redesign; structure wrong → refactor
+- **EXTERNAL (degrade)** — API down → fallback; deprecated → replace; credentials expired → prompt once
+- **SKILL MISMATCH (re-route)** — wrong skill → re-evaluate via `_router.md`; conflict → Skill 01 > specific > general
 
-Recovery: detect -> classify -> fix -> verify -> if 3x same failure escalate one level -> check for regressions.
+**Recovery** — detect → classify → fix → verify → if 3x same failure escalate one level → check for regressions
 
 ## Crons vs Completion
-Crons=monitoring ONLY (health, uptime, deploy status). Work completion=single deep session with parallel phases. If `/loop` or `/schedule` invoked for work (not monitoring), warn user: "This is work completion, not monitoring. Running deep session instead."
+- Crons = monitoring ONLY (health, uptime, deploy status)
+- Work completion = single deep session with parallel phases
+- If `/loop` or `/schedule` invoked for work (not monitoring), warn user: "This is work completion, not monitoring. Running deep session instead."
 
 ## Spawn/Kill Pattern
-Decompose→parallel phases→agents complete+return (ephemeral, not persistent)→master merges→next phase→context>60%: progress.md→fresh agent→3x critical fail: alert brian@megabyte.space via Resend→DONE when all Hard Gates pass+zero recommendations.
+- Decompose → parallel phases → agents complete + return (ephemeral, not persistent)
+- Master merges → next phase
+- Context >60% → `progress.md` → fresh agent
+- 3x critical fail → alert brian@megabyte.space via Resend
+- DONE when all Hard Gates pass + zero recommendations
 
-Worktree isolation: each parallel agent gets isolated git worktree (`git worktree add ../worktree-frontend emdash/feat-xxx`). Agents cannot clobber each other's files. Merge after phase completion.
+**Worktree isolation** — each parallel agent gets isolated git worktree (`git worktree add ../worktree-frontend emdash/feat-xxx`). Agents cannot clobber each other's files. Merge after phase completion.
 
-SubagentStop hook: `~/.claude/hooks/on-session-end.sh` fires when agent session ends. Auto-commits+pushes skill/memory changes to heymegabyte/claude-skills. Checks `~/.claude/audit/sweep-results.jsonl` — if latest sweep <8/10, blocks "done" and re-queues fixes.
+**SubagentStop hook** — `~/.claude/hooks/on-session-end.sh` fires when agent session ends. Auto-commits + pushes skill/memory changes to `heymegabyte/claude-skills`. Checks `~/.claude/audit/sweep-results.jsonl` — if latest sweep <8/10, blocks "done" and re-queues fixes.
 
 ## Anti-Patterns
-Pick best not ask|no skeletons "for next session"|never sequential when parallel-safe|no "good enough"|no "Coming soon"|no mock data|no "done" without AI vision proof|no ignoring admin sections|no crons for work|no recurring tasks for one-run work
+- Pick best, not ask
+- No skeletons "for next session"
+- Never sequential when parallel-safe
+- No "good enough"
+- No "Coming soon"
+- No mock data
+- No "done" without AI vision proof
+- No ignoring admin sections
+- No crons for work
+- No recurring tasks for one-run work
 
 ## Trigger/Stop Conditions
-**Trigger:** New project, "build this"/"make this better", returning to project with pending improvements.
-**Stop:** Exceeds all competitors, all quality gates pass, user explicitly says stop.
+- **Trigger** — new project, "build this" / "make this better", returning to project with pending improvements
+- **Stop** — exceeds all competitors, all quality gates pass, user explicitly says stop
 
 ## Ownership
-**Owns:** Master orchestration, task decomposition, autonomous decisions, parallel agent coordination, completion criteria, continuous improvement loop, competitive iteration.
-**Never owns:** Implementation (->06), testing (->07), deployment (->08), design (->10), media (->12), policy (->01).
+- **Owns** — master orchestration, task decomposition, autonomous decisions, parallel agent coordination, completion criteria, continuous improvement loop, competitive iteration
+- **Never owns** — implementation (→06), testing (→07), deployment (→08), design (→10), media (→12), policy (→01)

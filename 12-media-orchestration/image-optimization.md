@@ -7,6 +7,7 @@ updated: "2026-04-23"
 # Image Optimization Pipeline
 
 ## Sharp Processing Worker
+
 ```typescript
 // src/workers/image-processor.ts
 import sharp from 'sharp';
@@ -79,6 +80,7 @@ async function processImage(
 ```
 
 ## Post-Upload Queue Handler
+
 ```typescript
 // src/queues/image-queue.ts
 import { Hono } from 'hono';
@@ -115,6 +117,7 @@ export default {
 ```
 
 ## Responsive Image Component (Angular)
+
 ```typescript
 // responsive-image.component.ts
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
@@ -171,6 +174,7 @@ export class ResponsiveImageComponent {
 ```
 
 ## Cloudflare Image Resizing (On-Demand Alternative)
+
 ```typescript
 // No pre-generation needed — CF resizes on first request, caches at edge
 // Requires CF Pro+ plan with Image Resizing enabled
@@ -184,6 +188,7 @@ function cfImageUrl(originalUrl: string, width: number, format: 'webp' | 'avif' 
 ```
 
 ## Uppy Integration (trigger processing after upload)
+
 ```typescript
 // In upload success handler, queue image for processing
 uploads.post('/presign', zValidator('json', uploadSchema), async (c) => {
@@ -195,6 +200,7 @@ uploads.post('/presign', zValidator('json', uploadSchema), async (c) => {
 ```
 
 ## wrangler.toml Bindings
+
 ```toml
 [[queues.producers]]
 queue = "image-processing"
@@ -207,4 +213,12 @@ max_retries = 3
 ```
 
 ## Quality Settings
-WebP quality 80 (SSIM ~0.98, visually lossless). AVIF quality 70 (same perceptual quality, 30-50% smaller than WebP). Never upscale. Skip variants wider than original. Max single image after optimization: <200KB. Total page images: <500KB. Hero: eager+preload. Everything else: lazy, decoding=async.
+
+- **WebP** — quality 80 (SSIM ~0.98, visually lossless)
+- **AVIF** — quality 70 (same perceptual quality, 30-50% smaller than WebP)
+- Never upscale
+- Skip variants wider than original
+- **Max single image after optimization** — <200KB
+- **Total page images** — <500KB
+- **Hero** — eager + preload
+- **Everything else** — lazy, `decoding=async`

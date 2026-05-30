@@ -8,9 +8,12 @@ updated: "2026-04-30"
 
 ## Why This Replaces Single-HTML Output
 
-The legacy generator (Llama 3.1 70B → 16K-token single inline HTML, "Under 80KB total") fundamentally cannot produce the multi-page, media-rich, blog-bearing sites the platform promises. Symptoms: missing blog, missing favicons, missing logo, single-page collapse, gradient hero placeholders. Root cause: no protocol for emitting >1 file, no template inheritance, no plan-first discipline.
-
-Bolt's `<boltArtifact>` envelope (proven in production at bolt.new since 2024, adopted by v0/Lovable/Replit with minor variants) is the right shape: a single XML container with an ordered sequence of file-write + shell actions. The runtime parses the artifact, writes each file, runs each shell, in order. Cloud Build / Workers / wrangler deploy at the end.
+- Legacy generator (Llama 3.1 70B → 16K-token single inline HTML, "Under 80KB total") cannot produce multi-page, media-rich, blog-bearing sites
+- **Symptoms**: missing blog, missing favicons, missing logo, single-page collapse, gradient hero placeholders
+- **Root cause**: no protocol for emitting >1 file, no template inheritance, no plan-first discipline
+- Bolt's `<boltArtifact>` envelope is the right shape — single XML container with ordered sequence of file-write + shell actions
+- Proven in production at bolt.new since 2024, adopted by v0/Lovable/Replit with minor variants
+- Runtime parses artifact, writes each file, runs each shell, in order. Cloud Build / Workers / `wrangler deploy` at end
 
 ## Envelope Shape
 
@@ -29,34 +32,32 @@ Bolt's `<boltArtifact>` envelope (proven in production at bolt.new since 2024, a
 
 ## Action Types
 
-| Type | filePath | Body | Effect |
-|------|----------|------|--------|
-| `file` | required, repo-relative | full file contents | overwrite or create file at path |
-| `shell` | omitted | one-line command | run in workspace root, must succeed (non-zero exit fails build) |
+- **`file`** — `filePath` required (repo-relative), body = full file contents, effect = overwrite or create file at path
+- **`shell`** — `filePath` omitted, body = one-line command, runs in workspace root, must succeed (non-zero exit fails build)
 
 No other action types. No `start`, no `import`, no `web` (Bolt has those, projectsites.dev doesn't need them — the runtime always runs `npm install && npm run build` at the end).
 
 ## Ordering Rules (***NON-NEGOTIABLE***)
 
-The runtime writes files in document order, then runs shell actions in document order. So order must obey dependency chains:
+Runtime writes files in document order, then runs shell actions in document order. Order must obey dependency chains:
 
-1. **PLAN.md first.** A 200-token plan block: route tree, design-token diff vs template, media count, file count. Forces plan-first discipline.
-2. **package.json + tailwind.config + vite.config + tsconfig** — config layer first so npm install resolves.
-3. **public/ static assets** — favicons, manifest, robots, sitemap, og-image. (Image binaries handled separately by `scripts/generate-favicons.mjs` shell action — artifact emits the script, not the binary.)
-4. **src/index.css** — design tokens before any component imports.
-5. **src/types/** — shared types before components.
-6. **src/lib/** + **src/utils/** — utilities before components.
-7. **src/components/** — UI primitives before pages.
-8. **src/data/** — blog-posts.ts, services.ts, etc. before pages.
-9. **src/pages/** — pages last, after everything they import.
-10. **src/App.tsx + src/main.tsx** — router + entry after all routes.
+1. **`PLAN.md` first** — 200-token plan block: route tree, design-token diff vs template, media count, file count. Forces plan-first discipline.
+2. **`package.json` + `tailwind.config` + `vite.config` + `tsconfig`** — config layer first so `npm install` resolves.
+3. **`public/` static assets** — favicons, manifest, robots, sitemap, og-image. Image binaries handled by `scripts/generate-favicons.mjs` shell action — artifact emits script, not binary.
+4. **`src/index.css`** — design tokens before any component imports.
+5. **`src/types/`** — shared types before components.
+6. **`src/lib/`** + **`src/utils/`** — utilities before components.
+7. **`src/components/`** — UI primitives before pages.
+8. **`src/data/`** — `blog-posts.ts`, `services.ts`, etc. before pages.
+9. **`src/pages/`** — pages last, after everything they import.
+10. **`src/App.tsx` + `src/main.tsx`** — router + entry after all routes.
 11. **shell actions** — `npm install && node scripts/generate-favicons.mjs && npm run build && node scripts/validate-assets.mjs dist`.
 
 Violating order = build fails on missing import.
 
 ## Plan-First Discipline (***FIRST ACTION ALWAYS***)
 
-The very first `<boltAction>` MUST be `filePath="PLAN.md"` containing:
+First `<boltAction>` MUST be `filePath="PLAN.md"` containing:
 
 ```markdown
 # Plan
@@ -69,11 +70,11 @@ The very first `<boltAction>` MUST be `filePath="PLAN.md"` containing:
 - Validators: validate-assets.mjs, validate-meta.mjs, validate-citations.mjs, validate-h1.mjs
 ```
 
-Forcing the plan as a real file (not a comment, not a chat message) means it's auditable post-build, version-controlled, and visible to the next iteration.
+Forcing plan as a real file (not comment, not chat message) means it's auditable post-build, version-controlled, visible to next iteration.
 
 ## Runtime Semantics
 
-The projectsites.dev workflow consumes the artifact like this:
+projectsites.dev workflow consumes the artifact:
 
 ```typescript
 // src/workflows/site-generation.ts (after rewire)
@@ -95,30 +96,32 @@ Container with: Node 20+, Bun 1.x optional, ImageMagick (favicon fallback), pdft
 
 ## Anti-Patterns
 
-- ❌ Emitting prose before the artifact ("I'll create a beautiful site for you…")
-- ❌ Emitting markdown fences around the artifact
-- ❌ Emitting multiple top-level artifacts
-- ❌ Files referenced in imports but not emitted (gives Vite "module not found")
-- ❌ Pages emitted before components they import
-- ❌ Skipping PLAN.md
-- ❌ Using shell actions to write files (use `type="file"` actions; shell is for `npm install`, build commands, validators)
-- ❌ Embedding binary image data in `<boltAction>` bodies (emit a `scripts/generate-*.mjs` script that produces them at build time)
+- Emitting prose before the artifact ("I'll create a beautiful site for you…")
+- Emitting markdown fences around the artifact
+- Emitting multiple top-level artifacts
+- Files referenced in imports but not emitted (gives Vite "module not found")
+- Pages emitted before components they import
+- Skipping `PLAN.md`
+- Using shell actions to write files — use `type="file"` actions; shell is for `npm install`, build commands, validators
+- Embedding binary image data in `<boltAction>` bodies — emit a `scripts/generate-*.mjs` script that produces them at build time
 
 ## Comparison to Adjacent Protocols
 
-| Tool | Protocol | Why we picked Bolt-style |
-|------|----------|---------------------------|
-| Bolt.new | `<boltArtifact>` + `<boltAction>` | Mature, predictable, plan-first, ordered |
-| v0 | `<CodeProject>` block, file inside | Proprietary, less suited to multi-file |
-| Lovable | `lov-write`, `lov-add-dependency` | Tool-call style, harder to stream |
-| Replit | `<replitArtifact><replitAction>` | Same shape as Bolt, naming differs |
-| Claude Code Tool Use | individual `Write` tool calls | Works in IDE, doesn't fit a generation API |
+- **Bolt.new** — `<boltArtifact>` + `<boltAction>`. Mature, predictable, plan-first, ordered.
+- **v0** — `<CodeProject>` block, file inside. Proprietary, less suited to multi-file.
+- **Lovable** — `lov-write`, `lov-add-dependency`. Tool-call style, harder to stream.
+- **Replit** — `<replitArtifact><replitAction>`. Same shape as Bolt, naming differs.
+- **Claude Code Tool Use** — individual `Write` tool calls. Works in IDE, doesn't fit a generation API.
 
-We picked Bolt's shape because it's: (1) widely understood by the Claude model from training data, (2) streamable token-by-token (file content streams while next file's metadata is buffered), (3) verifiable (parser can reject malformed envelopes before any file write), (4) plan-first by convention.
+Picked Bolt's shape because:
+1. Widely understood by Claude from training data
+2. Streamable token-by-token (file content streams while next file's metadata buffers)
+3. Verifiable (parser can reject malformed envelopes before any file write)
+4. Plan-first by convention
 
 ## Validation
 
-Before executing the artifact, the runtime parses + validates:
+Before executing artifact, runtime parses + validates:
 
 ```typescript
 function validateArtifact(artifact: BoltArtifact): string[] {
@@ -141,14 +144,14 @@ function validateArtifact(artifact: BoltArtifact): string[] {
 }
 ```
 
-Failed validation → re-prompt Claude with the error list. Max 2 retries.
+Failed validation → re-prompt Claude with error list. Max 2 retries.
 
 ## Streaming Considerations
 
 When using Anthropic streaming API:
-- Stream `text_delta` events into a parser that emits `boltAction-start`, `boltAction-body-delta`, `boltAction-end` events
+- Stream `text_delta` events into a parser emitting `boltAction-start`, `boltAction-body-delta`, `boltAction-end` events
 - Write file as soon as `boltAction-end` fires (don't buffer entire artifact)
-- This lets the user see file-by-file progress in the projectsites.dev dashboard
+- Lets user see file-by-file progress in projectsites.dev dashboard
 - `npm install` shell action starts as soon as `package.json` finishes streaming
 
 ## Cost & Throughput

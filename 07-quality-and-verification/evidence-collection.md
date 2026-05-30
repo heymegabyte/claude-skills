@@ -8,7 +8,15 @@ description: "Every automated form submission creates a complete evidence packag
 # Evidence Collection Pattern
 
 ## Per-Submission Package
-Every `fillForm()` call creates: EvidenceCollector instance→screenshots at each step→red circle overlays on button clicks (Node canvas, 30px radius rgba(255,0,0,0.9))→action log→manifest.json→video via Playwright `recordVideo` API. Package uploaded to R2 at `evidence/{echoId}/{appId}/{packageId}/`.
+Every `fillForm()` call creates:
+- EvidenceCollector instance
+- Screenshots at each step
+- Red circle overlays on button clicks (Node canvas, 30px radius `rgba(255,0,0,0.9)`)
+- Action log
+- `manifest.json`
+- Video via Playwright `recordVideo` API
+
+Package uploaded to R2 at `evidence/{echoId}/{appId}/{packageId}/`.
 
 ## R2 Storage Patterns
 ```typescript
@@ -57,7 +65,10 @@ async function listEvidencePackages(env: Env, echoId: string, appId: string) {
 ```
 
 ## Video Recording
-`context.newContext({ recordVideo: { dir, size: { width:1280, height:720 } } })` captures full session. Video finalized on `page.close()`. Uploaded to R2 as WebM. Public URL returned in API response + stored in application record.
+- `context.newContext({ recordVideo: { dir, size: { width:1280, height:720 } } })` captures full session
+- Video finalized on `page.close()`
+- Uploaded to R2 as WebM
+- Public URL returned in API response + stored in application record
 
 ## Manifest Schema
 ```typescript
@@ -71,7 +82,10 @@ interface EvidenceManifest {
 ```
 
 ## Access Patterns
-Dashboard: status cards show video play button when videoUrl exists. Your Data panel: "Submission Videos" section lists all recordings with R2 presigned URLs. Chat: AI surfaces video via `application-video` widget. API: `GET /api/evidence/:appId` returns manifest+URLs.
+- **Dashboard** — status cards show video play button when `videoUrl` exists
+- **Your Data panel** — "Submission Videos" section lists all recordings with R2 presigned URLs
+- **Chat** — AI surfaces video via `application-video` widget
+- **API** — `GET /api/evidence/:appId` returns manifest + URLs
 
 ## R2 Binding (wrangler.toml)
 ```toml
@@ -79,4 +93,6 @@ Dashboard: status cards show video play button when videoUrl exists. Your Data p
 binding = "R2"
 bucket_name = "evidence-bucket"
 ```
-Public access: enable R2 public development URL or custom domain for `R2_PUBLIC_URL`. Retention: 90-day lifecycle rule on bucket (legal compliance without unbounded storage).
+
+- **Public access:** enable R2 public development URL or custom domain for `R2_PUBLIC_URL`
+- **Retention:** 90-day lifecycle rule on bucket (legal compliance without unbounded storage)

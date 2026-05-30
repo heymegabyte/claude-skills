@@ -39,7 +39,7 @@ One-line prompts→production-ready products with elite UX, multimedia, bold des
 ## Autonomy Rules
 
 ### Do Without Asking
-Choose stack defaults|add SEO+analytics+legal+structured data|compress images|deploy to CF|run tests|generate logos/favicons/previews (Ideogram, GPT Image)|add a11y (WCAG 2.2 AA, axe-core)|instrument PostHog/Sentry/GA4|research+implement better approaches|fix bugs during verification|update skills/memory/CLAUDE.md|connect all MCPs|integrate Slack/Discord webhooks|generate AI content (alt text, translations, meta)|add multimedia (Sora, GPT Image, Pexels/Unsplash)|scan shared API pool (05/shared-api-pool) and auto-integrate|ToolSearch bulk-load deferred tools before planning (`query:"computer-use", max_results:30`)
+Choose stack defaults|add SEO+analytics+legal+structured data|compress images|deploy to CF|run tests|generate logos/favicons/previews (Ideogram, GPT Image)|add a11y (WCAG 2.2 AA, axe-core)|instrument PostHog/Sentry/GA4|research+implement better approaches|fix bugs during verification|update skills/memory/CLAUDE.md|connect all MCPs|integrate Slack/Discord webhooks|generate AI content (alt text, translations, meta)|add multimedia (Sora, GPT Image, Pexels/Pixabay)|scan shared API pool (05/shared-api-pool) and auto-integrate|ToolSearch bulk-load deferred tools before planning (`query:"computer-use", max_results:30`)
 
 ### Ask Before Doing
 Architecture forks changing product shape|paid services not in default stack|brand changes for existing brands|legal/billing/security model changes|deleting user data or production resources

@@ -3,7 +3,9 @@ name: "Adversarial Testing"
 description: "Stress tests that break apps: rapid nav, resize storms, offline resilience, Unicode bombs, back-button edge cases, chaos engineering patterns, D1/latency injection."
 updated: "2026-04-23"
 ---
+
 # Adversarial Testing
+
 ## Edge Case Generator
 ```typescript
 test.describe('Adversarial Tests', () => {
@@ -66,16 +68,14 @@ test.describe('Adversarial Tests', () => {
 ```
 
 ## Chaos Testing Checklist
-```
-[ ] What happens with JavaScript disabled? (content still readable?)
-[ ] What happens at 2G speed? (anything useful within 10 seconds?)
-[ ] What happens with 200% font scaling? (nothing overflows?)
-[ ] What happens if every image fails to load? (alt text visible? Layout intact?)
-[ ] What happens if third-party scripts fail? (YouTube, Maps, Stripe, GTM)
-[ ] What happens at 320px viewport? (the smallest real phone)
-[ ] What if the user triple-clicks text? (selection doesn't break layout?)
-[ ] What if cookies/localStorage are blocked? (graceful fallback?)
-```
+- What happens with JavaScript disabled? (content still readable?)
+- What happens at 2G speed? (anything useful within 10 seconds?)
+- What happens with 200% font scaling? (nothing overflows?)
+- What happens if every image fails to load? (alt text visible? Layout intact?)
+- What happens if third-party scripts fail? (YouTube, Maps, Stripe, GTM)
+- What happens at 320px viewport? (the smallest real phone)
+- What if the user triple-clicks text? (selection doesn't break layout?)
+- What if cookies/localStorage are blocked? (graceful fallback?)
 
 ## Chaos Engineering Patterns
 

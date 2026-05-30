@@ -5,7 +5,9 @@ updated: "2026-04-23"
 ---
 
 # Media Generation Prompt Templates
+
 ## Image Prompt Schema
+
 ```
 Subject: [main subject]
 Style: [art style — digital illustration, photograph, 3D render, etc.]
@@ -20,7 +22,7 @@ Aspect ratio: [dimensions]
 ```
 
 ### Image Prompt Rules
-- Be specific about style, not generic ("dark tech illustration with cyan accent glow" not "cool image")
+- Be specific about style, not generic (`"dark tech illustration with cyan accent glow"` not `"cool image"`)
 - Include brand colors explicitly
 - Specify what to AVOID (text in images, watermarks, specific unwanted elements)
 - For product screenshots, use browser rendering instead of generation
@@ -28,6 +30,7 @@ Aspect ratio: [dimensions]
 - Never add detail the user didn't imply — augment generic prompts, preserve specific ones
 
 ## Brian's Brand Prompt Style
+
 ```
 Dark, atmospheric [subject]. Cyan (#00E5FF) light streaks and purple (#7C3AED) nebula effects
 on deep black (#060610). Quantum-inspired dots and connections. Premium tech aesthetic.
@@ -35,6 +38,7 @@ Ultra-wide composition. Ultra realistic. No text.
 ```
 
 ## Logo Prompt Templates (Ideogram v3)
+
 ### Horizontal Lockup
 ```
 a premium, clean, modern logo for "{BusinessName}", a {industry} business.
@@ -58,6 +62,7 @@ or Linear level of typographic quality. No icons, text only.
 ```
 
 ## OG Image Template Prompt
+
 ```
 Create a social media preview image for [product name].
 Dimensions: 1200x630 pixels.
@@ -70,6 +75,7 @@ Clean, modern, tech-forward design.
 ```
 
 ## Video Prompt Template (Sora)
+
 ```
 [Opening shot/setup, 0-2s]: [describe initial frame]
 [Main action, 2-6s]: [describe what happens]
@@ -83,6 +89,7 @@ Mood: [match product tone]
 ```
 
 ## Ideogram v3 API Call
+
 ```bash
 curl -X POST "https://api.ideogram.ai/v1/ideogram-v3/generate" \
   -H "Api-Key: $IDEOGRAM_API_KEY" \
@@ -96,4 +103,4 @@ curl -X POST "https://api.ideogram.ai/v1/ideogram-v3/generate" \
 
 - Put desired text in quotation marks within the prompt
 - Upload up to 3 style reference images for consistency
-- TURBO mode: ~4s generation at $0.03-0.05 per image
+- **TURBO mode** — ~4s generation at $0.03-0.05 per image

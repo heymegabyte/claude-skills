@@ -6,6 +6,7 @@ description: "Consolidated webhook handling for Stripe, Clerk, GitHub, and custo
 ---
 
 # Webhook System
+
 ## Universal Webhook Handler Pattern
 ```typescript
 // src/routes/webhooks.ts
@@ -99,6 +100,7 @@ DELETE FROM webhook_events WHERE processed_at < datetime('now', '-30 days');
 ```
 
 ## Event Handlers
+
 ### Stripe: Checkout Complete
 ```typescript
 async function handleCheckoutComplete(session: Stripe.Checkout.Session, env: Env) {
@@ -139,6 +141,7 @@ async function handleUserCreated(user: ClerkUser, env: Env) {
 ```
 
 ## Registering Webhooks
+
 ### Stripe
 ```bash
 # Via Stripe CLI (development)
@@ -158,7 +161,7 @@ stripe listen --forward-to https://domain.com/webhooks/stripe
 ```
 
 ## Outbound Webhooks (Customer-Facing)
-For API/platform products: let customers register webhook endpoints to receive events from your app.
+For API/platform products — let customers register webhook endpoints to receive events from your app.
 
 ### Architecture
 ```

@@ -104,7 +104,9 @@ npx openapi-typescript-codegen --input https://api.example.com/api/v1/doc --outp
 npx openapi-typescript-codegen --input openapi.json --output src/client --client fetch --name ApiClient
 ```
 
-Generated client provides typed methods: `ApiClient.users.listUsers({ limit: 20 })`, `ApiClient.users.createUser({ email, name })`. RPC via `hc<AppType>` still preferred for same-repo consumers; generated SDK for external/third-party consumers.
+- Generated client provides typed methods — `ApiClient.users.listUsers({ limit: 20 })`, `ApiClient.users.createUser({ email, name })`
+- RPC via `hc<AppType>` still preferred for same-repo consumers
+- Generated SDK for external/third-party consumers
 
 ## Versioning Strategy
 ```typescript
@@ -149,4 +151,10 @@ pnpm add @hono/zod-openapi @hono/swagger-ui
 pnpm add -D openapi-typescript-codegen
 ```
 
-Pattern: Zod schemas are single source of truth → createRoute defines request/response contracts → OpenAPI spec auto-generated → Swagger UI for manual testing → SDK codegen for external consumers. Never manually write OpenAPI YAML.
+## Pattern
+- Zod schemas — single source of truth
+- `createRoute` defines request/response contracts
+- OpenAPI spec auto-generated
+- Swagger UI for manual testing
+- SDK codegen for external consumers
+- Never manually write OpenAPI YAML

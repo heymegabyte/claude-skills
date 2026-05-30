@@ -76,6 +76,7 @@ Routing:
 10. All hyperlinks valid
 11. INP ≤ 200ms (target ≤ 100ms for cinematic)
 12. JSON-LD per page (accurate types only — never pad to hit a count; FAQPage only when real FAQs exist)
+13. Every new feature ships behind a feature flag (`enabled=0, rollout=0, stage='experimental'`) per `@rules/feature-flags.md`. Admin UI at `/admin/feature-flags` toggles + rolls out + promotes stages. No feature ships permanently-on at launch.
 
 ## Stack
 - **Edge** — CF Workers + Hono
@@ -123,7 +124,7 @@ Routing:
 - Folder name = domain.
 - Deploy skeleton to CF first prompt.
 - Portfolio: if `~/emdash-projects/PORTFOLIO.md` exists, read it at session start for highest-ROI task.
-- **Website builds** → execute Phase 0-8 from `@rules/website-build-doctrine.md` IN ORDER: research saturation → template clone + augment → maximalist page enrichment → swap-out authority → AI-native spiral (podcast / Veo-stitched video / interactive maps / voice / multimodal) → agent swarm parallel (3-7 per page) → continuous "what else" loop → token discipline → Christ-like ethos. Reusable patterns flow BACK to `template.projectsites.dev` the SAME turn. Skipping Phase 0 = build fail.
+- **Website builds** → execute Phase -1 → Phase 8 from `@rules/website-build-doctrine.md` IN ORDER: **competitor research (top 5-10 peer sites, score on 100-pt rubric, set the floor)** → research saturation → template clone + augment → maximalist page enrichment → swap-out authority → AI-native spiral (podcast / Veo-stitched video / interactive maps / voice / multimodal) → agent swarm parallel (3-7 per page) → continuous "what else" loop (terminates ONLY when OUR build outscores every competitor on every dimension by ≥15% per `@rules/competitor-research.md` § Loop termination) → token discipline → Christ-like ethos. Reusable patterns flow BACK to `template.projectsites.dev` the SAME turn. Skipping Phase -1 (competitor research) or Phase 0 (subject saturation) = build fail.
 
 ## Philosophies
 - Distribution > technology (skill 13).
@@ -156,5 +157,5 @@ Preserve: files, tasks, branch, gates, prefs, parallelization, value extraction.
 <context>
 - **Bash** — camelCase fns, UPPER_CASE vars, `gum log` never `echo`, ShellCheck + shfmt.
 - **File format** — human-readable bullets (unordered) or numbered lists when weight matters. Stay concise: one idea per bullet, ≤2 lines, no padding. See `@rules/brian-preferences.md` § Skill/Rule File Format.
-- See `@rules/` for: `prompt-as-training-signal` (SUPREME every-prompt extraction), `e2e-tdd-organization` (SUPREME parallel-ready test layout), `e2e-visual-inspection` (SUPREME random snapshots + new-section AI vision), `context-spillover` (SUPREME adjacent-surface harvest), `angular-nx-monorepo` (SUPREME Angular 21 + Nx + CLI MCP), `rxjs-first-angular` (SUPREME every-backend-call-is-an-observable + polling-as-floor + SSE/WS-ceiling), `code-style`, `brian-preferences`, `always`, `verification-loop`, `error-recovery`, `quality-metrics`, `copy-writing`, `model-routing`, `prompt-cache`, `auto-meta-work`, `full-autonomy`, `computer-use-safety`, `hono-api`, `fetch-defaults`, `citations`, `supreme-polish`, `proactive-improvements`, `extra-mile`, `auto-integrate-recs`, `monitor-orchestration`, `source-site-enhancement`, `secret-provisioning`, `secret-auto-provisioning`, `image-quality`, `text-contrast`, `logo-contrast`, `timeline-authenticity`, `i18n-by-demographics`, `payments-routing`, `thin-source-amplification`.
+- See `@rules/` for: `competitor-research` (SUPREME gate -1 — every website build starts by identifying + scoring the top 5-10 peer sites + sets the ≥15% beat-floor for Phase 6 loop termination), `website-build-doctrine` (Phase -1 → Phase 8 sequence), `prompt-as-training-signal` (SUPREME every-prompt extraction), `e2e-tdd-organization` (SUPREME parallel-ready test layout), `e2e-visual-inspection` (SUPREME random snapshots + new-section AI vision), `context-spillover` (SUPREME adjacent-surface harvest), `angular-nx-monorepo` (SUPREME Angular 21 + Nx + CLI MCP), `rxjs-first-angular` (SUPREME every-backend-call-is-an-observable + polling-as-floor + SSE/WS-ceiling), `code-style`, `brian-preferences`, `always`, `verification-loop`, `error-recovery`, `quality-metrics`, `copy-writing`, `model-routing`, `prompt-cache`, `auto-meta-work`, `full-autonomy`, `computer-use-safety`, `hono-api`, `fetch-defaults`, `citations`, `supreme-polish`, `proactive-improvements`, `extra-mile`, `auto-integrate-recs`, `monitor-orchestration`, `source-site-enhancement`, `secret-provisioning`, `secret-auto-provisioning`, `image-quality`, `text-contrast`, `logo-contrast`, `timeline-authenticity`, `i18n-by-demographics`, `payments-routing`, `thin-source-amplification`.
 </context>

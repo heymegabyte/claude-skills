@@ -8,6 +8,7 @@ description: "Emdash brand tokens (#060610/#00E5FF/#50AAE3/#7C3AED). HSL scales 
 # Design Tokens
 
 ## Color Scale Generation (HSL manipulation)
+
 ```typescript
 // scripts/generate-tokens.ts
 function hexToHsl(hex: string): [number, number, number] {
@@ -42,6 +43,7 @@ function generateScale(hex: string): Record<string, string> {
 ```
 
 ## Token File: CSS Custom Properties
+
 ```css
 /* src/styles/tokens.css */
 
@@ -188,6 +190,7 @@ function generateScale(hex: string): Record<string, string> {
 ```
 
 ## Token File: TypeScript Constants
+
 ```typescript
 // src/styles/tokens.ts
 export const colors = {
@@ -228,6 +231,7 @@ export type RadiusToken = keyof typeof radius;
 ```
 
 ## Usage
+
 ```css
 /* Apply tokens */
 .card {
@@ -245,4 +249,8 @@ export type RadiusToken = keyof typeof radius;
 }
 ```
 
-Dark-first: all tokens defined for dark. Light is the override, not the default. `prefers-color-scheme: light` maps to `[data-theme="light"]`. Never hardcode colors — always reference tokens.
+## Conventions
+
+- **Dark-first** — all tokens defined for dark; light is the override, not the default.
+- `prefers-color-scheme: light` maps to `[data-theme="light"]`.
+- **Never hardcode colors** — always reference tokens.

@@ -6,7 +6,9 @@ description: "MANDATORY: Every site gets full PWA manifest with screenshots, sho
 ---
 
 # Web Manifest System
+
 ## Required Files (EVERY site, NO EXCEPTIONS)
+
 | File | Purpose | Template Below |
 |------|---------|---------------|
 | `site.webmanifest` | PWA manifest with icons, screenshots, shortcuts | Yes |
@@ -86,9 +88,9 @@ description: "MANDATORY: Every site gets full PWA manifest with screenshots, sho
 
 ### CRITICAL: Screenshots (fixes "Richer PWA Install UI" warnings)
 - **At least 1 screenshot with `form_factor: "wide"`** (desktop)
-- **At least 1 screenshot with `form_factor: "narrow"`** or without form_factor (mobile)
-- Take screenshots with Playwright: `npx playwright screenshot --viewport-size "1920,1080" URL output.png`
-- Recommended sizes: 1920x1080 (wide), 1080x1920 (narrow)
+- **At least 1 screenshot with `form_factor: "narrow"`** or without `form_factor` (mobile)
+- Take screenshots with Playwright — `npx playwright screenshot --viewport-size "1920,1080" URL output.png`
+- Recommended sizes — 1920x1080 (wide), 1080x1920 (narrow)
 
 ## HTML `<head>` Meta Tags (COMPREHENSIVE — match install.doctor)
 ```html
@@ -186,15 +188,16 @@ Also add in JSON-LD `sameAs` array:
 ```
 
 ## JSON-LD Structured Data (Rich Snippets)
-Every page needs at minimum: Organization + WebSite + WebPage.
+- Every page needs at minimum — Organization + WebSite + WebPage
+
 Additional types by page purpose:
-- Donation page: `DonateAction`
-- FAQ: `FAQPage` with `Question` + `Answer`
-- Contact: `ContactPoint`
-- Events: `Event`
-- Blog: `BlogPosting`
-- Products: `Product` with `Offer`
-- Breadcrumbs: `BreadcrumbList` on all subpages
+- **Donation page** — `DonateAction`
+- **FAQ** — `FAQPage` with `Question` + `Answer`
+- **Contact** — `ContactPoint`
+- **Events** — `Event`
+- **Blog** — `BlogPosting`
+- **Products** — `Product` with `Offer`
+- **Breadcrumbs** — `BreadcrumbList` on all subpages
 
 ## Screenshot Generation Workflow
 Use Playwright to capture real screenshots (not mockups):
@@ -218,25 +221,23 @@ img.save('screenshots/mobile-1080x1920.png')
 ```
 
 ## Verification Checklist (EVERY deploy)
-```
-[ ] site.webmanifest has screenshots (wide + narrow)
-[ ] All shortcut URLs are within scope (no tel:, no external)
-[ ] All shortcuts have 96x96 icons
-[ ] display_override includes window-controls-overlay
-[ ] icons include both "any" and "maskable" purpose
-[ ] Cross-site alternate links present
-[ ] humans.txt accessible
-[ ] security.txt accessible at /.well-known/security.txt
-[ ] robots.txt references sitemap
-[ ] No Chrome DevTools manifest warnings
-[ ] OG image exists at 1200x630 (≤100KB, branded)
-[ ] apple-touch-icon.png at root (180x180, generated from logo)
-[ ] color-scheme meta present (dark|light|dark light)
-[ ] DNS-prefetch + preconnect for fonts/analytics
-[ ] Font woff2 preload for primary display + body fonts
-[ ] All JSON-LD validates at schema.org validator
-[ ] 4+ JSON-LD blocks per page (WebSite + Org/LocalBusiness + WebPage + BreadcrumbList minimum)
-[ ] sitemap.xml every <url> has <lastmod>
-[ ] Lightbox component (src/components/lightbox.tsx) mounted in Layout
-[ ] Major image groups wrapped in [data-gallery="<id>"]
-```
+- [ ] `site.webmanifest` has screenshots (wide + narrow)
+- [ ] All shortcut URLs are within scope (no `tel:`, no external)
+- [ ] All shortcuts have 96x96 icons
+- [ ] `display_override` includes `window-controls-overlay`
+- [ ] Icons include both `"any"` and `"maskable"` purpose
+- [ ] Cross-site alternate links present
+- [ ] `humans.txt` accessible
+- [ ] `security.txt` accessible at `/.well-known/security.txt`
+- [ ] `robots.txt` references sitemap
+- [ ] No Chrome DevTools manifest warnings
+- [ ] OG image exists at 1200x630 (≤100KB, branded)
+- [ ] `apple-touch-icon.png` at root (180x180, generated from logo)
+- [ ] `color-scheme` meta present (dark | light | dark light)
+- [ ] DNS-prefetch + preconnect for fonts/analytics
+- [ ] Font woff2 preload for primary display + body fonts
+- [ ] All JSON-LD validates at schema.org validator
+- [ ] 4+ JSON-LD blocks per page (WebSite + Org/LocalBusiness + WebPage + BreadcrumbList minimum)
+- [ ] `sitemap.xml` every `<url>` has `<lastmod>`
+- [ ] Lightbox component (`src/components/lightbox.tsx`) mounted in Layout
+- [ ] Major image groups wrapped in `[data-gallery="<id>"]`

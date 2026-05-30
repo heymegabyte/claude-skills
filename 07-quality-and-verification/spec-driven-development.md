@@ -13,6 +13,7 @@ AI builds the happy path and stops. Features ship incomplete. Recommendations ge
 
 ### Phase 1: Generate Spec (BEFORE any code)
 For every feature/project, generate `SPEC.md`:
+
 ```markdown
 # Feature: [name]
 ## Acceptance Criteria
@@ -31,12 +32,11 @@ For every feature/project, generate `SPEC.md`:
 
 Each acceptance criterion MUST be:
 - Observable on production (not just in code)
-- Testable via Playwright against PROD_URL
+- Testable via Playwright against `PROD_URL`
 - Completable in under 1 minute of test execution
 
 ### Phase 2: Write Failing Tests FIRST
-For every acceptance criterion, write the Playwright test BEFORE implementing.
-Test must fail (red). Then implement until it passes (green). Then refactor.
+For every acceptance criterion, write the Playwright test BEFORE implementing. Test must fail (red). Then implement until it passes (green). Then refactor.
 
 ```typescript
 // test_ac1.spec.ts — written BEFORE implementation
@@ -49,17 +49,18 @@ test('AC1: donation form accepts Stripe payment', async ({ page }) => {
 ```
 
 ### Phase 3: Build in Slices
-Each acceptance criterion = one vertical slice.
-Implement → deploy → run that test → pass → next criterion.
-Never implement AC2 before AC1's test passes on production.
+- Each acceptance criterion = one vertical slice
+- Implement → deploy → run that test → pass → next criterion
+- Never implement AC2 before AC1's test passes on production
 
 ### Phase 4: Recommendations Loop
-After all ACs pass, ask: "What else can I improve?"
-Every recommendation → new AC → new test → implement → verify.
-Loop until zero recommendations.
+- After all ACs pass, ask: "What else can I improve?"
+- Every recommendation → new AC → new test → implement → verify
+- Loop until zero recommendations
 
 ### Phase 5: Progress Persistence
 Write progress to `progress.md` in project root:
+
 ```markdown
 # Progress
 ## Completed
@@ -76,35 +77,31 @@ Write progress to `progress.md` in project root:
 This file survives context compaction. Any new session reads it and picks up where the last left off.
 
 ## The Ralph Loop (Autonomous Execution)
-
 For full-app builds, use the autonomous loop:
-```
-1. Generate feature-requirements.md with ALL features as acceptance criteria
-2. Generate progress.md (all unchecked)
+
+1. Generate `feature-requirements.md` with ALL features as acceptance criteria
+2. Generate `progress.md` (all unchecked)
 3. Loop:
-   a. Read progress.md → find next unchecked AC
-   b. Write failing test for that AC
-   c. Implement until test passes on production
-   d. Screenshot → GPT-4o critique → fix if needed
-   e. Mark AC complete in progress.md
-   f. Git commit with AC reference
-   g. If context getting full → save progress → spawn fresh agent to continue
-   h. Repeat until all ACs checked
+   - Read `progress.md` → find next unchecked AC
+   - Write failing test for that AC
+   - Implement until test passes on production
+   - Screenshot → GPT-4o critique → fix if needed
+   - Mark AC complete in `progress.md`
+   - Git commit with AC reference
+   - If context getting full → save progress → spawn fresh agent to continue
+   - Repeat until all ACs checked
 4. Run recommendations loop (skill 14)
-5. Done when: all ACs pass + all recommendations implemented or rejected + GPT-4o says zero issues
-```
+5. **Done when** — all ACs pass + all recommendations implemented or rejected + GPT-4o says zero issues
 
 ## Context Exhaustion Prevention
-
 When context exceeds 60%:
-1. Save current progress to progress.md
+1. Save current progress to `progress.md`
 2. Commit all work
 3. Spawn a new agent with: "Read progress.md and SPEC.md. Continue from where the last agent left off. Implement the next unchecked acceptance criterion."
 
 This gives infinite effective context — each agent gets a fresh window but continues the same spec.
 
 ## Test Organization
-
 ```
 tests/
 ├── e2e/
@@ -120,16 +117,15 @@ tests/
 └── playwright.config.ts
 ```
 
-Each E2E file: ~1 minute, tests one feature, runs against PROD_URL, parallel-safe.
-Total test suite: should complete in under 5 minutes with parallelization.
+- Each E2E file: ~1 minute, tests one feature, runs against `PROD_URL`, parallel-safe
+- Total test suite: should complete in under 5 minutes with parallelization
 
 ## Stagehand Integration
-
-Use raw Playwright for predictable elements (data-testid, role, text).
-Use Stagehand `act()/extract()/observe()` for:
-- Dynamic content that changes between deploys
-- Natural language assertions ("verify the page looks professional")
-- Complex multi-step flows where selectors are fragile
+- Use raw Playwright for predictable elements (`data-testid`, role, text)
+- Use Stagehand `act()/extract()/observe()` for:
+  - Dynamic content that changes between deploys
+  - Natural language assertions ("verify the page looks professional")
+  - Complex multi-step flows where selectors are fragile
 
 ```typescript
 import { Stagehand } from '@browserbasehq/stagehand';

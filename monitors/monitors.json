@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-monitors.json",
+  "monitors": [
+    {
+      "name": "wrangler-tail",
+      "description": "Stream live Worker logs",
+      "command": "wrangler tail --format pretty",
+      "trigger_on_lines_with": ["error", "exception", "uncaught", "ReferenceError", "TypeError"],
+      "max_lines": 200
+    },
+    {
+      "name": "gh-run-watch",
+      "description": "Watch latest GitHub Actions run for failures",
+      "command": "gh run watch --exit-status",
+      "trigger_on_lines_with": ["failed", "error", "FAIL"],
+      "max_lines": 100
+    },
+    {
+      "name": "vite-dev",
+      "description": "Vite dev server output",
+      "command": "bun run dev",
+      "trigger_on_lines_with": ["error", "ENOENT", "Failed", "Cannot find"],
+      "max_lines": 100
+    },
+    {
+      "name": "wrangler-logs",
+      "description": "Local wrangler dev logs",
+      "command": "tail -F .wrangler/logs/wrangler-*.log",
+      "trigger_on_lines_with": ["error", "FATAL", "exception"],
+      "max_lines": 200
+    }
+  ]
+}

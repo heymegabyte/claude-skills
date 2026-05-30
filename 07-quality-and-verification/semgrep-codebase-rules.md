@@ -6,8 +6,10 @@ description: "Custom Semgrep YAML rules per-project. Architecture, style, OWASP 
 ---
 
 # Semgrep Codebase Rules
+
 ESLint rules require JS authoring. Semgrep rules are YAML — AI writes in seconds, AST-matched (not text), fewer false positives. Per-project in `.semgrep/rules/`, versioned in git.
-Setup: `brew install semgrep` → `mkdir -p .semgrep/rules/`.
+
+**Setup:** `brew install semgrep` → `mkdir -p .semgrep/rules/`.
 
 ## Core Rule Set (every Emdash project)
 ```yaml
@@ -76,10 +78,17 @@ rules:
 ```
 
 ## OWASP 2025 Coverage
-A01→cors-wildcard+missing-auth | A03 Supply Chain→`npm audit` in CI | A04→hardcoded-secret | A05→missing-zod+no-eval | A07→missing-auth-middleware | A09→no-console-log | A10 Exceptional Conditions→try/catch enforcement (add rule when pattern found 3x).
+- **A01** → `cors-wildcard` + `missing-auth`
+- **A03 Supply Chain** → `npm audit` in CI
+- **A04** → `hardcoded-secret`
+- **A05** → `missing-zod` + `no-eval`
+- **A07** → `missing-auth-middleware`
+- **A09** → `no-console-log`
+- **A10 Exceptional Conditions** → try/catch enforcement (add rule when pattern found 3x)
 
 ## AI Rule Evolution
 Same pattern fixed 3+ times → create rule. Architecture decision → enforce immediately.
+
 ```bash
 cat > .semgrep/rules/new-rule.yaml << 'EOF'
 rules:
@@ -91,11 +100,26 @@ rules:
 EOF
 semgrep --config .semgrep/rules/new-rule.yaml src/  # test, refine if noisy
 ```
-Lifecycle: Create→Test→Refine→Enforce→Evolve→Retire (0 hits in 30 days).
+
+**Lifecycle:** Create → Test → Refine → Enforce → Evolve → Retire (0 hits in 30 days).
 
 ## Integration
-Pre-commit: `- repo: https://github.com/semgrep/semgrep\n  rev: v1.95.0\n  hooks: [{id: semgrep, args: ['--config','.semgrep/rules/','--error']}]`
-CI: `semgrep --config .semgrep/rules/ --error src/`
-PostToolUse (format-on-save.sh): `semgrep --config .semgrep/rules/ --quiet "$FILE" 2>/dev/null`
+
+### Pre-commit
+```yaml
+- repo: https://github.com/semgrep/semgrep
+  rev: v1.95.0
+  hooks: [{id: semgrep, args: ['--config','.semgrep/rules/','--error']}]
+```
+
+### CI
+```bash
+semgrep --config .semgrep/rules/ --error src/
+```
+
+### PostToolUse (`format-on-save.sh`)
+```bash
+semgrep --config .semgrep/rules/ --quiet "$FILE" 2>/dev/null
+```
 
 Each session adds 1-3 rules. After 10 sessions: 30+ rules = codebase fingerprint. New agents read rules, instantly understand constraints without full conversation history.

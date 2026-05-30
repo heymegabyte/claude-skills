@@ -134,7 +134,6 @@ CF: `get-secret CLOUDFLARE_EMAIL` / `get-secret CLOUDFLARE_API_TOKEN` / `get-sec
 | OpenAI | OPENAI_API_KEY | Pay-per-use |
 | Anthropic | ANTHROPIC_API_KEY | Pay-per-use |
 | Ideogram | IDEOGRAM_API_KEY | Pay-per-use |
-| Unsplash | UNSPLASH_ACCESS_KEY | 50 req/hr |
 | Pexels | PEXELS_API_KEY | 200 req/hr |
 | GA4 | GCP service account | Free |
 | Clerk | CLERK_SECRET_KEY | 10K MAU |

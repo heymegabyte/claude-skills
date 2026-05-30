@@ -6,11 +6,12 @@ description: "CopilotKit for AI-powered UX with useCopilotReadable, useCopilotAc
 ---
 
 # Copilot and AI Features
-## CopilotKit Setup (Angular/React-compatible)
-```typescript
-// CopilotKit provides React hooks — for Angular, use the REST API + custom service
-// Or embed CopilotKit React components via Angular elements wrapper
 
+## CopilotKit Setup (Angular/React-compatible)
+- CopilotKit provides React hooks
+- For Angular — use the REST API + custom service, or embed CopilotKit React components via Angular elements wrapper
+
+```typescript
 // copilot.service.ts (Angular — REST API approach)
 import { Injectable } from '@angular/core';
 
@@ -189,13 +190,14 @@ async function searchSimilar(query: string, env: Env, topK = 5): Promise<Vectori
 ```
 
 ## CoAgents Pattern (autonomous in-app agents)
-```typescript
-// CoAgent: multi-step task execution with tool use
-// 1. User: "Set up my project for launch"
-// 2. Agent plans: create checklist, verify settings, enable features
-// 3. Agent executes each step via registered actions
-// 4. Agent reports progress and results
+- **CoAgent** — multi-step task execution with tool use
+- Example flow:
+  1. User — "Set up my project for launch"
+  2. Agent plans — create checklist, verify settings, enable features
+  3. Agent executes each step via registered actions
+  4. Agent reports progress and results
 
+```typescript
 // Backend: stateful agent loop
 async function runCoAgent(goal: string, actions: CopilotAction[], env: Env): Promise<string[]> {
   const log: string[] = [];

@@ -93,7 +93,7 @@ The container entrypoint: HTTP server on 8080. POST /build → select template f
 
 ## Env Vars Available in Container
 
-API keys passed from Worker → container: ANTHROPIC_API_KEY, OPENAI_API_KEY, UNSPLASH_ACCESS_KEY, PEXELS_API_KEY, PIXABAY_API_KEY, YOUTUBE_API_KEY, LOGODEV_TOKEN, BRANDFETCH_API_KEY, FOURSQUARE_API_KEY, YELP_API_KEY, GOOGLE_PLACES_API_KEY, GOOGLE_CSE_KEY, GOOGLE_CSE_CX, IDEOGRAM_API_KEY, REPLICATE_API_TOKEN, STABILITY_API_KEY, GOOGLE_MAPS_API_KEY, CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, MAPBOX_TOKEN.
+API keys passed from Worker → container: ANTHROPIC_API_KEY, OPENAI_API_KEY, PEXELS_API_KEY, PIXABAY_API_KEY, YOUTUBE_API_KEY, LOGODEV_TOKEN, BRANDFETCH_API_KEY, FOURSQUARE_API_KEY, YELP_API_KEY, GOOGLE_PLACES_API_KEY, GOOGLE_CSE_KEY, GOOGLE_CSE_CX, IDEOGRAM_API_KEY, REPLICATE_API_TOKEN, STABILITY_API_KEY, GOOGLE_MAPS_API_KEY, CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, MAPBOX_TOKEN.
 
 R2 credentials: CF_API_TOKEN, CF_ACCOUNT_ID, R2_BUCKET_NAME, SITE_SLUG, SITE_VERSION.
 
@@ -146,7 +146,7 @@ After site generation, the pipeline CAN auto-send a welcome email to the busines
 | **Image profiling** | ~$0.02 (Workers AI bulk + GPT-4o hero) | ~$0.01 (Workers AI) | Llama Vision for all, GPT-4o hero pick only |
 | **Logo generation** | ~$0.05 (Ideogram) | ~$0.05 | No cheap alternative for quality logos |
 | **AI images** | ~$0.30 (5-8 GPT Image) | ~$0.10 (Workers AI SDXL) | Edge inference, bulk pricing, category caching |
-| **Stock images** | ~$0 (free tiers) | ~$0 | Unsplash/Pexels/Pixabay unlimited for most uses |
+| **Stock images** | ~$0 (free tiers) | ~$0 | Pexels/Pixabay unlimited for most uses |
 | **Video discovery** | ~$0 (YouTube embed) | ~$0 | YouTube/Pexels embeds, no storage |
 | **Vision QA** | ~$0.06 (Workers AI bulk + GPT-4o homepage) | ~$0.02 (Workers AI) | Workers AI all pages, GPT-4o homepage ATF only |
 | **In-container inspect** | ~$0.02 (Workers AI draft + GPT-4o final) | ~$0.005 (Workers AI) | Workers AI drafts, GPT-4o final homepage only |
@@ -180,7 +180,6 @@ Complex multi-page sites, custom designs, SaaS, portfolios with unique layouts. 
 | API | Free Tier | Paid | Strategy |
 |-----|-----------|------|----------|
 | Google Places | 0 (pay per req) | $17/1K requests | Cache aggressively, batch nearby |
-| Unsplash | 50/hr | Unlimited (apply) | Apply for production API, cache by query |
 | Pexels | 200/hr | 200/hr | Pool across Workers, queue system |
 | Pixabay | 100/hr | 100/hr | Same pooling |
 | Ideogram | pay per gen | Volume pricing | Batch logo generation via Queues |

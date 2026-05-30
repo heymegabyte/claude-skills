@@ -26,19 +26,23 @@ REPEAT {
 } UNTIL all routes VERIFIED OR 3 iterations complete OR $1 spent
 ```
 
-**Cost discipline:** a11y tree is FREE and catches layout/functional/a11y issues. GPT-4o vision ONLY for: color harmony, visual hierarchy, brand consistency, "does it look good?" — things pixels reveal that DOM can't. Never send 6 breakpoints to GPT-4o when 2 (mobile+desktop) suffice for aesthetic checks.
+### Cost discipline
+- a11y tree is FREE and catches layout/functional/a11y issues
+- GPT-4o vision ONLY for color harmony, visual hierarchy, brand consistency, "does it look good?" — things pixels reveal that DOM can't
+- Never send 6 breakpoints to GPT-4o when 2 (mobile + desktop) suffice for aesthetic checks
 
 ## Vision Analysis Prompt
-Categories: LAYOUT, TYPOGRAPHY, COLOR, CONTENT, INTERACTION, ACCESSIBILITY, POLISH, COMPLETENESS
-Per issue: Category, Severity (critical/major/minor/cosmetic), Location, Fix (specific CSS/HTML)
-Production ready: `{"status": "verified", "issues": []}`
-Needs work: `{"status": "needs_fixes", "issues": [...]}`
+- **Categories:** LAYOUT, TYPOGRAPHY, COLOR, CONTENT, INTERACTION, ACCESSIBILITY, POLISH, COMPLETENESS
+- **Per issue:** Category, Severity (critical / major / minor / cosmetic), Location, Fix (specific CSS/HTML)
+- **Production ready:** `{"status": "verified", "issues": []}`
+- **Needs work:** `{"status": "needs_fixes", "issues": [...]}`
 
 ## Provider Priority
 1. Playwright MCP a11y tree (FREE — functional, a11y, layout structure)
 2. axe-core via Playwright (FREE — WCAG violations)
-3. OpenAI GPT-4o detail:low (aesthetic-only, $0.01/shot — 2 breakpoints max)
-4. Anthropic Claude vision (fallback when GPT-4o fails/rate-limited)
+3. OpenAI GPT-4o `detail:low` (aesthetic-only, $0.01/shot — 2 breakpoints max)
+4. Anthropic Claude vision (fallback when GPT-4o fails / rate-limited)
+
 Vision is the LAST resort, not the first. A11y tree catches 80% of issues at zero cost.
 
 ## Breakpoints
@@ -59,7 +63,7 @@ const BREAKPOINTS = [
 3. All E2E tests pass
 4. No new issues in last complete iteration
 5. Human reviewer hasn't flagged additional issues
-6. **Zero Recommendations Gate:** When asked "How can I improve this more?" AI genuinely has no recommendations. If it does -> implement -> re-verify -> re-ask. Loop stops when AI's critical judgment says "genuinely complete."
+6. **Zero Recommendations Gate** — When asked "How can I improve this more?" AI genuinely has no recommendations. If it does → implement → re-verify → re-ask. Loop stops when AI's critical judgment says "genuinely complete."
 
 ## 5-Pass Verification Protocol (ALL must pass)
 
@@ -67,27 +71,34 @@ const BREAKPOINTS = [
 Every route 200, forms submit correctly, interactive elements respond, API returns valid Zod shape, E2E green.
 
 ### Pass 2: Visual
-AI screenshot critique at 1280+375px finds zero layout issues, no overflow/overlap, typography hierarchy clear, brand consistent. Passes "agency test."
+AI screenshot critique at 1280 + 375px finds zero layout issues, no overflow/overlap, typography hierarchy clear, brand consistent. Passes "agency test."
 
 ### Pass 3: Content
-Zero placeholder text (Lorem/TBD/TODO/"coming soon"/sample data), copy specific to product, microcopy complete (labels, empty states, errors, tooltips), alt text on all images, Flesch >= 60.
+Zero placeholder text (Lorem / TBD / TODO / "coming soon" / sample data), copy specific to product, microcopy complete (labels, empty states, errors, tooltips), alt text on all images, Flesch ≥60.
 
 ### Pass 4: Technical
-Lighthouse Perf >= 90, LCP <2.5s, INP <200ms, CLS <0.1, SEO (title+meta+H1+canonical+JSON-LD+OG), a11y (skip link, ARIA, focus rings, 4.5:1, axe-core clean), security (CSP, Zod, no eval/innerHTML).
+- Lighthouse Perf ≥90
+- LCP <2.5s, INP <200ms, CLS <0.1
+- SEO (title + meta + H1 + canonical + JSON-LD + OG)
+- a11y (skip link, ARIA, focus rings, 4.5:1, axe-core clean)
+- Security (CSP, Zod, no `eval` / `innerHTML`)
 
 ### Pass 5: Business & Psychology
 Serves actual user need, clear conversion path (CTA visible, value above fold), Peak-End Rule satisfied, social proof present, ethical persuasion only.
 
-**Failure protocol:** Fix -> re-deploy -> re-run failed pass + all subsequent passes. Never skip.
+**Failure protocol:** Fix → re-deploy → re-run failed pass + all subsequent passes. Never skip.
 
 ## Cost (***HARD CAP $1***)
-A11y tree + axe-core: FREE — use for ALL functional/a11y/layout checks. GPT-4o vision (2bp × detail:low): ~$0.02/page.
-**Homepage/ATF priority:** spend vision budget on homepage above-the-fold FIRST. Only vision-check other pages if homepage passes AND budget remains.
-Budget math: homepage 2bp × 3 rounds = ~$0.06. Remaining ~$0.94 for other critical pages. Most sites: 4-6 pages × 2bp × 1 round = ~$0.12 total.
-Previous uncapped approach ($24/run) burned $100 in 9 hours — NEVER again.
+- A11y tree + axe-core: FREE — use for ALL functional / a11y / layout checks
+- GPT-4o vision (2bp × `detail:low`): ~$0.02/page
+- **Homepage/ATF priority:** spend vision budget on homepage above-the-fold FIRST. Only vision-check other pages if homepage passes AND budget remains
+- **Budget math:** homepage 2bp × 3 rounds = ~$0.06. Remaining ~$0.94 for other critical pages. Most sites: 4-6 pages × 2bp × 1 round = ~$0.12 total
+- Previous uncapped approach ($24/run) burned $100 in 9 hours — NEVER again
 
 ## Trigger Conditions
-User says "verify"/"check everything"/"is it done?", after deploy, after design changes affecting multiple pages.
+- User says "verify" / "check everything" / "is it done?"
+- After deploy
+- After design changes affecting multiple pages
 
 ## Anti-Patterns
 - DO NOT skip breakpoints

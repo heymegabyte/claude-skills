@@ -8,18 +8,35 @@ allowed-tools: "Bash, Read, Write, Edit, mcp__playwright__*"
 # AI Technology Integration
 
 ## Visual TDD Loop (MANDATORY every deploy — ***COST-TIERED***)
-```
-Build -> Deploy -> a11y tree ALL pages (FREE) -> axe-core (FREE) -> fix -> Screenshot 2bp (375+1280) -> Workers AI Llama Vision (FREE) -> fix -> GPT-4o detail:low homepage ATF only ($0.02) -> fix -> DONE
-```
 
-**Quick (inline):** Playwright a11y tree + axe-core (FREE, catches 80%) → Workers AI vision for layout → GPT-4o detail:low for homepage aesthetics only
-**Automated:** `/Users/apple/.agentskills/scripts/visual-tdd-loop.sh https://example.com 2`
-**Single image:** `/Users/apple/.agentskills/scripts/gpt4o-vision-analyze.sh screenshot.png`
+Pipeline:
+1. Build → Deploy
+2. a11y tree ALL pages (FREE)
+3. axe-core (FREE) → fix
+4. Screenshot 2bp (375 + 1280)
+5. Workers AI Llama Vision (FREE) → fix
+6. GPT-4o `detail:low` homepage ATF only ($0.02) → fix
+7. DONE
 
-Run after: every deploy, CSS/layout changes, new pages, UI PRs.
-Acceptance: 2 breakpoints (375+1280) clean, zero critical/high issues, max 3 iterations. ***$1 HARD CAP on GPT-4o per prompt.***
+### Methods
+- **Quick (inline)** — Playwright a11y tree + axe-core (FREE, catches 80%) → Workers AI vision for layout → GPT-4o `detail:low` for homepage aesthetics only
+- **Automated** — `/Users/apple/.agentskills/scripts/visual-tdd-loop.sh https://example.com 2`
+- **Single image** — `/Users/apple/.agentskills/scripts/gpt4o-vision-analyze.sh screenshot.png`
+
+### When to run
+- Every deploy
+- CSS/layout changes
+- New pages
+- UI PRs
+
+### Acceptance
+- 2 breakpoints (375 + 1280) clean
+- Zero critical/high issues
+- Max 3 iterations
+- ***$1 HARD CAP on GPT-4o per prompt***
 
 ## Model Selection
+
 | Task | Model | Cost | Latency |
 |------|-------|------|---------|
 | Visual QA (bulk) | Workers AI Llama Vision | FREE | <1s |
@@ -35,8 +52,12 @@ Acceptance: 2 breakpoints (375+1280) clean, zero critical/high issues, max 3 ite
 | Speech-to-text | Deepgram Nova-2 | $0.0043/min | Real-time |
 | Web search | Firecrawl (self-hosted) | Free | 1-3s |
 
-### API Keys (in rare-chefs/.env.local)
-OPENAI_API_KEY, ANTHROPIC_API_KEY, IDEOGRAM_API_KEY, REPLICATE_API_TOKEN, CLOUDFLARE_API_TOKEN
+### API Keys (in `rare-chefs/.env.local`)
+- `OPENAI_API_KEY`
+- `ANTHROPIC_API_KEY`
+- `IDEOGRAM_API_KEY`
+- `REPLICATE_API_TOKEN`
+- `CLOUDFLARE_API_TOKEN`
 
 ## Workers AI Patterns
 ```typescript
@@ -47,7 +68,15 @@ OPENAI_API_KEY, ANTHROPIC_API_KEY, IDEOGRAM_API_KEY, REPLICATE_API_TOKEN, CLOUDF
 // New models (Apr 2026): GLM, Qwen, EmbeddingGemma (no provider keys), Kimi K2.5 (large agent model), real-time voice
 ```
 
-Wrangler: `[ai] binding = "AI"` + `[[vectorize]] binding = "VECTORIZE_INDEX" index_name = "site-content"`
+Wrangler config:
+```toml
+[ai]
+binding = "AI"
+
+[[vectorize]]
+binding = "VECTORIZE_INDEX"
+index_name = "site-content"
+```
 
 ## AI Search Namespace Binding (Apr 16, 2026)
 ```toml
@@ -64,7 +93,8 @@ const instance = await env.AI_SEARCH.createInstance({ name: 'tenant-123' });
 // Cross-instance ranked search via instance ID array
 const merged = await env.AI_SEARCH.search(query, { instances: ['tenant-a', 'tenant-b'] });
 ```
-Built-in storage + vector index on new instances. Use for: per-tenant RAG, per-agent knowledge bases, multi-language search.
+- Built-in storage + vector index on new instances
+- Use for: per-tenant RAG, per-agent knowledge bases, multi-language search
 
 ## GPT-4o Structured Outputs
 ```typescript
@@ -75,12 +105,10 @@ response_format: { type: 'json_schema', json_schema: { name: 'visual_qa', schema
 ```
 
 ## Image Generation
-
-**Logo (Ideogram):** `"Minimalist logo for [BRAND], cyan (#00E5FF) on black (#060610), clean geometric, no text, vector style"` — V_3, 1:1, DESIGN style
-**Hero (GPT Image):** `"Dark atmospheric hero, abstract geometric, cyan light on deep black, premium tech, 21:9"` — gpt-image-1.5, 1536x1024, high
-**OG (1200x630):** Generate 1536x1024 then resize with CF Image Resizing
-
-**Critique Loop:** Generate -> GPT-4o rate 1-10 -> if <8 remix with improved prompt -> max 3 iterations
+- **Logo (Ideogram)** — `"Minimalist logo for [BRAND], cyan (#00E5FF) on black (#060610), clean geometric, no text, vector style"` — V_3, 1:1, DESIGN style
+- **Hero (GPT Image)** — `"Dark atmospheric hero, abstract geometric, cyan light on deep black, premium tech, 21:9"` — gpt-image-1.5, 1536x1024, high
+- **OG (1200x630)** — Generate 1536x1024 then resize with CF Image Resizing
+- **Critique Loop** — Generate → GPT-4o rate 1-10 → if <8 remix with improved prompt → max 3 iterations
 
 ## RAG Architecture (Cloudflare)
 ```typescript
@@ -95,8 +123,18 @@ await env.AI.run('@cf/meta/llama-3.1-8b-instruct', { messages: [{ role: 'system'
 ```
 
 ## AI Integration Points
-07 Quality (visual TDD), 08 Deploy (post-deploy vision), 09 Brand (copy/tone), 10 Design (critique), 12 Media (gen+critique), 14 Idea Engine (research), 07/accessibility-gate (alt text), 09/seo-and-keywords (keywords/meta), 06/site-search (RAG), 06/internationalization (translation), 06/ai-chat-widget (RAG bot)
+- 07 Quality (visual TDD)
+- 08 Deploy (post-deploy vision)
+- 09 Brand (copy/tone)
+- 10 Design (critique)
+- 12 Media (gen + critique)
+- 14 Idea Engine (research)
+- 07/accessibility-gate (alt text)
+- 09/seo-and-keywords (keywords/meta)
+- 06/site-search (RAG)
+- 06/internationalization (translation)
+- 06/ai-chat-widget (RAG bot)
 
 ## Ownership
-**Owns:** AI model selection, Visual TDD loop, image/video generation, Workers AI patterns, RAG architecture, structured outputs, cost optimization.
-**Never owns:** Deployment (->08), testing framework (->07), media pipeline (->12), brand strategy (->09).
+- **Owns** — AI model selection, Visual TDD loop, image/video generation, Workers AI patterns, RAG architecture, structured outputs, cost optimization
+- **Never owns** — deployment (→08), testing framework (→07), media pipeline (→12), brand strategy (→09)

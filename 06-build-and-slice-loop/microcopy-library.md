@@ -7,7 +7,7 @@ description: "Canonical brand-voice microcopy dictionary. Eliminates generic AI 
 
 # Microcopy Library
 
-Brand-voice microcopy for every UI surface. Flesch>=60, active voice, no "please," no corporate tone. Irreverent but professional. Every string must feel like a human wrote it, not a framework.
+Brand-voice microcopy for every UI surface. Flesch≥60, active voice, no "please," no corporate tone. Irreverent but professional. Every string must feel like a human wrote it, not a framework.
 
 ## Dictionary
 
@@ -171,18 +171,16 @@ Brand-voice microcopy for every UI surface. Flesch>=60, active voice, no "please
 ```
 
 ## Usage Rules
-
-1. **Never use generic framework defaults.** Every user-facing string must come from this dictionary or match its tone.
-2. **Contractions always.** "You're" not "You are." "It's" not "It is." "Can't" not "Cannot."
-3. **No "please."** Direct without being rude. "Enter your email" not "Please enter your email."
-4. **No exclamation marks on errors.** Save excitement for success states only.
-5. **Template variables** use `{{variable}}` syntax. Keep them minimal — one per string max.
-6. **Sentence case everywhere.** "Save your changes" not "Save Your Changes." Exception: product names, proper nouns.
-7. **Max length:** Buttons 20 chars. Tooltips 60 chars. Errors 80 chars. Empty states 60 chars.
-8. **Test readability:** If you'd cringe reading it aloud, rewrite it.
+1. **Never use generic framework defaults** — every user-facing string must come from this dictionary or match its tone
+2. **Contractions always** — "You're" not "You are", "It's" not "It is", "Can't" not "Cannot"
+3. **No "please"** — direct without being rude. "Enter your email" not "Please enter your email."
+4. **No exclamation marks on errors** — save excitement for success states only
+5. **Template variables** — use `{{variable}}` syntax. Keep them minimal — one per string max.
+6. **Sentence case everywhere** — "Save your changes" not "Save Your Changes". Exception — product names, proper nouns.
+7. **Max length** — Buttons 20 chars. Tooltips 60 chars. Errors 80 chars. Empty states 60 chars.
+8. **Test readability** — if you'd cringe reading it aloud, rewrite it
 
 ## Implementation Pattern
-
 ```typescript
 // src/lib/microcopy.ts
 const copy = {
@@ -210,7 +208,6 @@ export { copy, t };
 ```
 
 ## Angular Integration
-
 ```typescript
 // In components, use the t() function directly:
 import { t } from '../lib/microcopy';

@@ -6,7 +6,9 @@ description: "Beautiful branded error pages for every HTTP status: 404 (not foun
 ---
 
 # Custom Error Pages
+
 ## Required Error Pages (EVERY site)
+
 ### 404 — Not Found
 The most common error. Must be helpful, not dead-end.
 
@@ -20,10 +22,10 @@ app.notFound((c) => {
 - Brand colors, logo, and typography
 - Animated element (floating orbs, particle effect — reuse from domain provisioning)
 - "This page doesn't exist" headline (friendly, not technical)
-- Search box if site has search (06/site-search)
+- Search box if site has search (`06/site-search`)
 - 3-4 links to popular pages
 - "Go home" CTA button
-- Easter egg opportunity (06/easter-eggs)
+- Easter egg opportunity (`06/easter-eggs`)
 
 ### 500 — Server Error
 ```typescript

@@ -35,12 +35,10 @@ export const requireRole = (role: string) => async (c, next) => {
 ```
 
 ## Route Protection Layers
-```
-Public:       /health, /api/webhooks/*, marketing pages
-Auth-only:    /api/user/*, /api/projects/* (any logged-in user)
-Role-gated:   /api/admin/* (org:admin), /api/billing/* (org:admin|org:billing)
-Owner-only:   /api/projects/:id/* (resource.userId === auth.userId)
-```
+- **Public** — `/health`, `/api/webhooks/*`, marketing pages
+- **Auth-only** — `/api/user/*`, `/api/projects/*` (any logged-in user)
+- **Role-gated** — `/api/admin/*` (`org:admin`), `/api/billing/*` (`org:admin|org:billing`)
+- **Owner-only** — `/api/projects/:id/*` (`resource.userId === auth.userId`)
 
 ## Webhook Sync (Clerk → D1)
 ```typescript
@@ -90,12 +88,18 @@ export const users = sqliteTable('users', {
 ```
 
 ## RBAC Pattern
-Roles stored in D1 (not Clerk metadata) for query flexibility. Clerk org roles for org-scoped access. Pattern: Clerk JWT → extract userId → D1 lookup for app role → authorize.
+- Roles stored in D1 (not Clerk metadata) for query flexibility
+- Clerk org roles for org-scoped access
+- Pattern — Clerk JWT → extract userId → D1 lookup for app role → authorize
 
-Org hierarchy: `org:admin` > `org:member` > `org:viewer`. App roles: `superadmin` (Brian only) > `admin` > `member` > `viewer`.
+### Hierarchy
+- **Org** — `org:admin` > `org:member` > `org:viewer`
+- **App** — `superadmin` (Brian only) > `admin` > `member` > `viewer`
 
 ## Session Tokens on CF Workers
-Clerk JWT verified per-request (no session store needed). Short-lived tokens (60s) auto-refresh. For WebSocket/DO: verify JWT on connect, cache userId in DO state, re-verify on reconnect.
+- Clerk JWT verified per-request (no session store needed)
+- Short-lived tokens (60s) auto-refresh
+- For WebSocket/DO — verify JWT on connect, cache userId in DO state, re-verify on reconnect
 
 ## Frontend (Angular)
 ```typescript
@@ -106,26 +110,38 @@ Clerk JWT verified per-request (no session store needed). Short-lived tokens (60
 ```
 
 ## Clerk CLI (Apr 22, 2026)
-`clerk init` — framework detect + scaffold (Angular/React/Next/Remix). `clerk config` — auth settings from terminal. `clerk api` — direct BAPI access for scripting. `clerk deploy` coming.
-Install: `npm i -g @clerk/cli` or `npx @clerk/cli init`.
+- `clerk init` — framework detect + scaffold (Angular/React/Next/Remix)
+- `clerk config` — auth settings from terminal
+- `clerk api` — direct BAPI access for scripting
+- `clerk deploy` — coming
+- Install — `npm i -g @clerk/cli` or `npx @clerk/cli init`
 
 ## API Keys GA (Apr 17, 2026)
-Machine auth: users create delegated API keys for programmatic access. Use for: CI/CD integration, external service auth, customer API access. Verify: `clerk.apiKeys.verify(apiKey)`. Billing active — counts toward MAU.
+- Machine auth — users create delegated API keys for programmatic access
+- Use for — CI/CD integration, external service auth, customer API access
+- Verify — `clerk.apiKeys.verify(apiKey)`
+- Billing active — counts toward MAU
 
 ## SCIM / Directory Sync (Roadmap — NOT GA)
-On Clerk's roadmap for enterprise orgs — auto user create/update/deactivate from IdP (Okta, Azure AD, OneLogin, Google Workspace). NOT yet generally available as of April 2026. When GA: custom attribute mapping into `publicMetadata`, role assignment from IdP groups, no extra charge with enterprise connection. For now: use Clerk webhooks (`organizationMembership.created`/`deleted`) for JIT provisioning from IdP.
+- On Clerk's roadmap for enterprise orgs — auto user create/update/deactivate from IdP (Okta, Azure AD, OneLogin, Google Workspace)
+- NOT yet generally available as of April 2026
+- When GA — custom attribute mapping into `publicMetadata`, role assignment from IdP groups, no extra charge with enterprise connection
+- For now — use Clerk webhooks (`organizationMembership.created`/`deleted`) for JIT provisioning from IdP
 
 ## Clerk Core 3 (Mar 3, 2026)
-Theme editor for custom auth UI. Keyless mode (no CLERK_PUBLISHABLE_KEY needed in dev). Modern React compat improvements. Upgrade path: `npx @clerk/upgrade` runs codemods automatically.
+- Theme editor for custom auth UI
+- Keyless mode (no `CLERK_PUBLISHABLE_KEY` needed in dev)
+- Modern React compat improvements
+- Upgrade path — `npx @clerk/upgrade` runs codemods automatically
 
 ## Checklist
-- [ ] `CLERK_SECRET_KEY` + `CLERK_PUBLISHABLE_KEY` in wrangler.toml [vars]
+- [ ] `CLERK_SECRET_KEY` + `CLERK_PUBLISHABLE_KEY` in `wrangler.toml [vars]`
 - [ ] `CLERK_WEBHOOK_SECRET` for svix verification
-- [ ] Webhook endpoint registered in Clerk dashboard (user.*, org.*, session.*, organizationMembership.*)
+- [ ] Webhook endpoint registered in Clerk dashboard (`user.*`, `org.*`, `session.*`, `organizationMembership.*`)
 - [ ] D1 users table with Clerk ID as PK
-- [ ] Middleware applied to all /api/* except /api/webhooks/* and /health
+- [ ] Middleware applied to all `/api/*` except `/api/webhooks/*` and `/health`
 - [ ] Frontend route guards on protected pages
 - [ ] MFA enforced for admin roles (Clerk dashboard setting)
 - [ ] SCIM directory connection configured for enterprise customers (when GA — currently roadmap)
 - [ ] API Keys enabled for programmatic access use cases
-- [ ] Test: expired JWT returns 401, wrong org returns 403, deleted user returns 401
+- [ ] Test — expired JWT returns 401, wrong org returns 403, deleted user returns 401

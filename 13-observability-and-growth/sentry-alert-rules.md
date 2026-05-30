@@ -6,7 +6,7 @@ updated: "2026-04-23"
 
 # Sentry Alert Rules
 
-Every deployed project gets four alert rules automatically at first deploy. Per-project (not global) — each domain gets its own rules. All alerts route to Slack #emdash-alerts.
+Every deployed project gets four alert rules automatically at first deploy. Per-project (not global) — each domain gets its own rules. All alerts route to Slack `#emdash-alerts`.
 
 ## Alert Rule Set
 
@@ -131,7 +131,6 @@ P95 response time exceeds 500ms for 10 consecutive minutes.
 All rules created via Sentry API. Base URL: `https://sentry.megabyte.space` (self-hosted).
 
 ### Create Issue Alert
-
 ```bash
 curl -X POST "https://sentry.megabyte.space/api/0/projects/{org}/{project}/rules/" \
   -H "Authorization: Bearer $SENTRY_AUTH_TOKEN" \
@@ -140,7 +139,6 @@ curl -X POST "https://sentry.megabyte.space/api/0/projects/{org}/{project}/rules
 ```
 
 ### Create Metric Alert (P95 Latency)
-
 ```bash
 curl -X POST "https://sentry.megabyte.space/api/0/projects/{org}/{project}/alert-rules/" \
   -H "Authorization: Bearer $SENTRY_AUTH_TOKEN" \
@@ -161,7 +159,7 @@ curl "https://sentry.megabyte.space/api/0/organizations/{org}/integrations/?prov
 # 3. Use in alert rule actions
 ```
 
-Slack app must be installed in workspace first via Sentry Settings > Integrations > Slack.
+Slack app must be installed in workspace first via **Sentry Settings → Integrations → Slack**.
 
 ## Orchestration Function
 
@@ -220,21 +218,18 @@ async function silenceDuringDeploy(project: string, durationMinutes: number = 10
 }
 ```
 
-Deploy flow integration:
-
-```
-1. silenceDuringDeploy(project, 10)  — mute alerts
-2. wrangler deploy                    — deploy Worker
-3. purge CDN cache                    — clear stale responses
-4. E2E tests on prod                  — verify
-5. Alerts auto-unmute after window    — resume monitoring
-```
+### Deploy flow integration
+1. `silenceDuringDeploy(project, 10)` — mute alerts
+2. `wrangler deploy` — deploy Worker
+3. Purge CDN cache — clear stale responses
+4. E2E tests on prod — verify
+5. Alerts auto-unmute after window — resume monitoring
 
 ## Per-Project Isolation
 
 Every project gets its own alert rule set. Never use organization-wide alert rules — they cause noise from unrelated projects.
 
-Naming convention: `[{project}] {Alert Name}` — square brackets make filtering easy in Slack.
+**Naming convention** — `[{project}] {Alert Name}` — square brackets make filtering easy in Slack.
 
 When a project is decommissioned, delete its alert rules:
 
@@ -248,6 +243,7 @@ curl "https://sentry.megabyte.space/api/0/projects/{org}/{project}/rules/" \
 ```
 
 ## Sentry SDK Setup (v10.50+ — Hono + Bun)
+
 ```typescript
 // src/instrument.ts — dedicated @sentry/hono/bun entry point (Apr 2026)
 import * as Sentry from '@sentry/hono/bun';

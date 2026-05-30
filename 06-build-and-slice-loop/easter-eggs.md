@@ -6,10 +6,9 @@ description: "MANDATORY: Every website gets at least one hidden Easter egg via U
 ---
 
 # Easter Eggs — Mandatory Hidden Delights
+
 ## Rule: Every Website Gets One
-This is not optional. Every website deployed through Emdash must include at least one
-Easter egg accessible via a URL query parameter. The AI chooses what it is — creative,
-appropriate for the project's tone, and genuinely fun.
+This is not optional. Every website deployed through Emdash must include at least one Easter egg accessible via a URL query parameter. The AI chooses what it is — creative, appropriate for the project's tone, and genuinely fun.
 
 ## Brian's Personal Motifs (Use in Easter Eggs)
 - **Squirrels** — Brian's spirit animal. Animated squirrel collecting acorns, squirrel cursor follower, etc.
@@ -17,6 +16,7 @@ appropriate for the project's tone, and genuinely fun.
 - **Space/cosmic themes** — stars, constellations, quantum particles in cyan/purple
 
 ## What Works (Proven Patterns)
+
 ### Full-screen canvas games/animations
 - Squirrel collecting acorns (Brian's personal favorite animal)
 - Stick figure shooting things with rainbows coming out of his mouth
@@ -25,7 +25,7 @@ appropriate for the project's tone, and genuinely fun.
 - Physics simulations with turtles
 - Generative art that uses the site's brand colors
 
-### What makes a GOOD Easter egg:
+### What makes a GOOD Easter egg
 - **Self-contained** — one `<script>` block, no external assets
 - **Full-screen canvas** — overlays the entire page with translucent dark background
 - **Immediate visual payoff** — something cool happens within 1 second
@@ -33,7 +33,7 @@ appropriate for the project's tone, and genuinely fun.
 - **Dismissible** — ESC key + click on overlay to close
 - **Themed** — uses the site's brand colors (cyan, blue) somewhere
 - **Has a score/counter** — gives the user something to watch grow
-- **Performant** — requestAnimationFrame, no heavy computation
+- **Performant** — `requestAnimationFrame`, no heavy computation
 
 ## Implementation Template
 ```javascript
@@ -66,6 +66,7 @@ appropriate for the project's tone, and genuinely fun.
 ```
 
 ## Ideas by Project Type
+
 ### Nonprofit / Mission
 - `?Win` — Guy with rainbows + AK-47 shooting clouds (IMPLEMENTED)
 - `?Love` — Particle hearts that swarm toward cursor
@@ -113,8 +114,8 @@ Auto-generate a printable one-page flyer with:
 - Brand colors and logo
 - "Scan to learn more" CTA
 
-Generate as PDF on deploy. Available at /flyer.pdf.
-Useful for physical distribution (bus stops, community centers, churches).
+- Generate as PDF on deploy
+- Available at `/flyer.pdf`
+- Useful for physical distribution (bus stops, community centers, churches)
 
-Include this as part of the Easter egg plan — a useful hidden feature
-accessible via ?Flyer or /flyer.pdf.
+Include this as part of the Easter egg plan — a useful hidden feature accessible via `?Flyer` or `/flyer.pdf`.

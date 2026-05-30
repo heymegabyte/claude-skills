@@ -29,11 +29,23 @@ Stale docs are bugs. The entire codebase (code, comments, markdown, configs) sta
 ```
 
 ## CLAUDE.md Standards
-Required: What This Is, Tech Stack, Project Structure, Key Patterns, Commands, Current State. Keep <200 lines. Update after every session.
+- **Required sections:** What This Is, Tech Stack, Project Structure, Key Patterns, Commands, Current State
+- Keep <200 lines
+- Update after every session
 
 ## Code Comments
-**When:** WHY (not what), complex algorithms, workarounds with issue links, API contracts, security decisions.
-**Never:** Restating code, TODO without issue link, commented-out code (git has history).
+
+### When
+- WHY (not what)
+- Complex algorithms
+- Workarounds with issue links
+- API contracts
+- Security decisions
+
+### Never
+- Restating code
+- TODO without issue link
+- Commented-out code (git has history)
 
 ```typescript
 // GOOD: Clerk webhook sends display_name, but our DB schema uses name
@@ -43,20 +55,36 @@ user.name = clerkUser.display_name;
 ```
 
 ## JSDoc
-Every exported function: `@param`, `@returns`, `@example`, `@see` (with URL). Descriptions <2 sentences.
+Every exported function — `@param`, `@returns`, `@example`, `@see` (with URL). Descriptions <2 sentences.
 
 ## Stale Code Removal
-**Remove:** Commented-out code, unused imports, dead functions, TODO >30 days without issue, console.log debug, old applied migrations.
-**Keep:** User-written code, documented workarounds with links, active feature flags.
+
+### Remove
+- Commented-out code
+- Unused imports
+- Dead functions
+- TODO >30 days without issue
+- `console.log` debug
+- Old applied migrations
+
+### Keep
+- User-written code
+- Documented workarounds with links
+- Active feature flags
+
 **Rule:** Never remove user code without asking. Use `npx knip` for unused exports.
 
 ## Sync Protocol
-**Every session:** README matches reality, CLAUDE.md current, remove deleted file refs.
-**Feature completion:** Update README features, CLAUDE.md patterns, relevant skills.
-**Refactor:** Update all docs, rename refs, grep for old names, update project structure.
+- **Every session** — README matches reality, CLAUDE.md current, remove deleted file refs
+- **Feature completion** — update README features, CLAUDE.md patterns, relevant skills
+- **Refactor** — update all docs, rename refs, grep for old names, update project structure
 
 ## Naming Conventions
-Files: kebab-case. Functions: camelCase. Types: PascalCase. Constants: SCREAMING_SNAKE. DB columns: snake_case.
+- **Files** — kebab-case
+- **Functions** — camelCase
+- **Types** — PascalCase
+- **Constants** — SCREAMING_SNAKE
+- **DB columns** — snake_case
 
 ## Quality Checks
 ```bash
@@ -66,5 +94,5 @@ npx knip --reporter compact
 ```
 
 ## Ownership
-**Owns:** README template, CLAUDE.md standards, code comment quality, JSDoc, stale code removal, cross-project sync, AI-readable formatting.
-**Never owns:** Content writing (->09,22), implementation (->06), testing (->07), deployment (->08).
+- **Owns:** README template, CLAUDE.md standards, code comment quality, JSDoc, stale code removal, cross-project sync, AI-readable formatting
+- **Never owns:** Content writing (→09, 22), implementation (→06), testing (→07), deployment (→08)

@@ -6,7 +6,9 @@ description: "Every site gets a working contact form with Turnstile captcha, Zod
 ---
 
 # Contact Forms and Endpoints
+
 ## Default Contact Form (EVERY site)
+
 ### Frontend
 ```html
 <form id="contact" action="/api/contact" method="POST">
@@ -188,6 +190,7 @@ test.describe('Contact form', () => {
 ```
 
 ## Other Form Types
+
 ### Newsletter Signup (Listmonk)
 ```html
 <form action="/api/subscribe" method="POST">
@@ -197,8 +200,8 @@ test.describe('Contact form', () => {
 </form>
 ```
 
-### Donation Form (Stripe — 13/stripe-billing)
+### Donation Form (Stripe — `13/stripe-billing`)
 Redirect to Stripe Checkout. No form processing needed on our side.
 
-### Feedback Form (13/user-feedback-collection)
+### Feedback Form (`13/user-feedback-collection`)
 In-app widget with rating + text. Stored in D1.

@@ -6,6 +6,7 @@ description: "AG Grid (ag-grid-angular) for complex data tables with server-side
 ---
 
 # Data Tables
+
 ## Angular AG Grid Setup
 ```typescript
 // data-table.component.ts

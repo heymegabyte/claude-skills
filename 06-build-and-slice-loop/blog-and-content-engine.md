@@ -6,13 +6,12 @@ description: "SEO-driven blog system on Cloudflare Workers: markdown-to-HTML ren
 ---
 
 # Blog and Content Engine
+
 ## Architecture
-```
-/blog                → Blog index (paginated, 10 per page)
-/blog/[slug]         → Individual post
-/blog/rss.xml        → RSS feed
-/blog/category/[cat] → Category archive
-```
+- `/blog` → Blog index (paginated, 10 per page)
+- `/blog/[slug]` → Individual post
+- `/blog/rss.xml` → RSS feed
+- `/blog/category/[cat]` → Category archive
 
 ### Storage Options
 - **Static markdown** — files in `/content/blog/` compiled at deploy time
@@ -34,23 +33,21 @@ Your markdown content here...
 
 ## SEO Integration (09/seo-and-keywords)
 Every blog post targets a longtail keyword:
-- **Title tag** contains the keyword phrase
-- **H1** matches the title (or is a close variation)
-- **First paragraph** mentions the keyword naturally
-- **H2s** use semantic variations
-- **Meta description** includes keyword + CTA
-- **URL slug** contains keyword in hyphens
-- **Image alt text** includes keyword where natural
+- **Title tag** — contains the keyword phrase
+- **H1** — matches the title (or close variation)
+- **First paragraph** — mentions the keyword naturally
+- **H2s** — use semantic variations
+- **Meta description** — includes keyword + CTA
+- **URL slug** — contains keyword in hyphens
+- **Image alt text** — includes keyword where natural
 
 ### Seed Posts (3-5 on First Build)
-Generate 3-5 posts targeting longtail keywords from 09/seo-and-keywords research:
-```
+Generate 3-5 posts targeting longtail keywords from `09/seo-and-keywords` research:
 1. "How to [solve problem] with [our product]" (tutorial)
-2. "[Product category] comparison: [us] vs alternatives" (comparison)
+2. "[Product category] comparison — [us] vs alternatives" (comparison)
 3. "[Industry] guide to [relevant topic]" (guide)
 4. "Why we built [product] on [technology]" (behind the scenes)
 5. "[Common question] answered" (FAQ-style, targets PAA)
-```
 
 ## Post Template (Hono HTML Rendering)
 ```typescript

@@ -6,6 +6,7 @@ description: "Editor.js (@editorjs/editorjs) integration with Angular 21. Block-
 ---
 
 # Rich Text Editor
+
 ## Angular Editor.js Wrapper
 ```typescript
 // editor.component.ts

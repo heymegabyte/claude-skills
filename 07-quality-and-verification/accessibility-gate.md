@@ -7,9 +7,16 @@ description: "WCAG 2.2 AA via axe-core v4.11.3 + Playwright. 9 new SC: focus-not
 
 # Accessibility Gate
 
-WCAG 2.2 AA minimum on every project. 1 in 4 US adults has disability. 71% leave inaccessible sites. 5,000+ ADA lawsuits in 2025 (37% YoY increase). Accessible sites rank higher (semantic HTML, alt text). Brian's ethos: sites must be usable by everyone.
+WCAG 2.2 AA minimum on every project.
 
-## Automated Audit (EVERY Deploy)
+### Why it matters
+- 1 in 4 US adults has a disability
+- 71% leave inaccessible sites
+- 5,000+ ADA lawsuits in 2025 (+37% YoY)
+- Accessible sites rank higher (semantic HTML, alt text)
+- Brian's ethos: sites must be usable by everyone
+
+## Automated Audit (EVERY deploy)
 ```typescript
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
@@ -54,7 +61,9 @@ for (const bp of BREAKPOINTS) {
 ```
 
 ## Keyboard Navigation Test
-Tab through all focusable elements — verify not stuck on BODY. Test Escape closes modals.
+- Tab through all focusable elements
+- Verify focus does not get stuck on `BODY`
+- Test `Escape` closes modals
 
 ## Reduced Motion
 ```typescript
@@ -67,22 +76,73 @@ test('respects prefers-reduced-motion', async ({ page }) => {
 ```
 
 ## Screen Reader Checklist
-All interactive elements have accessible names, form errors via aria-live="polite", dynamic content uses aria-live, images have descriptive alt (not "image"/filename), decorative alt="" + role="presentation", links describe destination, buttons describe action, page title includes page name + brand, logical heading hierarchy.
+- All interactive elements have accessible names
+- Form errors announced via `aria-live="polite"`
+- Dynamic content uses `aria-live`
+- Images have descriptive `alt` (not "image" / filename)
+- Decorative: `alt=""` + `role="presentation"`
+- Links describe destination
+- Buttons describe action
+- Page title includes page name + brand
+- Logical heading hierarchy
 
 ## WCAG 2.2 New Success Criteria (9 total)
-**Level A (3):** 3.2.6 Consistent Help (same relative order)|3.3.7 Redundant Entry (don't re-ask same info)|3.3.9 Accessible Auth Enhanced (all cognitive tests need alternatives).
-**Level AA (6):** 2.4.11 Focus Not Obscured Min (not hidden by sticky headers)|2.4.12 Focus Not Obscured Enhanced|2.4.13 Focus Appearance (2px thick, 3:1 contrast)|2.5.7 Dragging Movements (single-pointer alternative)|2.5.8 Target Size Min (24x24 CSS px)|3.3.8 Accessible Auth Min (support password managers/autofill/biometrics).
+
+### Level A (3)
+- **3.2.6 Consistent Help** — same relative order
+- **3.3.7 Redundant Entry** — don't re-ask same info
+- **3.3.9 Accessible Auth Enhanced** — all cognitive tests need alternatives
+
+### Level AA (6)
+- **2.4.11 Focus Not Obscured (Min)** — not hidden by sticky headers
+- **2.4.12 Focus Not Obscured (Enhanced)**
+- **2.4.13 Focus Appearance** — 2px thick, 3:1 contrast
+- **2.5.7 Dragging Movements** — single-pointer alternative
+- **2.5.8 Target Size (Min)** — 24×24 CSS px
+- **3.3.8 Accessible Auth (Min)** — support password managers / autofill / biometrics
 
 ## Full Deploy Checklist
-Skip-to-content link, all images alt text, form inputs labeled, contrast >= 4.5:1 (3:1 large), keyboard accessible, focus rings visible+beautiful (2px solid, 3:1 contrast per 2.4.13), ARIA landmarks, `lang` on html, prefers-reduced-motion, axe-core 0 violations (wcag22aa tags), logical tab order, no keyboard traps, touch targets >= 24x24px (WCAG 2.2) / 44x44px (recommended), focused element not obscured by sticky headers/footers (2.4.11), dragging has single-pointer alt (2.5.7), forms support autofill/password managers (3.3.8), help mechanisms consistent across pages (3.2.6), don't re-ask info already entered (3.3.7), iframes have title, icon buttons have aria-label, toggle buttons use aria-checked/pressed, decorative elements aria-hidden="true".
+- Skip-to-content link
+- All images have alt text
+- Form inputs labeled
+- Contrast ≥4.5:1 (3:1 large)
+- Keyboard accessible
+- Focus rings visible + beautiful (2px solid, 3:1 contrast per 2.4.13)
+- ARIA landmarks
+- `lang` on `<html>`
+- `prefers-reduced-motion` respected
+- axe-core 0 violations (wcag22aa tags)
+- Logical tab order
+- No keyboard traps
+- Touch targets ≥24×24px (WCAG 2.2) / 44×44px (recommended)
+- Focused element not obscured by sticky headers/footers (2.4.11)
+- Dragging has single-pointer alt (2.5.7)
+- Forms support autofill / password managers (3.3.8)
+- Help mechanisms consistent across pages (3.2.6)
+- Never re-ask info already entered (3.3.7)
+- Iframes have `title`
+- Icon buttons have `aria-label`
+- Toggle buttons use `aria-checked` / `aria-pressed`
+- Decorative elements `aria-hidden="true"`
 
 ## MANDATORY Playwright Test (create if missing)
-Verify: lang attr, skip link exists, landmarks (main/nav/header/footer), keyboard reaches CTA, focus-visible defined (2px thick per 2.4.13), reduced-motion defined, form inputs labeled, buttons named, no same fg/bg colors, target sizes >= 24px, focused element visible (not behind sticky elements).
+Verify:
+- `lang` attribute
+- Skip link exists
+- Landmarks (`main` / `nav` / `header` / `footer`)
+- Keyboard reaches CTA
+- `focus-visible` defined (2px thick per 2.4.13)
+- `prefers-reduced-motion` defined
+- Form inputs labeled
+- Buttons named
+- No same fg/bg colors
+- Target sizes ≥24px
+- Focused element visible (not behind sticky elements)
 
 ## ADA & Standards Landscape
-- **ADA Title II:** Large entities (50K+ pop) April 2027, smaller April 2028 (extended from 2026/2027). Standard: WCAG 2.2 AA.
-- **Private companies:** No formal deadline, but 5,000+ lawsuits in 2025 (37% increase). Gov contractors contractually required.
-- **WCAG 3.0:** Working draft March 2026, 174 requirements (up from 78 SC), no A/AA/AAA levels, assertions+scoring. Est. W3C Rec 2028-2030, legal adoption 2030+.
-- **axe-core v4.11.3:** Covers WCAG 2.0/2.1/2.2 at A/AA/AAA, Section 508, EN 301 549, RGAA, ADA. ~57% automated detection.
+- **ADA Title II** — Large entities (50K+ pop) April 2027, smaller April 2028 (extended from 2026/2027). Standard: WCAG 2.2 AA.
+- **Private companies** — No formal deadline, but 5,000+ lawsuits in 2025 (+37%). Gov contractors contractually required.
+- **WCAG 3.0** — Working draft March 2026, 174 requirements (up from 78 SC), no A/AA/AAA levels, assertions + scoring. Est. W3C Rec 2028-2030, legal adoption 2030+.
+- **axe-core v4.11.3** — Covers WCAG 2.0/2.1/2.2 at A/AA/AAA, Section 508, EN 301 549, RGAA, ADA. ~57% automated detection.
 - AI agents interact with interfaces — semantic HTML + ARIA + structured data serve BOTH humans and agents.
 - `font-display: swap`, subset fonts, min 16px body, test at 200% zoom, `prefers-contrast: more` support.

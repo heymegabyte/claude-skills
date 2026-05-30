@@ -11,7 +11,7 @@ updated: "2026-04-23"
 Generate output → Send to LLM judge (Haiku) → Score 1-10 → Pass if ≥ threshold → Fail with reasoning
 ```
 
-Cost: ~$0.01/eval with claude-haiku-4-5. Run hundreds of evals for pennies. Treat evals like tests — they run in CI, they block merges, they catch regressions.
+Cost: ~$0.01/eval with `claude-haiku-4-5`. Run hundreds of evals for pennies. Treat evals like tests — they run in CI, they block merges, they catch regressions.
 
 ## Eval Runner
 ```typescript
@@ -184,10 +184,22 @@ describe('Quality Evals', () => {
 ```
 
 ## Cost Model
-Haiku: ~$0.25/MTok input, ~$1.25/MTok output. Typical eval: ~800 input + ~200 output tokens = ~$0.0005/eval. Suite of 20 evals = ~$0.01. Run 100x/day = ~$1/day. Cheaper than one hour debugging a regression.
+- Haiku: ~$0.25/MTok input, ~$1.25/MTok output
+- Typical eval: ~800 input + ~200 output tokens = ~$0.0005/eval
+- Suite of 20 evals = ~$0.01
+- Run 100×/day = ~$1/day
+- Cheaper than one hour debugging a regression
 
 ## Best Practices
-Deterministic rubrics: numeric criteria, not vibes. Threshold tuning: start at 7, tighten as quality improves. Eval versioning: bump version when rubric changes to avoid false regressions. Multi-judge: run 3 evals, take median for flaky-prone checks. Baseline capture: record scores on main branch, fail PR if score drops.
+- **Deterministic rubrics** — numeric criteria, not vibes
+- **Threshold tuning** — start at 7, tighten as quality improves
+- **Eval versioning** — bump version when rubric changes to avoid false regressions
+- **Multi-judge** — run 3 evals, take median for flaky-prone checks
+- **Baseline capture** — record scores on main branch, fail PR if score drops
 
 ## Anti-Patterns
-Never: use GPT-4o for evals (10x cost, marginally better). Judge your own output with the same model that generated it. Skip reasoning field (can't debug failures). Set threshold at 10 (too brittle). Run evals synchronously (parallelize with Promise.all).
+- Never use GPT-4o for evals (10x cost, marginally better)
+- Don't judge your own output with the same model that generated it
+- Don't skip reasoning field (can't debug failures)
+- Don't set threshold at 10 (too brittle)
+- Don't run evals synchronously (parallelize with `Promise.all`)

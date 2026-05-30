@@ -6,8 +6,9 @@ description: "Lightweight /admin panel for content moderation and data review. E
 ---
 
 # Admin Dashboard
+
 ## Philosophy
-This is NOT a full CMS or code editor. Code management happens through the embedded bolt.diy editor at editor.projectsites.dev. The admin dashboard is for:
+This is NOT a full CMS or code editor. Code management happens through the embedded bolt.diy editor at `editor.projectsites.dev`. The admin dashboard is for:
 - Moderating user-submitted content (testimonials, feedback)
 - Reviewing webhook event logs
 - Managing newsletter subscribers
@@ -15,14 +16,12 @@ This is NOT a full CMS or code editor. Code management happens through the embed
 - Blog post draft review (if blog uses D1)
 
 ## Architecture
-```
-/admin          → Dashboard overview (auth-protected)
-/admin/feedback → Manage feedback submissions
-/admin/testimonials → Approve/reject testimonials
-/admin/webhooks → View webhook event log
-/admin/subscribers → Newsletter subscriber list
-/admin/editor   → Embedded bolt.diy iframe
-```
+- `/admin` → Dashboard overview (auth-protected)
+- `/admin/feedback` → Manage feedback submissions
+- `/admin/testimonials` → Approve/reject testimonials
+- `/admin/webhooks` → View webhook event log
+- `/admin/subscribers` → Newsletter subscriber list
+- `/admin/editor` → Embedded bolt.diy iframe
 
 ## Auth Protection
 ```typescript
@@ -58,6 +57,7 @@ app.get('/admin', async (c) => {
 ```
 
 ## Content Moderation
+
 ### Feedback Review
 ```typescript
 app.get('/admin/feedback', async (c) => {
@@ -77,7 +77,8 @@ app.post('/admin/feedback/:id/reject', async (c) => {
 ```
 
 ### Testimonial Moderation
-Same pattern. Approved testimonials display on the homepage (skill 09 social proof).
+- Same pattern
+- Approved testimonials display on the homepage (skill 09 social proof)
 
 ## Embedded AI Editor
 ```html
@@ -99,7 +100,7 @@ All code changes, feature additions, and refactors go through this editor. The a
 - Simple table layouts with approve/reject action buttons
 - No heavy frameworks — server-rendered HTML from Hono
 - Mobile-friendly (responsive tables collapse to cards)
-- Navigation sidebar: Overview, Chat, Feedback, Testimonials, Webhooks, Subscribers, Editor
+- **Navigation sidebar** — Overview, Chat, Feedback, Testimonials, Webhooks, Subscribers, Editor
 
 ## AI Chat Interface (Build Critique Assistant)
 Every admin dashboard includes an AI chat for discussing post-build critiques.
@@ -145,4 +146,4 @@ app.post('/admin/chat', async (c) => {
 ### Post-Build Notification
 After every deploy, send critique email via Resend:
 - Include link to admin dashboard for follow-up
-- Severity levels: CRITICAL (blocks launch), WARNING (should fix), INFO (nice to have)
+- Severity levels — CRITICAL (blocks launch), WARNING (should fix), INFO (nice to have)

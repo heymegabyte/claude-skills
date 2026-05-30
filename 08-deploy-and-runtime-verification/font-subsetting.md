@@ -82,7 +82,7 @@ glyphhanger https://example.com --formats=woff2 --subset=*.ttf
 <link rel="preload" href="/fonts/SpaceGrotesk-Bold-subset.woff2" as="font" type="font/woff2" crossorigin>
 ```
 
-crossorigin attribute required even for same-origin fonts (CORS fetch mode). Only preload fonts used above the fold — preloading all fonts wastes bandwidth and delays LCP.
+`crossorigin` attribute required even for same-origin fonts (CORS fetch mode). Only preload fonts used above the fold — preloading all fonts wastes bandwidth and delays LCP.
 
 ## @fontsource Alternative (pre-subset, tree-shakeable)
 ```bash
@@ -123,6 +123,17 @@ app.get('/fonts/:filename', async (c) => {
 ```
 
 ## Size Budget
-Target per font file: 15-25KB (subset WOFF2). Total all fonts: ≤100KB. Typical breakdown: Sora 400 (~18KB) + Sora 500 (~18KB) + Space Grotesk 600 (~16KB) + Space Grotesk 700 (~16KB) + JetBrains Mono 400 (~20KB) = ~88KB. If over budget: drop least-used weight, use `font-synthesis: weight` for minor weight differences.
+- **Target per font file** — 15-25KB (subset WOFF2)
+- **Total all fonts** — ≤100KB
+
+### Typical breakdown
+- Sora 400 (~18KB)
+- Sora 500 (~18KB)
+- Space Grotesk 600 (~16KB)
+- Space Grotesk 700 (~16KB)
+- JetBrains Mono 400 (~20KB)
+- **Total: ~88KB**
+
+If over budget: drop least-used weight, use `font-synthesis: weight` for minor weight differences.
 
 Never use Google Fonts CDN (privacy, extra DNS lookup, no HTTP/3 multiplexing with your origin). Self-host always.

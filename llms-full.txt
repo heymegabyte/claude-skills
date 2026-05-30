@@ -232,7 +232,7 @@ OWASP Agentic Top 10 (2026): prompt injection|trust boundary failures|tool misus
 ```
 default-src 'self'; script-src 'self' 'nonce-{NONCE}' 'strict-dynamic' googletagmanager.com challenges.cloudflare.com *.posthog.com;
 style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com;
-img-src 'self' data: images.unsplash.com images.pexels.com *.stripe.com *.sentry.io;
+img-src 'self' data: images.pexels.com *.stripe.com *.sentry.io;
 connect-src 'self' google-analytics.com *.posthog.com *.sentry.io challenges.cloudflare.com *.inngest.com;
 frame-src youtube.com js.stripe.com challenges.cloudflare.com;
 report-uri /api/csp-report;

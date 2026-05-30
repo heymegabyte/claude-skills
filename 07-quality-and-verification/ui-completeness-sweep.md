@@ -81,22 +81,18 @@ for (const img of await page.locator('img').all()) {
 ```
 
 ### Phase 3: GPT-4o Vision Analysis
-```
 For each screenshot, ask GPT-4o:
-"You are a QA engineer reviewing a deployed SaaS product. 
-Look at this screenshot and identify:
-1. Any UI element that looks unfinished, placeholder, or broken
-2. Any button/link that appears non-functional (grayed out, no hover state)
-3. Any section that looks empty or missing content
-4. Any text that says Coming Soon, TODO, placeholder, sample, example
-5. Any image that looks like a stock placeholder or is broken
-6. Any form that appears incomplete (missing labels, no validation)
-7. Any layout that breaks at this viewport width
-8. Any element that a user would perceive as unfinished
-
-Rate completeness 0-10. List every finding with exact location.
-10 = ship it. Below 8 = not done."
-```
+> "You are a QA engineer reviewing a deployed SaaS product. Look at this screenshot and identify:
+> 1. Any UI element that looks unfinished, placeholder, or broken
+> 2. Any button/link that appears non-functional (grayed out, no hover state)
+> 3. Any section that looks empty or missing content
+> 4. Any text that says Coming Soon, TODO, placeholder, sample, example
+> 5. Any image that looks like a stock placeholder or is broken
+> 6. Any form that appears incomplete (missing labels, no validation)
+> 7. Any layout that breaks at this viewport width
+> 8. Any element that a user would perceive as unfinished
+>
+> Rate completeness 0-10. List every finding with exact location. 10 = ship it. Below 8 = not done."
 
 ### Phase 4: Fix Loop
 ```
@@ -111,25 +107,23 @@ while findings.length > 0 AND round < 3:
 ```
 
 ## What Specifically to Catch
-| Pattern | Where | Fix |
-|---------|-------|-----|
-| Disabled buttons | UI | Implement the handler or remove the button |
-| "Coming soon" text | Anywhere | Build the feature or remove the section |
-| Empty arrays rendering blank | Lists, tables, feeds | Add empty state with CTA |
-| Forms with no validation | Any form | Add Zod validation + error messages |
-| Links to # or javascript:void | Nav, buttons | Wire to real routes |
-| Console errors | Any page | Fix every error, zero tolerance |
-| Missing loading states | Data-fetching pages | Add skeleton/spinner |
-| Missing error boundaries | Every page | Add error UI with retry |
-| 404 on internal routes | Navigation | Fix routing or remove link |
-| Placeholder images | Hero, cards, avatars | Generate real images (Ideogram/Pexels/Unsplash) |
-| Truncated text/overflow | Mobile breakpoints | Fix CSS, add text-overflow |
-| Missing favicon | Browser tab | Generate and add via Ideogram |
-| Missing OG image | Social sharing | Generate 1200x630 preview image |
+- **Disabled buttons** (UI) → implement the handler or remove the button
+- **"Coming soon" text** (anywhere) → build the feature or remove the section
+- **Empty arrays rendering blank** (lists, tables, feeds) → add empty state with CTA
+- **Forms with no validation** (any form) → add Zod validation + error messages
+- **Links to `#` or `javascript:void`** (nav, buttons) → wire to real routes
+- **Console errors** (any page) → fix every error, zero tolerance
+- **Missing loading states** (data-fetching pages) → add skeleton / spinner
+- **Missing error boundaries** (every page) → add error UI with retry
+- **404 on internal routes** (navigation) → fix routing or remove link
+- **Placeholder images** (hero, cards, avatars) → generate real images (Ideogram / Pexels / Pixabay)
+- **Truncated text / overflow** (mobile breakpoints) → fix CSS, add `text-overflow`
+- **Missing favicon** (browser tab) → generate and add via Ideogram
+- **Missing OG image** (social sharing) → generate 1200×630 preview image
 
 ## Integration Points
-- completeness-checker agent runs this sweep
-- visual-qa agent runs the GPT-4o analysis
-- deploy-verifier agent runs post-deploy checks
+- `completeness-checker` agent runs this sweep
+- `visual-qa` agent runs the GPT-4o analysis
+- `deploy-verifier` agent runs post-deploy checks
 - The orchestrator MUST run this before declaring any build task complete
 - The Stop hook SHOULD verify this ran (check for sweep results in audit log)

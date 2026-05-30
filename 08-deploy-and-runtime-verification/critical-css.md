@@ -117,9 +117,9 @@ app.get('/', (c) => {
 1. Inline critical CSS in `<style>` (0ms — already in HTML)
 2. Preload above-fold fonts (parallel with HTML parse)
 3. Deferred full stylesheet via `<link rel="preload" as="style">` (non-blocking)
-4. font-display: swap prevents invisible text during font load
-5. Below-fold images: lazy load
-6. Result: first meaningful paint with styled content + system font → swap to custom font
+4. `font-display: swap` prevents invisible text during font load
+5. Below-fold images — lazy load
+6. **Result:** first meaningful paint with styled content + system font → swap to custom font
 
 ## Verification
 ```bash
@@ -131,4 +131,8 @@ curl -s https://example.com | grep -c '<style>' # Should be >= 1
 curl -s https://example.com | grep -c 'media="print" onload' # Deferred stylesheets
 ```
 
-LCP target: ≤2.5s. CLS target: ≤0.1 (critical CSS prevents layout shift from late-loading styles). FCP target: ≤1.8s. Combined with font subsetting + preloading, typical FCP improvement: 300-800ms.
+### Targets
+- LCP — ≤2.5s
+- CLS — ≤0.1 (critical CSS prevents layout shift from late-loading styles)
+- FCP — ≤1.8s
+- Combined with font subsetting + preloading, typical FCP improvement: 300-800ms

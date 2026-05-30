@@ -16,6 +16,7 @@ updated: "2026-04-23"
 5. Project `.mcp.json` or `.mcp/` — local project
 
 ### Priority-Ranked Servers
+
 | # | Server | Tools | Status | Cost |
 |---|--------|-------|--------|------|
 | 1 | Cloudflare | Workers, D1, R2, KV, DNS (2500+ endpoints via 2 tools) | Connected | Free |
@@ -31,7 +32,7 @@ updated: "2026-04-23"
 | 11 | Google (Gmail, Cal, Drive) | Email, scheduling, files | Ask first | Free |
 | 12 | Composio | 300+ connectors | Ask first | Free tier |
 
-**Key insight:** Cloudflare MCP uses 2 tools + <1K tokens for 2,500+ endpoints (Code Mode).
+**Key insight** — Cloudflare MCP uses 2 tools + <1K tokens for 2,500+ endpoints (Code Mode).
 
 ### MCP Config Commands
 ```bash
@@ -43,44 +44,63 @@ claude mcp add google-workspace -- npx -y @taylorwilsdon/google_workspace_mcp
 ```
 
 ### Connected in This Environment
-
-**Built-In (Claude AI OAuth):** Cloudflare, Stripe, Gmail, Google Calendar, Google Drive, Slack, Canva, IFTTT
-**Self-Hosted:** Coolify, Firecrawl, Postiz, WordPress, Home Assistant, DeepSeek, n8n, Notion, Supermemory, Plane, Omi
-**Developer Tools:** Playwright, GitHub, Sequential Thinking, Computer Use, PostHog, Sentry
-**Resend MCP (Apr 7, 2026):** Official MCP server with HTTP transport. `claude mcp add resend --transport http --url https://mcp.resend.com`. Tools: send_email, list_emails, create_contact, list_contacts, list_domains. Use for: transactional email automation, contact management, domain verification — all from Claude Code.
+- **Built-In (Claude AI OAuth)** — Cloudflare, Stripe, Gmail, Google Calendar, Google Drive, Slack, Canva, IFTTT
+- **Self-Hosted** — Coolify, Firecrawl, Postiz, WordPress, Home Assistant, DeepSeek, n8n, Notion, Supermemory, Plane, Omi
+- **Developer Tools** — Playwright, GitHub, Sequential Thinking, Computer Use, PostHog, Sentry
+- **Resend MCP (Apr 7, 2026)** — official MCP server with HTTP transport. `claude mcp add resend --transport http --url https://mcp.resend.com`. Tools: `send_email`, `list_emails`, `create_contact`, `list_contacts`, `list_domains`. Use for transactional email automation, contact management, domain verification — all from Claude Code.
 
 ### Agent Interop Protocols
-**MCP (Model Context Protocol):** Tool access for AI agents. 97M+ monthly SDK downloads. Donated to Linux Foundation AAIF (Dec 2025). Standard for connecting AI models to external tools/data.
-**A2A (Agent-to-Agent, Google):** Agent discovery and coordination across org boundaries. Donated to Linux Foundation. Enables agents to find, authenticate, and delegate tasks to other agents. ACP (Cisco/LangChain agent commerce) merged into A2A (Aug 2025).
-**Enterprise stack:** MCP (tool access) + A2A (agent coordination) = complete agent interop. MCP for connecting to services, A2A for multi-agent orchestration across teams/orgs.
+- **MCP (Model Context Protocol)** — tool access for AI agents. 97M+ monthly SDK downloads. Donated to Linux Foundation AAIF (Dec 2025). Standard for connecting AI models to external tools/data.
+- **A2A (Agent-to-Agent, Google)** — agent discovery and coordination across org boundaries. Donated to Linux Foundation. Enables agents to find, authenticate, and delegate tasks to other agents. ACP (Cisco/LangChain agent commerce) merged into A2A (Aug 2025).
+- **Enterprise stack** — MCP (tool access) + A2A (agent coordination) = complete agent interop. MCP for connecting to services, A2A for multi-agent orchestration across teams/orgs.
 
-### MCP -> Skill Mapping
-Cloudflare→08-deploy, Playwright→07-quality, Square→13/square-payments (donations/SMB default), Stripe→13/stripe-billing (SaaS subs/enterprise only), GitHub→08/ci-cd-pipeline, Coolify→05/mcp-and-cloud-integrations, Firecrawl→03/competitive-analysis, Postiz→09/social-automation, n8n→06/webhook-system, Gmail→09/email-templates, WordPress→06/blog-and-content-engine, Notion→09/documentation-and-codebase-hygiene, Sentry→13-observability, PostHog→13-observability, Computer Use→07-quality, Plane→03-planning
+### MCP → Skill Mapping
+- Cloudflare → `08-deploy`
+- Playwright → `07-quality`
+- Square → `13/square-payments` (donations/SMB default)
+- Stripe → `13/stripe-billing` (SaaS subs/enterprise only)
+- GitHub → `08/ci-cd-pipeline`
+- Coolify → `05/mcp-and-cloud-integrations`
+- Firecrawl → `03/competitive-analysis`
+- Postiz → `09/social-automation`
+- n8n → `06/webhook-system`
+- Gmail → `09/email-templates`
+- WordPress → `06/blog-and-content-engine`
+- Notion → `09/documentation-and-codebase-hygiene`
+- Sentry → `13-observability`
+- PostHog → `13-observability`
+- Computer Use → `07-quality`
+- Plane → `03-planning`
 
 ## Secret Hygiene
 
-12 MCP servers have inline secrets. Migrate to chezmoi at `~/.local/share/chezmoi/home/.chezmoitemplates/secrets-macbook-pro/`. Never store secrets in markdown, CLAUDE.md, skill files, or git-tracked configs.
+- 12 MCP servers have inline secrets
+- Migrate to chezmoi at `~/.local/share/chezmoi/home/.chezmoitemplates/secrets-macbook-pro/`
+- Never store secrets in markdown, CLAUDE.md, skill files, or git-tracked configs
 
 ## Secrets Discovery (check all, merge)
-```
-1. Project .env.local -> 2. Project .env -> 3. rare-chefs/.env.local (master)
-4. ~/.config/emdash/ (stored tokens) -> 5. Coolify API -> 6. Claude MCP configs
+1. Project `.env.local`
+2. Project `.env`
+3. `rare-chefs/.env.local` (master)
+4. `~/.config/emdash/` (stored tokens)
+5. Coolify API
+6. Claude MCP configs
 7. Prompt user (ONCE per key, then store)
-```
 
 ### Key Categories
+
 | Category | Keys |
 |----------|------|
-| AI | OPENAI_API_KEY, ANTHROPIC_API_KEY, IDEOGRAM_API_KEY |
-| Cloud | CLOUDFLARE_API_TOKEN, CF_ZONE_ID |
-| Payments (donations/SMB default) | SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID, SQUARE_APPLICATION_ID, SQUARE_ENVIRONMENT, SQUARE_WEBHOOK_SIGNATURE_KEY |
-| Payments (SaaS subs / enterprise) | STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET |
-| Email | RESEND_API_KEY |
-| Auth | CLERK_SECRET_KEY |
-| Analytics | POSTHOG_API_KEY, SENTRY_DSN, GA4_MEASUREMENT_ID |
-| Communication | SLACK_WEBHOOK_URL, DISCORD_WEBHOOK_URL, TWILIO_AUTH_TOKEN |
-| Automation | ZAPIER_WEBHOOK_URL, N8N_API_KEY |
-| Self-Hosted | COOLIFY_API_TOKEN, SEARXNG_URL, FIRECRAWL_API_KEY |
+| AI | `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `IDEOGRAM_API_KEY` |
+| Cloud | `CLOUDFLARE_API_TOKEN`, `CF_ZONE_ID` |
+| Payments (donations/SMB default) | `SQUARE_ACCESS_TOKEN`, `SQUARE_LOCATION_ID`, `SQUARE_APPLICATION_ID`, `SQUARE_ENVIRONMENT`, `SQUARE_WEBHOOK_SIGNATURE_KEY` |
+| Payments (SaaS subs / enterprise) | `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET` |
+| Email | `RESEND_API_KEY` |
+| Auth | `CLERK_SECRET_KEY` |
+| Analytics | `POSTHOG_API_KEY`, `SENTRY_DSN`, `GA4_MEASUREMENT_ID` |
+| Communication | `SLACK_WEBHOOK_URL`, `DISCORD_WEBHOOK_URL`, `TWILIO_AUTH_TOKEN` |
+| Automation | `ZAPIER_WEBHOOK_URL`, `N8N_API_KEY` |
+| Self-Hosted | `COOLIFY_API_TOKEN`, `SEARXNG_URL`, `FIRECRAWL_API_KEY` |
 
 ## Standard Integrations
 
@@ -98,12 +118,12 @@ async function notifySlack(env: Env, message: string) {
 }
 ```
 
-**Discord Webhooks:** Same pattern with `embeds: [{ title, description, color: 0x00E5FF }]`
+**Discord Webhooks** — same pattern with `embeds: [{ title, description, color: 0x00E5FF }]`
 
 ### Tier 2 (When Beneficial)
-- **Twilio:** SMS via REST API for phone-based features
-- **Zapier:** Trigger workflows on key events (new donation, signup, deploy)
-- **Cal.com:** `<button data-cal-link="brian/30min" data-cal-config='{"theme":"dark"}'>Schedule a Call</button>`
+- **Twilio** — SMS via REST API for phone-based features
+- **Zapier** — trigger workflows on key events (new donation, signup, deploy)
+- **Cal.com** — `<button data-cal-link="brian/30min" data-cal-config='{"theme":"dark"}'>Schedule a Call</button>`
 
 ## AI API Usage Strategy
 
@@ -120,7 +140,8 @@ async function notifySlack(env: Env, message: string) {
 ```html
 <footer><p>Built with <a href="https://projectsites.dev">projectsites.dev</a></p></footer>
 ```
-Every site shipped IS the marketing. Quality = best ad.
+- Every site shipped IS the marketing
+- Quality = best ad
 
 ## Missing Key Prompt
 Never block on missing key. Always have fallback. Be casual:
@@ -132,5 +153,5 @@ Hey — I need a [SERVICE] key. Options:
 ```
 
 ## Ownership
-**Owns:** MCP discovery/connection, secrets discovery, cloud API patterns, AI API strategy, notification patterns, automation hooks, projectsites.dev branding.
-**Never owns:** Specific implementations (→individual skills), donations + SMB payments (→13/square-payments), SaaS subscriptions + enterprise billing (→13/stripe-billing), email (→09/email-templates), deployment (→08-deploy).
+- **Owns** — MCP discovery/connection, secrets discovery, cloud API patterns, AI API strategy, notification patterns, automation hooks, projectsites.dev branding
+- **Never owns** — specific implementations (→individual skills), donations + SMB payments (→`13/square-payments`), SaaS subscriptions + enterprise billing (→`13/stripe-billing`), email (→`09/email-templates`), deployment (→`08-deploy`)

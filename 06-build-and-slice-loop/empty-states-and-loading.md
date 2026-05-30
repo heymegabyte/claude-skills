@@ -6,8 +6,10 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 ---
 
 # Empty States and Loading
+
 ## Empty States: Prompt Action, Don't Show Nothing
-### Every Empty List Gets:
+
+### Every Empty List Gets
 1. An illustration or icon (on-brand, not generic)
 2. A clear headline ("No donations yet")
 3. A helpful subtext ("Share your page to start receiving donations")
@@ -38,6 +40,7 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 ```
 
 ### By Context
+
 | Section | Headline | Subtext | CTA |
 |---------|---------|---------|-----|
 | Blog posts | "No posts yet" | "Write your first article to start driving traffic." | "Write a Post" |
@@ -49,11 +52,12 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 | Notifications | "All caught up" | "You'll see new notifications here." | — (positive empty state) |
 
 ### Positive vs Negative Empty States
-- **Negative** (something should be here but isn't): strong CTA to create/add
-- **Positive** (everything is handled): reassuring message, no CTA needed
-  - Example: "All caught up!" with a checkmark
+- **Negative** (something should be here but isn't) — strong CTA to create/add
+- **Positive** (everything is handled) — reassuring message, no CTA needed
+  - Example — "All caught up!" with a checkmark
 
 ## Loading States: Skeleton Screens
+
 ### Never Show
 - Blank white/dark page while loading
 - Spinning wheel with no context

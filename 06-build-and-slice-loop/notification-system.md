@@ -6,11 +6,12 @@ description: "OneSignal web push notifications for product updates, donation mil
 ---
 
 # Notification System
+
 ## When to Include
 - SaaS products where users return regularly
 - Donation campaigns with milestones
 - Products with content updates (blog, features)
-- NOT for: simple marketing sites with no return visitors
+- **NOT for** — simple marketing sites with no return visitors
 
 ## Architecture
 ```
@@ -19,6 +20,7 @@ Event occurs → Create notification in D1 → Push via OneSignal + Email via Re
 ```
 
 ## Web Push (OneSignal)
+
 ### Setup
 ```html
 <!-- OneSignal SDK -->
@@ -82,6 +84,7 @@ async function sendPushNotification(env: Env, title: string, message: string, ur
 ```
 
 ## In-App Notification Bell
+
 ### D1 Schema
 ```sql
 CREATE TABLE notifications (
@@ -139,6 +142,7 @@ app.post('/api/notifications/:id/read', async (c) => {
 ```
 
 ## Notification Types
+
 | Event | Push | In-App | Email |
 |-------|------|--------|-------|
 | Donation goal reached | Yes | Yes | Yes |

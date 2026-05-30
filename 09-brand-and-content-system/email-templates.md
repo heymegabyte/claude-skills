@@ -6,6 +6,7 @@ description: "Branded HTML transactional email: dark gradient header, clean body
 ---
 
 # Email Templates
+
 ## Design Principles (Source: Litmus, Really Good Emails)
 - **Dark mode support** — emails must look great in both light and dark email clients
 - **Max width: 560px** — optimal reading width across all clients
@@ -78,6 +79,7 @@ description: "Branded HTML transactional email: dark gradient header, clean body
 ```
 
 ## Email Types
+
 ### 1. Contact Form Confirmation
 **Subject:** "Got it — we'll be in touch"
 ```
@@ -164,21 +166,19 @@ await resend.emails.send({
 });
 ```
 
-- Verified domain: megabyte.space
-- API key: shared key pool (05/shared-api-pool)
-- Rate limit: 100 emails/day on free tier
-- For bulk: use Listmonk on Cloudflare Containers
+- **Verified domain** — megabyte.space
+- **API key** — shared key pool (05/shared-api-pool)
+- **Rate limit** — 100 emails/day on free tier
+- **For bulk** — use Listmonk on Cloudflare Containers
 
 ## Testing Checklist
-```
-[ ] Renders correctly in Gmail (web + mobile)
-[ ] Renders correctly in Apple Mail
-[ ] Dark mode displays properly
-[ ] Logo loads (and email is readable without it)
-[ ] CTA button is tappable on mobile (min 44px height)
-[ ] Unsubscribe link works
-[ ] Links are absolute URLs (not relative)
-[ ] No broken images
-[ ] Subject line < 50 characters
-[ ] Preview text is meaningful (not "View in browser")
-```
+- [ ] Renders correctly in Gmail (web + mobile)
+- [ ] Renders correctly in Apple Mail
+- [ ] Dark mode displays properly
+- [ ] Logo loads (and email is readable without it)
+- [ ] CTA button is tappable on mobile (min 44px height)
+- [ ] Unsubscribe link works
+- [ ] Links are absolute URLs (not relative)
+- [ ] No broken images
+- [ ] Subject line <50 characters
+- [ ] Preview text is meaningful (not "View in browser")

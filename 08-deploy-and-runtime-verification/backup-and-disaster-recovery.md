@@ -44,23 +44,19 @@ npx wrangler d1 execute DB --file=backup/db/database.sql  # 2. Restore D1
 Export D1 tables + KV dump to R2 at `backups/daily/{date}/`.
 
 ## Retention Policy
-| Tier | Retention |
-|------|-----------|
-| Daily | 7 days |
-| Weekly (Sunday) | 12 weeks |
-| Monthly (1st) | 12 months |
+- **Daily** — 7 days
+- **Weekly (Sunday)** — 12 weeks
+- **Monthly (1st)** — 12 months
 
 Cleanup: delete daily backups older than 7 days after each run.
 
 ## Recovery Runbook
-| Scenario | Fix |
-|----------|-----|
-| Worker deleted | `npx wrangler deploy` |
-| D1 corrupted | Restore from R2 backup |
-| KV lost | Restore from R2 backup |
-| DNS lost | Re-create from dns-records.json |
-| Secrets lost | Re-enter from password manager |
-| Total loss | Run restore.sh |
+- **Worker deleted** — `npx wrangler deploy`
+- **D1 corrupted** — restore from R2 backup
+- **KV lost** — restore from R2 backup
+- **DNS lost** — re-create from `dns-records.json`
+- **Secrets lost** — re-enter from password manager
+- **Total loss** — run `restore.sh`
 
 ## MCP Tools for Backups
 - `mcp__coolify__database_backups` — trigger Coolify DB backups
@@ -75,4 +71,12 @@ r2://backups/{daily|weekly|monthly}/{date}/{db|kv|coolify|config}/
 ```
 
 ## Acceptance Criteria
-Daily backup runs automatically, D1 row count matches, KV key count matches, Coolify DBs triggered, retention enforced, restore.sh works end-to-end, size <100MB (alert on 10x spike), secrets list has names only, DNS records valid.
+- Daily backup runs automatically
+- D1 row count matches
+- KV key count matches
+- Coolify DBs triggered
+- Retention enforced
+- `restore.sh` works end-to-end
+- Size <100MB (alert on 10x spike)
+- Secrets list has names only
+- DNS records valid

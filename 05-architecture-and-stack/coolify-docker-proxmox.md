@@ -5,6 +5,7 @@ updated: "2026-04-23"
 ---
 
 # Coolify, Docker, and Proxmox
+
 ## CRITICAL: First-Use Confirmation Required
 **Before using this skill for the first time in any project, ALWAYS ask:**
 
@@ -18,37 +19,41 @@ This touches your production self-hosted infrastructure (70+ services).
 Want me to go ahead?
 ```
 
-**Wait for explicit "yes" before proceeding.** After first confirmation per project, subsequent Coolify operations in the same project don't need re-confirmation unless they:
+**Wait for explicit "yes" before proceeding.**
+
+After first confirmation per project, subsequent Coolify operations in the same project don't need re-confirmation UNLESS they:
 - Deploy a NEW service (not just configure an existing one)
 - Delete or restart an existing service
 - Change environment variables on a shared service
 - Modify DNS or networking
 
 ## Infrastructure Overview
+
 ### Proxmox Host (361 conversations about Proxmox in ChatGPT history)
 Brian's Proxmox box runs Coolify as the PaaS layer. Coolify manages 70+ Docker services.
-- Hardware: Bare metal Proxmox with ZFS storage
-- VMs: OPNsense, Ubuntu Desktop, macOS, Windows 11, Home Assistant OS, Coolify server
-- Backup: Daily ZFS snapshots → R2 (3-2-1 pattern)
-- Network: VLAN segmentation, 10+ VLANs
+- **Hardware** — Bare metal Proxmox with ZFS storage
+- **VMs** — OPNsense, Ubuntu Desktop, macOS, Windows 11, Home Assistant OS, Coolify server
+- **Backup** — Daily ZFS snapshots → R2 (3-2-1 pattern)
+- **Network** — VLAN segmentation, 10+ VLANs
 
 ### OPNsense (250 conversations)
 - Virtualized on Proxmox as primary firewall/router
-- VPN: Multi-provider WireGuard + OpenVPN + Cloudflare WARP
-- DNS: Unbound with DNSSEC + DNS-over-TLS
-- ACME: Let's Encrypt via Cloudflare DNS challenge for *.megabyte.space
+- **VPN** — Multi-provider WireGuard + OpenVPN + Cloudflare WARP
+- **DNS** — Unbound with DNSSEC + DNS-over-TLS
+- **ACME** — Let's Encrypt via Cloudflare DNS challenge for `*.megabyte.space`
 - Authentik LDAP integration for authentication
 - Mesh VPN coordination via Headscale
 
 ### Coolify Access (136 mentions — THE hub)
-- **URL:** `{service}.megabyte.space` pattern (behind CF Tunnel + Authentik)
-- **API:** `{coolify-url}/api/v1/`
-- **Token:** `~/.config/emdash/coolify-token`
-- Behind: Cloudflare tunnel (cloudflared) for zero-trust access
-- Reverse proxy: Traefik with Authentik forward-auth middleware
-- Docker-compose conventions: SERVICE_FQDN_*, SERVICE_URL_* magic variables
+- **URL** — `{service}.megabyte.space` pattern (behind CF Tunnel + Authentik)
+- **API** — `{coolify-url}/api/v1/`
+- **Token** — `~/.config/emdash/coolify-token`
+- Behind — Cloudflare tunnel (cloudflared) for zero-trust access
+- Reverse proxy — Traefik with Authentik forward-auth middleware
+- Docker-compose conventions — `SERVICE_FQDN_*`, `SERVICE_URL_*` magic variables
 
 ### Already-Running Services (ranked by usage from 3,102 ChatGPT conversations)
+
 | Service | Pattern | Role |
 |---------|---------|------|
 | **Authentik** | `{service}.megabyte.space` | SSO for everything |
@@ -70,12 +75,13 @@ All services follow `{service}.megabyte.space` pattern. Discoverable via Coolify
 ### Common Coolify Problems (from debugging sessions)
 1. Healthcheck failures in Docker compose (10+ conversations)
 2. Container file permissions (9999:root pattern)
-3. Redirect loops: Cloudflare -> Authentik -> Service
+3. Redirect loops — Cloudflare → Authentik → Service
 4. Port conflicts between containers
 5. Volume permission issues
 6. TLS handshake timeouts
 
 ## Coolify API Reference
+
 ### Authentication
 ```bash
 COOLIFY_TOKEN=$(cat ~/.config/emdash/coolify-token)
@@ -137,6 +143,7 @@ curl -s "$COOLIFY_URL/services/{service_id}" \
 ```
 
 ## When to Use Coolify vs Cloudflare
+
 | Need | Use Cloudflare | Use Coolify |
 |------|---------------|-------------|
 | API endpoints | Workers (Hono) | — |
@@ -151,13 +158,14 @@ curl -s "$COOLIFY_URL/services/{service_id}" \
 | Long-running processes | Workflows v2 + Queues | Coolify |
 | Full-stack apps (Django, Rails, etc.) | CF Containers | Coolify (existing infra) |
 | Services needing persistent disk | CF Containers | Coolify |
-| Services needing > 128MB RAM | CF Containers | Coolify |
+| Services needing >128MB RAM | CF Containers | Coolify |
 | Custom networking | CF Mesh | Coolify (complex VLAN) |
 | Email marketing | CF Email Service (beta) | Listmonk on Coolify |
 
-**Rule:** Default to Cloudflare. CF Containers GA eliminates most Coolify use cases for new projects. Use Coolify for existing 70+ services and complex self-hosted stacks.
+**Rule** — Default to Cloudflare. CF Containers GA eliminates most Coolify use cases for new projects. Use Coolify for existing 70+ services and complex self-hosted stacks.
 
 ## Docker Compose Patterns
+
 ### Simple Service
 ```yaml
 version: "3"
@@ -200,11 +208,12 @@ volumes:
 ```
 
 ## Disaster Recovery for Self-Hosted Services
+
 ### Backup Strategy
 - Coolify auto-backs up configurations
-- PostgreSQL databases: `pg_dump` via cron to R2
-- Volumes: periodic tar to R2
-- Environment variables: exported and stored encrypted
+- PostgreSQL databases — `pg_dump` via cron to R2
+- Volumes — periodic tar to R2
+- Environment variables — exported and stored encrypted
 
 ### Recovery
 ```bash
@@ -215,15 +224,16 @@ volumes:
 # 5. Verify all services healthy
 ```
 
-See 08/backup-and-disaster-recovery for the full single-zip restore plan.
+See `08/backup-and-disaster-recovery` for the full single-zip restore plan.
 
 ## Troubleshooting
+
 | Issue | Fix |
 |-------|-----|
 | Service unreachable | Check `curl $COOLIFY_URL/services/{id}` status |
-| Container restarting | Check logs: `docker logs {container_id}` via Coolify UI |
+| Container restarting | Check logs — `docker logs {container_id}` via Coolify UI |
 | Out of memory | Scale up Proxmox VM or optimize service config |
-| Disk full | Clean Docker: `docker system prune -a` |
+| Disk full | Clean Docker — `docker system prune -a` |
 | SSL cert expired | Coolify auto-renews via Let's Encrypt; check Traefik logs |
 | API timeout | Coolify may be overloaded; check Proxmox CPU/RAM |
 
@@ -233,4 +243,3 @@ See 08/backup-and-disaster-recovery for the full single-zip restore plan.
 - Self-hosted service orchestration
 - Proxmox infrastructure awareness
 - When-to-use-Coolify decision logic
-

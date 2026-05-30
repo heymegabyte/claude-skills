@@ -36,6 +36,7 @@ const results = await instance.search({
 Range query ensures `site-abc123/` matches but `site-abc1234/` does not.
 
 ### Tier Matrix
+
 | Tier | Strategy | Max Pages |
 |------|----------|-----------|
 | Free | Shared, folder-prefix | 50 |
@@ -76,7 +77,11 @@ async function indexSitePages(env: Env, siteId: string, pages: SitePage[]) {
 ```
 
 ## Cmd+K UI
-Keyboard: Cmd/Ctrl+K opens, Escape closes. Debounced 200ms search on input. Arrow keys navigate results. Enter opens. Shows loading state, empty state.
+- Keyboard — Cmd/Ctrl+K opens, Escape closes
+- Debounced 200ms search on input
+- Arrow keys navigate results
+- Enter opens
+- Shows loading state, empty state
 
 ## Cross-Instance Search (Premium)
 ```typescript
@@ -89,8 +94,12 @@ boost: [{ field: "timestamp", method: "recency", weight: 1.2 }, { field: "catego
 ```
 
 ## Migration from D1 LIKE
-Keep same `/api/search` endpoint, replace D1 query with AI Search, add `data-site-id` to `<html>`, run indexSitePages on first deploy, remove search_index table after verification.
+1. Keep same `/api/search` endpoint
+2. Replace D1 query with AI Search
+3. Add `data-site-id` to `<html>`
+4. Run `indexSitePages` on first deploy
+5. Remove `search_index` table after verification
 
 ## Ownership
-**Owns:** Search indexing, multi-tenant isolation, search API, Cmd+K UI, MCP endpoint, auto-indexing, cross-instance search.
-**Never owns:** AI chat/conversational (->43), general MCP (->52), deployment (->08).
+- **Owns** — search indexing, multi-tenant isolation, search API, Cmd+K UI, MCP endpoint, auto-indexing, cross-instance search
+- **Never owns** — AI chat/conversational (→43), general MCP (→52), deployment (→08)

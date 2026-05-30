@@ -5,7 +5,9 @@ updated: "2026-04-23"
 ---
 
 # Compression Pipeline
+
 ## Python Compression
+
 ```python
 from PIL import Image
 import subprocess
@@ -29,6 +31,7 @@ def optimize_image(input_path, output_path, max_width=1200, quality=80):
 ```
 
 ## Size Verification
+
 ```python
 import os
 MAX_SIZES = {
@@ -49,29 +52,28 @@ def check_size(path, category='hero'):
 ```
 
 ## Compression Standards
-| Format | Quality | Max Size | Tool |
-|--------|---------|----------|------|
-| WebP (photo) | 80% | 200KB | cwebp or sharp |
-| WebP (illustration) | 90% | 150KB | cwebp or sharp |
-| PNG (logo/icon) | Lossless | 50KB | pngquant |
-| SVG | Optimized | 10KB | svgo |
-| MP4 (hero video) | CRF 28 | 2MB | ffmpeg |
-| MP4 (feature video) | CRF 26 | 5MB | ffmpeg |
-| ICO | Multi-resolution | 15KB | ImageMagick |
+
+- **WebP (photo)** — quality 80%, max 200KB, via `cwebp` or `sharp`
+- **WebP (illustration)** — quality 90%, max 150KB, via `cwebp` or `sharp`
+- **PNG (logo/icon)** — lossless, max 50KB, via `pngquant`
+- **SVG** — optimized, max 10KB, via `svgo`
+- **MP4 (hero video)** — CRF 28, max 2MB, via `ffmpeg`
+- **MP4 (feature video)** — CRF 26, max 5MB, via `ffmpeg`
+- **ICO** — multi-resolution, max 15KB, via `ImageMagick`
 
 ## Image Dimensions
-| Use | Dimensions | Format |
-|-----|-----------|--------|
-| Hero (desktop) | 1920x1080 | WebP |
-| Hero (mobile) | 750x1334 | WebP |
-| Feature icon | 128x128 | SVG or WebP |
-| Testimonial headshot | 96x96 | WebP |
-| OG image | 1200x630 | PNG |
-| Blog header | 1200x675 | WebP |
-| Logo (horizontal) | 240xauto | SVG or PNG |
-| Favicon | 16/32/48/180/192/512 | ICO/PNG |
+
+- **Hero (desktop)** — 1920x1080, WebP
+- **Hero (mobile)** — 750x1334, WebP
+- **Feature icon** — 128x128, SVG or WebP
+- **Testimonial headshot** — 96x96, WebP
+- **OG image** — 1200x630, PNG
+- **Blog header** — 1200x675, WebP
+- **Logo (horizontal)** — 240xauto, SVG or PNG
+- **Favicon** — 16/32/48/180/192/512, ICO/PNG
 
 ## Delivery via Cloudflare
+
 ```html
 <!-- Responsive images -->
 <picture>
@@ -85,17 +87,22 @@ def check_size(path, category='hero'):
 ```
 
 ## Cloudflare Image Transforms
+
 Store originals in R2, transform on-the-fly via URL params — no pre-generated variants:
+
 ```
 https://domain.com/cdn-cgi/image/width=800,quality=75,format=auto/path/to/image.jpg
 ```
+
 - `format=auto` serves AVIF/WebP based on browser support
 - Each variant cached at the edge automatically
 - Sub-50ms delivery globally
 
 ## Preventing CLS (Layout Shift)
-Always include `width` and `height` attributes on `<img>` tags.
-Use CSS `aspect-ratio` for responsive containers:
+
+- Always include `width` and `height` attributes on `<img>` tags
+- Use CSS `aspect-ratio` for responsive containers:
+
 ```css
 .image-container {
   aspect-ratio: 16/9;
@@ -109,6 +116,7 @@ Use CSS `aspect-ratio` for responsive containers:
 ```
 
 ## Broken Image Detection (Playwright)
+
 ```typescript
 test('no broken images', async ({ page }) => {
   await page.goto('/');

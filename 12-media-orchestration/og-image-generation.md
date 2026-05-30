@@ -5,7 +5,9 @@ updated: "2026-04-23"
 ---
 
 # OG Image Generation
+
 ## Worker Route (Hono)
+
 ```typescript
 // src/routes/og.ts
 import { Hono } from 'hono';
@@ -127,6 +129,7 @@ export { og };
 ```
 
 ## Meta-Tag Helper
+
 ```typescript
 // src/lib/og-meta.ts
 interface OgMetaOptions {
@@ -166,6 +169,7 @@ export { generateOgMeta, ogImageUrl };
 ```
 
 ## Angular SSR Integration
+
 ```typescript
 // og-meta.service.ts
 import { Injectable, inject } from '@angular/core';
@@ -193,6 +197,7 @@ export class OgMetaService {
 ```
 
 ## Cache Purge on Content Change
+
 ```typescript
 // Inngest function to purge OG cache when content updates
 import { inngest } from './client';
@@ -218,6 +223,7 @@ export const purgeOgCache = inngest.createFunction(
 ```
 
 ## R2 Font Setup
+
 ```bash
 # Upload brand fonts to R2 for Satori rendering
 wrangler r2 object put uploads/fonts/Sora-Bold.ttf --file=./assets/fonts/Sora-Bold.ttf
@@ -225,6 +231,7 @@ wrangler r2 object put uploads/fonts/SpaceGrotesk-Regular.ttf --file=./assets/fo
 ```
 
 ## wrangler.toml Bindings
+
 ```toml
 [[kv_namespaces]]
 binding = "KV"
@@ -236,7 +243,21 @@ bucket_name = "uploads"
 ```
 
 ## Social Platform Sizes
-OG (Facebook/general): 1200x630. Twitter: 1200x600. LinkedIn: 1200x627. All use same template, different crop. Size param on /api/og controls which dimensions Satori renders.
+
+- **OG (Facebook/general)** — 1200x630
+- **Twitter** — 1200x600
+- **LinkedIn** — 1200x627
+
+All use same template, different crop. `size` param on `/api/og` controls which dimensions Satori renders.
 
 ## Fallback Chain
-1. KV cache hit → serve immediately. 2. Satori render → cache in KV + R2 → serve. 3. Satori fails → serve R2 default.png. 4. R2 default missing → 500 with error envelope. Pre-generate default.png at deploy time: `curl /api/og?title=Megabyte+Labs&desc=Ship+faster`.
+
+1. KV cache hit → serve immediately
+2. Satori render → cache in KV + R2 → serve
+3. Satori fails → serve R2 `default.png`
+4. R2 default missing → 500 with error envelope
+
+Pre-generate `default.png` at deploy time:
+```bash
+curl /api/og?title=Megabyte+Labs&desc=Ship+faster
+```

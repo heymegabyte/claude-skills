@@ -8,7 +8,14 @@ description: "Append-only parallel journey chunks. Each feature = new spec file 
 # E2E Accumulation
 
 ## Rules
-Tests append-only, never deleted. Removed features→skip+comment. Each feature area = own spec file (`e2e/journeys/{feature}.spec.ts`). All files run parallel (4 workers). Each ≤30s — split at navigation boundary when exceeded. Cross-page nav via UI clicks within each chunk, never `page.goto()` for internal routes. Shared `loginAsTestUser(page)` helper logs in via clicks. New feature = new file, existing files untouched.
+- Tests append-only, never deleted
+- Removed features → skip + comment
+- Each feature area = own spec file (`e2e/journeys/{feature}.spec.ts`)
+- All files run parallel (4 workers)
+- Each ≤30s — split at navigation boundary when exceeded
+- Cross-page nav via UI clicks within each chunk, never `page.goto()` for internal routes
+- Shared `loginAsTestUser(page)` helper logs in via clicks
+- New feature = new file, existing files untouched
 
 ## Structure
 ```
@@ -23,10 +30,20 @@ e2e/helpers/
 ```
 
 ## Config
-`fullyParallel:true|workers:4|timeout:30000|retries:1|projects:[chromium,mobile]`
+- `fullyParallel: true`
+- `workers: 4`
+- `timeout: 30000`
+- `retries: 1`
+- `projects: [chromium, mobile]`
 
 ## Coverage Matrix (in SPEC.md)
-Every feature row must have: journey chunk, edge case spec, error states, mobile viewport. No feature ships without all four. completeness-checker agent verifies.
+Every feature row must have:
+- Journey chunk
+- Edge case spec
+- Error states
+- Mobile viewport
+
+No feature ships without all four. `completeness-checker` agent verifies.
 
 ## Math
 10 features × 30s ÷ 4 workers = ~75s total. Scales linearly with features, not time.

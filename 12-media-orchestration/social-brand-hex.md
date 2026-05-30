@@ -9,6 +9,7 @@ updated: "2026-05-01"
 Every social icon link must hover to ITS brand color — not the generic accent. Generic accent on hover = AI slop. Brand-hex hover = polish. Same map applied in footer, header, contact tiles, share buttons, social proof rows.
 
 ## Canonical Hex Map (`src/data/social-brand-hex.ts`)
+
 ```ts
 export const SOCIAL_BRAND_HEX: Record<string, string> = {
   facebook:  '#1877F2',
@@ -43,7 +44,9 @@ export const SOCIAL_BRAND_HEX: Record<string, string> = {
 ```
 
 ## Hover/Focus/Active CSS Pattern
+
 Icon stays neutral (`var(--text-secondary)` or `currentColor`) by default; transitions to brand-hex on `:hover` AND `:focus` AND `:focus-visible` AND `:active`. Smooth transition via `--ease-out`.
+
 ```css
 .social-link {
   color: var(--text-secondary);
@@ -57,16 +60,34 @@ Icon stays neutral (`var(--text-secondary)` or `currentColor`) by default; trans
 ```
 
 ## TikTok / Instagram Special Cases
-**TikTok** uses cyan+magenta accents — render the hover state as the primary black plus a `text-shadow: 2px 0 #FF0050, -2px 0 #00F2EA;` glitch effect for full brand fidelity. **Instagram** is a gradient — apply via SVG `linearGradient` def on the icon path's `fill` AND use `background-image` + `-webkit-background-clip: text` on text labels.
+
+- **TikTok** — uses cyan+magenta accents; render the hover state as the primary black plus a `text-shadow: 2px 0 #FF0050, -2px 0 #00F2EA;` glitch effect for full brand fidelity.
+- **Instagram** — is a gradient; apply via SVG `linearGradient` def on the icon path's `fill` AND use `background-image` + `-webkit-background-clip: text` on text labels.
 
 ## Per-Platform Class Generation
-Build emits `.social-link--{platform}` per icon: `<a class="social-link social-link--linkedin" style="--social-brand-hex: #0A66C2">`. CSS variable indirection lets a single rule handle all platforms. Builder reads `_research.json.social[]` array, maps each to `SOCIAL_BRAND_HEX[platform]`, emits inline `--social-brand-hex` style.
+
+Build emits `.social-link--{platform}` per icon:
+
+```html
+<a class="social-link social-link--linkedin" style="--social-brand-hex: #0A66C2">
+```
+
+CSS variable indirection lets a single rule handle all platforms. Builder reads `_research.json.social[]` array, maps each to `SOCIAL_BRAND_HEX[platform]`, emits inline `--social-brand-hex` style.
 
 ## Aria-Labels (***ACCESSIBILITY***)
+
 Every social icon link has descriptive aria-label including platform AND business name: `aria-label="Visit {BusinessName} on LinkedIn"` not just `aria-label="LinkedIn"`. Screen reader users get full context.
 
 ## Build Gate
-`validate-social-brand-hex.mjs`: for every `<a>` matching `[class*="social-link--"]`, assert: (a) `--social-brand-hex` CSS var resolves to a hex matching `SOCIAL_BRAND_HEX[platform]`, (b) hover transition declared, (c) focus-visible state distinct from default, (d) aria-label contains both platform name AND business name. Fail build on any miss.
+
+`validate-social-brand-hex.mjs` — for every `<a>` matching `[class*="social-link--"]`, assert:
+- `--social-brand-hex` CSS var resolves to a hex matching `SOCIAL_BRAND_HEX[platform]`
+- Hover transition declared
+- `focus-visible` state distinct from default
+- `aria-label` contains both platform name AND business name
+
+Fail build on any miss.
 
 ## Anti-Pattern (caught in lone-mountain-2)
+
 LinkedIn + Twitter + Instagram icons all hovered to `var(--brand-accent)` (cyan) — every platform looked identical. Fix: import `SOCIAL_BRAND_HEX` from `src/data/social-brand-hex.ts`, render each icon with its own `--social-brand-hex` variable.

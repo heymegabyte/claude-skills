@@ -6,14 +6,21 @@ description: "Full command palette (Cmd+K) like Linear/Notion for SaaS products.
 ---
 
 # Keyboard Shortcuts and Command Palette
+
 ## When to Include
 - SaaS products with 3+ pages
 - Developer tools
 - Products targeting power users
-- Any product with search (pairs with 06/site-search)
+- Any product with search (pairs with `06/site-search`)
 
 ## Command Palette (Cmd+K)
-**Focus contract (***NON-NEGOTIABLE***):** opening the palette or AI chat via `Meta+K`/`Ctrl+K` MUST focus the text input on the same frame — caret blinking, zero extra clicks. Use `autofocus` on the input AND a programmatic `requestAnimationFrame(()=>input.focus({preventScroll:true}))` after the `hidden=false`/open-state flip (covers React re-render, View Transitions, and `@starting-style` enter). If the modal is already open, re-pressing Cmd+K re-focuses and `input.select()`s existing text. Esc returns focus to the triggering element (a11y). Playwright test: `await page.keyboard.press('Meta+K'); await expect(page.locator('#cmdInput')).toBeFocused();` — failure = build fail.
+
+### Focus contract (***NON-NEGOTIABLE***)
+- Opening the palette or AI chat via `Meta+K`/`Ctrl+K` MUST focus the text input on the same frame — caret blinking, zero extra clicks
+- Use `autofocus` on the input AND a programmatic `requestAnimationFrame(()=>input.focus({preventScroll:true}))` after the `hidden=false`/open-state flip (covers React re-render, View Transitions, and `@starting-style` enter)
+- If the modal is already open, re-pressing Cmd+K re-focuses and `input.select()`s existing text
+- Esc returns focus to the triggering element (a11y)
+- Playwright test — `await page.keyboard.press('Meta+K'); await expect(page.locator('#cmdInput')).toBeFocused();` — failure = build fail
 
 ### HTML
 ```html
@@ -139,4 +146,4 @@ function renderResults(items) {
 - Arrow keys navigate, Enter selects, Escape closes
 - All shortcuts skip when user is typing in an input/textarea
 - Screen reader announces selected item
-- Reduced motion: no transition animations on palette open/close
+- Reduced motion — no transition animations on palette open/close

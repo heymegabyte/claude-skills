@@ -6,6 +6,7 @@ description: "Health endpoints on every Worker (/health + /health/deep), externa
 ---
 
 # Uptime and Health
+
 ## Health Endpoint (EVERY Worker)
 ```typescript
 app.get('/health', (c) => {
@@ -45,16 +46,17 @@ app.get('/health/deep', async (c) => {
 ```
 
 ## External Monitoring (Let Others Handle It)
+
 ### UptimeRobot (Free — 50 monitors)
 Set up via their dashboard or API:
-- Monitor: `https://domain.com/health`
-- Interval: 5 minutes
-- Alert: email to brian@megabyte.space
+- Monitor — `https://domain.com/health`
+- Interval — 5 minutes
+- Alert — email to brian@megabyte.space
 
 ### Better Stack (Free tier)
 Better UI, incident management, status pages.
-- Monitor: `https://domain.com/health`
-- Status page: auto-generated
+- Monitor — `https://domain.com/health`
+- Status page — auto-generated
 
 ### Cloudflare Health Checks (Built-in)
 If using Cloudflare Load Balancing, health checks are built in.
@@ -93,29 +95,24 @@ export default {
 ```
 
 ## MCP Tools Available
+
 ### Coolify MCP (`mcp__coolify__*`) — for self-hosted service health
-| Tool | Purpose |
-|------|---------|
-| `mcp__coolify__diagnose_app` | Diagnose a Coolify-hosted app (Postiz, Listmonk, PostHog, etc.) |
-| `mcp__coolify__diagnose_server` | Check overall server health (CPU, memory, disk) |
-| `mcp__coolify__get_infrastructure_overview` | Full infrastructure summary — all apps, DBs, services |
-| `mcp__coolify__application_logs` | Pull recent logs for a specific application |
-| `mcp__coolify__find_issues` | Auto-detect issues across all services |
-| `mcp__coolify__validate_server` | Validate server configuration and connectivity |
-| `mcp__coolify__list_applications` | List all running applications with status |
-| `mcp__coolify__control` | Start/stop/restart any Coolify service |
+- **`diagnose_app`** — diagnose a Coolify-hosted app (Postiz, Listmonk, PostHog, etc.)
+- **`diagnose_server`** — check overall server health (CPU, memory, disk)
+- **`get_infrastructure_overview`** — full infrastructure summary — all apps, DBs, services
+- **`application_logs`** — pull recent logs for a specific application
+- **`find_issues`** — auto-detect issues across all services
+- **`validate_server`** — validate server configuration and connectivity
+- **`list_applications`** — list all running applications with status
+- **`control`** — start / stop / restart any Coolify service
 
 ### Cloudflare MCP (`mcp__claude_ai_Cloudflare_Developer_Platform__*`)
-| Tool | Purpose |
-|------|---------|
-| `mcp__claude_ai_Cloudflare_Developer_Platform__workers_list` | List all Workers to verify they're deployed |
-| `mcp__claude_ai_Cloudflare_Developer_Platform__workers_get_worker` | Check a specific Worker's status |
+- **`workers_list`** — list all Workers to verify they're deployed
+- **`workers_get_worker`** — check a specific Worker's status
 
 ### Playwright MCP (`mcp__playwright__*`) — for visual health verification
-| Tool | Purpose |
-|------|---------|
-| `mcp__playwright__browser_navigate` | Navigate to `/health` or `/status` endpoint |
-| `mcp__playwright__browser_take_screenshot` | Screenshot the status page for visual verification |
+- **`browser_navigate`** — navigate to `/health` or `/status` endpoint
+- **`browser_take_screenshot`** — screenshot the status page for visual verification
 
 ## Health Endpoint Schema (Strict)
 Every Worker MUST return this exact JSON shape from `/health`:
@@ -135,13 +132,14 @@ interface DeepHealthResponse extends HealthResponse {
 }
 ```
 
-Rules:
+### Rules
 - `/health` returns 200 for `ok`, 503 for `degraded` or `error`
-- Response time must be < 500ms (no heavy queries in shallow health)
+- Response time must be <500ms (no heavy queries in shallow health)
 - `/health/deep` may take up to 5s (checks external dependencies)
 - Never expose secrets, internal IPs, or stack traces in health responses
 
 ## Monitoring Integration Patterns
+
 ### Pattern 1: Coolify + Cloudflare Workers (hybrid)
 ```
 Coolify services (Postiz, Listmonk, PostHog)
@@ -164,20 +162,18 @@ Every 5 min: Worker cron hits /health
 ## Computer Use Integration
 Use `mcp__computer-use__*` for visual verification of monitoring dashboards:
 
-1. **Better Stack dashboard** — Screenshot the status page to verify all monitors show green
-2. **UptimeRobot dashboard** — Visual check that no monitors are in alert state
-3. **Coolify dashboard** — Screenshot `https://coolify.megabyte.space` to see all service health at a glance
+1. **Better Stack dashboard** — screenshot the status page to verify all monitors show green
+2. **UptimeRobot dashboard** — visual check that no monitors are in alert state
+3. **Coolify dashboard** — screenshot `https://coolify.megabyte.space` to see all service health at a glance
 
 Best used during: incident investigation, post-deploy verification, weekly health audits.
 
 ## Acceptance Criteria
-| # | Criterion | Measurement |
-|---|-----------|-------------|
-| 1 | `/health` returns 200 with valid JSON | `curl /health` returns `{ status: 'ok', version, timestamp, region }` |
-| 2 | `/health` responds in < 500ms | `curl -w '%{time_total}' /health` < 0.5 |
-| 3 | `/health/deep` checks all dependencies | Response `checks` object has keys for every bound resource (D1, KV, R2) |
-| 4 | 503 returned when any dependency is down | Kill a dependency, confirm status flips to `degraded` and HTTP 503 |
-| 5 | Cron self-check fires every 5 minutes | Check KV uptime counter increments every 5 min |
-| 6 | Alert email sent on failure | Simulate failure, confirm Resend email arrives within 5 minutes |
-| 7 | External monitor configured | UptimeRobot or Better Stack has an active monitor for `/health` |
-| 8 | Status page renders correctly | Playwright screenshot of `/status` shows current health, no errors |
+1. `/health` returns 200 with valid JSON — `curl /health` returns `{ status: 'ok', version, timestamp, region }`
+2. `/health` responds in <500ms — `curl -w '%{time_total}' /health` <0.5
+3. `/health/deep` checks all dependencies — response `checks` object has keys for every bound resource (D1, KV, R2)
+4. 503 returned when any dependency is down — kill a dependency, confirm status flips to `degraded` and HTTP 503
+5. Cron self-check fires every 5 minutes — check KV uptime counter increments every 5 min
+6. Alert email sent on failure — simulate failure, confirm Resend email arrives within 5 minutes
+7. External monitor configured — UptimeRobot or Better Stack has an active monitor for `/health`
+8. Status page renders correctly — Playwright screenshot of `/status` shows current health, no errors

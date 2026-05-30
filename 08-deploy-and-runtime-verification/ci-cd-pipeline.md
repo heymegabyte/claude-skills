@@ -6,14 +6,16 @@ description: "Workers Builds (native, preferred) + GitHub Actions fallback. Auto
 ---
 
 # CI/CD Pipeline
+
 ## Note on Usage
 Brian deploys live from CLI (`npx wrangler deploy`). This pipeline exists for:
 - Future contributors who use PRs
-- Safety net: auto-test on push
+- Safety net — auto-test on push
 - Branch previews for review
 - Lighthouse tracking over time
 
 ## GitHub Actions Workflow
+
 ### `.github/workflows/deploy.yml`
 ```yaml
 name: Deploy
@@ -73,11 +75,9 @@ jobs:
 ```
 
 ## Required GitHub Secrets
-```
-CLOUDFLARE_API_TOKEN — Wrangler deploy token
-CF_ZONE_ID — For cache purge
-PROD_URL — https://domain.com
-```
+- **`CLOUDFLARE_API_TOKEN`** — Wrangler deploy token
+- **`CF_ZONE_ID`** — for cache purge
+- **`PROD_URL`** — `https://domain.com`
 
 Set via: `gh secret set CLOUDFLARE_API_TOKEN --body "..."` or through GitHub UI.
 
@@ -108,34 +108,30 @@ Set via: `gh secret set CLOUDFLARE_API_TOKEN --body "..."` or through GitHub UI.
 ```
 
 ## MCP Tools Available
+
 ### GitHub MCP (`mcp__github-mcp__*`)
-| Tool | Purpose |
-|------|---------|
-| `mcp__github-mcp__list_pull_requests` | Check open PRs and their CI status |
-| `mcp__github-mcp__pull_request_read` | Read PR details including check results |
-| `mcp__github-mcp__create_pull_request` | Create PRs programmatically for feature branches |
-| `mcp__github-mcp__merge_pull_request` | Auto-merge PRs that pass all checks |
-| `mcp__github-mcp__add_issue_comment` | Comment CI results on PRs |
-| `mcp__github-mcp__search_code` | Search for workflow files across repos |
-| `mcp__github-mcp__create_or_update_file` | Create/update `.github/workflows/*.yml` files |
-| `mcp__github-mcp__push_files` | Push workflow changes in a single commit |
+- **`list_pull_requests`** — check open PRs and their CI status
+- **`pull_request_read`** — read PR details including check results
+- **`create_pull_request`** — create PRs programmatically for feature branches
+- **`merge_pull_request`** — auto-merge PRs that pass all checks
+- **`add_issue_comment`** — comment CI results on PRs
+- **`search_code`** — search for workflow files across repos
+- **`create_or_update_file`** — create / update `.github/workflows/*.yml` files
+- **`push_files`** — push workflow changes in a single commit
 
 ### Playwright MCP (`mcp__playwright__*`) — for E2E in CI verification
-| Tool | Purpose |
-|------|---------|
-| `mcp__playwright__browser_navigate` | Navigate to preview/production URL post-deploy |
-| `mcp__playwright__browser_take_screenshot` | Screenshot pages for visual regression |
-| `mcp__playwright__browser_snapshot` | Get accessibility tree for a11y checks |
-| `mcp__playwright__browser_console_messages` | Check for JS errors on deployed pages |
-| `mcp__playwright__browser_network_requests` | Verify API calls succeed (no 4xx/5xx) |
+- **`browser_navigate`** — navigate to preview / production URL post-deploy
+- **`browser_take_screenshot`** — screenshot pages for visual regression
+- **`browser_snapshot`** — get accessibility tree for a11y checks
+- **`browser_console_messages`** — check for JS errors on deployed pages
+- **`browser_network_requests`** — verify API calls succeed (no 4xx / 5xx)
 
 ### Cloudflare MCP — for deployment verification
-| Tool | Purpose |
-|------|---------|
-| `mcp__claude_ai_Cloudflare_Developer_Platform__workers_get_worker` | Verify Worker deployed successfully |
-| `mcp__claude_ai_Cloudflare_Developer_Platform__workers_list` | List all Workers and their status |
+- **`workers_get_worker`** — verify Worker deployed successfully
+- **`workers_list`** — list all Workers and their status
 
 ## Deployment Verification Patterns
+
 ### Post-Deploy Smoke Test (run after `wrangler deploy` in CI)
 ```yaml
   verify:
@@ -189,20 +185,18 @@ Set via: `gh secret set CLOUDFLARE_API_TOKEN --body "..."` or through GitHub UI.
 ## Computer Use Integration
 Use `mcp__computer-use__*` for debugging CI failures visually:
 
-1. **GitHub Actions UI** — Screenshot the Actions tab to see failed job steps when log parsing is insufficient
-2. **Preview deploy verification** — Open the preview URL and screenshot at multiple viewports to verify the deploy looks correct before merging
-3. **Cloudflare dashboard** — Screenshot Workers & Pages dashboard to verify deployment status and error rates
+1. **GitHub Actions UI** — screenshot the Actions tab to see failed job steps when log parsing is insufficient
+2. **Preview deploy verification** — open the preview URL and screenshot at multiple viewports to verify the deploy looks correct before merging
+3. **Cloudflare dashboard** — screenshot Workers & Pages dashboard to verify deployment status and error rates
 
 ## Acceptance Criteria
-| # | Criterion | Measurement |
-|---|-----------|-------------|
-| 1 | CI runs on every push to main | GitHub Actions shows a workflow run for every main branch commit |
-| 2 | CI runs on every PR | PRs show check status (pass/fail) before merge |
-| 3 | TypeScript compilation passes | `npx tsc --noEmit` exits 0 in CI |
-| 4 | E2E tests pass in CI | Playwright test job exits 0, report artifact uploaded |
-| 5 | Deploy only happens on main push | Deploy job has correct `if` condition, no deploy on PRs |
-| 6 | Lighthouse score tracked | Lighthouse CI job runs on main, scores uploaded as artifacts |
-| 7 | Health endpoint verified post-deploy | Smoke test confirms `/health` returns 200 |
-| 8 | Preview deploys comment on PR | PR has a bot comment with preview URL |
-| 9 | Secrets configured | `gh secret list` shows CLOUDFLARE_API_TOKEN, CF_ZONE_ID, PROD_URL |
-| 10 | Failed CI blocks merge | Branch protection requires CI to pass before merge is allowed |
+1. CI runs on every push to main — GitHub Actions shows a workflow run for every main branch commit
+2. CI runs on every PR — PRs show check status (pass / fail) before merge
+3. TypeScript compilation passes — `npx tsc --noEmit` exits 0 in CI
+4. E2E tests pass in CI — Playwright test job exits 0, report artifact uploaded
+5. Deploy only happens on main push — deploy job has correct `if` condition, no deploy on PRs
+6. Lighthouse score tracked — Lighthouse CI job runs on main, scores uploaded as artifacts
+7. Health endpoint verified post-deploy — smoke test confirms `/health` returns 200
+8. Preview deploys comment on PR — PR has a bot comment with preview URL
+9. Secrets configured — `gh secret list` shows `CLOUDFLARE_API_TOKEN`, `CF_ZONE_ID`, `PROD_URL`
+10. Failed CI blocks merge — branch protection requires CI to pass before merge is allowed

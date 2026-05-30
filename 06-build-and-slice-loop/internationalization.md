@@ -6,6 +6,7 @@ description: "Multi-language support via URL parameter (?lang=es) or dropdown. M
 ---
 
 # Internationalization (i18n)
+
 ## Architecture
 ```
 User visits ?lang=es → Worker checks KV for Spanish content → serves translated page
@@ -46,7 +47,7 @@ for (const [key, enValue] of Object.entries(strings)) {
 </div>
 ```
 
-Position: top-right of navbar, before any CTA button.
+Position — top-right of navbar, before any CTA button.
 
 ## Middleware
 ```typescript

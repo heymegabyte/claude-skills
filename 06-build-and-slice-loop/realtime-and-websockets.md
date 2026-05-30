@@ -6,6 +6,7 @@ description: "Cloudflare Durable Objects for WebSocket-based realtime features. 
 ---
 
 # Realtime and WebSockets
+
 ## Durable Object WebSocket Handler
 ```typescript
 // src/do/room.ts
@@ -230,11 +231,9 @@ onMouseMove(e: MouseEvent): void {
 ```
 
 ## Hibernation API Cost Optimization
-```
-Hibernation API: DO "sleeps" when no messages pending.
+- DO "sleeps" when no messages pending
 - No compute charge during hibernation
-- webSocketMessage/webSocketClose wake the DO on demand
-- Use ctx.acceptWebSocket(ws) instead of manual ws.accept()
-- State persists across hibernation cycles via ctx.storage
+- `webSocketMessage`/`webSocketClose` wake the DO on demand
+- Use `ctx.acceptWebSocket(ws)` instead of manual `ws.accept()`
+- State persists across hibernation cycles via `ctx.storage`
 - Ideal for rooms with sporadic activity (most chat rooms)
-```

@@ -92,7 +92,7 @@ TypeScript strict: `noUncheckedIndexedAccess`, `noImplicitReturns`, `noFallthrou
 
 ## Content Generation
 
-Copy: infer from product/domain, benefit-oriented, social proof, clear CTAs. Images: imagegen/Sora hero, Unsplash/Pexels stock, Ideogram logos, WebP/AVIF compressed. Structured data: Organization, WebSite, WebPage, FAQPage, Product, SoftwareApplication, BreadcrumbList (4+ per page).
+Copy: infer from product/domain, benefit-oriented, social proof, clear CTAs. Images: imagegen/Sora hero, Pexels/Pixabay stock, Ideogram logos, WebP/AVIF compressed. Structured data: Organization, WebSite, WebPage, FAQPage, Product, SoftwareApplication, BreadcrumbList (4+ per page).
 
 ## Strict TDD (***MANDATORY***)
 Spec (Given/When/Then)→failing E2E (Red)→minimum impl (Green)→refactor→FCE scan→visual verify→deploy.

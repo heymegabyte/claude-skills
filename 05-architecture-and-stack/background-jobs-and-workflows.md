@@ -7,21 +7,30 @@ updated: "2026-04-24"
 # Background Jobs and Workflows
 
 ## Decision Tree
-Simple schedule (health check, cache warm) → CF Cron Triggers (5 free, 250 paid). High-throughput fire-and-forget (analytics, logs) → CF Queues. Durable multi-step (onboarding, billing sync, email drip) → Inngest. Stateful long-running (AI agent, workflow builder) → CF Workflows v2 or DO. D1→R2 daily backup → CF Workflows + Cron Trigger. Agent orchestration → CF Agents SDK (Project Think, Fibers for crash-survivable execution).
+- **Simple schedule** (health check, cache warm) → CF Cron Triggers (5 free, 250 paid)
+- **High-throughput fire-and-forget** (analytics, logs) → CF Queues
+- **Durable multi-step** (onboarding, billing sync, email drip) → Inngest
+- **Stateful long-running** (AI agent, workflow builder) → CF Workflows v2 or DO
+- **D1→R2 daily backup** → CF Workflows + Cron Trigger
+- **Agent orchestration** → CF Agents SDK (Project Think, Fibers for crash-survivable execution)
 
 ## CF Workflows v2 (Apr 15, 2026 — Rearchitected)
-Concurrency: 50K concurrent (up from 10K), 300/sec creation rate (up from 30/sec), 2M queued. Steps can return `ReadableStream` for >1MiB payloads (no more serialization limit). Control plane fully rearchitected — lower latency, better observability. Use for: multi-step pipelines, long-running AI agent tasks, data processing fan-out. Inngest still preferred for event-driven durable functions with built-in step.ai.infer().
+- **Concurrency** — 50K concurrent (up from 10K), 300/sec creation rate (up from 30/sec), 2M queued
+- Steps can return `ReadableStream` for >1MiB payloads (no more serialization limit)
+- Control plane fully rearchitected — lower latency, better observability
+- Use for — multi-step pipelines, long-running AI agent tasks, data processing fan-out
+- Inngest still preferred for event-driven durable functions with built-in `step.ai.infer()`
 
 ## Inngest v4 on CF Workers (GA Mar 16, 2026 — BREAKING)
 
 ### v3→v4 Breaking Changes
-- Default mode→cloud (was dev). Requires `INNGEST_SIGNING_KEY` or set `isDev: true`/`INNGEST_DEV=1` for local
+- Default mode → cloud (was dev). Requires `INNGEST_SIGNING_KEY` or set `isDev: true`/`INNGEST_DEV=1` for local
 - `EventSchemas` removed → use `eventType("name", { schema: z.object({...}) })` per-event
-- Standard Schema support: schema field accepts Zod, Valibot, ArkType, or any Standard Schema lib
+- Standard Schema support — schema field accepts Zod, Valibot, ArkType, or any Standard Schema lib
 - Triggers moved into options object (1st arg of `createFunction`)
 - Serve options (signingKey, baseUrl) moved to client constructor
 - `step.invoke()` no longer accepts string function IDs
-- `connect()` API: `rewriteGatewayEndpoint` → `gatewayUrl`
+- `connect()` API — `rewriteGatewayEndpoint` → `gatewayUrl`
 - Middleware completely rewritten — check migration guide
 - Parallel step optimization + checkpointing default-on (~50% fewer HTTP requests)
 
@@ -59,7 +68,7 @@ app.on(['GET', 'PUT', 'POST'], '/api/inngest', (c) => {
 
 ### Core Patterns
 
-**1. Webhook → Multi-Step Processing**
+#### 1. Webhook → Multi-Step Processing
 ```typescript
 export const handleStripeInvoice = inngest.createFunction(
   { id: 'stripe-invoice-paid', retries: 3 },
@@ -82,7 +91,7 @@ export const handleStripeInvoice = inngest.createFunction(
 );
 ```
 
-**2. Email Drip Sequence**
+#### 2. Email Drip Sequence
 ```typescript
 export const onboardingDrip = inngest.createFunction(
   { id: 'onboarding-drip' },
@@ -100,7 +109,7 @@ export const onboardingDrip = inngest.createFunction(
 );
 ```
 
-**3. Fan-Out (Parallel Steps)**
+#### 3. Fan-Out (Parallel Steps)
 ```typescript
 export const bulkSync = inngest.createFunction(
   { id: 'bulk-sync', concurrency: { limit: 5 } },
@@ -115,7 +124,7 @@ export const bulkSync = inngest.createFunction(
 );
 ```
 
-**4. Scheduled (Cron via Inngest)**
+#### 4. Scheduled (Cron via Inngest)
 ```typescript
 export const dailyReport = inngest.createFunction(
   { id: 'daily-report' },
@@ -129,7 +138,7 @@ export const dailyReport = inngest.createFunction(
 );
 ```
 
-**5. AI Inference (step.ai.infer — v4)**
+#### 5. AI Inference (`step.ai.infer` — v4)
 ```typescript
 export const analyzeContent = inngest.createFunction(
   { id: 'analyze-content' },
@@ -149,7 +158,7 @@ export const analyzeContent = inngest.createFunction(
 );
 ```
 
-**6. Realtime (built-in v4)**
+#### 6. Realtime (built-in v4)
 ```typescript
 export const processOrder = inngest.createFunction(
   { id: 'process-order' },
@@ -198,14 +207,34 @@ max_batch_timeout = 30
 ```
 
 ## Patterns
-Idempotency: every Inngest step is retried independently → each step must be idempotent. Use D1 dedup table (event_id UNIQUE) for external effects. Inngest auto-deduplicates by event ID within 24h.
 
-Timeout: `step.sleep()` for delays, `step.waitForEvent()` for external triggers (e.g., wait for Stripe webhook before continuing onboarding). Max function duration: 2hrs (Inngest Cloud).
+### Idempotency
+- Every Inngest step is retried independently → each step must be idempotent
+- Use D1 dedup table (event_id UNIQUE) for external effects
+- Inngest auto-deduplicates by event ID within 24h
 
-Error handling: `retries: 3` default, exponential backoff. Dead letter: Inngest dashboard. Alert: `onFailure` callback → Sentry + Slack.
+### Timeout
+- `step.sleep()` for delays
+- `step.waitForEvent()` for external triggers (e.g., wait for Stripe webhook before continuing onboarding)
+- Max function duration — 2hrs (Inngest Cloud)
 
-v4 step.ai.infer(): offloads AI inference to Inngest infrastructure — function pauses while inference runs, zero serverless compute charges during wait. Parallelizable via `Promise.all()`. Supports OpenAI, Anthropic, and custom models.
+### Error Handling
+- `retries: 3` default, exponential backoff
+- Dead letter — Inngest dashboard
+- Alert — `onFailure` callback → Sentry + Slack
 
-v4 Realtime: `step.realtime.publish(channel, data)` for durable pub/sub (survives retries). `inngest.realtime.publish()` for non-durable fire-and-forget. Client: `@inngest/realtime` React hook `useRealtime(channel)`. Replaces deprecated `@inngest/realtime` package.
+### v4 `step.ai.infer()`
+- Offloads AI inference to Inngest infrastructure — function pauses while inference runs, zero serverless compute charges during wait
+- Parallelizable via `Promise.all()`
+- Supports OpenAI, Anthropic, and custom models
 
-Testing: `inngest/test` SDK for local step-through. `npx inngest-cli dev` for local dev server with event replay. v4: set `isDev: true` or `INNGEST_DEV=1` for local mode.
+### v4 Realtime
+- `step.realtime.publish(channel, data)` — durable pub/sub (survives retries)
+- `inngest.realtime.publish()` — non-durable fire-and-forget
+- Client — `@inngest/realtime` React hook `useRealtime(channel)`
+- Replaces deprecated `@inngest/realtime` package
+
+### Testing
+- `inngest/test` SDK for local step-through
+- `npx inngest-cli dev` for local dev server with event replay
+- v4 — set `isDev: true` or `INNGEST_DEV=1` for local mode

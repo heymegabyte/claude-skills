@@ -1,7 +1,7 @@
 {
   "name": "claude-skills",
-  "description": "14-category autonomous product-building OS with 18 agents for 32+ AI coding tools. One-line prompts to production on Cloudflare Workers. 94 reference docs, 32 platform variants.",
-  "version": "7.2.1",
+  "description": "16-category autonomous product-building OS with 18 agents for 32+ AI coding tools. One-line prompts to production on Cloudflare Workers. 100+ reference docs, 32 platform variants, output styles, monitors.",
+  "version": "7.3.0",
   "author": {
     "name": "Brian Zalewski",
     "url": "https://megabyte.space"
@@ -39,8 +39,14 @@
     "11-motion-and-interaction-system",
     "12-media-orchestration",
     "13-observability-and-growth",
-    "14-independent-idea-engine"
+    "14-independent-idea-engine",
+    "15-site-generation",
+    "16-cinematic-website-prime-directive"
   ],
+  "outputStyles": [
+    "output-styles/emdash-concise.md"
+  ],
+  "monitors": "monitors/monitors.json",
   "agents": [
     "agents/accessibility-auditor.md",
     "agents/architect.md",

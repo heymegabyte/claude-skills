@@ -76,10 +76,21 @@ process.exit(hits.length>0?1:0);
 ```
 
 ## GEO Anti-Slop (AI Search Optimization)
-AI search engines (Perplexity/ChatGPT/Gemini) prefer quotable direct answers. Slop patterns reduce citation rate from 16%→54%.
-Rules: lead paragraphs answer query directly|40-60 word quotable blocks|specific numbers not vague claims|FAQ/HowTo structured data|no "in conclusion/to summarize"|no hedging phrases.
-Check: `grep -rn "it's worth noting\|in today's digital\|plays a crucial role" src/`.
+AI search engines (Perplexity / ChatGPT / Gemini) prefer quotable direct answers. Slop patterns reduce citation rate from 16% → 54%.
+
+### Rules
+- Lead paragraphs answer query directly
+- 40-60 word quotable blocks
+- Specific numbers not vague claims
+- FAQ / HowTo structured data
+- No "in conclusion / to summarize"
+- No hedging phrases
+
+### Check
+```bash
+grep -rn "it's worth noting\|in today's digital\|plays a crucial role" src/
+```
 
 ## Package Scripts + Exceptions
-`"lint:slop": "bun run scripts/slop-scan.ts"` — runs in CI, blocks merge on any hit.
-Exceptions: test files|docs referencing banned patterns|node_modules|error messages quoting user input.
+- `"lint:slop": "bun run scripts/slop-scan.ts"` — runs in CI, blocks merge on any hit
+- **Exceptions:** test files | docs referencing banned patterns | node_modules | error messages quoting user input

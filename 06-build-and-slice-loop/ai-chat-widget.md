@@ -6,9 +6,11 @@ description: "MANDATORY on every service/product. Workers AI + Vectorize RAG cha
 ---
 
 # AI Chat Widget
-## Mandatory Inclusion Rule
-**Every product/service built by this system MUST include an AI chat widget** trained on that specific service's content. This is not optional. The chat must:
 
+## Mandatory Inclusion Rule
+**Every product/service built by this system MUST include an AI chat widget** trained on that specific service's content. This is not optional.
+
+The chat must:
 1. Be trained exclusively on the service's own pages, docs, and content
 2. Auto-re-index at every deploy (content changes = chat knowledge updates)
 3. Know the service's name, purpose, pricing, and features
@@ -18,7 +20,6 @@ description: "MANDATORY on every service/product. Workers AI + Vectorize RAG cha
 
 ## Context Training Per Service
 Each AI chat is unique because it indexes ONLY that service's content:
-
 ```typescript
 // At deploy time, index THIS service's content
 async function indexServiceContent(env: Env) {
@@ -162,4 +163,5 @@ app.post('/api/chat', async (c) => {
 }
 ```
 
-## Cost: Free on CF Workers AI free tier (10K neurons/day)
+## Cost
+Free on CF Workers AI free tier (10K neurons/day).

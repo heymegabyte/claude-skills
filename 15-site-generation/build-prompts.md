@@ -12,44 +12,97 @@ The container runs ONE comprehensive Claude Code prompt. This prompt encompasses
 
 Reference build: `~/emdash-projects/njsk.org` (live https://njsk-org.manhattan.workers.dev/). Every one-line prompt must produce a site at this level. Full gap analysis: `~/emdash-projects/projectsites.dev/apps/project-sites/NJSK_LESSONS.md`.
 
-**Mandatory inclusions in every generated site:**
+### Mandatory inclusions in every generated site
 
-1. **Motion kit (9 utilities, ALL gated by `prefers-reduced-motion`):**
-   - `.hero-rise > *:nth-child(n)` — stepped 80/240/400/560ms delays, translateY(12px)→0 + blur(4px)→0 + opacity 0→1, 0.7s cubic-bezier(0.22,1,0.36,1) both
-   - `.text-sheen` — `linear-gradient(110deg, currentColor 40%, var(--brand-200) 50%, currentColor 60%)` background-clip:text, 3s infinite shimmer
-   - `.heading-underline::after` — 4px gradient bar that scaleX 0→1 on `.reveal-visible` toggle, 0.6s ease
-   - `.card-lift:hover` — translateY(-4px) scale(1.01) + shadow lift, 0.3s ease
-   - `.link-wipe::after` — width 0→100% via transform:scaleX, 0.4s ease
-   - `.float-bob` — translateY(-3px)↔(0px), 3s ease-in-out infinite alternate
-   - `.badge-pop` — scale(0.9→1) opacity 0→1, 0.3s spring
-   - `.scroll-progress` — `position:fixed top:0 height:3px`, scaleX driven by `@supports (animation-timeline: scroll())`
-   - `.reveal[data-reveal]` paired with IntersectionObserver toggling `.reveal-visible`; children stagger via `--i` custom prop
+#### 1. Motion kit (9 utilities, ALL gated by `prefers-reduced-motion`)
+- `.hero-rise > *:nth-child(n)` — stepped 80/240/400/560ms delays, translateY(12px)→0 + blur(4px)→0 + opacity 0→1, 0.7s cubic-bezier(0.22,1,0.36,1) both
+- `.text-sheen` — `linear-gradient(110deg, currentColor 40%, var(--brand-200) 50%, currentColor 60%)` background-clip:text, 3s infinite shimmer
+- `.heading-underline::after` — 4px gradient bar that scaleX 0→1 on `.reveal-visible` toggle, 0.6s ease
+- `.card-lift:hover` — translateY(-4px) scale(1.01) + shadow lift, 0.3s ease
+- `.link-wipe::after` — width 0→100% via transform:scaleX, 0.4s ease
+- `.float-bob` — translateY(-3px)↔(0px), 3s ease-in-out infinite alternate
+- `.badge-pop` — scale(0.9→1) opacity 0→1, 0.3s spring
+- `.scroll-progress` — `position:fixed top:0 height:3px`, scaleX driven by `@supports (animation-timeline: scroll())`
+- `.reveal[data-reveal]` paired with IntersectionObserver toggling `.reveal-visible`; children stagger via `--i` custom prop
 
-2. **Stylized hand-drawn SVG map (NEVER Google Maps iframe).** Inline 500–800px wide SVG with brand-colored streets, landmark blocks, business pin. Below map: `Get Directions →` link to `https://www.google.com/maps/dir/?api=1&destination={url-encoded-address}` target=_blank. Reference pattern: `~/emdash-projects/njsk.org/src/components/stylized-map.tsx`. Iframes are slow, ugly, and leak data to Google.
+#### 2. Stylized hand-drawn SVG map (NEVER Google Maps iframe)
+- Inline 500–800px wide SVG with brand-colored streets, landmark blocks, business pin
+- Below map: `Get Directions →` link to `https://www.google.com/maps/dir/?api=1&destination={url-encoded-address}` target=_blank
+- Reference pattern: `~/emdash-projects/njsk.org/src/components/stylized-map.tsx`
+- Iframes are slow, ugly, and leak data to Google
 
-3. **Lightbox (document-level click listener):** Auto-open any `<img>` ≥200×200 not inside `a|button|header|footer|[data-no-zoom]`. Render via `createPortal(modal, document.body)`. Body-scroll-lock: `body.style.position='fixed'; body.style.top='-${scrollY}px'; body.style.width='100%'; body.style.overflow='hidden'`. Use `100dvh` not `100vh`. Arrow keys + Escape + counter `{n}/{total}` + caption from `alt`. Auto-mark eligible imgs with `cursor:zoom-in` via `setInterval(markZoomable, 1500)`. Reference: `~/emdash-projects/njsk.org/src/components/lightbox.tsx`.
+#### 3. Lightbox (document-level click listener)
+- Auto-open any `<img>` ≥200×200 not inside `a|button|header|footer|[data-no-zoom]`
+- Render via `createPortal(modal, document.body)`
+- Body-scroll-lock: `body.style.position='fixed'; body.style.top='-${scrollY}px'; body.style.width='100%'; body.style.overflow='hidden'`
+- Use `100dvh` not `100vh`
+- Arrow keys + Escape + counter `{n}/{total}` + caption from `alt`
+- Auto-mark eligible imgs with `cursor:zoom-in` via `setInterval(markZoomable, 1500)`
+- Reference: `~/emdash-projects/njsk.org/src/components/lightbox.tsx`
 
-4. **WCAG 2.2 AA (NOT 2.1):** 24×24px min targets (2.5.8). Focus appearance `outline:2px solid var(--brand-500); outline-offset:2px` (2.4.11). Focus-not-obscured (2.4.12). Consistent help (3.2.6). Redundant entry (3.3.7). Skip-link to `#main` first element in body.
+#### 4. WCAG 2.2 AA (NOT 2.1)
+- 24×24px min targets (2.5.8)
+- Focus appearance `outline:2px solid var(--brand-500); outline-offset:2px` (2.4.11)
+- Focus-not-obscured (2.4.12)
+- Consistent help (3.2.6)
+- Redundant entry (3.3.7)
+- Skip-link to `#main` first element in body
 
-5. **Two Google Fonts when `formality≥0.6`:** serif heading (Fraunces/Playfair/DM Serif) + sans body (Inter/DM Sans). Single sans for casual. preconnect+preload. Font-loaded gate: `<style>html:not(.fonts-loaded) body{opacity:0}</style>` + `document.fonts.ready.then(()=>document.documentElement.classList.add('fonts-loaded'))`.
+#### 5. Two Google Fonts when `formality≥0.6`
+- Serif heading (Fraunces/Playfair/DM Serif) + sans body (Inter/DM Sans)
+- Single sans for casual
+- preconnect+preload
+- Font-loaded gate: `<style>html:not(.fonts-loaded) body{opacity:0}</style>` + `document.fonts.ready.then(()=>document.documentElement.classList.add('fonts-loaded'))`
 
-6. **11-stop palette `--brand-50…--brand-950`** via OKLCH lightness ramp from `brand_json.colors.primary`. Surfaces 50/100, text/accents 600/700/800, dark hero overlays 900/950.
+#### 6. 11-stop palette `--brand-50…--brand-950`
+- Via OKLCH lightness ramp from `brand_json.colors.primary`
+- Surfaces 50/100, text/accents 600/700/800, dark hero overlays 900/950
 
-7. **Drop-cap on first paragraph:** `.lead::first-letter{float:left;font-size:4em;line-height:0.9;padding:0.1em 0.1em 0 0;font-family:var(--font-heading);color:var(--brand-700)}`.
+#### 7. Drop-cap on first paragraph
+- `.lead::first-letter{float:left;font-size:4em;line-height:0.9;padding:0.1em 0.1em 0 0;font-family:var(--font-heading);color:var(--brand-700)}`
 
-8. **≥4 JSON-LD blocks:** Organization + LocalBusiness + WebSite + (FAQPage if FAQ present) + (BreadcrumbList if multi-page).
+#### 8. ≥4 JSON-LD blocks
+- Organization + LocalBusiness + WebSite + (FAQPage if FAQ present) + (BreadcrumbList if multi-page)
 
-9. **Banned-word grep — regenerate if any occurrence:** `revolutionize|leverage|seamless|robust|cutting-edge|world-class|empower|game-changing|unleash|supercharge|harness|foster|bolster|paradigm|holistic|ecosystem|next-generation|best-in-class|turnkey|synergy|disrupt|elevate|streamline|cornerstone|pivotal|myriad|plethora|transform|reimagine|redefine|transcend|boundless`. Each occurrence -0.1 to professionalism+brand_consistency.
+#### 9. Banned-word grep — regenerate if any occurrence
+`revolutionize|leverage|seamless|robust|cutting-edge|world-class|empower|game-changing|unleash|supercharge|harness|foster|bolster|paradigm|holistic|ecosystem|next-generation|best-in-class|turnkey|synergy|disrupt|elevate|streamline|cornerstone|pivotal|myriad|plethora|transform|reimagine|redefine|transcend|boundless`
 
-10. **Ken-Burns slow-zoom on every hero bg image:** `transform: scale(1.0→1.08)` 8s alternate.
+Each occurrence -0.1 to professionalism+brand_consistency.
 
-11. **md5 image dedup before render** — never ship same hash twice. Source-code refs use FULL canonical filenames.
+#### 10. Ken-Burns slow-zoom on every hero bg image
+- `transform: scale(1.0→1.08)` 8s alternate
 
-12. **Editorial typed-blocks for imported corpora:** Run any imported content (Squarespace export, scraped CMS, manual paste) through `clean_content` prompt FIRST. Output: `{ posts: [{ title, slug, excerpt(120-180ch), keywords[4-8], blocks: [{type:"lead|heading|paragraph|quote|callout", text, level?}], publishedAt, image }], related_map: {slug:[siblingSlugs]} }`. Strip Squarespace residue. NEVER alter direct quotes, names, dates, or factual claims.
+#### 11. md5 image dedup before render
+- Never ship same hash twice
+- Source-code refs use FULL canonical filenames
 
-13. **Multi-page expansion when `complexity≥mid`:** Run `generate_routes` prompt to plan 5–14 routes. Internal-link graph: every page → 3–5 contextual anchors with VARIED anchor text. BreadcrumbList JSON-LD on every non-home route. Sitemap.xml with priority+changefreq+lastmod per route.
+#### 12. Editorial typed-blocks for imported corpora
+Run any imported content (Squarespace export, scraped CMS, manual paste) through `clean_content` prompt FIRST. Output:
+```json
+{
+  "posts": [{
+    "title": "...",
+    "slug": "...",
+    "excerpt": "(120-180ch)",
+    "keywords": "[4-8]",
+    "blocks": [{"type":"lead|heading|paragraph|quote|callout", "text": "...", "level?": 0}],
+    "publishedAt": "...",
+    "image": "..."
+  }],
+  "related_map": {"slug": ["siblingSlugs"]}
+}
+```
+- Strip Squarespace residue
+- NEVER alter direct quotes, names, dates, or factual claims
 
-**Pipeline order (`apps/project-sites/src/workflows/site-generation.ts`):**
+#### 13. Multi-page expansion when `complexity≥mid`
+- Run `generate_routes` prompt to plan 5–14 routes
+- Internal-link graph: every page → 3–5 contextual anchors with VARIED anchor text
+- BreadcrumbList JSON-LD on every non-home route
+- Sitemap.xml with priority+changefreq+lastmod per route
+
+### Pipeline order (`apps/project-sites/src/workflows/site-generation.ts`)
+
 ```
 import → strip_cms_residue → ai_block_typing(lead/heading/paragraph/quote/callout)
 → md5_image_dedup → keyword_extract → excerpt_120_180 → related_score
@@ -58,7 +111,7 @@ import → strip_cms_residue → ai_block_typing(lead/heading/paragraph/quote/ca
 → regen_if_below_0.6 → publish
 ```
 
-Runtime prompts registered in `apps/project-sites/src/services/ai_workflows.ts`:
+### Runtime prompts registered in `apps/project-sites/src/services/ai_workflows.ts`
 - `generate_website@2` — full motion kit + lightbox + stylized SVG map + WCAG 2.2 AA
 - `score_website@1` — 10-dim scoring including motion + typography + banned_words_found[]
 - `clean_content@1` — typed-block editorial pass
@@ -68,6 +121,20 @@ Runtime prompts registered in `apps/project-sites/src/services/ai_workflows.ts`:
 
 ```
 # Build a Stunning Website for {{businessName}}
+
+## Phase 0 Monitor Fan-Out (***REBUILD/OPTIMIZE/ENHANCE PROMPTS — FIRE BEFORE ANY CODE | ONE MULTI-TOOL MESSAGE***)
+"Rebuild/optimize/enhance X.com" prompts trigger Monitor-pattern parallel-agent fan-out per [[monitor-orchestration]] § Parallel-agent playbook + [[source-site-enhancement]] § Parallel-agent playbook. Main thread orchestrates only — spawn ALL of the following as parallel `Agent` calls in ONE multi-tool message, NEVER sequential:
+- **crawler-agent** → Playwright walks every sitemap.xml URL (capped 1000), emits `_scraped_content.json` + `_original_urls` + per-page image manifest (see Per-Page Image Extraction). Squarespace JSON API path when CMS detected
+- **demographics-agent** → ACS B16001 lookup on service_area, emits `_locales.json` per [[i18n-by-demographics]] (Census API, county-FIPS resolution, LEP-pct thresholds → translation_strategy)
+- **org-type-inferrer-agent** → resolves `_research.json.identity.schema_org_type` from name+category+content signals, returns canonical-floor route set per [[page-set-expansion]] § Org-Type Canonical Floor, emits `_page_set_gap.json` (missing_routes + jewel_candidates)
+- **media-walker-agent** → walks `<img>+<picture>+CSS-bg+slider+og:image+linked-PDF/DOC` across every source URL, downloads to `public/images/<section>/`, emits `_assets.json` + `_sliders.json` (preserves order)
+- **brand-extractor-agent** → logo extraction chain (header→og:image→link rel=icon→wp-content→Squarespace→Wix→favicon→Wayback) + Brandfetch/Logo.dev/GPT-4o-vision color extraction → `_brand.json` (colors + fonts + personality + logo variants light/dark)
+- **jewel-content-authors** (***one parallel agent per jewel batch — 3-5 jewels each***) → each gets a slice of `_jewels.json` JewelBrief[] (see [[page-set-expansion]] § Jewel Content Authoring Playbook), authors h1+sections+JSON-LD+inline-link-targets+APA citations against `_pdf_facts.json`+`_research.json`+`_corpus.json`, returns typed-block JSON per skill 15 build-prompts.md "Editorial typed-blocks" pattern. Batch by topic cluster (about+team+history one batch, programs+services+impact next, donate+volunteer+events next, blog+faq+contact last) so each agent has coherent context
+- **i18n-translator-agents** (***one parallel agent per secondary_locale in `_locales.json`***) → each translates ENTIRE route corpus (h1, body blocks, meta, JSON-LD strings) into target locale, emits `_translations.<locale>.json` keyed by route+block-id. Translation strategy = `full_route_alt` → ship `/<locale>/<route>`; `hreflang_only` → ship hreflang link tags + translated meta only. Native speaker register, NEVER literal machine output — pass `_research.json` cultural-context block into each prompt
+- **IA-normalizer-agent** → reconciles `_scraped_content.json.sitemap_urls[]` (source) + `_page_set_gap.json.canonical_floor_routes[]` (floor) + `_jewels.json[].route` (jewels) into single normalized IA, emits `_redirects` map (source-CMS-garbage slugs → clean canonical routes, never 404) + `_sitemap.json` (union output)
+- **squarespace-dedup-agent** (***only when CMS detected as Squarespace***) → md5-dedup `_assets.json` images, emits canonical-vs-twin redirect map, rewrites every `.tsx/.html` reference to canonical filename (see Image Dedupe via 301 section)
+
+Fan-out shape: ONE Bash/Task call block with 9-15 parallel agents (jewels+i18n inflate count). Each agent's prompt 100-300 words per rules/full-autonomy.md sub-agent limit. Main thread waits for ALL to return summaries (≤200 words each) before assembling final build prompt. Build prompt receives UNION(source_routes, missing_routes, jewel_routes, locale_routes) — never a subset. See [[monitor-orchestration]] Known-shortcoming #7 for prior failure mode (monitor was NOT firing on rebuild prompts → sequential single-agent crawl → sub-floor page count).
 
 Read ALL _ prefixed files in this directory for context:
 - _research.json — business profile, hours, phone, address, reviews, geo
@@ -277,9 +344,9 @@ Web fonts loading from Google Fonts/CDN cause a visible Flash Of Unstyled Text (
 ### Hero Image Context (***NEVER GENERIC — MATCH PAGE INTENT***)
 Hero backgrounds carry semantic weight. A food video on a Mass-schedule page or a generic stock-photo hero on a Health-Clinic page reads as careless. Every hero MUST visually align with the page's specific topic, not just the site's overall vibe.
 - **Audit pass:** For each route, ask: does the hero image/video literally depict what this page is about? `/donate` → volunteers-serving-meals (the impact). `/mass-schedule` → stained-glass church interior (worship). `/services/health-clinic` → medical-care imagery (not food). `/we-need` → pantry/donation-stock (not soup kitchen line)
-- **Source priority:** (1) original-site photos that match the page topic (2) blog post photos from the same topic cluster (3) stock photos from Pexels/Unsplash with `topic` query (`unsplash.com/s/photos/{topic}` → first non-people-faced result, license-free) (4) AI generation as last resort
+- **Source priority:** (1) original-site photos that match the page topic (2) blog post photos from the same topic cluster (3) stock photos from Pexels/Pixabay with `topic` query (`pexels.com/search/{topic}` → first non-people-faced result, license-free) (4) AI generation as last resort
 - **Hard gate:** Visual QA pass — AI vision scores each hero on `image_matches_page_topic` (0-10). Any hero <8/10 flagged for replacement. Score 6 example: food-prep video on /mass-schedule (food is on-brand for the org but off-topic for the page). Score 9 example: stained-glass-window photo on /mass-schedule
-- **The njsk.org Mass-schedule incident:** Hero used `/videos/volunteers-serving.mp4` because it was the only available video — semantically wrong (the page is about Sunday Catholic worship, not the kitchen). Fix: downloaded a stained-glass church interior from Unsplash, applied ken-burns slow-zoom, dropped opacity to 40% with maroon gradient overlay. Now the hero matches what the page is actually about
+- **The njsk.org Mass-schedule incident:** Hero used `/videos/volunteers-serving.mp4` because it was the only available video — semantically wrong (the page is about Sunday Catholic worship, not the kitchen). Fix: downloaded a stained-glass church interior from Pexels, applied ken-burns slow-zoom, dropped opacity to 40% with maroon gradient overlay. Now the hero matches what the page is actually about
 
 ### Parallel Verification Scan (***POST-DEPLOY GATE — ZERO 404s + ZERO CONSOLE ERRORS***)
 Manual click-through testing misses 80%+ of broken assets, console errors, and CSP violations because they fire only on specific routes/breakpoints/timings. Every deploy MUST run a parallel headless scan that captures every console error/warning and every failed network request across every route.
@@ -710,41 +777,70 @@ This uploads all dist/ files to R2 at sites/{{slug}}/{{version}}/.
 ## Prompt Assembly Logic
 
 The Worker builds this prompt dynamically:
+
 1. Read form data (business name, address, category, notes, uploaded files)
 2. Inject research results into template variables
-3. Select domain features from _domain_features.json
+3. Select domain features from `_domain_features.json`
 4. Conditional blocks expand based on available data (email, geo, rating, videos)
 5. Write assembled prompt to `_prompt.txt` in build directory
 
 ## Inspect Script Integration
 
-`/home/cuser/inspect.js` — pre-baked in Docker image. Takes HTML file path, sends first 14KB to GPT-4o with "senior Stripe web designer" persona. Scores 1-10 across: color contrast, typography, layout/spacing, animations, images, mobile, brand consistency, visual polish. Returns `{ score, issues[], recommendations[] }` as JSON to stdout. 25s timeout. Requires `OPENAI_API_KEY`.
+`/home/cuser/inspect.js` — pre-baked in Docker image.
+
+- Takes HTML file path
+- Sends first 14KB to GPT-4o with "senior Stripe web designer" persona
+- Scores 1-10 across: color contrast, typography, layout/spacing, animations, images, mobile, brand consistency, visual polish
+- Returns `{ score, issues[], recommendations[] }` as JSON to stdout
+- 25s timeout
+- Requires `OPENAI_API_KEY`
 
 ## Prompt Evolution
 
-Every successful build → analyze output quality. Patterns that improve quality get folded into this prompt template. Criticism from users → generalized into rules added to quality-gates.md. The prompt chain gets better with every iteration.
+Every successful build → analyze output quality. Patterns that improve quality get folded into this prompt template. Criticism from users → generalized into rules added to `quality-gates.md`. The prompt chain gets better with every iteration.
 
 ## Blog Import & Editorial Pipeline (***NON-NEGOTIABLE***)
 
 Any time the build imports long-form blog content (Squarespace, WordPress, Medium, custom CMS), a two-stage pipeline runs:
 
-**Stage 1 — Cleanup (`clean-blog-corpus.mjs` pattern):** strip CMS residue (Squarespace `#block-yui_*`, `.sqs-*`, `.margin-wrapper`, raw `<style>` blocks), AI-restructure flat HTML into typed blocks (`lead | heading | paragraph | quote | callout`), generate SEO keywords + 120-180-char excerpt per post, deduplicate images by md5 hash, delete orphan media with `--delete-orphans`. Direct quotes preserved verbatim. Names/dates/facts never rewritten.
+### Stage 1 — Cleanup (`clean-blog-corpus.mjs` pattern)
+- Strip CMS residue (Squarespace `#block-yui_*`, `.sqs-*`, `.margin-wrapper`, raw `<style>` blocks)
+- AI-restructure flat HTML into typed blocks (`lead | heading | paragraph | quote | callout`)
+- Generate SEO keywords + 120-180-char excerpt per post
+- Deduplicate images by md5 hash
+- Delete orphan media with `--delete-orphans`
+- Direct quotes preserved verbatim
+- Names/dates/facts never rewritten
 
-**Stage 2 — Editorial pass (`enhance-blog-posts.mjs` — see reference script in this skill dir):** GPT-4o-mini editorial pass over every cleaned post. Mandates:
+### Stage 2 — Editorial pass (`enhance-blog-posts.mjs` — see reference script in this skill dir)
+GPT-4o-mini editorial pass over every cleaned post. Mandates:
 
-1. **Grammar/spelling/professional tone** — fix without altering author voice or factual content.
-2. **Quote preservation** — anything in `quote` blocks or `"..."` strings stays verbatim.
-3. **Interlinking** — inject 2-5 contextual `[label](/path)` markdown links per post: other blog posts (`/blog/{slug}`) AND site sections (`/about`, `/services`, `/team`, `/volunteer`, `/donate`, `/we-need`, `/contact`, `/faq`, plus any domain-specific pages). Pass the full slug list and section list into the system prompt so the model picks relevant anchors.
+1. **Grammar/spelling/professional tone** — fix without altering author voice or factual content
+2. **Quote preservation** — anything in `quote` blocks or `"..."` strings stays verbatim
+3. **Interlinking** — inject 2-5 contextual `[label](/path)` markdown links per post: other blog posts (`/blog/{slug}`) AND site sections (`/about`, `/services`, `/team`, `/volunteer`, `/donate`, `/we-need`, `/contact`, `/faq`, plus any domain-specific pages). Pass the full slug list and section list into the system prompt so the model picks relevant anchors
 4. **Contact hyperlinks** — wherever these strings appear in body copy, wrap them as anchors:
    - `volunteer@{org}` → `mailto:volunteer@{org}`
    - `info@{org}` / generic email → `mailto:{email}`
    - `(NNN) NNN-NNNN` phone numbers → `tel:+{e164}`
    - Full street address → `/contact`
-5. **Block-typed JSON output** — model must return the same `{ type, text }` block array shape, never raw HTML or markdown blob.
-6. **Renderer support** — body renderer must handle inline markdown links via a `renderInline` regex (`/\[([^\]]+)\]\(([^)]+)\)/g`) that splits text into `<a>` + plain spans. Without this, links render as raw `[label](/path)` strings.
+5. **Block-typed JSON output** — model must return the same `{ type, text }` block array shape, never raw HTML or markdown blob
+6. **Renderer support** — body renderer must handle inline markdown links via a `renderInline` regex (`/\[([^\]]+)\]\(([^)]+)\)/g`) that splits text into `<a>` + plain spans. Without this, links render as raw `[label](/path)` strings
 
-**Operations:** concurrency 5-8 against OpenAI (`OPENAI_API_KEY` env). CLI flags: `--only=slug` (single post), `--limit=N` (truncate corpus), `--concurrency=N`. Idempotent — re-running on already-enhanced posts produces near-identical output. Failures surface per-slug (`console.warn(\`FAIL ${slug}: ${err}\`)`) — never silently swallow.
+### Operations
+- Concurrency 5-8 against OpenAI (`OPENAI_API_KEY` env)
+- **CLI flags**:
+  - `--only=slug` (single post)
+  - `--limit=N` (truncate corpus)
+  - `--concurrency=N`
+- Idempotent — re-running on already-enhanced posts produces near-identical output
+- Failures surface per-slug (`console.warn(\`FAIL ${slug}: ${err}\`)`) — never silently swallow
 
-**Hard gate:** after enhancement, every post must have ≥2 outbound interlinks, and there must be zero raw occurrences of the org's contact strings (email, phone, address) without an anchor wrapper. Run a regex sweep on the serialized `blog-posts.ts` to enforce.
+### Hard gate
+After enhancement, every post must have:
+- ≥2 outbound interlinks
+- Zero raw occurrences of the org's contact strings (email, phone, address) without an anchor wrapper
 
-**Reference implementation:** `/Users/apple/.agentskills/15-site-generation/enhance-blog-posts.mjs` (copied from njsk.org build, 2026-04-30). Adapt SITE_SECTIONS array + contact hyperlink table per project. Keep the system prompt's "preserve quotes verbatim" clause unchanged.
+Run a regex sweep on the serialized `blog-posts.ts` to enforce.
+
+### Reference implementation
+`/Users/apple/.agentskills/15-site-generation/enhance-blog-posts.mjs` (copied from njsk.org build, 2026-04-30). Adapt SITE_SECTIONS array + contact hyperlink table per project. Keep the system prompt's "preserve quotes verbatim" clause unchanged.

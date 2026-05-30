@@ -5,9 +5,10 @@ updated: "2026-04-23"
 ---
 
 # Drizzle ORM and Migrations
+
 ## Why Drizzle (v1.0.0-beta.2, passed Prisma in downloads)
 - Type-safe queries, 5KB bundle (vs Prisma 40KB+), zero-overhead SQL
-- RQBv2: 363 commits, 9K+ tests, relational query builder rewrite
+- RQBv2 — 363 commits, 9K+ tests, relational query builder rewrite
 - 10x schema introspection speed (10s → <1s)
 - Schema defined in TypeScript (single source of truth)
 - Auto-generated migrations via `drizzle-kit`
@@ -15,6 +16,7 @@ updated: "2026-04-23"
 - Edge runtime compatible — perfect for Workers
 
 ## Setup
+
 ### Install
 ```bash
 npm install drizzle-orm
@@ -45,6 +47,7 @@ app.use('*', async (c, next) => {
 ```
 
 ## Schema Conventions
+
 ### Standard Columns (Every Table)
 ```typescript
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
@@ -64,11 +67,11 @@ export const users = sqliteTable('users', {
 ```
 
 ### Naming Rules
-- Tables: plural snake_case (`users`, `blog_posts`, `donation_records`)
-- Columns: snake_case (`created_at`, `stripe_customer_id`)
-- TypeScript: camelCase (`createdAt`, `stripeCustomerId`) — Drizzle maps automatically
-- Indexes: `idx_{table}_{column}` (`idx_users_email`)
-- Foreign keys: `{referenced_table}_id` (`user_id`, `post_id`)
+- **Tables** — plural snake_case (`users`, `blog_posts`, `donation_records`)
+- **Columns** — snake_case (`created_at`, `stripe_customer_id`)
+- **TypeScript** — camelCase (`createdAt`, `stripeCustomerId`) — Drizzle maps automatically
+- **Indexes** — `idx_{table}_{column}` (`idx_users_email`)
+- **Foreign keys** — `{referenced_table}_id` (`user_id`, `post_id`)
 
 ### Relations
 ```typescript
@@ -107,6 +110,7 @@ export const posts = sqliteTable('posts', {
 ```
 
 ## Migration Workflow
+
 ### Generate Migration
 ```bash
 npx drizzle-kit generate
@@ -127,6 +131,7 @@ npx wrangler d1 migrations apply DB          # Apply to production
 - Use `PRAGMA optimize` after bulk writes
 
 ## Common Query Patterns
+
 ### Select with Relations
 ```typescript
 const postsWithAuthor = await db.query.posts.findMany({
@@ -186,8 +191,7 @@ async function seed(db: DrizzleD1Database) {
 ```
 
 ## Neon (PostgreSQL) Variant
-When D1 isn't enough (complex joins, full-text search, > 1TB, RLS):
-
+When D1 isn't enough (complex joins, full-text search, >1TB, RLS):
 ```typescript
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
@@ -199,9 +203,9 @@ const db = drizzle(sql, { schema });
 Schema uses `pgTable` instead of `sqliteTable`, identity columns (not serial) for IDs, and `timestamp` instead of `text` for dates. Use `$inferSelect`/`$inferInsert` for type derivation. Zod integration via `createInsertSchema`/`createSelectSchema`.
 
 ## D1 Notes (2026)
-- Global read replication (beta): routes reads to nearest replica, reduces latency 40-60%
-- Storage: 1TB per account (paid), Time Travel 30-day PIT recovery
+- Global read replication (beta) — routes reads to nearest replica, reduces latency 40-60%
+- Storage — 1TB per account (paid), Time Travel 30-day PIT recovery
 - PRAGMA optimize support for query performance
 - Does NOT support BEGIN transactions — use batch API instead
 - Prepared statements for repeated queries
-- node:fs and Web File System APIs now available in Workers
+- `node:fs` and Web File System APIs now available in Workers

@@ -8,17 +8,21 @@ updated: "2026-04-23"
 # Technical Diagramming
 
 ## Format Selection
-ASCII: README/terminal/inline docs, zero dependencies, universal rendering. Mermaid: GitHub/GitLab auto-render, versioned in markdown, CI-friendly. SVG: high-fidelity exports, presentations, external docs. D2: declarative alternative to Mermaid, auto-layout.
 
-| Context | Format | Why |
-|---------|--------|-----|
-| README | ASCII | renders everywhere, no extensions |
-| GitHub PR/wiki | Mermaid | native rendering, diffable |
-| Architecture doc | Mermaid+SVG export | version+present |
-| Terminal output | ASCII | monospace guaranteed |
-| Slide deck | SVG/PNG via freeze | high-fidelity |
+- **ASCII** — README/terminal/inline docs, zero dependencies, universal rendering
+- **Mermaid** — GitHub/GitLab auto-render, versioned in markdown, CI-friendly
+- **SVG** — high-fidelity exports, presentations, external docs
+- **D2** — declarative alternative to Mermaid, auto-layout
+
+### When to Use Which
+- **README** — ASCII (renders everywhere, no extensions)
+- **GitHub PR/wiki** — Mermaid (native rendering, diffable)
+- **Architecture doc** — Mermaid + SVG export (version + present)
+- **Terminal output** — ASCII (monospace guaranteed)
+- **Slide deck** — SVG/PNG via `freeze` (high-fidelity)
 
 ## ASCII Diagrams
+
 ### Box-Drawing Characters
 ```
 ┌─────────┐    ┌──────────┐    ┌─────────┐
@@ -30,7 +34,12 @@ ASCII: README/terminal/inline docs, zero dependencies, universal rendering. Merm
               │    R2    │
               └──────────┘
 ```
-Chars: `┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼` for boxes | `─→ ──▶ ◀── ←─` for arrows | `···` for optional | `═══` for emphasis
+
+Chars:
+- `┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼` for boxes
+- `─→ ──▶ ◀── ←─` for arrows
+- `···` for optional
+- `═══` for emphasis
 
 ### Reusable Architecture Template
 ```
@@ -47,8 +56,15 @@ Chars: `┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼` for boxes | `─→ ──�
 ```
 
 ## Mermaid.js
+
 ### Diagram Types
-flowchart (system arch) | sequence (API flows) | classDiagram (data models) | erDiagram (DB schema) | stateDiagram (state machines) | gantt (timelines) | C4Context (high-level arch)
+- `flowchart` — system arch
+- `sequence` — API flows
+- `classDiagram` — data models
+- `erDiagram` — DB schema
+- `stateDiagram` — state machines
+- `gantt` — timelines
+- `C4Context` — high-level arch
 
 ### Flowchart
 ```mermaid
@@ -84,7 +100,11 @@ erDiagram
 ```
 
 ## Tools
-`freeze` (charm.sh): code/diagram→PNG, terminal-native | `mmdc` (mermaid-cli): .mmd→SVG/PNG/PDF, CI integration | `d2` (terrastruct): declarative diagrams, auto-layout, themes | Excalidraw: hand-drawn aesthetic, collaborative, embeddable
+
+- **`freeze`** (charm.sh) — code/diagram → PNG, terminal-native
+- **`mmdc`** (mermaid-cli) — `.mmd` → SVG/PNG/PDF, CI integration
+- **`d2`** (terrastruct) — declarative diagrams, auto-layout, themes
+- **Excalidraw** — hand-drawn aesthetic, collaborative, embeddable
 
 ### freeze Example
 ```bash
@@ -97,8 +117,15 @@ npx -p @mermaid-js/mermaid-cli mmdc -i diagram.mmd -o diagram.svg -t dark -b '#0
 ```
 
 ## Best Practices
-Left-to-right flow (LR) default, top-to-bottom (TB) for hierarchies. Max 7±2 nodes per diagram — split complex systems into sub-diagrams. Label ALL edges — unlabeled arrows are ambiguous. Color for grouping not decoration — subgraphs with fills. Consistent spacing — align nodes vertically/horizontally. Dark theme: bg `#060610`, node fill `#1a1a2e`, text `#e0e0e0`, edge `#00E5FF`.
+
+- Left-to-right flow (LR) default, top-to-bottom (TB) for hierarchies
+- Max 7±2 nodes per diagram — split complex systems into sub-diagrams
+- Label ALL edges — unlabeled arrows are ambiguous
+- Color for grouping not decoration — subgraphs with fills
+- Consistent spacing — align nodes vertically/horizontally
+- Dark theme: bg `#060610`, node fill `#1a1a2e`, text `#e0e0e0`, edge `#00E5FF`
 
 ## Ownership
-**Owns:** Diagram generation (ASCII+Mermaid+SVG+D2), architecture visualization, data flow diagrams, ER diagrams, deployment maps.
-**Never owns:** Image generation (→image-gen), brand design (→09), UI mockups (→10).
+
+- **Owns** — Diagram generation (ASCII + Mermaid + SVG + D2), architecture visualization, data flow diagrams, ER diagrams, deployment maps
+- **Never owns** — Image generation (→ image-gen), brand design (→ 09), UI mockups (→ 10)

@@ -6,6 +6,7 @@ description: "Novu for multi-channel notifications: in-app bell, push, email (vi
 ---
 
 # Notification Center
+
 ## Novu Setup (Server-Side)
 ```typescript
 // src/services/notifications.ts
@@ -93,24 +94,10 @@ export { notifications };
 ```
 
 ## Notification Workflows (Novu Dashboard or code)
-```typescript
-// Workflow: welcome-email
-// Channel: Email (via Resend integration)
-// Template variables: {{firstName}}, {{productName}}, {{loginUrl}}
-
-// Workflow: invoice-paid
-// Channels: In-App + Email
-// Digest: batch per subscriber, 1hr window
-// Template: "{{count}} invoices paid totaling {{totalAmount}}"
-
-// Workflow: team-invite
-// Channels: Email + In-App
-// Template: "{{inviterName}} invited you to {{teamName}}"
-
-// Workflow: usage-alert
-// Channels: In-App + Email + Push
-// Template: "You've used {{percentage}}% of your {{resource}} quota"
-```
+- **`welcome-email`** — Email (via Resend integration). Template variables — `{{firstName}}`, `{{productName}}`, `{{loginUrl}}`
+- **`invoice-paid`** — In-App + Email. Digest — batch per subscriber, 1hr window. Template — "{{count}} invoices paid totaling {{totalAmount}}"
+- **`team-invite`** — Email + In-App. Template — "{{inviterName}} invited you to {{teamName}}"
+- **`usage-alert`** — In-App + Email + Push. Template — "You've used {{percentage}}% of your {{resource}} quota"
 
 ## Novu + Resend Email Integration
 ```typescript
@@ -212,11 +199,9 @@ export class NotificationBellComponent implements OnInit {
 ```
 
 ## Digest/Batching Pattern
-```typescript
-// Novu workflow with digest step:
-// 1. Trigger event fires per-item (e.g. each comment)
-// 2. Digest step collects events for 1 hour
-// 3. Single notification sent: "You have 5 new comments on Project X"
-// Configure in Novu Dashboard: Add Digest Step → Regular → 1 hour
-// Access digested events in template: {{#each events}} {{payload.comment}} {{/each}}
-```
+- Novu workflow with digest step:
+  1. Trigger event fires per-item (e.g. each comment)
+  2. Digest step collects events for 1 hour
+  3. Single notification sent — "You have 5 new comments on Project X"
+- Configure in Novu Dashboard — Add Digest Step → Regular → 1 hour
+- Access digested events in template — `{{#each events}} {{payload.comment}} {{/each}}`

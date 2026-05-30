@@ -3,7 +3,9 @@
 Every page reads like a streaming-platform splash, not a content blog. Marketing/non-profit/portfolio sites apply the FULL stack; SaaS dashboards apply EDGE-SAFE GUTTERS + FOCUS RINGS + LETTERBOX at minimum.
 
 ## Edge-safe gutters (***NON-NEGOTIABLE — never let a card kiss the viewport edge***)
-Cards touching the edge = AI-slop tell. Use a token, never a literal:
+
+Cards touching the edge = AI-slop tell. Use a token, never a literal.
+
 ```css
 :root {
   --edge:        max(1.75rem,  env(safe-area-inset-left, 1.75rem));
@@ -16,16 +18,29 @@ Cards touching the edge = AI-slop tell. Use a token, never a literal:
 @media (max-width: 768px)  { .container { padding-inline: var(--edge-mobile); } }
 @media (max-width: 480px)  { .container { padding-inline: var(--edge-tiny); } }
 ```
+
 `env(safe-area-inset-*)` handles notched/round-screen devices. Gate: `e2e/cinematic.spec.ts` asserts `.container` computed `padding-inline-start >= 16px` at all 6 breakpoints.
 
 ## Overflow containment (***BUILD-BREAKING — never ship a page with horizontal scroll***)
-`html { overflow-x: clip; } body { overflow-x: clip; }` — `clip` not `hidden` (no scroll container, cleaner). Position-fixed pseudo-elements (`body::after { inset: -10% }`) DO contribute to `body.scrollWidth` in Chromium — always use `inset: 0` for fixed overlays, not negative insets. Animate via `transform: scale()` inside if you need bleed. Gate: `bodyScrollWidth <= viewportWidth + 1` at 6bp.
+
+```css
+html { overflow-x: clip; }
+body { overflow-x: clip; }
+```
+
+- `clip` not `hidden` (no scroll container, cleaner)
+- Position-fixed pseudo-elements (`body::after { inset: -10% }`) DO contribute to `body.scrollWidth` in Chromium — always use `inset: 0` for fixed overlays, not negative insets
+- Animate via `transform: scale()` inside if you need bleed
+- Gate: `bodyScrollWidth <= viewportWidth + 1` at 6bp
 
 ## Cinematic layer (six fixed overlays — z-index orchestration)
+
 Lay them in this z-order: noise(0) → aurora(0) → vignette(1) → spotlight(1) → letterbox(2) → content(3+). Each must be `pointer-events:none` and `position:fixed` with `inset:0`.
 
 ### 1. Aurora bloom (establishing shot)
-Three drifting radial gradients, 32s alternate keyframe animation. `mix-blend-mode: normal`, opacity 0.95→1.0→0.90:
+
+Three drifting radial gradients, 32s alternate keyframe animation. `mix-blend-mode: normal`, opacity 0.95 → 1.0 → 0.90:
+
 ```css
 body::after {
   content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
@@ -44,7 +59,9 @@ body::after {
 ```
 
 ### 2. Vignette (2.39:1 release-print darkening)
+
 Radial-darken corners + linear-darken top/bottom edges. `mix-blend-mode: multiply` deepens shadows without crushing midtones:
+
 ```css
 .vignette {
   position:fixed; inset:0; pointer-events:none; z-index:1;
@@ -56,7 +73,9 @@ Radial-darken corners + linear-darken top/bottom edges. `mix-blend-mode: multipl
 ```
 
 ### 3. Spotlight (pointer-driven follow light)
+
 Desktop only — `(pointer: fine)` media query gate. Updates `--mx/--my` via rAF-throttled mousemove handler. `mix-blend-mode: screen` makes it additive:
+
 ```css
 .spotlight {
   position:fixed; inset:0; pointer-events:none; z-index:1; opacity:0;
@@ -66,6 +85,7 @@ Desktop only — `(pointer: fine)` media query gate. Updates `--mx/--my` via rAF
 }
 @media (pointer: fine) { body.has-pointer .spotlight { opacity:1; } }
 ```
+
 ```js
 (() => {
   let raf = 0, x = 50, y = 50;
@@ -81,7 +101,9 @@ Desktop only — `(pointer: fine)` media query gate. Updates `--mx/--my` via rAF
 ```
 
 ### 4. Letterbox bars (cinematic 2.39:1 framing on hero)
+
 14px top + 28px bottom — top is shorter (cinema bars are intentionally asymmetric for visual weight):
+
 ```css
 .hero { position:relative; overflow:hidden; }
 .hero::before { content:''; position:absolute; inset:0 0 auto 0; height:14px; background:linear-gradient(180deg, rgba(6,6,16,1), transparent); z-index:2; }
@@ -89,12 +111,15 @@ Desktop only — `(pointer: fine)` media query gate. Updates `--mx/--my` via rAF
 ```
 
 ### 5. Color grading (body filter — entire page reads like a graded master)
+
 ```css
 body { filter: contrast(1.04) saturate(1.06); }
 ```
+
 Don't go past 1.06/1.08 — destroys photo grades and pumps reds in skin tones.
 
 ### 6. Selection + focus (cinema-blue interactive states)
+
 ```css
 ::selection { background: rgba(0,229,255,.35); text-shadow: 0 0 12px rgba(0,229,255,.5); color: #fff; }
 :focus-visible {
@@ -106,6 +131,7 @@ Don't go past 1.06/1.08 — destroys photo grades and pumps reds in skin tones.
 ```
 
 ## Random creative touches (***DELIGHT FLOOR — pick ≥3 per build***)
+
 Pre-built menu. Pick at least 3 — Brian's directive is "a lot of random creative stuff."
 
 1. **Headline shimmer** — tri-stop gradient + `background-clip:text` + 8s slide animation on `h1, h2`:
@@ -120,7 +146,7 @@ Pre-built menu. Pick at least 3 — Brian's directive is "a lot of random creati
    @keyframes titleShimmer { 0%,100%{background-position:200% 0;} 50%{background-position:0 0;} }
    ```
 2. **Drop-cap on first manifesto paragraph** — `:first-of-type::first-letter`, 4rem cyan with text-shadow.
-3. **3D card tilt** — perspective + custom-prop rotateX/rotateY from pointer position. Disabled on `(pointer: coarse)` and `prefers-reduced-motion`:
+3. **3D card tilt** — perspective + custom-prop `rotateX/rotateY` from pointer position. Disabled on `(pointer: coarse)` and `prefers-reduced-motion`:
    ```css
    .card { transform: perspective(900px) rotateX(calc(var(--ty,0) * -3deg)) rotateY(calc(var(--tx,0) * 3deg)); transition: transform .3s ease; }
    @media (pointer: coarse), (prefers-reduced-motion: reduce) { .card { transform: none !important; } }
@@ -147,13 +173,14 @@ Pre-built menu. Pick at least 3 — Brian's directive is "a lot of random creati
 8. **Card-image bottom-fade** — `.card-img-wrap::after` linear-gradient overlay (0deg, black, transparent).
 9. **Anti-FOUC + in-viewport fadeIn** — `body { animation: pageFadeIn .5s ease-out; }` + IntersectionObserver `.fade-in-section`.
 10. **Page transitions via View Transitions API** — `@view-transition { navigation: auto; }` + cross-fade.
-11. **Konami code easter egg** — secret animation on `↑↑↓↓←→←→BA` (keep < 1KB).
+11. **Konami code easter egg** — secret animation on `↑↑↓↓←→←→BA` (keep <1KB).
 12. **Branded scrollbar** — `scrollbar-color: var(--blue) var(--black);` + webkit overrides 8px wide.
 13. **Scroll-driven hero parallax** — `@supports (animation-timeline: scroll())` only, fallback `transform: none`.
 14. **Custom selection cursor** — `cursor: url('data:image/svg+xml,...'), auto;` near interactive elements.
 15. **Footer signature animation** — copyright fades in last, with cyan period blink.
 
 ## Reduced-motion override (***ACCESSIBILITY — every cinematic element***)
+
 ```css
 @media (prefers-reduced-motion: reduce) {
   body::after { animation: none; }
@@ -165,16 +192,29 @@ Pre-built menu. Pick at least 3 — Brian's directive is "a lot of random creati
 ```
 
 ## Mobile downgrade
-- Spotlight: hidden via `@media (pointer: coarse)`.
-- 3D tilt: disabled (`transform: none`).
-- Letterbox: reduce to 8px / 16px below 768px.
-- Aurora: opacity 0.6 below 480px (battery + contrast).
+
+- **Spotlight** — hidden via `@media (pointer: coarse)`
+- **3D tilt** — disabled (`transform: none`)
+- **Letterbox** — reduce to 8px / 16px below 768px
+- **Aurora** — opacity 0.6 below 480px (battery + contrast)
 
 ## Build gate (***E2E SPEC — `e2e/cinematic.spec.ts` MANDATORY***)
-Six-breakpoint guard. Per breakpoint asserts: (a) `bodyScrollWidth ≤ viewportWidth + 1` (no horizontal scroll), (b) `htmlScrollWidth ≤ viewportWidth + 1`, (c) `.container` computed `padding-inline-{start,end} ≥ 16px`, (d) `.vignette` + `#spotlight` attached, (e) `getComputedStyle(body).filter` matches `/contrast|saturate/`. Failure = build broken.
+
+Six-breakpoint guard. Per breakpoint asserts:
+- (a) `bodyScrollWidth ≤ viewportWidth + 1` (no horizontal scroll)
+- (b) `htmlScrollWidth ≤ viewportWidth + 1`
+- (c) `.container` computed `padding-inline-{start,end} ≥ 16px`
+- (d) `.vignette` + `#spotlight` attached
+- (e) `getComputedStyle(body).filter` matches `/contrast|saturate/`
+
+Failure = build broken.
 
 ## Reference incident (2026-05-11, mission.megabyte.space)
-First cinematic pass added aurora `body::after { position:fixed; inset:-10% }`. In Chromium, position-fixed body pseudo-elements DO contribute to `body.scrollWidth` even though they're out of document flow. Caused 146px horizontal overflow at 1920 (`bodyScrollWidth = 2068`). Fix bundle = `inset: -10%` → `inset: 0` AND `html/body { overflow-x: clip }`. Lesson: always test `body.scrollWidth` at 1920 after adding fixed-position pseudo overlays. The orbs inside `.hero { overflow:hidden }` were red herrings — they DON'T contribute to body.scrollWidth because their containing block clips them.
+
+First cinematic pass added aurora `body::after { position:fixed; inset:-10% }`. In Chromium, position-fixed body pseudo-elements DO contribute to `body.scrollWidth` even though they're out of document flow. Caused 146px horizontal overflow at 1920 (`bodyScrollWidth = 2068`). Fix bundle = `inset: -10%` → `inset: 0` AND `html/body { overflow-x: clip }`.
+
+Lesson: always test `body.scrollWidth` at 1920 after adding fixed-position pseudo overlays. The orbs inside `.hero { overflow:hidden }` were red herrings — they DON'T contribute to `body.scrollWidth` because their containing block clips them.
 
 ## File-map (drop-in CSS bundle path)
+
 Store the canonical bundle at `~/.agentskills/10-experience-and-design-system/cinematic-bundle.css` (next iteration). Include all six layers + delight menu items + reduced-motion overrides. Site-gen skill 15 imports + tokens-swaps colors for brand fit.

@@ -5,7 +5,9 @@ updated: "2026-04-23"
 ---
 
 # Feature Flags and Experiments
+
 ## PostHog Server-Side Flags (Hono Middleware)
+
 ```typescript
 // src/middleware/feature-flags.ts
 import { PostHog } from 'posthog-node';
@@ -47,6 +49,7 @@ app.get('/api/new-feature', featureFlagMiddleware, async (c) => {
 ```
 
 ## Angular Feature Flag Directive
+
 ```typescript
 // feature-flag.directive.ts
 import { Directive, Input, TemplateRef, ViewContainerRef, OnInit, DestroyRef, inject } from '@angular/core';
@@ -111,17 +114,20 @@ export class FeatureFlagService {
 ```
 
 ## A/B Experiment Setup
-```typescript
-// PostHog Dashboard: Experiments → New Experiment
-// 1. Name: "pricing-page-redesign"
-// 2. Feature flag key: "pricing-page-variant"
-// 3. Variants: control (50%), test-a (25%), test-b (25%)
-// 4. Goal metric: "upgrade_click" event
-// 5. Secondary: "time_on_page" property
-// 6. Minimum sample: 1000 per variant
-// 7. Significance threshold: 95%
 
-// Client implementation
+PostHog Dashboard: **Experiments → New Experiment**
+
+1. **Name** — `"pricing-page-redesign"`
+2. **Feature flag key** — `"pricing-page-variant"`
+3. **Variants** — control (50%), test-a (25%), test-b (25%)
+4. **Goal metric** — `upgrade_click` event
+5. **Secondary** — `time_on_page` property
+6. **Minimum sample** — 1000 per variant
+7. **Significance threshold** — 95%
+
+Client implementation:
+
+```typescript
 const variant = posthog.getFeatureFlag('pricing-page-variant');
 // variant: 'control' | 'test-a' | 'test-b'
 
@@ -141,20 +147,22 @@ posthog.capture('upgrade_click', { plan: 'pro', source: 'pricing-page' });
 ```
 
 ## Gradual Rollout Pattern
-```typescript
-// PostHog Dashboard: Feature Flags → New Flag
-// Release conditions:
-// 1. Start: 5% of users → monitor errors/feedback
-// 2. Day 2: 25% → check metrics
-// 3. Day 5: 50% → validate at scale
-// 4. Day 7: 100% → full release
-//
-// Targeting:
-// - By property: plan = 'pro' (beta users first)
-// - By cohort: "internal-team" → 100%, everyone else → rollout %
-// - By email: *@megabyte.space → always on (internal testing)
 
-// Rollout automation via API
+PostHog Dashboard: **Feature Flags → New Flag**
+
+### Release conditions
+1. **Start** — 5% of users → monitor errors/feedback
+2. **Day 2** — 25% → check metrics
+3. **Day 5** — 50% → validate at scale
+4. **Day 7** — 100% → full release
+
+### Targeting
+- **By property** — `plan = 'pro'` (beta users first)
+- **By cohort** — `"internal-team"` → 100%, everyone else → rollout %
+- **By email** — `*@megabyte.space` → always on (internal testing)
+
+### Rollout automation via API
+```typescript
 async function updateRollout(flagKey: string, percentage: number, env: Env): Promise<void> {
   await fetch(`https://posthog.megabyte.space/api/projects/${env.POSTHOG_PROJECT_ID}/feature_flags`, {
     method: 'PATCH',
@@ -171,12 +179,13 @@ async function updateRollout(flagKey: string, percentage: number, env: Env): Pro
 ```
 
 ## Kill Switch Pattern
-```typescript
-// Critical flags that disable features instantly
-// Name convention: kill-{feature} (inverted logic)
-// kill-payments → true = payments DISABLED
-// kill-signups → true = signups DISABLED
 
+Critical flags that disable features instantly. Name convention: `kill-{feature}` (inverted logic).
+
+- `kill-payments` → true = payments **DISABLED**
+- `kill-signups` → true = signups **DISABLED**
+
+```typescript
 async function checkKillSwitch(feature: string, c: Context): Promise<boolean> {
   const flags = c.get('featureFlags') as Record<string, boolean>;
   return flags[`kill-${feature}`] === true;
@@ -189,13 +198,12 @@ app.post('/api/checkout', async (c) => {
   }
   // Normal checkout flow
 });
-
-// PostHog: toggle kill-payments to true → instant disable
-// No deploy needed. Rolls back in <1 second.
 ```
+
+PostHog: toggle `kill-payments` to true → instant disable. No deploy needed. Rolls back in <1 second.
 
 ## Experiment Analysis Checklist
-```
+
 1. Minimum 100 conversions per variant (not just impressions)
 2. Run for full week minimum (captures day-of-week effects)
 3. Check for novelty effect (flat after initial spike = novelty)
@@ -203,4 +211,3 @@ app.post('/api/checkout', async (c) => {
 5. Check segments: does variant win across all plans/devices?
 6. Document: hypothesis, variants, metric, result, decision
 7. Archive losing variant code. Ship winner. Clean up flag.
-```

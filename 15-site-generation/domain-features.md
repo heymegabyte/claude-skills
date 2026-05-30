@@ -24,7 +24,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **AI search optimization (GEO)** — quotable 40-60 word answer blocks, entity definitions, structured data
 
 ### PWA & Installability
-- **Web App Manifest** — `site.webmanifest` with name, icons (192+512), theme_color, display: standalone
+- **Web App Manifest** — `site.webmanifest` with name, icons (192+512), `theme_color`, `display: standalone`
 - **Favicon complete set** — favicon.ico (16+32+48), favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png (180), android-chrome-192x192.png, android-chrome-512x512.png
 - **Meta theme-color** — matches brand primary
 - **Apple mobile web app capable** — fullscreen on iOS
@@ -45,7 +45,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Business hours display** — from Places API, with open/closed status indicator
 - **Email signup** — newsletter form (connects to Listmonk or stores in D1)
 - **Social share buttons** — per page, uses OG meta
-- **SMS deep links** — `sms:` links alongside `tel:`, track as sms_click event
+- **SMS deep links** — `sms:` links alongside `tel:`, track as `sms_click` event
 - **Speed Dial FAB** — floating action button (mobile), expands to phone/email/directions/booking
 - **Emergency banner** — auto-shows after business hours with emergency number (medical/dental/plumber/HVAC/legal)
 
@@ -75,7 +75,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Reduced motion** — `prefers-reduced-motion` disables all animations
 - **Focus visible outlines** — WCAG 2.4.11 Focus Appearance
 - **Before/after slider** — CSS clip-path drag comparison, touch-support, for contractors/salons/dental
-- **Competitor comparison** — auto-generated from research data, "/why-choose-us" page
+- **Competitor comparison** — auto-generated from research data, `/why-choose-us` page
 - **Weather-aware hero** — outdoor businesses get dynamic hero based on local weather conditions
 
 ### Content Enrichment
@@ -99,41 +99,223 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 
 ## Category→Feature Map
 
-**Restaurant/Cafe:** Menu with categories+prices+dietary icons (V/VG/GF/DF) | OpenTable/Resy reservation widget or built-in form | Hours with holiday exceptions | Photo gallery (food-first, min 8 dishes) | Chef/team bios | Catering inquiry form | JSON-LD: Restaurant+Menu+FAQPage | Special: daily specials section, happy hour callout, online ordering link
+### Restaurant/Cafe
+- Menu with categories+prices+dietary icons (V/VG/GF/DF)
+- OpenTable/Resy reservation widget or built-in form
+- Hours with holiday exceptions
+- Photo gallery (food-first, min 8 dishes)
+- Chef/team bios
+- Catering inquiry form
+- **JSON-LD**: Restaurant+Menu+FAQPage
+- **Special**: daily specials section, happy hour callout, online ordering link
 
-**Salon/Spa:** Service menu with duration+price+description | Online booking CTA (link to existing system or built-in form) | Before/after gallery (side-by-side layout) | Stylist/therapist profiles with specialties | Product recommendations section | Gift card CTA | JSON-LD: HealthAndBeautyBusiness+PriceSpecification | Special: loyalty program highlight
+### Salon/Spa
+- Service menu with duration+price+description
+- Online booking CTA (link to existing system or built-in form)
+- Before/after gallery (side-by-side layout)
+- Stylist/therapist profiles with specialties
+- Product recommendations section
+- Gift card CTA
+- **JSON-LD**: HealthAndBeautyBusiness+PriceSpecification
+- **Special**: loyalty program highlight
 
-**Medical/Dental:** Provider profiles with credentials+headshots | Insurance accepted list (searchable) | Patient portal link | Conditions treated (expandable accordion) | Telehealth availability badge | HIPAA notice in footer | Appointment request form (NOT booking — requires human confirmation) | JSON-LD: MedicalBusiness+Physician | Special: emergency contact prominent, ADA compliance critical
+### Medical/Dental
+- Provider profiles with credentials+headshots
+- Insurance accepted list (searchable)
+- Patient portal link
+- Conditions treated (expandable accordion)
+- Telehealth availability badge
+- HIPAA notice in footer
+- Appointment request form (NOT booking — requires human confirmation)
+- **JSON-LD**: MedicalBusiness+Physician
+- **Special**: emergency contact prominent, ADA compliance critical
 
-**Legal:** Practice areas with detailed descriptions | Attorney profiles with bar admissions+education | Case results/verdicts (anonymized) | Free consultation CTA (prominent, every page) | Blog/legal updates section | FAQ per practice area | JSON-LD: LegalService+Attorney | Special: disclaimer footer, no guarantees language
+### Legal
+- Practice areas with detailed descriptions
+- Attorney profiles with bar admissions+education
+- Case results/verdicts (anonymized)
+- Free consultation CTA (prominent, every page)
+- Blog/legal updates section
+- FAQ per practice area
+- **JSON-LD**: LegalService+Attorney
+- **Special**: disclaimer footer, no guarantees language
 
-**Fitness/Gym:** Class schedule (weekly grid, filterable) | Membership tiers (comparison table) | Trainer profiles with certifications | Virtual tour / facility gallery | Free trial CTA | Transformation stories (before/after with consent) | JSON-LD: SportsActivityLocation | Special: mobile-first schedule view
+### Fitness/Gym
+- Class schedule (weekly grid, filterable)
+- Membership tiers (comparison table)
+- Trainer profiles with certifications
+- Virtual tour / facility gallery
+- Free trial CTA
+- Transformation stories (before/after with consent)
+- **JSON-LD**: SportsActivityLocation
+- **Special**: mobile-first schedule view
 
-**Automotive:** Services list with price ranges | Online appointment scheduling | Vehicle makes/models served | Coupons/specials section | Customer reviews prominent | ASE certification badges | JSON-LD: AutoRepair | Special: emergency/towing number prominent
+### Automotive
+- Services list with price ranges
+- Online appointment scheduling
+- Vehicle makes/models served
+- Coupons/specials section
+- Customer reviews prominent
+- ASE certification badges
+- **JSON-LD**: AutoRepair
+- **Special**: emergency/towing number prominent
 
-**Construction/Contractor:** Project portfolio (masonry grid with filters: residential/commercial/type) | License+insurance+bonding badges | Service area map | Free estimate CTA | Process timeline (step-by-step) | Testimonials with project photos | JSON-LD: HomeAndConstructionBusiness | Special: license number in footer
+### Construction/Contractor
+- Project portfolio (masonry grid with filters: residential/commercial/type)
+- License+insurance+bonding badges
+- Service area map
+- Free estimate CTA
+- Process timeline (step-by-step)
+- Testimonials with project photos
+- **JSON-LD**: HomeAndConstructionBusiness
+- **Special**: license number in footer
 
-**Photography:** Portfolio gallery (masonry, lightbox, categories) | Pricing packages (session types) | Booking calendar or inquiry form | Client access portal link | Blog with recent shoots | Instagram feed integration | JSON-LD: ProfessionalService | Special: image-heavy, minimal text, full-bleed hero
+### Photography
+- Portfolio gallery (masonry, lightbox, categories)
+- Pricing packages (session types)
+- Booking calendar or inquiry form
+- Client access portal link
+- Blog with recent shoots
+- Instagram feed integration
+- **JSON-LD**: ProfessionalService
+- **Special**: image-heavy, minimal text, full-bleed hero
 
-**Real Estate:** Property listings (grid+map view) | Agent profiles | Market reports/blog | Neighborhood guides | Mortgage calculator widget | Virtual tour embeds | Home valuation CTA | JSON-LD: RealEstateAgent | Special: IDX integration link, MLS disclaimer
+### Real Estate
+- Property listings (grid+map view)
+- Agent profiles
+- Market reports/blog
+- Neighborhood guides
+- Mortgage calculator widget
+- Virtual tour embeds
+- Home valuation CTA
+- **JSON-LD**: RealEstateAgent
+- **Special**: IDX integration link, MLS disclaimer
 
-**Education:** Programs/courses list with details | Faculty directory | Admissions process timeline | Campus gallery/virtual tour | Events calendar | Student resources links | Apply now CTA | JSON-LD: EducationalOrganization+Course | Special: accreditation badges
+### Education
+- Programs/courses list with details
+- Faculty directory
+- Admissions process timeline
+- Campus gallery/virtual tour
+- Events calendar
+- Student resources links
+- Apply now CTA
+- **JSON-LD**: EducationalOrganization+Course
+- **Special**: accreditation badges
 
-**Financial/Accounting:** Services matrix (tax/audit/advisory/bookkeeping) | Team credentials (CPA, EA, CFP) | Client portal link | Tax deadline calendar | Resource library (downloadable guides) | Free consultation CTA | JSON-LD: FinancialService+AccountingService | Special: regulatory disclaimers
+### Financial/Accounting
+- Services matrix (tax/audit/advisory/bookkeeping)
+- Team credentials (CPA, EA, CFP)
+- Client portal link
+- Tax deadline calendar
+- Resource library (downloadable guides)
+- Free consultation CTA
+- **JSON-LD**: FinancialService+AccountingService
+- **Special**: regulatory disclaimers
 
-**Retail:** Product highlights (featured, not full catalog) | Store locator if multi-location | Brand story section | Loyalty program CTA | Instagram/social shop link | Events/workshops calendar | JSON-LD: Store+Product | Special: link to existing ecommerce, don't rebuild catalog
+### Retail
+- Product highlights (featured, not full catalog)
+- Store locator if multi-location
+- Brand story section
+- Loyalty program CTA
+- Instagram/social shop link
+- Events/workshops calendar
+- **JSON-LD**: Store+Product
+- **Special**: link to existing ecommerce, don't rebuild catalog
 
-**Non-Profit:** Dedicated `/donate` page (full spec in template-system.md §DonationForm) — 7 sections: (1) mission hero + impact line, (2) 4 impact tiers via `_research.json.donations.impact_tiers` or `donation-tier-presets.json` per cause-type (food-pantry $25→5 meals/$100→20 meals/$500→100 meals/$1,000→200 meals; disaster-relief; education; medical; environmental; animal-welfare each ship presets), (3) "Where Your Money Goes" 4-bar breakdown with animated `<CountUp>` percentages cited inline from Form 990/GuideStar (soup-kitchen default: program 92%/admin 5%/fundraising 3%/infrastructure 1%), (4) one-time + monthly toggle DEFAULT MONTHLY + cover-fees-default-ON + tribute fields (in honor/memory) + Stripe Payment Links or external platform (Donorbox/Givebutter/Classy/Bonterra), (5) live Monthly Goal widget GATED behind `import.meta.env.VITE_PROJECTSITES_API` — when env unset render `null`, NEVER `$0/$0` empty bar (njsk.org incident 2026-04), (6) 16 donor FAQ accordions covering tax deductibility (501(c)(3) EIN inline) / recurring management / in-honor / stock / crypto / DAF / corporate matching / IRA QCD / planned giving / receipts / privacy / refunds / volunteer match / major gifts contact — every answer runs `renderInline` so embedded mailto/tel/maps links render, generates `FAQPage` JSON-LD, (7) other ways to give: mail-in check with `<AddressBlock mapsMode='search'>` (PO Box uses search not directions), planned giving anchor, in-kind via `<MailLink>` | Donation CTA prominent (3+ placements linking to /donate) | Impact metrics counters via `<CountUp>` (suffix outside digit node) | Programs/services list | Volunteer signup form | Events calendar | Newsletter signup | Partner/sponsor logos with grayscale→color hover (logos NEVER lightboxed) | Annual report highlights | JSON-LD: NGO+DonateAction+FAQPage | Special: mission statement hero, 501(c)(3) EIN in footer, no live monthly-goal without API env
+### Non-Profit
 
-**Government/Institutional:** Service finder (search/filter) | Department directory | Document library (PDFs, organized by category) | News/press releases | Meeting calendar with agendas | Multi-language toggle | Accessibility statement page | JSON-LD: GovernmentOrganization | Special: WCAG AAA target, plain language
+**Dedicated `/donate` page** (full spec in `template-system.md` §DonationForm) — 7 sections:
 
-**SaaS/Tech:** Feature comparison table (3-tier) | Interactive demo/video hero | Pricing toggle (monthly/annual) | Integration logos grid | API documentation link | Changelog/status page link | Trust badges (SOC2/GDPR/HIPAA) | Free trial CTA with email capture | JSON-LD: SoftwareApplication+Product | Special: dark theme default, code snippets section
+1. **Mission hero + impact line**
+2. **4 impact tiers** via `_research.json.donations.impact_tiers` or `donation-tier-presets.json` per cause-type
+   - Food-pantry: $25→5 meals / $100→20 meals / $500→100 meals / $1,000→200 meals
+   - Disaster-relief, education, medical, environmental, animal-welfare each ship presets
+3. **"Where Your Money Goes"** — 4-bar breakdown with animated `<CountUp>` percentages cited inline from Form 990/GuideStar (soup-kitchen default: program 92%/admin 5%/fundraising 3%/infrastructure 1%)
+4. **One-time + monthly toggle** DEFAULT MONTHLY + cover-fees-default-ON + tribute fields (in honor/memory) + Stripe Payment Links or external platform (Donorbox/Givebutter/Classy/Bonterra)
+5. **Live Monthly Goal widget** GATED behind `import.meta.env.VITE_PROJECTSITES_API` — when env unset render `null`, NEVER `$0/$0` empty bar (njsk.org incident 2026-04)
+6. **16 donor FAQ accordions** covering tax deductibility (501(c)(3) EIN inline) / recurring management / in-honor / stock / crypto / DAF / corporate matching / IRA QCD / planned giving / receipts / privacy / refunds / volunteer match / major gifts contact — every answer runs `renderInline` so embedded mailto/tel/maps links render, generates `FAQPage` JSON-LD
+7. **Other ways to give** — mail-in check with `<AddressBlock mapsMode='search'>` (PO Box uses search not directions), planned giving anchor, in-kind via `<MailLink>`
 
-**Church/Religious:** Service times (weekly schedule) | Sermon archive (audio/video embeds) | Event calendar | Small groups directory | Dedicated `/give` page with one-time + monthly toggle (DEFAULT TO MONTHLY), suggested amounts $25/$50/$100/$250/$500, Stripe or link to existing giving platform | Prayer request form | Staff/leadership directory | Visitor welcome section | JSON-LD: Church+Event | Special: livestream embed, warm welcoming tone
+**Standard routes (14)**:
+- `/` (home), `/about`, `/mission`, `/programs`, `/impact`
+- `/get-involved`, `/volunteer`, `/events`, `/news`, `/contact`
+- `/donate`, `/privacy`, `/terms`, `/accessibility`
 
-**Pet Services:** Services (grooming/boarding/training) with pricing | Pet gallery | Staff profiles with certifications | Online booking | Vaccination requirements | Emergency vet referral | JSON-LD: PetStore+AnimalShelter | Special: friendly playful design, pet safety badges
+**Jewel routes (10)**:
+- `/financials` — 4-bar program/admin/fundraising/infra `<FinancialBreakdown>` + Form 990 PDF + Charity Navigator badge
+- `/planned-giving` — `<PlannedGivingGrid>` bequest|IRA-QCD|DAF|stock|charitable-gift-annuity + sample bequest language + planned-giving-officer card
+- `/ways-to-give` — `<WaysToGiveTaxonomy>` 10-path grid → `/donate/recurring | /donate/major-gift | /donate/in-kind | /donate/stock | /donate/crypto | /donate/vehicle | /donate/employer-match | /donate/tribute | /planned-giving | /donate`
+- `/partners` — `<PartnerLogoWall>` grayscale→color-hover grouped foundation|corporate|gov|community|media
+- `/press` — `<PressMentions>` outlet+headline+date+paraphrase+outbound
+- `/stories` — `<TestimonialCarousel>` consent-tagged guest/volunteer/donor
+- `/sermons` or `/podcast` — `<TranscriptPlayer>` audio+video+structured transcript+chapters+VTT/SRT
+- `/alumni` — `<AlumniGrid>` past-role→current-role→still-gives-back
+- `/campaigns/{slug}` — `<CampaignThermometer>` raised/goal + named gift opportunities + match-grant + Stripe embed
+- `/parish-toolkit` or `/resources` — `<ParishToolkitDownloads>` bulletin inserts | donation drive guides | sermon outlines | fundraiser templates PDFs
 
-**Wedding/Events:** Portfolio gallery (by event type) | Package pricing comparison | Availability calendar | Vendor partnerships | Testimonials with event photos | Planning timeline | JSON-LD: EventVenue+LocalBusiness | Special: romantic elegant design, lead capture form
+**Other features**:
+- Donation CTA prominent (3+ placements linking to `/donate`)
+- Impact metrics counters via `<CountUp>` (suffix outside digit node)
+- `<LocaleSwitcher>` header dropdown + `<HrefLangHead>` per route when `_research.json.i18n.locales[]` populated
+- **JSON-LD**: NGO+DonateAction+FAQPage+NewsArticle (press)+Event (campaigns)
+- **Special**: mission statement hero, 501(c)(3) EIN in footer, no live monthly-goal without API env
+
+**Cross-refs**: Standard+jewel union per `[[page-set-expansion]]` § Nonprofit; demographic locale mirrors per `[[i18n-by-demographics]]`; rebuild from source via `[[source-site-enhancement]]`.
+
+### Government/Institutional
+- Service finder (search/filter)
+- Department directory
+- Document library (PDFs, organized by category)
+- News/press releases
+- Meeting calendar with agendas
+- Multi-language toggle
+- Accessibility statement page
+- **JSON-LD**: GovernmentOrganization
+- **Special**: WCAG AAA target, plain language
+
+### SaaS/Tech
+- Feature comparison table (3-tier)
+- Interactive demo/video hero
+- Pricing toggle (monthly/annual)
+- Integration logos grid
+- API documentation link
+- Changelog/status page link
+- Trust badges (SOC2/GDPR/HIPAA)
+- Free trial CTA with email capture
+- **JSON-LD**: SoftwareApplication+Product
+- **Special**: dark theme default, code snippets section
+
+### Church/Religious
+- Service times (weekly schedule)
+- Sermon archive (audio/video embeds)
+- Event calendar
+- Small groups directory
+- Dedicated `/give` page with one-time + monthly toggle (DEFAULT TO MONTHLY), suggested amounts $25/$50/$100/$250/$500, Stripe or link to existing giving platform
+- Prayer request form
+- Staff/leadership directory
+- Visitor welcome section
+- **JSON-LD**: Church+Event
+- **Special**: livestream embed, warm welcoming tone
+
+### Pet Services
+- Services (grooming/boarding/training) with pricing
+- Pet gallery
+- Staff profiles with certifications
+- Online booking
+- Vaccination requirements
+- Emergency vet referral
+- **JSON-LD**: PetStore+AnimalShelter
+- **Special**: friendly playful design, pet safety badges
+
+### Wedding/Events
+- Portfolio gallery (by event type)
+- Package pricing comparison
+- Availability calendar
+- Vendor partnerships
+- Testimonials with event photos
+- Planning timeline
+- **JSON-LD**: EventVenue+LocalBusiness
+- **Special**: romantic elegant design, lead capture form
 
 ## Schema Priority
 

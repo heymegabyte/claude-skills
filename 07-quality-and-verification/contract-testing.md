@@ -8,13 +8,17 @@ description: "Zod schema validation against live Hono API endpoints. Runtime typ
 # Contract Testing
 
 ## Core Pattern
-Zod = source of truth (05/api-design). Contract tests verify live endpoints conform at runtime. No mocks — hit the real API, validate the real response.
+- Zod = source of truth (see 05/api-design)
+- Contract tests verify live endpoints conform at runtime
+- No mocks — hit the real API, validate the real response
+
 ```
 Define Zod schema → fetch live endpoint → z.parse(response) → fail on mismatch
 ```
 
 ## Drizzle v1 Schema-to-Zod (Auto-Derive Contracts)
 Drizzle v1 (`drizzle-zod`) generates Zod schemas directly from table definitions — contracts stay in sync with DB schema automatically:
+
 ```typescript
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { createSelectSchema, createInsertSchema } from 'drizzle-zod';
@@ -85,9 +89,22 @@ describe('API Contracts', () => {
 ```
 
 ## When to Run
-Post-deploy: always (verify live API). PR checks: against staging URL. Nightly: production.
-Never pre-deploy (schemas may not match yet). Never mock API responses (defeats the purpose).
+- **Post-deploy** — always (verify live API)
+- **PR checks** — against staging URL
+- **Nightly** — production
+- **Never pre-deploy** (schemas may not match yet)
+- **Never mock API responses** (defeats the purpose)
 
 ## Anti-Patterns
-Never: mock responses|skip error envelope validation|test against localhost in CI|hardcode test data that changes.
-Always: test success+error paths|validate pagination contracts|run against real deployed URL|derive Drizzle contracts from table schemas.
+
+### Never
+- Mock responses
+- Skip error envelope validation
+- Test against localhost in CI
+- Hardcode test data that changes
+
+### Always
+- Test success + error paths
+- Validate pagination contracts
+- Run against real deployed URL
+- Derive Drizzle contracts from table schemas

@@ -6,7 +6,7 @@ updated: "2026-05-01"
 
 # Per-Route Static Head Metadata (***BUILD-BREAKING — EVERY ROUTE***)
 
-Every route emits a fully-hydrated static `<head>` at SSG/prerender time. NEVER client-router-only — crawlers and AI agents read the raw HTML before JS executes.
+Every route emits a fully-hydrated static `<head>` at SSG / prerender time. NEVER client-router-only — crawlers and AI agents read the raw HTML before JS executes.
 
 ## RouteMetadata Interface (SSOT — type-checked at build)
 ```ts
@@ -22,7 +22,10 @@ interface RouteMetadata {
   robots: { index: boolean; follow: boolean };
 }
 ```
-Source: `src/data/page-meta.ts` exports `Record<route, RouteMetadata>`. Blog/dynamic routes derive at build via the same factory. Hard gate: every `<Route path>` in App.tsx has an entry — fail if any route resolves to `index.html`'s static title.
+
+**Source:** `src/data/page-meta.ts` exports `Record<route, RouteMetadata>`. Blog / dynamic routes derive at build via the same factory.
+
+**Hard gate:** every `<Route path>` in `App.tsx` has an entry — fail if any route resolves to `index.html`'s static title.
 
 ## Per-Route Head Template (paste verbatim — SSOT)
 ```html
@@ -56,13 +59,34 @@ Source: `src/data/page-meta.ts` exports `Record<route, RouteMetadata>`. Blog/dyn
 ```
 
 ## Per-Route OG Image (***1200×630 — DESIGNED CARD, NEVER HERO PHOTO***)
-Generate with **Satori** preferred (edge-rendered, deterministic, brand-card layout: title + sitelogo + accent gradient + tagline + brand watermark). **Fallback:** gpt-image-1.5 with brand colors + business name + tagline + logo bottom-right. **NEVER:** reuse homepage hero photo as OG image — must be a designed card. Store at `r2://sites/<slug>/og/<route-slug>.jpg` (≤100KB, JPEG q=85, 1200×630). Each route gets a unique card. Build gate: every route's `og:image` URL HEADs 200 + size ≤100KB + dimensions 1200×630.
+- **Generate with Satori preferred** — edge-rendered, deterministic, brand-card layout: title + sitelogo + accent gradient + tagline + brand watermark
+- **Fallback** — gpt-image-1.5 with brand colors + business name + tagline + logo bottom-right
+- **NEVER** — reuse homepage hero photo as OG image — must be a designed card
+- **Store at** `r2://sites/<slug>/og/<route-slug>.jpg` (≤100KB, JPEG q=85, 1200×630)
+- Each route gets a unique card
+- **Build gate** — every route's `og:image` URL HEADs 200 + size ≤100KB + dimensions 1200×630
 
 ## Generous Internal Linking (***≥5 PER PAGE — body-copy contextual***)
-Every page contains **≥5 internal links woven into body copy** with descriptive anchor text (never "click here", "learn more"). When body mentions: institutions/journals/conferences/awards/organizations/people/places, link them. Internal where a relevant page exists; outbound `rel="noopener" target="_blank"` to authoritative source otherwise (journal name → journal homepage, university → official site, conference → official site). Anchor text varies — never repeat identical text site-wide. Hard gate: `validate-internal-links.mjs` counts contextual `<a>` per page, flags pages with <5 or with repeated identical anchors >2×.
+- Every page contains **≥5 internal links woven into body copy** with descriptive anchor text (never "click here", "learn more")
+- When body mentions: institutions / journals / conferences / awards / organizations / people / places, link them
+- Internal where a relevant page exists; outbound `rel="noopener" target="_blank"` to authoritative source otherwise (journal name → journal homepage, university → official site, conference → official site)
+- Anchor text varies — never repeat identical text site-wide
+- **Hard gate:** `validate-internal-links.mjs` counts contextual `<a>` per page, flags pages with <5 or with repeated identical anchors >2×
 
 ## Publication / External-Source Linking (***FOR PORTFOLIO/ACADEMIC/PRESS LISTINGS***)
-When site lists publications, papers, articles, talks, press, awards, podcasts: each item card MUST contain (a) auto-extracted ~40-word summary from the original detail page (crawled at research time), (b) deep-link to original (`target="_blank" rel="noopener"`), (c) hyperlinked source name (journal/publisher/conference) → its homepage or DOI. NEVER import direct quoted abstracts (SEO duplicate-content risk + copyright). Summary = our paraphrase. Date+author+type+ISBN (if any) extracted as structured metadata (BlogPosting/Article/ScholarlyArticle JSON-LD). Build gate: every publication card has summary + outbound link + source-name link OR fail.
+When site lists publications, papers, articles, talks, press, awards, podcasts, each item card MUST contain:
+
+1. Auto-extracted ~40-word summary from the original detail page (crawled at research time)
+2. Deep-link to original (`target="_blank" rel="noopener"`)
+3. Hyperlinked source name (journal / publisher / conference) → its homepage or DOI
+
+### Rules
+- NEVER import direct quoted abstracts (SEO duplicate-content risk + copyright)
+- Summary = our paraphrase
+- Date + author + type + ISBN (if any) extracted as structured metadata (BlogPosting / Article / ScholarlyArticle JSON-LD)
+
+### Build gate
+Every publication card has summary + outbound link + source-name link OR fail.
 
 ## Publication Item Schema
 ```ts
@@ -77,10 +101,36 @@ interface PublicationItem {
 ```
 
 ## Sub-Page Type Mapping
-homepage → `website` | about/team/bio → `profile` | service/product detail → `service`/`product` | blog post → `article` | restaurant/salon/clinic → `local_business` | nonprofit → `nonprofit`. JSON-LD schema by type: WebSite+Organization (home) | Person+ProfilePage (bio) | Service+Organization (service) | BlogPosting+BreadcrumbList (article) | LocalBusiness+PostalAddress+GeoCoordinates (local) | NGO+Organization (nonprofit). Always +BreadcrumbList on non-home routes.
+- **homepage** → `website`
+- **about / team / bio** → `profile`
+- **service / product detail** → `service` / `product`
+- **blog post** → `article`
+- **restaurant / salon / clinic** → `local_business`
+- **nonprofit** → `nonprofit`
+
+### JSON-LD schema by type
+- **home** — WebSite + Organization
+- **bio** — Person + ProfilePage
+- **service** — Service + Organization
+- **article** — BlogPosting + BreadcrumbList
+- **local** — LocalBusiness + PostalAddress + GeoCoordinates
+- **nonprofit** — NGO + Organization
+
+Always + BreadcrumbList on non-home routes.
 
 ## Anchor Text Variation (anti-templating)
 Never reuse identical anchor text across the site. Vary phrasing per occurrence: "her work at Boston University" / "Boston University doctoral program" / "BU's nutrition department". Each occurrence reads naturally in context.
 
 ## Validator: validate-route-metadata.mjs
-For every route in sitemap.xml: fetch raw HTML (NOT executed JS), assert: title 50-60ch | desc 120-156ch | canonical present | og:image+og:title+og:description present non-empty | twitter:card=summary_large_image | JSON-LD parseable + ≥4 blocks | h1 in raw HTML before any `<script>`. Fail build on any violation. Wired into `gate` script (skill 07 quality-gates.md).
+For every route in `sitemap.xml`:
+- Fetch raw HTML (NOT executed JS)
+- Assert:
+  - Title 50-60ch
+  - Desc 120-156ch
+  - Canonical present
+  - `og:image` + `og:title` + `og:description` present non-empty
+  - `twitter:card=summary_large_image`
+  - JSON-LD parseable + ≥4 blocks
+  - h1 in raw HTML before any `<script>`
+- Fail build on any violation
+- Wired into `gate` script (skill 07 `quality-gates.md`)

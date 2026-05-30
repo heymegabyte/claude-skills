@@ -8,18 +8,17 @@ description: "Three-tier visual regression: Percy AI Visual Review Agent (CI, 3x
 # Visual Regression Testing
 
 ## Tool Hierarchy
-1. **Percy AI Visual Review Agent (2025+):** CI integration, 3x review reduction, 40% false positive filtering, OCR for text-shift elimination. 5K screenshots/month free tier. Best for: full-page regression in CI.
-2. **Chromatic:** Pixel-perfect detection built around Storybook, now supports Playwright. Best for: component-level regression, design system changes.
-3. **pixelmatch:** Lightweight zero-dependency PNG diffing for local CI. ~150 lines, no native bindings. Best for: fast local checks, custom thresholds.
-Best combo: Percy (CI integration) + Chromatic (component-level) together. pixelmatch for local dev loop.
+1. **Percy AI Visual Review Agent (2025+)** — CI integration, 3x review reduction, 40% false positive filtering, OCR for text-shift elimination. 5K screenshots/month free tier. Best for: full-page regression in CI.
+2. **Chromatic** — Pixel-perfect detection built around Storybook, now supports Playwright. Best for: component-level regression, design system changes.
+3. **pixelmatch** — Lightweight zero-dependency PNG diffing for local CI. ~150 lines, no native bindings. Best for: fast local checks, custom thresholds.
+
+**Best combo:** Percy (CI integration) + Chromatic (component-level) together. pixelmatch for local dev loop.
 
 ## Baseline Workflow
-```
-1. Capture screenshots at 6 breakpoints (see visual-inspection-loop.md)
-2. First run: save as baselines → screenshots/baselines/{route}_{breakpoint}.png
+1. Capture screenshots at 6 breakpoints (see `visual-inspection-loop.md`)
+2. First run: save as baselines → `screenshots/baselines/{route}_{breakpoint}.png`
 3. Subsequent runs: capture → compare against baselines → diff images
 4. Review diffs → accept changes (update baselines) or fix regressions
-```
 
 ## Implementation
 ```typescript
@@ -152,15 +151,14 @@ const IGNORE_REGIONS: Record<string, Array<{ x: number; y: number; w: number; h:
 ```
 
 ## Visual QA Agent Integration
-visual-regression feeds into the visual-qa agent (07/visual-inspection-loop.md):
-```
+`visual-regression` feeds into the `visual-qa` agent (07/visual-inspection-loop.md):
+
 1. Run pixelmatch diff → any failures?
 2. Yes → send diff images + current screenshots to GPT-4o Vision
 3. AI classifies: intentional change | regression | flaky (animation/timing)
 4. Intentional → auto-update baselines
 5. Regression → generate fix suggestions
 6. Flaky → increase threshold or add ignore region
-```
 
 ## CI Integration (GitHub Actions)
 ```yaml
@@ -200,5 +198,15 @@ ROUTES="/" bun run test:visual
 ```
 
 ## Anti-Patterns
-Never: screenshot in headful mode (font rendering differs)|compare across OS (Linux vs macOS renders differ)|skip networkidle (loading spinners cause false diffs)|use exact match (threshold:0 catches subpixel antialiasing).
-Always: run in Docker/CI for consistent rendering|mask dynamic regions (dates, avatars)|store baselines in git (LFS for large repos)|review diff images before accepting.
+
+### Never
+- Screenshot in headful mode (font rendering differs)
+- Compare across OS (Linux vs macOS renders differ)
+- Skip `networkidle` (loading spinners cause false diffs)
+- Use exact match (`threshold:0` catches subpixel antialiasing)
+
+### Always
+- Run in Docker / CI for consistent rendering
+- Mask dynamic regions (dates, avatars)
+- Store baselines in git (LFS for large repos)
+- Review diff images before accepting

@@ -6,6 +6,7 @@ description: "Workbox cache strategies: CacheFirst static (30-day), NetworkFirst
 ---
 
 # Service Worker and Offline
+
 ## Workbox Configuration (workbox-config.js)
 ```javascript
 // workbox-config.js — Vite/webpack plugin feeds this
@@ -287,7 +288,11 @@ if ('serviceWorker' in navigator && environment.production) {
 ```
 
 ## CF Workers + Client SW Coordination
-Edge Worker handles: routing, auth, cache headers, HTML streaming, API. Client SW handles: offline fallback, asset caching, background sync, push. No overlap — edge sets `Cache-Control`, client SW respects it. Edge never caches HTML (max-age=0), client SW caches shell for offline. Edge handles /api/ auth + rate limiting, client SW caches safe GET responses.
+- **Edge Worker handles** — routing, auth, cache headers, HTML streaming, API
+- **Client SW handles** — offline fallback, asset caching, background sync, push
+- **No overlap** — edge sets `Cache-Control`, client SW respects it
+- Edge never caches HTML (`max-age=0`), client SW caches shell for offline
+- Edge handles `/api/` auth + rate limiting, client SW caches safe GET responses
 
 ## Vite Plugin Setup
 ```typescript

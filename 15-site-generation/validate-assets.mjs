@@ -51,7 +51,6 @@ const EXTERNAL_HOST_ALLOWLIST = [
   'res.cloudinary.com',
   'images.pexels.com',
   'videos.pexels.com',
-  'images.unsplash.com',
   'cdn.shopify.com',
 ];
 
