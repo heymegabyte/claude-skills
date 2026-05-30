@@ -38,7 +38,7 @@ The canonical list of PREFERRED packages + the decision discipline. **Listing �
 - ⏳ **libphonenumber-js** — phone validation where phone inputs exist.
 
 ### Editors / content
-- ⏳ **Monaco Editor** + **Shiki** — code/config/template/prompt editing + highlight (editor view).
+- ✅ **Monaco Editor** — code/config/log/prompt editing + read-only viewers. INSTALLED in projectsites.dev v2 (site-detail logs viewer). **Angular+esbuild gotchas (hard-won):** (1) `import('monaco-editor')`'s CSS pulls `codicon.ttf` → esbuild fails "No loader for .ttf" → add `"loader": { ".ttf": "file" }` to the `@angular/build` builder options. (2) Read-only viewers need NO language worker — set `self.MonacoEnvironment = { getWorker: () => ({postMessage(){},addEventListener(){},removeEventListener(){},terminate(){},dispatchEvent:()=>false,onmessage:null,onmessageerror:null,onerror:null}) }` (a stub worker object) BEFORE `import('monaco-editor')` to kill the "could not create web worker" console warning + any worker-asset 404; monarch highlighting still runs main-thread. (3) Dynamic `import()` inside `afterNextRender` → own lazy chunk (monaco is ~5MB, never initial). `defineTheme('ps-cockpit', {base:'vs-dark', colors:{'editor.background':'#03070a',...}})`, `automaticLayout:false` + ResizeObserver, dispose on destroy. Reference: `pages/admin-v2/sections/code-viewer.component.ts`. ⏳ **Shiki** — lighter highlight where a full editor is overkill.
 - ⏳ **Lexical** — rich text editor view.
 - ⏳ **GrapesJS** — third visual drag-and-drop editor view (alongside code + preview).
 - ⏳ **Payload CMS** — only where real content management is a product feature.
