@@ -49,7 +49,8 @@ The canonical list of PREFERRED packages + the decision discipline. **Listing �
 - ⏳ **Uppy** (uploads) · **cropper.js** · **compressor.js** · **Tesseract.js** (OCR = untrusted output) — adopt per real media features.
 
 ### Diagrams / viz / maps
-- ⏳ **Mermaid** (arch/workflow/ERD/docs) · **Apache ECharts** / **Unovis** (dashboards) · **@visx/visx** (custom viz) · **Cytoscape** (dependency/tenant/site graphs) · **Excalidraw**/**tldraw** (canvas) · **MapLibre**/**h3-js**/**pmtiles** (geo/local-SEO). Charts support decisions, not decoration.
+- ✅ **Apache ECharts** — the dashboard chart lib (Apache-2.0). INSTALLED in projectsites.dev v2 (`echarts ^6.1.0`, 2026-05-30) for the analytics cockpit. **Lazy-load contract:** dynamic `import('echarts')` inside `afterNextRender` so the ~1.16MB lib lands in its own chunk, never the initial bundle. Theme transparent canvas + helm hex; `prefers-reduced-motion` → `animation:false`; `ResizeObserver` + `dispose()` on destroy; `role="img"` + data-derived `aria-label`. Reference: `pages/admin-v2/sections/donut-chart.component.ts`.
+- ⏳ **Mermaid** (arch/workflow/ERD/docs) · **Unovis** (alt dashboards) · **@visx/visx** (custom viz) · **Cytoscape** (dependency/tenant/site graphs) · **Excalidraw**/**tldraw** (canvas) · **MapLibre**/**h3-js**/**pmtiles** (geo/local-SEO). Charts support decisions, not decoration.
 
 ### Motion
 - ✅ **Motion** — subtle, `prefers-reduced-motion`-gated. ⏳ **lottie-web** · 🔌 **Rive** · ❌ heavy **Theatre.js** unless a real cinematic need.
