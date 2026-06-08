@@ -1,4 +1,4 @@
-# Timeline Photo Authenticity (***NON-NEGOTIABLE***)
+# Timeline Photo Authenticity
 
 ## Mandate
 - Historical timelines (about/history/founder pages, museum-style scroll narratives, year-by-year scrolls, "Our Story" components) MUST use real, primary-sourced photographs for every entry that gets imagery.
@@ -68,7 +68,7 @@ Example: `'Mathew Brady studio · Library of Congress LC-BH82-4318 · Public Dom
 The rule scales: if the surface claims to depict the past, the depiction must be real.
 
 ## Cross-link
-- [[copy-writing]] — banned-authority-signals list
-- [[citations]] — APA source-hierarchy
-- [[09-brand-and-content-system]] — real-brand-extraction philosophy
-- [[12-media-orchestration]] — stock-curation rules
+- `copy-writing` — banned-authority-signals list
+- `citations` — APA source-hierarchy
+- `09-brand-and-content-system` — real-brand-extraction philosophy
+- `12-media-orchestration` — stock-curation rules

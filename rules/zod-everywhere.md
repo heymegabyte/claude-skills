@@ -1,10 +1,10 @@
-# Zod Everywhere (***SUPREME — every runtime boundary, every project***)
+# Zod Everywhere
 
 Zod is the single source of truth at EVERY runtime boundary. Types are inferred from schemas via `z.infer` — never hand-maintained alongside a schema where they can silently drift. If data crosses a boundary, a Zod schema guards it.
 
-This rule fires on every boundary-touching change. It complements `[[code-style]]` (TS strict + "Zod = source of truth") and `[[hono-api]]` (`@hono/zod-validator` on all bodies).
+This rule fires on every boundary-touching change. It complements ``code-style`` (TS strict + "Zod = source of truth") and ``hono-api`` (`@hono/zod-validator` on all bodies).
 
-## The boundaries (***each one needs a schema***)
+## The boundaries
 
 - Env vars
 - Feature manifests
@@ -44,7 +44,7 @@ export type CreateSiteInput = z.infer<typeof CreateSiteSchema>; // never hand-wr
 ### Do
 - `z.infer<typeof Schema>` for the type — one definition, zero drift.
 - Validate at the boundary, then pass the typed object inward.
-- Colocate the schema with the feature in `libs/features/<slug>/schemas.ts` per `[[feature-module-architecture]]`.
+- Colocate the schema with the feature in `libs/features/<slug>/schemas.ts` per ``feature-module-architecture``.
 - Parse env once at startup with a single `EnvSchema` — fail fast on missing/invalid config.
 - Use `safeParse` at I/O edges; `parse` only where a throw is the intended control flow.
 
@@ -57,16 +57,13 @@ export type CreateSiteInput = z.infer<typeof CreateSiteSchema>; // never hand-wr
 
 ## Type-safety baseline
 
-- TS config already enforces `"strict": true` + `"noUncheckedIndexedAccess": true` + `"exactOptionalPropertyTypes": true` per `[[code-style]]`.
+- TS config already enforces `"strict": true` + `"noUncheckedIndexedAccess": true` + `"exactOptionalPropertyTypes": true` per ``code-style``.
 - Zod adds the RUNTIME guarantee TypeScript can't: strict types prove compile-time shape, Zod proves runtime shape.
 - `z.infer` is the bridge — schemas drive both at once.
 
-## Reference incident (***2026-05-28 — global AI-dev OS upgrade***)
-Born from the autonomous-AI-dev OS upgrade prompt — elevates "Zod = source of truth" to a universal every-boundary mandate with `z.infer`-or-drift as the hard rule.
-
 ## See
-- [[contract-first-ai]] — AI outputs are a boundary; same validate-then-type pipeline
-- [[code-style]] — TS strict config + "Zod = source of truth" baseline
-- [[hono-api]] — `@hono/zod-validator` + `@hono/zod-openapi` on every request
-- [[feature-module-architecture]] — schemas colocate in each module's `schemas.ts`
-- [[drift-detection]] — duplicated/uncovered schemas are flagged drift
+- `contract-first-ai` — AI outputs are a boundary; same validate-then-type pipeline
+- `code-style` — TS strict config + "Zod = source of truth" baseline
+- `hono-api` — `@hono/zod-validator` + `@hono/zod-openapi` on every request
+- `feature-module-architecture` — schemas colocate in each module's `schemas.ts`
+- `drift-detection` — duplicated/uncovered schemas are flagged drift

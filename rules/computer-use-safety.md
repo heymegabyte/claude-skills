@@ -22,7 +22,7 @@
 - Unexpected dialog: assess → handle → continue
 - Verify state after multi-step sequences
 
-## Reality check — when desktop Computer Use is the wrong tool (***ADD before reaching for it***)
+## Reality check — when desktop Computer Use is the wrong tool
 Even with the user's REAL Chrome and live sessions, desktop Computer Use breaks down when ANY of these apply. Pre-check before starting a multi-vendor flow:
 - **Active chat client** (Emdash / Claude Desktop / terminal in foreground) intercepts keystrokes — `cmd+l` `type` `Return` lands in chat instead of Chrome's omnibox. Verified incident 2026-05-26: Twilio URL typed during projectsites.dev provisioning landed in Emdash chat buffer twice in a row despite intermediate dock-click focus
 - **Vendor 2FA walls** (Mailchimp Authenticator, Stripe mobile-device verification, Twilio 2FA, GCP SSO) require the user's phone or hardware key. Computer Use cannot complete these. Each provider that gates on TOTP/biometric = blocker
@@ -33,7 +33,7 @@ When ≥2 of these apply, switch to **paste-collaboration**: generate a tight bu
 
 Reference incident (2026-05-26, projectsites.dev): attempted to provision Twilio + GA4 + GCP + Stability + Unsplash + Whois via desktop Computer Use. Hit Stripe page-unload modal, then Emdash chat absorbed `cmd+l` keystrokes. CF_API_TOKEN + CF_ZONE_ID (both bash-doable via CF API) shipped autonomously; switched to paste-collab for the remaining 12. Rule: when API-doable, use API; when 2FA-walled, paste-collab beats Computer Use.
 
-## Focus discipline (***NON-NEGOTIABLE — desktop Computer Use only***)
+## Focus discipline
 - Keyboard events (`key`, `type`, `cmd+l`, `cmd+t`, `Return`) target the CURRENTLY-FOCUSED window, NOT the window in the last screenshot
 - Brian's chat client (Emdash / Claude Desktop / terminal) and his Chrome window are separate windows; my screenshot can show one while keystrokes route to the other
 - **Reliable focus-grab (proven 2026-05-26 on the Unsplash provisioning flow)**: shell out to osascript before any keystroke batch
@@ -57,7 +57,7 @@ Reference incident (2026-05-26, projectsites.dev): attempted to provision Twilio
 ## Links
 - Never click web links with computer-use — use Chrome MCP or WebFetch
 - Computer Use is for native-only apps: Finder, System Settings, Preview, Notes, Photos
-- **EXCEPTION — session-bound browser flows**: when a task requires the user's REAL browser session (logged-in vendor dashboards: HubSpot/Mailchimp/Stripe/GCP/Twilio/Vercel/AWS console), Chrome MCP + Playwright MCP both spawn FRESH isolated Chromium with zero cookies — they CANNOT complete the task. Desktop Computer Use is the ONLY tool that drives the user's actual Chrome with live sessions. When the user says "Use Computer Use" for OAuth-app registration / vendor-dashboard work, they ALWAYS mean `mcp__desktop-control__computer`, never Chrome MCP. The efficiency-priority list above ranks by speed for stateless work; for session-bound work, Desktop Computer Use is the ONLY path. Cross-link: [[secret-auto-provisioning]] § Tier 3.
+- **EXCEPTION — session-bound browser flows**: when a task requires the user's REAL browser session (logged-in vendor dashboards: HubSpot/Mailchimp/Stripe/GCP/Twilio/Vercel/AWS console), Chrome MCP + Playwright MCP both spawn FRESH isolated Chromium with zero cookies — they CANNOT complete the task. Desktop Computer Use is the ONLY tool that drives the user's actual Chrome with live sessions. When the user says "Use Computer Use" for OAuth-app registration / vendor-dashboard work, they ALWAYS mean `mcp__desktop-control__computer`, never Chrome MCP. The efficiency-priority list above ranks by speed for stateless work; for session-bound work, Desktop Computer Use is the ONLY path. Cross-link: `secret-auto-provisioning` § Tier 3.
 
 ## Creative use
 - Automate repetitive GUI tasks

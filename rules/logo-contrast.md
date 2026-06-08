@@ -1,4 +1,4 @@
-# Logo + Icon Contrast (***UNIVERSAL — every overlay/tile/badge/toast***)
+# Logo + Icon Contrast
 
 ## Core rule
 - Every logo, icon, monogram, or brand mark placed onto a UI surface MUST be paired with a background that gives WCAG-grade contrast against the mark's dominant color
@@ -37,20 +37,13 @@ object-fit: contain;
 - Either explicit `background: white` regardless OR a CSS-prop-driven tile that flips with the theme
 - Never assume "the parent is white right now, the icon is dark, so we're fine" — the parent might invert tomorrow
 
-## Reference incident (***2026-05-21***)
-- njsk.org PWA install prompt (`/Users/Apple/emdash/repositories/njsk.org/src/components/pwa-install-prompt.tsx`) used the raw `/android-chrome-192x192.png` (maroon-on-transparent) on the prompt's white background
-- The mark was readable on this specific prompt but the `.pwa-install-prompt__icon` CSS had no explicit background
-- Any theme inversion (dark-mode toast, contrast media query, OS-level theme) would have rendered the maroon mark on an inverted dark surface = invisible
-- **Fix**: explicit `background: #ffffff; padding: 4px; box-shadow: …` on the icon tile so the white surround is a property of the icon itself, not an inherited prop of the parent
-- Same fix applies to favicon-derived badges everywhere
-
 ## Validator path
 - `validate-icon-contrast.mjs` — **enforcement: WARNING** (console output, does not fail build)
 - Parses shipped CSS, finds every `.icon|.avatar|.badge|.logo|.brand` class that renders an `<img>`, flags any without an explicit `background:` declaration when the source asset has transparency + dominant-color outside the parent's color range
-- Rationale for warning tier: theme-inversion edge cases are rare enough that catching at code-review + visual-QA (see [[image-quality]] critique loop) beats blocking deploys
+- Rationale for warning tier: theme-inversion edge cases are rare enough that catching at code-review + visual-QA (see `image-quality` critique loop) beats blocking deploys
 
 ## See
-- [[image-quality]] (asset extraction + critique)
-- [[always]] (favicon/manifest icon mandate)
-- [[09-brand-and-content-system]] (real-brand extraction)
-- [[copy-writing]] (anti-AI-slop applies to brand assets too — extracted logo + wrong background = AI-slop)
+- `image-quality` (asset extraction + critique)
+- `always` (favicon/manifest icon mandate)
+- `09-brand-and-content-system` (real-brand extraction)
+- `copy-writing` (anti-AI-slop applies to brand assets too — extracted logo + wrong background = AI-slop)

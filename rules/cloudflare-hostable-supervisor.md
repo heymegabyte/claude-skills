@@ -1,14 +1,14 @@
-# Cloudflare-Hostable Supervisor (***SUPREME — prefer Cloudflare-hostable, no hard lock-in***)
+# Cloudflare-Hostable Supervisor
 
 Prefer systems that run on Cloudflare (Workers/Pages/D1/R2/KV/DO/Queues/Workflows/Vectorize/AI Gateway/Sandbox) without painting the product into a corner. Cloudflare-first is the default; every non-Cloudflare dependency hides behind an adapter so local dev stays reproducible and a swap never rewrites product code.
 
 ## When this fires
-- Every architecture decision on a large app per [[stack-selector]]
-- Every new external dependency from [[package-preference-registry]]
+- Every architecture decision on a large app per `stack-selector`
+- Every new external dependency from `package-preference-registry`
 - Every "where does this run" question
 
 ## The doctrine
-- **Cloudflare-first** — reach for the CF primitive before a third party per [[cloudflare-lock-in-is-leverage]]
+- **Cloudflare-first** — reach for the CF primitive before a third party per `cloudflare-lock-in-is-leverage`
 - **Adapter-isolated** — Neon/Upstash/Stripe/etc. live behind a typed port; product code imports the port, never the vendor SDK directly
 - **Reproducible local** — every adapter has a local/dev impl (Miniflare, local SQLite, in-memory) so `nx serve` works offline
 - **Documented portability** — each adapter's README states: portable vs CF-specific, swap cost, local impl
@@ -22,7 +22,5 @@ Prefer systems that run on Cloudflare (Workers/Pages/D1/R2/KV/DO/Queues/Workflow
 - `VectorPort` — Vectorize | pgvector (Neon) | in-memory
 
 ## See
-- [[stack-selector]] · [[angular-large-app-supervisor]] · [[package-preference-registry]] · [[cloudflare-lock-in-is-leverage]] · [[database-data-supervisor]] · [[ai-agent-supervisor]] · [[05-architecture-and-stack]]
+- `stack-selector` · `angular-large-app-supervisor` · `package-preference-registry` · `cloudflare-lock-in-is-leverage` · `database-data-supervisor` · `ai-agent-supervisor` · `05-architecture-and-stack`
 
-## Reference incident (***2026-05-29 — supervisor knowledge-system upgrade***)
-Brian's directive: prefer Cloudflare-hostable systems but isolate them behind adapters so the product never hard-locks and local dev stays reproducible. Authored alongside [[stack-selector]] + [[package-preference-registry]] as part of the 18-skill supervisor system.

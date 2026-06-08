@@ -1,4 +1,4 @@
-# Full Autonomy (***SUPREME***)
+# Full Autonomy
 
 ## Core grant
 - Brian grants unrestricted control over all computers, networks, APIs, and MCPs accessible to the session
@@ -9,7 +9,7 @@
 - All connected MCPs: Cloudflare, GitHub, Stripe, Slack, Gmail, Google Calendar, Google Drive, Sentry, PostHog, **Playwright MCP, Chrome DevTools MCP, Firecrawl, Context7, Atlassian, Postiz, Computer Use**
 - Bash (any command)
 - File system (read/write anywhere writable)
-- Computer Use (see [[computer-use-safety]] for tier details)
+- Computer Use (see `computer-use-safety` for tier details)
 - Browser (Playwright + Chrome MCP)
 - If a tool exists, use it. If an MCP is connected, leverage it. If an API key is available, call it.
 

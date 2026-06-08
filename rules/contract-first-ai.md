@@ -1,10 +1,10 @@
-# Contract-First AI (***SUPREME — every AI output, every model call, every project***)
+# Contract-First AI
 
-AI is foundational to the platform — that's exactly why its outputs deserve first-class typing. Every AI output MUST be structured, schema-bound, Zod-validated, and converted to a typed domain object BEFORE the app touches it. This is the same boundary discipline applied to every other input (env, webhook, queue, form) per [[zod-everywhere]] — AI is a first-class data source, treated like one. The contract — not the prose — is the interface.
+AI is foundational to the platform — that's exactly why its outputs deserve first-class typing. Every AI output MUST be structured, schema-bound, Zod-validated, and converted to a typed domain object BEFORE the app touches it. This is the same boundary discipline applied to every other input (env, webhook, queue, form) per `zod-everywhere` — AI is a first-class data source, treated like one. The contract — not the prose — is the interface.
 
-This rule fires on every model call that feeds app logic. It complements `[[verification-loop]]` (deploy + prod-E2E) and `[[auto-meta-work]]` (analytics + Structured Outputs wiring).
+This rule fires on every model call that feeds app logic. It complements ``verification-loop`` (deploy + prod-E2E) and ``auto-meta-work`` (analytics + Structured Outputs wiring).
 
-## The pipeline (***NON-NEGOTIABLE — every AI call***)
+## The pipeline
 
 `AI output → schema → Zod validation → typed object → app logic`
 
@@ -54,7 +54,7 @@ export type AiPatch = z.infer<typeof AiPatchSchema>;
 
 - **Anthropic Structured Outputs beta** — header `structured-outputs-2025-11-13` + `output_config.format` with the JSON schema derived from the Zod schema (`zod-to-json-schema`).
 - **OR a tool call** whose `input_schema` is the Zod-derived JSON schema — the model fills the tool args, you validate the args.
-- **Incompatible with Citations** (returns 400) — pick one per request per `[[auto-meta-work]]`. Use Citations only when source attribution is the payload; otherwise Structured Outputs.
+- **Incompatible with Citations** (returns 400) — pick one per request per ``auto-meta-work``. Use Citations only when source attribution is the payload; otherwise Structured Outputs.
 
 ## Validate-on-receipt + repair-or-reject
 
@@ -62,7 +62,7 @@ export type AiPatch = z.infer<typeof AiPatchSchema>;
 - `safeParse` every AI response at the boundary.
 - On validation failure, send the Zod error back to the model ONCE for a structured repair.
 - Reject + log to Sentry if the repair also fails — typed contracts in, typed contracts out, no raw-text fallthrough.
-- Carry `featureSlug` on every parsed object for traceability per `[[feature-module-architecture]]`.
+- Carry `featureSlug` on every parsed object for traceability per ``feature-module-architecture``.
 
 ### Don't
 - Don't `JSON.parse` model text and use it untyped.
@@ -70,16 +70,13 @@ export type AiPatch = z.infer<typeof AiPatchSchema>;
 - Don't act on a partial parse; an invalid contract is a no-op, not a guess.
 - Don't let prose ("here's your plan…") leak into app state.
 
-## Reference incident (***2026-05-28 — global AI-dev OS upgrade***)
-Born from the autonomous-AI-dev OS upgrade prompt — codifies schema-bound, Zod-validated AI outputs as the universal interface so AI's contribution flows through the same typed boundaries every other system input does.
-
-## Reframe (***2026-05-28 PM — AI permanence***)
-Earlier draft framed this rule as "never trust AI." Reframed: AI is permanent + foundational; validation is standard hygiene at every runtime boundary per [[zod-everywhere]], not skepticism. The rule is unchanged in mechanics — every AI output still flows `output → Zod → typed`. Only the frame: AI is a first-class data source the platform is built on.
+## Reframe
+Earlier draft framed this rule as "never trust AI." Reframed: AI is permanent + foundational; validation is standard hygiene at every runtime boundary per `zod-everywhere`, not skepticism. The rule is unchanged in mechanics — every AI output still flows `output → Zod → typed`. Only the frame: AI is a first-class data source the platform is built on.
 
 ## See
-- [[zod-everywhere]] — Zod is the SSOT at every boundary; this rule is the AI-boundary case
-- [[tool-design-as-api]] — tool inputs/outputs are contracts, same discipline
-- [[evals]] — eval cases + results are schema-bound too
-- [[event-sourced-build-progress]] — build events flow through the same parse pipeline
-- [[verification-loop]] — every parsed patch ships through deploy + prod-E2E
-- [[auto-meta-work]] — Structured Outputs wiring; incompatible with Citations, pick one per request
+- `zod-everywhere` — Zod is the SSOT at every boundary; this rule is the AI-boundary case
+- `tool-design-as-api` — tool inputs/outputs are contracts, same discipline
+- `evals` — eval cases + results are schema-bound too
+- `event-sourced-build-progress` — build events flow through the same parse pipeline
+- `verification-loop` — every parsed patch ships through deploy + prod-E2E
+- `auto-meta-work` — Structured Outputs wiring; incompatible with Citations, pick one per request

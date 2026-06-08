@@ -1,4 +1,4 @@
-# i18n by Community Demographics (***UNIVERSAL — every site serving a defined geography***)
+# i18n by Community Demographics
 
 ## Rule
 - Auto-fires ONLY when ALL FOUR conditions are met:
@@ -23,7 +23,7 @@
 5. **`route_emit`** — `/{locale}/*` prefix (`/es/donate`, `/pt/about`) with `<link rel="alternate" hreflang="{locale}">` cross-references + `x-default` on English root
 6. **`hreflang_audit`** — every page has hreflang entries for every shipped locale + x-default; missing entry = build fail
 
-## LOCALE_INFER_TABLE (***high-confidence pairs — apply automatically***)
+## LOCALE_INFER_TABLE
 - **Newark NJ** → `en|es|pt` — 36% Hispanic + 4th-largest Brazilian-American population in US
 - **Miami FL** → `en|es|ht` — 66% Hispanic + Haitian-Creole community
 - **Los Angeles CA** → `en|es|zh|ko|tl` — 48% Hispanic + Koreatown + Chinatown + Filipinotown
@@ -56,7 +56,7 @@ Unlisted geographies: query ACS/equivalent and apply the ≥10% rule fresh.
 - Cookie + localStorage persistence of user choice + auto-detect via `Accept-Language` on first visit + manual override always wins
 - `<html lang="{locale}" dir="{ltr|rtl}">` per route (Arabic, Hebrew, Urdu, Persian = `rtl`)
 
-## TRANSLATION_QUALITY (***NEVER ship machine-translate slop***)
+## TRANSLATION_QUALITY
 - Workers AI Llama 3.3 70B is FIRST PASS only
 - Every translated string runs through tone-check ("does this sound like a native speaker would write it on a nonprofit page?")
 - Top-10 conversion-critical routes get Claude Opus 4.7 second pass with explicit "no calque, no literal-translate-from-English, use locale-natural phrasing" prompt: `/`, `/about`, `/donate`, `/contact`, `/services`, `/faq`, `/team`, `/volunteer`, `/ways-to-give`, `/planned-giving`
@@ -68,9 +68,9 @@ Unlisted geographies: query ACS/equivalent and apply the ≥10% rule fresh.
 - `FAQPage` Q&A translated entity-by-entity (not bulk-translated paragraph dump — preserves accordion granularity)
 - `BreadcrumbList` `name` translated, `item` URL stays language-prefixed
 
-## SEO_CITY_PAGES (***pSEO multiplier***)
+## SEO_CITY_PAGES
 - When serving multiple cities/neighborhoods (common for soup kitchens, clinics, services), every locale × every city = a route (`/es/newark|/es/east-orange|/pt/ironbound`)
-- Use [[15-site-generation/local-seo]] pSEO templates per locale-city combo
+- Use `15-site-generation/local-seo` pSEO templates per locale-city combo
 - Caps at 200 city pages per locale to avoid thin-content flag — pick top-N by population density
 
 ## ACCESSIBILITY_TIE_IN
@@ -78,18 +78,13 @@ Unlisted geographies: query ACS/equivalent and apply the ≥10% rule fresh.
 - `<html lang>` for primary, `<span lang="{other}">` for inline foreign phrases
 - NEVER assume English is the default for screen readers in locale-prefixed routes
 
-## FAILURE_CASE (***NEVER ship***)
+## FAILURE_CASE
 - English-only site for an entity serving a community where ≥10% speak another language at home
 - Newark NJ nonprofit serving 36% Hispanic + significant Brazilian-Portuguese population MUST ship `/es/*` AND `/pt/*`
 - English-only = exclusion of one-third the served community = ethical failure + AI search miss + ADA Title II 2027 compliance risk (effective communication standard)
 
-## Reference incident (***2026-05-21 — njsk.org***)
-- Clone at `njsk-org.manhattan.workers.dev` correctly ships `/es/*` + `/pt/*` full mirrors
-- Original `njsk.org` Squarespace ships English-only despite serving Newark's majority-Latino + Brazilian-Portuguese population near Penn Station
-- Demographic lookup MUST be automatic, not prompted
-
 ## See
-- [[source-site-enhancement]]
-- [[always]] (hreflang requirements)
-- [[15-site-generation/page-set-expansion]] (locale × standard-page-set multiplier)
-- [[copy-writing]] (anti-slop applies per language)
+- `source-site-enhancement`
+- `always` (hreflang requirements)
+- `15-site-generation/page-set-expansion` (locale × standard-page-set multiplier)
+- `copy-writing` (anti-slop applies per language)

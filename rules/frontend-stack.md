@@ -1,66 +1,68 @@
-# Frontend Stack (***SUPREME — never write hand-rolled HTML files for any user-facing surface***)
+# Frontend Stack
+
+Never write hand-rolled HTML files for any user-facing surface.
 
 ## Mandate
-- Every user-facing surface (marketing sites, web apps, dashboards, admin UIs, generated business sites, landing pages, microsites, blogs) MUST be built with ONE of two stacks:
+- Every user-facing surface (marketing, web apps, dashboards, admin, generated sites, landing, microsites, blogs) MUST use ONE of two stacks:
   - **React 19 + Vite + SSR/SSG + TanStack Router + Tailwind v4** (default)
-  - **Angular 21+ + Nx 20 + Ionic 8 + Capacitor 6 + PrimeNG + SSR (`@angular/ssr` on Cloudflare Workers) + Tailwind v4 + Angular CDK** (when explicitly chosen; ProjectSites.dev pinned here). RxJS-first at every backend edge per [[rxjs-first-angular]].
-- Hand-rolling `public/index.html` + `public/pricing.html` + `public/about.html` etc. is a build failure. Period.
-- No "just one static HTML file" exceptions. Even a 1-page site uses the React+Vite or Angular+Ionic scaffold.
+  - **Angular 21+ + Nx 20 + Ionic 8 + Capacitor 6 + PrimeNG + SSR (`@angular/ssr` on Cloudflare Workers) + Tailwind v4 + Angular CDK** (when explicitly chosen; ProjectSites.dev pinned here). RxJS-first per `rxjs-first-angular.md`.
+- Hand-rolling `public/index.html` + `public/pricing.html` + `public/about.html` etc. = build fail.
+- No "just one static HTML file" exceptions. Even 1-page site uses the Vite or Angular scaffold.
 
 ## Why
-- Component reuse, type safety, and route-aware metadata are not optional anymore.
-- SSR/SSG is mandatory for SEO + AI search visibility (per `[[always]]` and `[[cinematic-website-prime-directive]]`).
-- One CSS file per page diverges, drift compounds, and accessibility regressions ship silently.
-- The two stacks above cover 99% of cases; deviation requires Brian's explicit "use X this time".
+- Component reuse, type safety, route-aware metadata not optional.
+- SSR/SSG mandatory for SEO + AI search visibility per `always.md` and `cinematic-website-prime-directive`.
+- One CSS file per page diverges, drift compounds, a11y regressions ship silently.
+- The two stacks cover 99% of cases.
 
-## React 19 + Vite + SSR (***default for one-line website prompts***)
+## React 19 + Vite + SSR (default)
 
 ### Core
-- **Vite 6+** with the React plugin
+- **Vite 6+** w/ React plugin
 - **React 19** (with Server Components when warranted)
 - **TanStack Router** for type-safe client routing
 - **TanStack Start** OR **vite-plugin-ssr / vike** OR **Vite SSG (`vite-ssg`)** for SSR/SSG
-  - Default: `vite-ssg` for marketing sites (prerender at build time → static HTML + hydration)
-  - For dashboards with auth: TanStack Start (server functions + SSR streaming)
-- **Tailwind v4** with CSS-first config in `app.css`
-- **shadcn/ui** components (Radix UI primitives) — copied in, not installed
-- **TypeScript 5.9+** strict mode
+  - Default: `vite-ssg` for marketing sites (prerender at build → static HTML + hydration)
+  - Dashboards w/ auth: TanStack Start (server functions + SSR streaming)
+- **Tailwind v4** CSS-first config in `app.css`
+- **shadcn/ui** (Radix primitives) — copied in, not installed
+- **TypeScript 5.9+** strict
 - **Zod** at every API + form boundary
 
 ### Build output
-- `dist/client/` — static HTML + JS + CSS bundles, per-route prerendered HTML
+- `dist/client/` — static HTML + JS + CSS + per-route prerendered HTML
 - `dist/server/` — SSR bundle if dynamic routes (skip for pure SSG)
-- Upload to R2 marketing/ via `wrangler r2 object put` for Cloudflare-hosted sites
+- Upload to R2 marketing/ via `wrangler r2 object put` for CF-hosted sites
 - OR deploy to Cloudflare Pages / Workers Sites directly
 
 ### Routing
-- TanStack Router with file-based routes under `src/routes/`
-- Layout components share header/footer (auth-aware) so the marketing surface knows when a user is signed in
+- TanStack Router w/ file-based routes under `src/routes/`
+- Layout components share header/footer (auth-aware) so marketing surface knows when signed in
 - View Transitions API for nav (`document.startViewTransition`)
 - Speculation Rules prerender on hover
 
 ### State + data
 - TanStack Query for server state
 - Zustand for client-only state (NEVER Redux for new code)
-- TanStack Form for forms with Zod schemas
+- TanStack Form for forms w/ Zod schemas
 
-## Angular 21 + Ionic + Capacitor + Cordova (***when explicitly chosen***)
+## Angular 21 + Ionic + Capacitor + Cordova (when chosen)
 
 ### Core
-- **Angular 21** standalone components + signals + **zoneless change detection** (`provideZonelessChangeDetection()` — default in 21, drop Zone.js entirely)
-- **`httpResource()`** (Angular 21 stable) — declarative HTTP→signal bridge for read-only endpoints; pair with full RxJS streams for mutations + WS + SSE per [[rxjs-first-angular]]
-- **Incremental hydration** — `provideClientHydration(withIncrementalHydration())` — hydrate on viewport/interaction only
-- **Nx 20+** workspace + `@nx/angular` generators + Angular CLI MCP wired
-- **Ionic 8+** UI components (cross-platform: web, iOS, Android)
-- **Capacitor 6+** for native iOS / Android wrapping; **Tauri 2** alongside for macOS/Windows/Linux desktop
-- **Cordova plugins** for any native API not covered by Capacitor
-- **`@angular/ssr` on Cloudflare Workers** — SSR at the edge, same origin as the API
-- **Spartan UI** (shadcn-for-Angular) — the ONE primary component system for ALL Angular surfaces (admin + marketing). NO PrimeNG / Material / Taiga / NG-ZORRO / Kendo. (Reversed 2026-05-29.)
-- **Tailwind v4** (OxIDE engine) + **Angular CDK** + **Floating UI** for overlays/drag-drop/virtual-scroll/positioning/a11y primitives
-- **RxJS-first at every backend edge** per [[rxjs-first-angular]] — observables for HTTP/WS/SSE, `toSignal()` only at the template boundary
-- **TypeScript 5.9+** with `"strict": true`, `"noUncheckedIndexedAccess": true`, `"exactOptionalPropertyTypes": true`
-- **Vitest** as the test runner (replaces Karma) via `@analogjs/vitest-angular`
-- **Angular built-in i18n** (`@angular/localize`) — the only i18n strategy. NOT ngx-translate, NOT Transloco. (Reversed 2026-05-29.)
+- **Angular 21** standalone + signals + **zoneless** (`provideZonelessChangeDetection()`, default in 21, drop Zone.js)
+- **`httpResource()`** (Angular 21 stable) — declarative HTTP→signal for read-only endpoints; pair with RxJS for mutations + WS + SSE per `rxjs-first-angular.md`
+- **Incremental hydration** — `provideClientHydration(withIncrementalHydration())` — viewport/interaction only
+- **Nx 20+** + `@nx/angular` + Angular CLI MCP wired
+- **Ionic 8+** UI (cross-platform: web, iOS, Android)
+- **Capacitor 6+** for native iOS / Android; **Tauri 2** for macOS/Windows/Linux desktop
+- **Cordova plugins** for native APIs not covered by Capacitor
+- **`@angular/ssr` on Cloudflare Workers** — SSR at edge, same origin as API
+- **Spartan UI** (shadcn-for-Angular) — ONE primary kit for ALL Angular surfaces (admin + marketing). NO PrimeNG / Material / Taiga / NG-ZORRO / Kendo.
+- **Tailwind v4** + **Angular CDK** + **Floating UI**
+- **RxJS-first** at every backend edge per `rxjs-first-angular.md` — observables for HTTP/WS/SSE, `toSignal()` only at template
+- **TypeScript 5.9+** w/ `"strict": true`, `"noUncheckedIndexedAccess": true`, `"exactOptionalPropertyTypes": true`
+- **Vitest** runner (replaces Karma) via `@analogjs/vitest-angular`
+- **Angular built-in i18n** (`@angular/localize`) — only strategy
 
 ### Build output
 - Web: `dist/{app}/browser/` + `dist/{app}/server/`
@@ -69,10 +71,10 @@
 
 ### When to pick Angular over React
 - Brian's own SaaS work
-- Native iOS/Android apps required (Capacitor)
-- Signal-based reactivity is load-bearing
+- Native iOS/Android required (Capacitor)
+- Signal-based reactivity load-bearing
 - Enterprise tooling (Angular CLI, schematics) needed
-- Brian explicitly says "Angular"
+- Brian says "Angular"
 
 ## File structure (React+Vite — canonical)
 
@@ -121,37 +123,30 @@
 ```
 
 ## NEVER
-
-- Never write hand-rolled `public/{page}.html` files for user-facing content.
-- Never write hand-rolled `public/css/site.css` + `public/js/site.js` + 20 HTML pages. That's the failure mode this rule exists to prevent.
-- Never use jQuery, Vue, Svelte, SolidJS, or Qwik for any new project (use only if maintaining legacy).
-- Never use Next.js when Vite+SSR or Astro covers the use case (Brian's preference — but Next.js is OK when explicitly requested for ISR or middleware patterns).
-- Never use plain `vanilla` JS modules in `public/js/` for new sites. Bolt.diy or generated business sites are React+Vite. Marketing surfaces are React+Vite+SSR.
-- Never check in `node_modules/`. Always `.gitignore`.
+- Hand-rolled `public/{page}.html` for user-facing content
+- Hand-rolled `public/css/site.css` + `public/js/site.js` + 20 HTML pages
+- jQuery, Vue, Svelte, SolidJS, Qwik for new projects (legacy maintenance OK)
+- Next.js when Vite+SSR or Astro covers (Brian's preference — Next.js OK only when explicitly requested for ISR or middleware patterns)
+- Plain vanilla JS modules in `public/js/` for new sites. Bolt.diy or generated business sites are React+Vite. Marketing surfaces are React+Vite+SSR.
+- Check in `node_modules/`. Always `.gitignore`.
 
 ## ALWAYS
-
 - React+Vite default. Angular+Ionic+Capacitor+Cordova when chosen.
-- SSR or SSG for every marketing surface (build-time prerender minimum).
+- SSR or SSG for every marketing surface (build-time prerender min).
 - TypeScript strict. Zod at boundaries.
 - Tailwind v4 + design tokens via CSS-first config.
-- TanStack ecosystem (Router, Query, Form, Table) over alternatives.
+- TanStack (Router, Query, Form, Table) over alternatives.
 - View Transitions API + Speculation Rules + `<picture>` AVIF + WebP fallback.
 - Single shared layout component for auth-aware header + footer.
 
 ## Existing project audit
-- If you find a project with hand-rolled `public/*.html` files for user-facing pages, that's a refactor backlog item — but don't compound the problem by adding MORE hand-rolled HTML. Either refactor to the canonical stack or, if the project is being deprecated, mark it for sunset.
-- Generated business sites (`/sites/{slug}/`) shipped by ProjectSites already use Vite+React+Tailwind+shadcn — that pattern is the reference.
+- Hand-rolled `public/*.html` for user-facing → refactor backlog. Don't add MORE hand-rolled HTML. Refactor to canonical stack OR mark for sunset.
+- Generated business sites (`/sites/{slug}/`) shipped by ProjectSites already use Vite+React+Tailwind+shadcn — reference pattern.
 
 ## E-commerce surfaces
-- Any e-commerce site (product catalog + cart + checkout + inventory) pairs the React+Vite or Angular+Ionic frontend with **Medusa.js** as the headless commerce backend per [[ecommerce-stack]]
-- Never roll your own cart/checkout/inventory schema for an e-commerce surface
-- Medusa Next.js starter NOT permitted — Next.js stays banned here too
+- E-commerce (product catalog + cart + checkout + inventory) pairs React+Vite or Angular+Ionic frontend with **Medusa.js** headless commerce backend per `ecommerce-stack.md`
+- Never roll your own cart/checkout/inventory schema
+- Medusa Next.js starter NOT permitted
 
 ## See
-- [[always]] — Hard Gates that EVERY marketing surface must satisfy (regardless of stack)
-- [[ecommerce-stack]] — Medusa.js mandate for every e-commerce backend
-- [[cinematic-website-prime-directive]] — skill 16, the 100-rule one-line-prompt build
-- [[code-style]] — TypeScript style + lint config
-- [[brian-preferences]] — pick ONE, never options
-- [[verification-loop]] — deploy + E2E mandate (same for any stack)
+- `always.md` · `ecommerce-stack.md` · `cinematic-website-prime-directive` · `code-style.md` · `brian-preferences.md` · `verification-loop.md`

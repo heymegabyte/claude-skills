@@ -1,99 +1,89 @@
-# Parallel Subagent Economy (***SUPREME — fan out whenever parallel saves ≥5 min wall-clock***)
+# Parallel Subagent Economy
 
-The primary rule: **fan out to parallel subagents whenever doing so saves ≥5 minutes of wall-clock over running the work serially**, provided the units are genuinely independent. Brian's two recurring heavy workloads — **lots of test-writing** and **lots of feature+test implementation across projects** — are the most common instances, but the ≥5-min test applies to ANY independent multi-unit batch. Once specialists run on Sonnet (often *cheaper* than one Opus thread — see [[model-routing]] + the cost model below) the token premium is small, so **time saved is the deciding factor, not token frugality**. Two hard preconditions still bind: the units must be genuinely **independent** (distinct files, no shared state, no data dependency), and there must be real minutes to save — never fan out to "look busy" on serial-by-nature or trivially-fast work.
+Primary rule: **fan out whenever doing so saves ≥5 min wall-clock over serial**, provided units genuinely independent. Sonnet specialists often *cheaper* than one Opus thread — time saved is the deciding factor.
 
-This rule sits **UNDER** the existing orchestration mesh and does NOT redefine it:
-- [[monitor-orchestration]] decides **IF** the Monitor fires (multi-faceted brief) — this rule pre-answers "yes, fan out" via the ≥5-min test (which can also fire a lighter 2-agent fan-out below the Monitor's ≥3-unit ceremony threshold).
-- [[agent-selection]] decides **WHICH** specialist owns each unit (taxonomy + assignment table + diversity gate).
-- [[model-routing]] decides **WHICH MODEL** by altitude.
-- This rule sets only the **TRIGGER**, the **WIDTH**, the **COST default**, and the **token guardrails**.
+Hard preconditions: units independent (distinct files, no shared state, no data dependency) AND real minutes to save — never fan out to "look busy" on serial-by-nature or trivially-fast work.
 
-### Mechanics (verified June 2026, v2.1.x)
-- **Parallel = the orchestrator emitting MULTIPLE Task/Agent calls in ONE turn.** The harness runs them concurrently. There is **no on/off toggle** and **no numeric "max concurrent" settings key** — concurrency is bounded by Anthropic API rate limits + the model's own decision. Custom rules (like this one) bias delegation.
-- Subagents start **fresh** (system preamble + the brief you pass) and do NOT inherit the parent conversation by default — so `/clear` does not reduce their cost (`CLAUDE_CODE_FORK_SUBAGENT=1` would make them inherit it; leave it UNSET).
-- `ultracode` is a **session-only** lever (`/effort ultracode`), NOT a `settings.json` value — it turns on xhigh + auto Dynamic-Workflow orchestration for the session, then resets. The underlying **Dynamic Workflows** feature is what persists (on by default Max/Team; `/config` toggle on Pro; `disableWorkflows` / `CLAUDE_CODE_DISABLE_WORKFLOWS=1` to kill it). Requires CC ≥ v2.1.154.
-- The real env levers: `CLAUDE_CODE_SUBAGENT_MODEL` (cheaper specialist model — SET, see below); `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (coordinated cross-messaging teams — leave unset); `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1` (kills background tasks — leave unset).
+## Layering (this rule sits UNDER existing mesh)
+- `monitor-orchestration.md` decides **IF** Monitor fires (multi-faceted brief). This rule pre-answers "yes, fan out" via ≥5-min test.
+- `agent-selection.md` decides **WHICH** specialist owns each unit.
+- `model-routing.md` decides **WHICH MODEL** by altitude.
+- This rule sets only the **TRIGGER**, **WIDTH**, **COST default**, and **token guardrails**.
 
-## Fresh context by default — inherit ONLY when it's a deliberately-good starting point (***SUPREME***)
-- **DEFAULT = fresh.** Spawn every subagent with a fresh, MINIMAL context: its system preamble + a self-contained 100-300 word brief (role · scope · exact file paths · non-goals · expected output, return ≤200 words). Never rely on it seeing the live conversation. Keep `CLAUDE_CODE_FORK_SUBAGENT` **UNSET** — the harness already defaults subagents to non-inheriting; setting it forks the parent transcript in and is almost never worth it.
-- **Inherit (fork / hand down a context packet) ONLY when the parent context is a genuinely-good starting point** — requires ALL of: (a) the parent already built compact, directly-relevant state the agent needs (a repo map, the exact contract/schema, the prior findings to dedup against), (b) that state is SMALL + on-topic, (c) the parent context is NOT bloated/saturated. Even then, hand down a **curated packet** (paste the few relevant excerpts into the brief) — never the raw transcript, and never `CLAUDE_CODE_FORK_SUBAGENT=1` on a large session.
-- **Decision test:** "Would a competent stranger do this task BETTER with my conversation so far, or just with a tight brief + the files?" Tight brief wins (the usual case) → fresh. The accumulated compact findings genuinely save re-derivation → hand down that packet only.
-- **Saturation corollary (HARD STOP).** If the live session is so full that spawns fail with **"Prompt is too long"** (`subagent_tokens: 0`), that is the signal to CHECKPOINT to `progress.md` and continue in a FRESH session — NOT to keep trying to fan out. A saturated parent makes BOTH fresh-spawn (heavy preamble + brief) and fork-inherit overflow; the only fix is a clean session, per [[01-operating-system]] "fresh agent at ~60% context." Do not silently degrade to serial in the saturated session either if the work genuinely needs the fan-out — surface the checkpoint.
-- **Why:** fresh-minimal is cheaper (no parent-transcript re-ingestion stacked on the already-heavy preamble — cost model #1) AND more reliable (won't blow the input limit). Forking a bloated parent is the worst of both: maximum cost + the "Prompt is too long" failure.
-- **Reference incident (2026-06-08 — projectsites.dev):** a 5-specialist visual-QA/audit fan-out spawned from a deeply-saturated session ALL failed instantly with "Prompt is too long" (`subagent_tokens: 0`) — the parent was too large to seed even *fresh* subagents. Brian's directive: *"make it so whenever a sub-agent is spawned it inherits a new fresh context, unless the context to inherit is a good starting point."* This section is that rule; the corollary above adds the checkpoint-to-fresh-session escape the incident proved necessary.
+## Mechanics (v2.1.x verified June 2026)
+- **Parallel = orchestrator emitting MULTIPLE Task/Agent calls in ONE turn.** Harness runs concurrently. No on/off toggle. No numeric "max concurrent" key — concurrency bounded by Anthropic rate limits + model's decision. Custom rules bias delegation.
+- Subagents start **fresh** (system preamble + your brief) — do NOT inherit parent conversation by default. `/clear` does NOT reduce cost. `CLAUDE_CODE_FORK_SUBAGENT=1` makes them inherit it — leave UNSET.
+- `ultracode` is **session-only** (`/effort ultracode`), NOT a settings.json value — turns on xhigh + auto Dynamic-Workflow orchestration for session, then resets.
+- Real env levers: `CLAUDE_CODE_SUBAGENT_MODEL` (cheaper specialist — SET), `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (coordinated cross-messaging — unset), `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1` (kills background — unset).
 
-### Why parallel agents burn tokens (the cost model — so the ≥5-min trade is honest)
-Cost ≈ `N_agents × (preamble + brief + reads + reasoning + return)`, and several terms multiply PER agent:
-1. **Preamble re-ingestion (the dominant cost).** Every subagent is a FRESH context that re-reads the whole system preamble — global CLAUDE.md + all loaded rules + project CLAUDE.md + skill descriptions: tens of thousands of tokens PER agent before any work. A flat 10-agent fan-out can spend 300–600k input tokens just booting.
-2. **Prompt-cache defeat.** [[prompt-cache]]'s ~90% discount is per-conversation; a fresh subagent pays a full-price cache WRITE (1.25×), not a read (0.1×). Fan-out trades the discount for N writes.
-3. **Flat-Opus fan-out.** Opus (xhigh + thinking) on every specialist multiplies the priciest tier. Tiering to Sonnet specialists is ~5× cheaper.
-4. **Brief bloat + shared-context re-reads** — pasting whole files, or each agent re-grepping what the orchestrator already read, multiplies read tokens N×.
+## Fresh context by default — inherit ONLY when deliberately-good starting point
+- **DEFAULT = fresh.** Spawn every subagent with fresh, MINIMAL context: system preamble + self-contained 100-300 word brief (role · scope · exact file paths · non-goals · expected output ≤200 words). Keep `CLAUDE_CODE_FORK_SUBAGENT` UNSET.
+- **Inherit/hand-down ONLY when parent already built compact, on-topic, directly-needed state AND parent context small.** Pass curated PACKET pasted into brief, never raw transcript.
+- **Decision test:** "Would competent stranger do this BETTER with my conversation, or just w/ tight brief + files?" Tight brief wins → fresh.
+- **Saturation HARD STOP.** Spawns failing "Prompt is too long" (`subagent_tokens: 0`) = signal to CHECKPOINT to `progress.md` + continue in FRESH session — NOT keep retrying. Saturated parent makes BOTH fresh-spawn AND fork-inherit overflow.
+- **Why:** fresh-minimal cheaper (no parent-transcript re-ingestion) AND more reliable.
+
+## Cost model (why parallel agents burn tokens)
+Cost ≈ `N_agents × (preamble + brief + reads + reasoning + return)`. Per-agent multipliers:
+1. **Preamble re-ingestion (DOMINANT)** — every subagent fresh context re-reads system preamble + global CLAUDE.md + all rules + project CLAUDE.md + skill descriptions: tens of thousands tokens PER agent before any work. Flat 10-agent fan-out can spend 300-600k input tokens just booting.
+2. **Prompt-cache defeat** — fresh subagent pays full-price cache WRITE (1.25×), not read (0.1×). Fan-out trades discount for N writes.
+3. **Flat-Opus fan-out** — Opus (xhigh + thinking) on every specialist multiplies priciest tier. Tiering to Sonnet ~5× cheaper.
+4. **Brief bloat + shared-context re-reads** — pasting whole files, or each agent re-grepping what orchestrator already read = N× read tokens.
 5. **Fat returns + runaway count** — agents echoing full files / spawning dozens, each re-paying #1.
-**Dollar reality (API rates):** a 4-unit job ≈ serial-Opus **~$5.50** · parallel-4×Opus **~$8–9** · parallel-4×Sonnet **~$2.50**. Parallel-on-**Sonnet is often cheaper than a single Opus thread** AND saves the wall-clock — which is exactly why the ≥5-min trigger is affordable. The drain people remember was parallel-on-**Opus** re-paying the big preamble N times at write rates. Hold #1–#5 down (cap width, Sonnet, read-once, ≤200-word returns) and the trade stays small.
 
-### The ≥5-minute wall-clock rule (the primary trigger)
-Estimate it before every borderline batch:
-- **Serial time** = sum of the units' durations (one after another).
-- **Parallel time** ≈ the *longest* single unit + ~2 min fan-out overhead (spin-up + fold-back).
-- **Fan out when `serial − parallel ≥ 5 min`** AND the units are independent.
-- Worked examples: 2 units × 8 min → serial 16, parallel ~10 → saves ~6 → **fan out** (even at 2 units). 3 units × 4 min → serial 12, parallel ~6 → saves ~6 → **fan out**. 2 units × 3 min → serial 6, parallel ~5 → saves ~1 → **serial**. 1 unit → nothing to parallelize → **serial**.
-- This LOWERS the old "≥3 units" floor to ~2 substantial units while still excluding trivial work — the "lean liberal, the cost is only a little more" calibration. Independence is the *possibility* gate; the ≥5-min test is the *worth-it* gate.
+**Dollar reality:** 4-unit job ≈ serial-Opus **~$5.50** · parallel-4×Opus **~$8-9** · parallel-4×Sonnet **~$2.50**. Parallel-on-Sonnet often cheaper than single Opus thread.
 
-### The two common shapes that clear the test (fan out by default — don't ask, don't serialize)
-- **Test-writing batch** — ≥2 independent spec targets (feature / route / component / endpoint / E2E journey) that clear the ≥5-min test. Hermetic specs per [[e2e-tdd-organization]] = zero shared state = perfect parallel candidate. **One agent per 2-3 spec dirs (batch), never one-agent-per-spec.** TDD-RED-first inside each agent.
-- **Feature/test-impl batch** — ≥2 independent feature modules / vertical slices that clear the ≥5-min test, **one agent owning one `libs/features/<slug>/` module end-to-end** (schema + handler + UI + colocated unit + E2E + docs). The module's TDD-RED spec and its impl stay **TOGETHER in the same agent** — spec↔impl is data-dependent and must never be split across agents.
-- **Read-only sweeps** (grep / audit / drift-scan / research across N dirs) — fan out freely; zero write-conflict risk, minimal cost, doesn't count against the width ceiling.
-- **Doesn't clear the ≥5-min test** (1 unit, or a batch so quick that `serial − parallel < 5 min`) → foreground / single thread, no agents.
+## ≥5-minute wall-clock rule (primary trigger)
+Estimate before every borderline batch:
+- **Serial time** = sum of units' durations
+- **Parallel time** ≈ longest single unit + ~2 min fan-out overhead
+- **Fan out when `serial − parallel ≥ 5 min`** AND units independent
 
-### Fan-out width (token-bounded)
-- **Sweet spot: 3-4 concurrent specialists.** Best wall-time-per-token; clears the ≥5-min bar with margin on most batches.
-- **Hard ceiling: 6 concurrent.** Past 6 the marginal wall-clock shrinks (each agent re-establishes context; the rate-limit tail serializes anyway) while token cost stays linear. Going past 6 requires a one-line justification in the [[agent-selection]] assignment table.
-- **Batch, don't trickle, don't blow the ceiling.** >6 independent units → sequential **waves of ≤6** (12 units → two waves of 6, or 6 agents × 2 units each), fold summaries between waves. Never spawn 12 at once; never one-at-a-time.
+Examples: 2 units × 8 min → serial 16, parallel ~10 → saves ~6 → **fan out**. 3 units × 4 min → serial 12, parallel ~6 → saves ~6 → **fan out**. 2 units × 3 min → serial 6, parallel ~5 → saves ~1 → **serial**. 1 unit → **serial**.
+
+Lowers old "≥3 units" floor to ~2 substantial units while excluding trivial. Independence is *possibility* gate; ≥5-min is *worth-it* gate.
+
+## Two common shapes that clear the test
+- **Test-writing batch** — ≥2 independent spec targets clearing ≥5-min. Hermetic specs per `e2e-tdd-organization.md` = zero shared state. **One agent per 2-3 spec dirs (batch), never one-agent-per-spec.** TDD-RED-first inside each.
+- **Feature/test-impl batch** — ≥2 independent feature modules clearing ≥5-min, **one agent owning one `libs/features/<slug>/` module end-to-end** (schema + handler + UI + colocated unit + E2E + docs). Module's TDD-RED spec and impl stay TOGETHER in same agent.
+- **Read-only sweeps** (grep / audit / drift-scan / research) — fan out freely; zero write-conflict, minimal cost, doesn't count against width ceiling.
+- **Doesn't clear ≥5-min** (1 unit, batch quick enough that `serial − parallel < 5 min`) → foreground / single thread.
+
+## Fan-out width (token-bounded)
+- **Sweet spot: 3-4 concurrent specialists.** Best wall-time-per-token; clears ≥5-min bar with margin.
+- **Hard ceiling: 6 concurrent.** Past 6 marginal wall-clock shrinks while token cost stays linear. Going past 6 requires one-line justification in `agent-selection.md` assignment table.
+- **Batch, don't trickle, don't blow ceiling.** >6 independent units → sequential **waves of ≤6** (12 units → two waves of 6, or 6 agents × 2 units each), fold summaries between.
 - **Width counts only units with distinct file ownership + no shared state.** 9 specs across 3 files = 3 agents (one per file), not 9.
 
-### Sonnet-specialist cost default (the single biggest token lever)
-- **`CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` is SET as the standing default** (in `~/.claude/settings.json` § env). Every spawned specialist runs Sonnet at `high` effort — test-writing + feature-impl is Sonnet-grade execution per [[model-routing]] (~0% quality loss on impl/test work). This is the cornerstone that makes the ≥5-min trigger affordable.
-- **Orchestrator (main thread) stays Opus `xhigh`** for decomposition, slice boundaries, fold-back, and the verify gate — **never implements**.
-- **Opus-pinned reviewers stay Opus — override the default explicitly.** When spawning `security-reviewer` / `architect` / `visual-qa` / a payment/auth review, pass an explicit `model: opus` on the Agent call (the call-level `model` param takes precedence over the env default per [[model-routing]] + [[agent-selection]]). The Sonnet default must NEVER silently downgrade a security/payment/architecture review. If Opus quota is red AND the review is security/payment/auth-sensitive, **defer** per [[opus-quota-fallback]] rather than ship a Sonnet-only pass.
-- **Haiku reserved for grunts only** (changelog / format / rename) — never test logic or feature code.
-- **On Opus quota exhaustion** per [[opus-quota-fallback]] the orchestrator drops to Sonnet too; specialists are already Sonnet, so **fan-out width is unchanged** (effort drops to `high`). Don't ALSO run a wide supreme-polish in the same degraded session.
+## Sonnet-specialist cost default (biggest token lever)
+- **`CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` SET as standing default** (in `~/.claude/settings.json` § env). Every spawned specialist runs Sonnet at `high` effort. ~0% quality loss on impl/test work.
+- **Orchestrator (main thread) stays Opus `xhigh`** for decomposition, slice boundaries, fold-back, verify gate. **Never implements.**
+- **Opus-pinned reviewers stay Opus — override default explicitly.** When spawning `security-reviewer` / `architect` / `visual-qa` / payment-auth review, pass explicit `model: opus` on Agent call (call-level `model` param takes precedence over env default). Sonnet default must NEVER silently downgrade sensitive review. If Opus quota red AND review is security/payment/auth-sensitive, **defer** per `opus-quota-fallback.md`.
+- **Haiku reserved for grunts only** (changelog / format / rename).
+- **On Opus quota exhaustion** per `opus-quota-fallback.md`, orchestrator drops to Sonnet too; specialists already Sonnet, so **fan-out width unchanged** (effort drops to `high`).
 
-### "No worms" guardrails (liberal-but-bounded — hard rules)
-- **No shared-context re-reads (the #1 worm — see cost model #1/#4).** Orchestrator reads the shared brief / schema / contract / fixture / brand-tokens **ONCE** in the main thread, then passes a 100-300 word self-contained slice into each agent brief per [[full-autonomy]]. Each agent caches its own slice per [[prompt-cache]] — never the whole repo, never each agent re-grepping the same context.
-- **Summaries ≤200 words back** per [[prompt-cache]] — raw test output / diffs / file bodies stay inside the agent; no agent echoes full file contents to the main thread.
-- **One fold, one build, one deploy.** Agents NEVER build / commit / deploy independently. The main thread folds all summaries, then builds + deploys + verifies ONCE. Parallel builds = parallel CI + token burn for zero gain.
-- **One agent = one disjoint, durable unit** (a whole file / spec dir / module owned start-to-finish) — never a fraction of a file (causes races + churn re-reads).
-- **Batch to the ceiling, never raise it** — 8 units → 6+2 or 4×2, not "bump to 8."
-- **No speculative agents.** No standing "researcher" / "reviewer" alongside implementers per-unit. Final-review fan-out per [[agent-selection]] is ONE pass at the end, not per-unit.
-- **No one-agent-per-spec / per-file / spawn-N-to-explore** — that's the worm this rule kills.
-- **Don't re-fan-out for repair.** If 2 of 4 agents' specs fail, fix-forward in the main thread or one targeted agent — never re-spawn the whole batch.
+## "No worms" guardrails (liberal-but-bounded — hard rules)
+- **No shared-context re-reads** — orchestrator reads shared brief / schema / contract / fixture / brand-tokens **ONCE** in main thread, passes 100-300 word self-contained slice into each agent brief per `full-autonomy.md`. Each agent caches its own slice per `prompt-cache.md` — never whole repo, never each agent re-grepping same context.
+- **Summaries ≤200 words back** per `prompt-cache.md` — raw test output / diffs / file bodies stay inside agent.
+- **One fold, one build, one deploy.** Agents NEVER build / commit / deploy independently. Main thread folds all summaries, then builds + deploys + verifies ONCE.
+- **One agent = one disjoint, durable unit** (whole file / spec dir / module owned start-to-finish) — never fraction of file.
+- **Batch to ceiling, never raise it** — 8 units → 6+2 or 4×2, not "bump to 8."
+- **No speculative agents.** No standing "researcher" / "reviewer" alongside implementers per-unit. Final-review fan-out per `agent-selection.md` is ONE pass at end.
+- **No one-agent-per-spec / per-file / spawn-N-to-explore.**
+- **Don't re-fan-out for repair.** If 2 of 4 agents' specs fail, fix-forward in main thread or one targeted agent — never re-spawn whole batch.
 
-### When NOT to parallelize (serial is correct)
-- **Parallelizing saves <5 min wall-clock** — `serial − (longest_unit + ~2 min overhead) < 5 min` (a single unit, or a batch that's individually quick). Inline it.
-- **Dependent chain** — `schema → handler → UI` (or `spec → impl → refactor`) for ONE module stays in ONE agent; parallelize **across** features, never **within** one, per [[full-autonomy]].
-- **Shared mutable infra** — one `index.ts` barrel, one migration, one design-token file, one shared component — serialize or agents stomp (see [[monitor-orchestration]] §9 worktree note + the project memory on worktree node_modules corruption). No time saving justifies a race.
-- **Exploratory / ambiguous scope** — decompose first in one orchestrator pass, learn the shape, THEN batch the rest. Never fan out a fog.
-- **Opus quota red AND the batch is security/payment/auth-sensitive** — defer per [[opus-quota-fallback]] rather than ship a Sonnet-only pass on sensitive surfaces.
+## When NOT to parallelize (serial correct)
+- **Parallelizing saves <5 min wall-clock** — single unit, or batch individually quick. Inline.
+- **Dependent chain** — `schema → handler → UI` (or `spec → impl → refactor`) for ONE module stays in ONE agent; parallelize **across** features, never **within**.
+- **Shared mutable infra** — one `index.ts` barrel, one migration, one design-token file, one shared component — serialize or agents stomp.
+- **Exploratory / ambiguous scope** — decompose first in one orchestrator pass, learn shape, THEN batch the rest.
+- **Opus quota red AND batch is security/payment/auth-sensitive** — defer per `opus-quota-fallback.md`.
 
-### ultracode + env levers
-- **`ultracode` — USE IT for the two batch workloads (session-only).** Run `/effort ultracode` at the start of a heavy test-writing or feature-impl session: it spins Dynamic Workflows = deterministic parallel fan-out **with built-in per-branch validation** — exactly the "build N modules, each gated by its own TDD suite" / "write N independent verifiable specs" shape (aligns with [[sandbox-execution]] + [[event-sourced-build-progress]] + [[verification-loop]]). This rule's ≥5-min trigger + 6-wide ceiling + Sonnet default + batch-beyond-6 guardrails **still bind** ultracode-spawned workflows — ultracode is NOT a license to widen. Drop back to `/effort high` for routine single-surface work + exploratory work. It's session-only by design (resets each session) + costs more per task, so don't leave it on for routine turns. A single task can also be run as a workflow by including the keyword `ultracode` in the prompt without changing session effort.
-- **`CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` — SET (standing default in settings.json).** The cost cornerstone; highest-ROI single change. (Sensitive reviewers override to Opus per the cost section.)
-- **`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` — LEAVE UNSET.** Coordinated cross-messaging teams add inter-agent chatter token overhead; the test/feature batches are independent-not-coordinated, so plain parallel Task calls are cheaper. Enable ONLY for a genuinely interdependent build whose slices must message each other (rare).
-- **`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` + `CLAUDE_CODE_DISABLE_WORKFLOWS` — LEAVE UNSET.** Background long builds + test-runs + deploys are useful during the loop; Dynamic Workflows must stay enabled for ultracode to work.
+## ultracode + env levers
+- **`ultracode` — USE for two batch workloads (session-only).** Run `/effort ultracode` at start of heavy test-writing or feature-impl session. Spins Dynamic Workflows = deterministic parallel fan-out **w/ built-in per-branch validation** (aligns with `sandbox-execution.md` + `event-sourced-build-progress.md` + `verification-loop.md`). This rule's ≥5-min trigger + 6-wide ceiling + Sonnet default + batch-beyond-6 guardrails **still bind** ultracode-spawned workflows.
+- **`CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` — SET (standing default).** Cost cornerstone; highest-ROI single change.
+- **`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` — LEAVE UNSET.** Cross-messaging adds inter-agent chatter overhead; test/feature batches are independent-not-coordinated, so plain parallel Task calls cheaper.
+- **`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` + `CLAUDE_CODE_DISABLE_WORKFLOWS` — LEAVE UNSET.**
 
-### Reference incident (***2026-06-08 — global subagent-economy upgrade***)
-Brian directive: lean toward parallel subagents for the two recurring heavy workloads (test-writing, feature/test impl), throughput-liberal but token-conscious. Three concurrent sessions drafted competing versions (frugal 2-3/4, liberal 3-5/8, balanced 3-4/6); a 4-agent design-panel workflow synthesized them into this canonical file at the balanced-leaning-liberal calibration (3-4 sweet spot / 6 hard ceiling), grafting the liberal draft's token-burn diagnosis + the frugal draft's guardrails + an Opus-reviewer override guardrail. Dupes removed; `ultracode` found to be session-only (`/effort ultracode`); `CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` set in settings.json env.
-
-**Refinement same day:** after walking the dollar cost (parallel-Sonnet ≈ serial-Opus, ~5× cheaper than parallel-Opus), Brian — *"since it's only a little bit more, … leverage multiple agents whenever parallel agents would lower the computing time down by 5 minutes."* Reframed the **primary trigger** from a ≥3-unit floor to the **≥5-minute wall-clock test** (`serial − parallel ≥ 5 min`, independence still required), lowering the floor to ~2 substantial units and generalizing beyond the two named workloads to any independent batch. Time-saved is now the deciding factor; the Sonnet default is what makes that affordable. Complements (does not duplicate) [[monitor-orchestration]] (IF fire), [[agent-selection]] (WHICH specialist), [[model-routing]] (altitude→model).
-
-### See
-- [[monitor-orchestration]] — the Monitor decomposition shell this rule fans out within
-- [[agent-selection]] — specialist taxonomy + assignment table + diversity gate
-- [[model-routing]] — Opus orchestrator → Sonnet specialist → Haiku grunt altitude mapping
-- [[opus-quota-fallback]] — fan-out survives quota red (width holds, effort drops); defer sensitive reviews
-- [[full-autonomy]] — 100-300 word briefs; parallel when independent, serial when chained
-- [[prompt-cache]] — per-subagent cache fill + ≤200-word summary returns (the cost diagnosis lives here too)
-- [[e2e-tdd-organization]] — hermetic specs = the zero-shared-state property that makes test fan-out safe
-- [[feature-module-architecture]] — `libs/features/<slug>/` is the one-agent-one-module unit boundary
-- [[verification-loop]] — the single fold-back build + deploy + prod-E2E gate after fan-out
-- [[brian-preferences]] — Simplicity > Cost > Speed; the frugal tiebreak on a borderline ≥5-min call
+## See
+- `monitor-orchestration.md` · `agent-selection.md` · `model-routing.md` · `opus-quota-fallback.md` · `full-autonomy.md` · `prompt-cache.md` · `e2e-tdd-organization.md` · `feature-module-architecture.md` · `verification-loop.md` · `brian-preferences.md`

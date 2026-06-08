@@ -1,6 +1,6 @@
-# Spartan UI Only for Angular (***SUPREME — every Angular dashboard, every project***)
+# Spartan UI Only for Angular
 
-When Angular is the chosen frontend per [[angular-nx-monorepo]], **Spartan UI** is
+When Angular is the chosen frontend per `angular-nx-monorepo`, **Spartan UI** is
 the sole primary UI component system. No PrimeNG. No Angular Material. No Taiga.
 No NG-ZORRO. No Kendo. No Syncfusion. No second component library.
 
@@ -39,7 +39,7 @@ with install/defer/adapter-only/reject classification.
 
 ## Existing PrimeNG projects
 
-Per [[no-staging-doctrine]] + [[main-only-branch]] + the convergence loop discipline,
+Per `no-staging-doctrine` + `main-only-branch` + the convergence loop discipline,
 projects with shipped PrimeNG do NOT rip-and-replace. They:
 
 1. Install Spartan UI alongside PrimeNG (additive, no breakage).
@@ -54,20 +54,11 @@ projects with shipped PrimeNG do NOT rip-and-replace. They:
 This is the same pattern as the Wave 25 React → Angular dashboard migration
 documented in `brickcitylabor.com/docs/wave25-unified-dashboard.md`.
 
-## Reference incident (***2026-05-30 — brickcitylabor.com Wave 37 supervisor brief***)
-
-User issued a long supervisor brief mandating "Spartan UI as the only primary
-Angular UI component system" and explicitly banning PrimeNG / Material / Taiga /
-NG-ZORRO / Kendo / Syncfusion. The brief reversed the prior split-doctrine in
-`code-style.md` § Angular. Captured here as a SUPREME universal so future
-Angular projects default to Spartan-only from day 1; existing PrimeNG projects
-follow the incremental swap pattern above.
-
 ## See
 
-- [[angular-nx-monorepo]] — the workspace shell Spartan UI lives inside
-- [[frontend-stack]] — the universal frontend-stack mandate (React+Vite default
+- `angular-nx-monorepo` — the workspace shell Spartan UI lives inside
+- `frontend-stack` — the universal frontend-stack mandate (React+Vite default
   OR Angular when explicitly chosen)
-- [[code-style]] — extended to remove the PrimeNG-for-admin mandate
-- [[rxjs-first-angular]] — RxJS at every backend edge inside Spartan components
-- [[brian-preferences]] — pick ONE, never options; Spartan-only IS the one
+- `code-style` — extended to remove the PrimeNG-for-admin mandate
+- `rxjs-first-angular` — RxJS at every backend edge inside Spartan components
+- `brian-preferences` — pick ONE, never options; Spartan-only IS the one

@@ -1,4 +1,4 @@
-# Image Sourcing + Generation Quality (***NON-NEGOTIABLE***)
+# Image Sourcing + Generation Quality
 
 ## Mandate
 Every image on every shipped page must be either:
@@ -11,7 +11,7 @@ Generic, flat, "good enough" AI output, unrelated stock photography, or hot-link
 1. Real photo from the institution's own archive → `public/images/<area>/` with descriptive slug.
 2. Real photo from Wikimedia Commons / Library of Congress / NPGallery / state historical society / verified press wire — DOWNLOAD into `public/images/<area>/` (never hot-link production-critical media — third-party CDNs disappear, rename files, change license terms).
 3. AI-upscale a small but authoritative source (Real-ESRGAN, Gigapixel, Topaz Photo AI, hosted equivalent) when the only available primary photo is sub-spec.
-4. AI-generated hyper-realistic photograph crafted specifically for the slot — last resort, decorative surfaces only, NEVER on historical timelines per [[timeline-authenticity]].
+4. AI-generated hyper-realistic photograph crafted specifically for the slot — last resort, decorative surfaces only, NEVER on historical timelines per `timeline-authenticity`.
 
 ## Web-sourcing cadence
 Run a meticulous search BEFORE prompting any generator. Minimum 3 searches per slot. Save every candidate URL + Commons file page + author + license + capture-date into `public/images/<area>/_credits.json`.
@@ -42,7 +42,7 @@ Search order:
 - Tag the upscaled file's `_credits.json` entry with `upscaled: { tool: "Real-ESRGAN x4plus", from: 600, to: 2400 }`.
 - Never alter historical content via inpainting/outpainting — that crosses into fabrication.
 
-## DALL·E / GPT Image 1.5 / Sora prompt-craft (***whenever AI generation is chosen***)
+## DALL·E / GPT Image 1.5 / Sora prompt-craft
 
 1. **Imagine the IDEAL frame.** Close your eyes, picture exactly what would belong in this slot for this audience: subject + composition + light + lens + emotion + era + palette. Write 2–3 sentences of cinematographer's language BEFORE touching the model.
 2. **Lock the medium.** Default: "hyper-realistic editorial photograph, shot on a Leica SL3 with a 50mm Summilux f/1.4 lens, shallow depth of field, ISO 200, 1/250s, golden-hour natural side-lighting from a north-facing window, 35mm full-frame sensor look, color-graded warm midtones / desaturated shadows, fine 35mm-film grain, no motion blur, no posterization, no chromatic aberration, magazine-cover quality." Adjust lens/light for the moment but keep the realism contract intact.
@@ -74,10 +74,10 @@ Search order:
 - Adobe Stock
 - iStock
 - Getty (without explicit licensed permission)
-- AI generators for historical timelines (see [[timeline-authenticity]])
+- AI generators for historical timelines (see `timeline-authenticity`)
 
 ## Cross-link
-- [[timeline-authenticity]] — which images may never be AI even hyper-realistic ones
-- [[12-media-orchestration]] — production pipeline + critique loop
-- [[09-brand-and-content-system]] — real-brand extraction
-- [[copy-writing]] — anti-slop
+- `timeline-authenticity` — which images may never be AI even hyper-realistic ones
+- `12-media-orchestration` — production pipeline + critique loop
+- `09-brand-and-content-system` — real-brand extraction
+- `copy-writing` — anti-slop

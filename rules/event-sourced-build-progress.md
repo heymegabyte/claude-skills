@@ -1,8 +1,8 @@
-# Event-Sourced Build Progress (***SUPREME — every AI build pipeline, every project***)
+# Event-Sourced Build Progress
 
 AI build progress MUST emit durable, typed, replayable events. Dashboards then show progress, generated components, tests, previews, failures, and publish status clearly — without polling, without log-scraping, without guessing. The event stream IS the source of truth for a build's state.
 
-## Event types (***the canonical set***)
+## Event types
 - `build.started` — pipeline kicked off
 - `agent.started` — an agent began a unit of work
 - `file.changed` — a file was written / patched
@@ -13,7 +13,7 @@ AI build progress MUST emit durable, typed, replayable events. Dashboards then s
 - `publish.completed` — validated artifact promoted to live
 - `build.failed` — terminal failure (with reason)
 
-## Every event's contract (***all five, no exceptions***)
+## Every event's contract
 - **Typed** — discriminated union on `type`, no loose `any` payloads
 - **Zod-validated** — parsed at the boundary before persistence; invalid events rejected
 - **Durable** — written to D1 / a session DO's SQLite / R2 (never in-memory only)
@@ -49,12 +49,9 @@ export type BuildEvent = z.infer<typeof BuildEventSchema>;
 - Emitter validates via `BuildEventSchema.parse` before persisting; rejects malformed events
 - The sandbox is the producer; the admin dashboard is the consumer
 
-## Reference incident (***2026-05-28 — global AI-dev OS upgrade***)
-Brian directive to formalize event-sourced build progress so every emdash AI-build pipeline emits typed, Zod-validated, durable, replayable events that render cleanly on the admin dashboard.
-
 ## See
-- [[contract-first-ai]] — events are a contract between the sandbox producer and dashboard consumer
-- [[zod-everywhere]] — every event parsed at the boundary
-- [[sandbox-execution]] — the sandbox emits the stream as it builds + validates
-- [[verification-loop]] — `tests.completed` + `publish.completed` events mirror the deploy gate
-- [[god-tier-engineering]] — durable event log pairs with pattern #8 ring-buffer logging
+- `contract-first-ai` — events are a contract between the sandbox producer and dashboard consumer
+- `zod-everywhere` — every event parsed at the boundary
+- `sandbox-execution` — the sandbox emits the stream as it builds + validates
+- `verification-loop` — `tests.completed` + `publish.completed` events mirror the deploy gate
+- `god-tier-engineering` — durable event log pairs with pattern #8 ring-buffer logging

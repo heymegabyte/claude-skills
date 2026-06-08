@@ -1,4 +1,4 @@
-# Secret Provisioning (***UNIVERSAL — every deploy, every project***)
+# Secret Provisioning
 
 ## Core mandate
 - Every deploy that depends on a secret MUST auto-fetch from `/Users/Apple/.local/bin/get-secret` and push to the destination BEFORE running the deploy command
@@ -12,7 +12,7 @@
 - Silently skip absent keys — they stay whatever the destination already has
 - Surface a single "set this secret" rec ONLY for genuinely missing keys, ONLY with the exact deeplinked URL where the secret is generated (`https://dash.cloudflare.com/?to=/:account/turnstile` not "go to CF dashboard")
 
-## Alias-aware gap analysis (***NON-NEGOTIABLE — every "what env vars am I missing" audit***)
+## Alias-aware gap analysis
 - Code commonly checks multiple alias variants for the same secret: `env.X_OAUTH_CLIENT_ID || env.X_CLIENT_ID || ''`. Naming-convention comment in `apps/project-sites/CLAUDE.md` MCP OAuth section: "`{PROVIDER}_OAUTH_CLIENT_ID` + `_OAUTH_CLIENT_SECRET`. Historical aliases (`MAILCHIMP_CLIENT_ID`, `HUBSPOT_CLIENT_ID`, `STRIPE_CONNECT_CLIENT_ID`, `GITHUB_CLIENT_ID`, `GOOGLE_CLIENT_ID`) kept as fallbacks."
 - Gap audit MUST grep the code for ALL alias variants of each `env.X` reference, then check the live secret list against the FULL alias set, not just the bare name
 - Bash: `grep -rhoE "env\.${PROVIDER}[A-Z_]+" src | sort -u` gives the alias surface for one provider
@@ -53,7 +53,7 @@
 ## CF auth bootstrap (fallback chain)
 1. `CLOUDFLARE_API_TOKEN` from get-secret
 2. `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL`
-3. Both stale → ask user to `! npx wrangler login` per [[verification-loop]] auth fallback chain
+3. Both stale → ask user to `! npx wrangler login` per `verification-loop` auth fallback chain
 
 NEVER silently skip the deploy step because creds were missing — surface it as a blocker the same turn.
 
@@ -71,7 +71,7 @@ NEVER silently skip the deploy step because creds were missing — surface it as
 - `wrangler pages secret put` overwrites silently on second run — safe to call every deploy
 - Reading `wrangler pages secret list` first to "check if it exists" wastes a roundtrip — skip the check, just write
 
-## Two-way mirror — prod ↔ chezmoi (***SUPREME — every secret write, every direction***)
+## Two-way mirror — prod ↔ chezmoi
 - Every `wrangler secret put KEY` (worker, page, or any deploy target) MUST be paired with a chezmoi write at `~/.local/share/chezmoi/home/.chezmoitemplates/secrets/{KEY}` via `printf '%s' "$VALUE" | chezmoi encrypt > "$path"` BEFORE OR IMMEDIATELY AFTER the push
 - Every chezmoi write of a new secret MUST also push to the relevant deploy target the same turn
 - Drift = recovery risk: a secret living in prod-only is unrecoverable if the worker config is wiped (Cloudflare dashboard accident, account compromise, account hand-off) since `wrangler secret list` exposes NAMES ONLY, never values
@@ -89,12 +89,9 @@ NEVER silently skip the deploy step because creds were missing — surface it as
   - The exact URL to generate it
   - The exact command to add it to get-secret (`echo "VALUE" > /Users/Apple/.local/secrets/KEY`) so it lands in get-secret for next time
 
-## Reference incident (***2026-05-21 — template.projectsites.dev v3.7***)
-Closed turn with "wire `RESEND_API_KEY` via `wrangler pages secret put`" as a Rec. Brian: *"isn't `RESEND_API_KEY` available with get-secret? Ensure this mistake is not happening again... make sure you automatically load from get-secret, when the secret is available."* Fixed by building `scripts/lib/secrets.mjs` reusable helper + wiring into `deploy-template.mjs` + `deploy-applied.mjs`. Every CF Pages project I touch from this point forward gets the helper automatically.
-
 ## See
-- [[secret-auto-provisioning]] — upstream rule: how to ACQUIRE secrets when they don't exist (openssl → API mint → Computer Use → manual). This rule is the downstream push step.
-- [[brian-preferences]] — pick ONE, never ask permission, just do it
-- [[auto-meta-work]] — Sentry+PostHog+GA4+Workers Tracing+AI Gateway provisioning
-- [[verification-loop]] — CF auth fallback chain
-- [[full-autonomy]] — secrets count as authorized infrastructure, push without asking
+- `secret-auto-provisioning` — upstream rule: how to ACQUIRE secrets when they don't exist (openssl → API mint → Computer Use → manual). This rule is the downstream push step.
+- `brian-preferences` — pick ONE, never ask permission, just do it
+- `auto-meta-work` — Sentry+PostHog+GA4+Workers Tracing+AI Gateway provisioning
+- `verification-loop` — CF auth fallback chain
+- `full-autonomy` — secrets count as authorized infrastructure, push without asking

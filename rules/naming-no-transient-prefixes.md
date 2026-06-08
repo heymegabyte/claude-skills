@@ -1,4 +1,4 @@
-# Naming — No Transient Prefixes (***SUPREME — every identifier, every project***)
+# Naming — No Transient Prefixes
 
 Names describe WHAT a thing is, never WHEN it was built. Wave / sprint / phase /
 version / batch numbers in durable identifiers are banned. They rot instantly:
@@ -20,19 +20,10 @@ codebase read like a changelog instead of a domain model.
 - **Real semantic API versions** — `/api/v2/...` when it's a genuine versioned contract, not a build wave.
 
 ## When you inherit wave-named identifiers
-- Treat them as drift per [[drift-detection]]. Rename to descriptive names in careful batches: rename the symbol/flag/route + update EVERY caller + migration-rename live DB rows/tables + verify (typecheck + tests + the route's frontend callers) before moving to the next batch. Never rename a live route without updating its callers in the same change.
-
-## Reference incident (***2026-06-08 — brickcitylabor.com***)
-A project accumulated 85 `wave28/29/20-*` API routes, 136 `wave<N>_*` flags, and
-`wave31-*` feature dirs. Brian: *"Remove the wave28_ stuff and all that and make sure
-everything is named appropriately. Include that in ~/.agentskills there should never be
-a case where you name it like that."* This rule is the durable capture. Pairs with the
-project memory `feedback_feature_naming` (which already said "descriptive, not waveN" for
-new code) — this elevates it to a universal hard rule covering ALL durable identifiers,
-not just new ones, with an inherited-name remediation path.
+- Treat them as drift per `drift-detection`. Rename to descriptive names in careful batches: rename the symbol/flag/route + update EVERY caller + migration-rename live DB rows/tables + verify (typecheck + tests + the route's frontend callers) before moving to the next batch. Never rename a live route without updating its callers in the same change.
 
 ## See
-- [[drift-detection]] — wave-named identifiers are drift; fix on sight in batches
-- [[code-style]] — naming conventions (camelCase/PascalCase/CONSTANT_CASE) this complements
-- [[feature-module-architecture]] — module slugs are descriptive snake_case ≤32 chars
-- [[brian-preferences]] — names read like a domain model, not a changelog
+- `drift-detection` — wave-named identifiers are drift; fix on sight in batches
+- `code-style` — naming conventions (camelCase/PascalCase/CONSTANT_CASE) this complements
+- `feature-module-architecture` — module slugs are descriptive snake_case ≤32 chars
+- `brian-preferences` — names read like a domain model, not a changelog

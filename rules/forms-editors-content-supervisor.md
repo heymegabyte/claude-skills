@@ -1,4 +1,4 @@
-# Forms + Editors + Content Supervisor (***SUPREME — every form, every editor, every large app***)
+# Forms + Editors + Content Supervisor
 
 Schema-driven forms and migratable, versioned editor state. Reactive Forms + NGX Formly for input; Monaco/Shiki/Lexical/GrapesJS for editing; every saved state is Zod-validated JSON, never an opaque blob. The forms/editors arm of the supervisor system.
 
@@ -10,8 +10,8 @@ Schema-driven forms and migratable, versioned editor state. Reactive Forms + NGX
 ## Forms
 - **Angular Reactive Forms** — typed `FormGroup<T>`, never template-driven
 - **NGX Formly** — schema-driven forms where form count/complexity justifies it; derive the Formly schema from Zod via `zod-to-json-schema`
-- **Zod** — validates form output client-side AND the server re-validates per [[validation-error-handling-supervisor]]
-- Loading / empty / error / success states on every form per [[angular-large-app-supervisor]]
+- **Zod** — validates form output client-side AND the server re-validates per `validation-error-handling-supervisor`
+- Loading / empty / error / success states on every form per `angular-large-app-supervisor`
 
 ## Editor doctrine (three-mode site editor)
 - **Code view** — Monaco Editor + Shiki highlight for code / config / template / prompt editing (preserve or create)
@@ -34,10 +34,8 @@ Schema-driven forms and migratable, versioned editor state. Reactive Forms + NGX
 - **GrapesJS** — visual/drag-and-drop editor view
 - **Payload CMS** — content management where it's a real feature
 - **Blockly** — visual logic only when it fits
-- **pdf-lib** — PDF generation/edit (reports, exports, proposals, invoices, site packets) — see [[media-file-document-supervisor]]
+- **pdf-lib** — PDF generation/edit (reports, exports, proposals, invoices, site packets) — see `media-file-document-supervisor`
 
 ## See
-- [[validation-error-handling-supervisor]] · [[package-preference-registry]] · [[angular-large-app-supervisor]] · [[spartan-ui-design-system]] · [[media-file-document-supervisor]] · [[collaboration-sync-supervisor]]
+- `validation-error-handling-supervisor` · `package-preference-registry` · `angular-large-app-supervisor` · `spartan-ui-design-system` · `media-file-document-supervisor` · `collaboration-sync-supervisor`
 
-## Reference incident (***2026-05-29 — supervisor knowledge-system upgrade, wave 2***)
-Brian's brief: Reactive Forms + NGX Formly + Zod + zod-to-json-schema for forms; Monaco+Shiki / Lexical / GrapesJS / Payload / Blockly for editors; three-mode (code/preview/visual) site editor; versioned Zod-validated JSON state, draft/publish, undo/redo, import/export, no opaque state. Authored wave 2; package decisions in [[package-preference-registry]].

@@ -1,4 +1,4 @@
-# Sandbox Execution (***SUPREME — every AI-generated build artifact, every preview path***)
+# Sandbox Execution
 
 AI is foundational to how code is authored on this platform. That's exactly why AI-authored builds get the same standard CI/CD discipline every other build artifact gets: built, tested, previewed, validated in an isolated sandbox BEFORE promotion to the real app runtime. This is normal pipeline hygiene — not skepticism — applied to a high-volume artifact source.
 
@@ -8,7 +8,7 @@ AI is foundational to how code is authored on this platform. That's exactly why 
 - Promotion is one-directional: sandbox → validate → promote. Never the reverse.
 - Skipping the sandbox = shipping an unvalidated build to prod = build fail (same rule as any other CI/CD bypass)
 
-## Sandbox capabilities (***the full surface***)
+## Sandbox capabilities
 - Create / resume an isolated session
 - Read / write files
 - Apply patches (diff-based edits)
@@ -19,7 +19,7 @@ AI is foundational to how code is authored on this platform. That's exactly why 
 - Produce artifacts (build output, screenshots, test reports)
 - Promote ONLY validated artifacts to the real runtime / publish pipeline
 
-## Provider interface (***one abstraction, two impls***)
+## Provider interface
 ```ts
 export interface WebsiteWorkspaceProvider {
   readFile(path: string): Promise<string>;
@@ -37,23 +37,20 @@ export interface WebsiteWorkspaceProvider {
 - **Isolation** — Containers / Durable Objects (one DO per sandbox session, hard process boundary)
 - **Artifacts** — R2 (build output, screenshots, reports keyed by session + build id)
 - **Session + build state** — D1 (durable rows) or the session DO's SQLite
-- Apply [[god-tier-engineering]] pattern #8 to the sandbox DO: auto-restart ≤3/min + idle-hibernate 30m + 1000-line ring-buffer logs
+- Apply `god-tier-engineering` pattern #8 to the sandbox DO: auto-restart ≤3/min + idle-hibernate 30m + 1000-line ring-buffer logs
 - Reference: projectsites.dev uses a container build orchestrator as the sandbox; the worker never runs generated code directly
 
-## Promotion gate (***artifacts only, never raw code***)
+## Promotion gate
 - Build green + tests green + preview renders clean → artifact is eligible
 - Promotion copies the validated R2 artifact to the live path; the generated SOURCE never executes outside the sandbox
 - A failed build / red test / dirty preview blocks promotion — fix-forward inside the sandbox, re-validate
 
-## Reference incident (***2026-05-28 — global AI-dev OS upgrade***)
-Brian directive to formalize the sandbox-first execution model so every emdash AI-build pipeline runs through a validated sandbox-promote pipeline, mirroring projectsites.dev's container build orchestrator. Standard CI/CD discipline applied at the volume AI-authored builds require.
-
-## Reframe (***2026-05-28 PM — AI permanence***)
+## Reframe
 Earlier draft framed sandboxes as a guard against "untrusted AI code." Reframed: AI is permanent + foundational; sandboxes are how every build artifact gets validated before promotion — the discipline applies to all build outputs, AI-authored is just the dominant one. Mechanics unchanged.
 
 ## See
-- [[event-sourced-build-progress]] — the sandbox streams typed build events to dashboards
-- [[contract-first-ai]] — generated output validated against a contract before promotion
-- [[god-tier-engineering]] — pattern #8 (Container DO auto-restart/hibernate/ring-buffer) for the sandbox runtime
-- [[verification-loop]] — promotion is gated by the same build + test + preview discipline
-- [[full-autonomy]] — spawning + driving sandboxes counts as authorized infrastructure
+- `event-sourced-build-progress` — the sandbox streams typed build events to dashboards
+- `contract-first-ai` — generated output validated against a contract before promotion
+- `god-tier-engineering` — pattern #8 (Container DO auto-restart/hibernate/ring-buffer) for the sandbox runtime
+- `verification-loop` — promotion is gated by the same build + test + preview discipline
+- `full-autonomy` — spawning + driving sandboxes counts as authorized infrastructure

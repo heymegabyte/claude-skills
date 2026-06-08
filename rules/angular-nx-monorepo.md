@@ -1,71 +1,63 @@
-# Angular + Nx Monorepo (***SUPREME — every Angular project, every workspace***)
+# Angular + Nx Monorepo
 
-Whenever Angular is the chosen frontend (per Brian's `~/.claude/CLAUDE.md` Frontend Stack rule — "explicitly says Angular" OR native iOS/Android shells OR signal-heavy enterprise), the project is built inside an **Nx monorepo running Angular 21** with the **Angular CLI MCP** wired into the toolchain. Standalone components only. Signals only. No NgModules. No Angular Material. No PrimeNG default. Tailwind v4 + Angular CDK + custom design system.
+When Angular is chosen (`frontend-stack.md`), build inside **Nx monorepo running Angular 21** with **Angular CLI MCP**. Standalone components only. Signals only. No NgModules. No Angular Material. No PrimeNG default. Tailwind v4 + Angular CDK + Spartan UI.
 
 ## Canonical stack
-- **Angular 21** (current stable). Not 18, not 20, not "18+". Pin to `21.x` in `package.json` and `angular.json`.
-- **Nx 20+** as the workspace wrapper. `nx.json` at repo root. Apps under `apps/`, libs under `libs/`.
-- **Standalone components** ONLY. NgModules are banned. `provideRouter` / `provideHttpClient` / `provideAnimationsAsync` in `app.config.ts`.
-- **Signals** (`signal`, `computed`, `effect`, `linkedSignal`, `resource`) for component + service state. NO RxJS subjects for component state. RxJS is acceptable for HTTP streams / WebSocket / interop only.
+- **Angular 21** pinned `21.x` in `package.json` + `angular.json`.
+- **Nx 20+** wrapper. `nx.json` at repo root. Apps under `apps/`, libs under `libs/`.
+- **Standalone components** ONLY. NgModules banned. `provideRouter` / `provideHttpClient` / `provideAnimationsAsync` in `app.config.ts`.
+- **Signals** (`signal`, `computed`, `effect`, `linkedSignal`, `resource`) for state. NO RxJS subjects for component state.
 - **Typed Reactive Forms** (`FormGroup<T>`, `FormControl<T>`). No template-driven forms.
-- **Lazy-loaded routes** via `loadComponent` / `loadChildren`. Every route lazy.
-- **`@defer` blocks** for below-the-fold and role-conditional rendering.
-- **Zoneless change detection** — `provideZonelessChangeDetection()` (default in Angular 21). Drop Zone.js entirely. Mandatory pairing with signals.
-- **Incremental hydration** — `provideClientHydration(withIncrementalHydration())` (Angular 21 stable). Hydrate on viewport/interaction.
-- **`httpResource()`** (Angular 21 stable) for declarative HTTP→signal bridges on read-only endpoints. Pair with full RxJS streams (HTTP/WS/SSE) per [[rxjs-first-angular]] for mutations, multi-source compose, polling fallback.
-- **`provideHttpClient(withFetch(), withInterceptors([...]))`** with typed interceptors for auth / tenant / role / error handling.
-- **RxJS-first at every backend edge** — every service returns `Observable<T>`; signals bridge only at the template via `toSignal()`. Polling is the floor; SSE/WS the ceiling. Full mandate: [[rxjs-first-angular]].
-- **Angular CDK** for overlays, drag-drop, virtual scrolling, a11y primitives + **Floating UI** for positioning. Wrap in design-system components — don't ship raw CDK to users.
-- **Spartan UI** (shadcn-for-Angular) is the ONE primary component system for EVERY Angular surface — admin AND marketing. NO PrimeNG, NO Angular Material, NO Taiga/NG-ZORRO/Kendo/Syncfusion/Ionic-as-UI. One component system per app; mixing kits = build fail. (Reversed 2026-05-29 — PrimeNG was previously mandated for admin; Spartan UI is now the only kit.)
-- **Tailwind v4** for styling (OxIDE engine). Brand tokens via CSS custom properties + OKLCH; Spartan composes on Tailwind so tokens flow straight through.
-- **esbuild application builder** (Angular's default since 17). **SSR via `@angular/ssr` on Cloudflare Workers** (behind an adapter) for SEO-critical + large-app surfaces.
-- **Ionic 8** + **Capacitor 6** for MOBILE NATIVE SHELLS ONLY (iOS/Android) — never as the web admin's component kit. **Tauri 2** for desktop shells.
-- **Angular built-in i18n** (`@angular/localize` + the CLI extract/build-per-locale flow). NOT ngx-translate, NOT Transloco. Angular's native localization is the only i18n strategy. (Reversed 2026-05-29.)
-- **ESLint 9 + Prettier + @angular-eslint + eslint-plugin-rxjs** with `"strict": true` + `"noUncheckedIndexedAccess": true` + `"exactOptionalPropertyTypes": true`.
-- **Vitest** for unit tests via `@analogjs/vitest-angular` (Karma is deprecated as of Angular 17). **Playwright** (TDD-RED first per [[e2e-tdd-organization]]) for E2E.
-- **MSW (Mock Service Worker)** for API mocks unified across dev + Storybook + Playwright.
-- **Storybook 8** for the component library with auto-docs + interaction tests.
+- **Lazy-loaded routes** via `loadComponent` / `loadChildren`.
+- **`@defer` blocks** for below-the-fold + role-conditional rendering.
+- **Zoneless** — `provideZonelessChangeDetection()` (default Angular 21). Drop Zone.js. Mandatory with signals.
+- **Incremental hydration** — `provideClientHydration(withIncrementalHydration())`. Hydrate on viewport/interaction.
+- **`httpResource()`** (Angular 21 stable) for declarative HTTP→signal on read-only endpoints. Pair with RxJS for mutations + multi-source compose + polling per `rxjs-first-angular.md`.
+- **`provideHttpClient(withFetch(), withInterceptors([...]))`** with typed interceptors (auth / tenant / role / error).
+- **RxJS-first** at every backend edge — services return `Observable<T>`, signals bridge at template only via `toSignal()`. Polling floor, SSE/WS ceiling. Full: `rxjs-first-angular.md`.
+- **Angular CDK** + **Floating UI** for overlays/drag-drop/virtual scroll/positioning/a11y. Wrap in design-system components.
+- **Spartan UI** (shadcn-for-Angular) — ONE primary kit for admin AND marketing. NO PrimeNG / Material / Taiga / NG-ZORRO / Kendo / Syncfusion / Ionic-as-UI. Mixing kits = build fail.
+- **Tailwind v4** (OxIDE). Brand tokens via CSS custom properties + OKLCH.
+- **esbuild application builder** (default since 17). **SSR via `@angular/ssr` on Cloudflare Workers** behind adapter for SEO-critical + large surfaces.
+- **Ionic 8** + **Capacitor 6** for MOBILE NATIVE SHELLS ONLY. **Tauri 2** for desktop.
+- **Angular built-in i18n** (`@angular/localize`). NOT ngx-translate, NOT Transloco.
+- **ESLint 9 + Prettier + @angular-eslint + eslint-plugin-rxjs** w/ `"strict": true` + `"noUncheckedIndexedAccess": true` + `"exactOptionalPropertyTypes": true`.
+- **Vitest** via `@analogjs/vitest-angular` (Karma deprecated as of 17). **Playwright** TDD-RED first per `e2e-tdd-organization.md`.
+- **MSW** for API mocks unified across dev + Storybook + Playwright.
+- **Storybook 8** for component library with auto-docs + interaction tests.
 
-## Nx workspace creation (canonical)
+## Workspace creation
 
 ```bash
 npx create-nx-workspace@latest <repo-name> \
-  --preset=angular-monorepo \
-  --appName=<first-app> \
-  --style=css \
-  --bundler=esbuild \
-  --ssr=false \
-  --routing=true \
-  --standalone=true \
-  --e2eTestRunner=playwright \
-  --unitTestRunner=vitest \
-  --packageManager=bun \
-  --nxCloud=skip
+  --preset=angular-monorepo --appName=<first-app> \
+  --style=css --bundler=esbuild --ssr=false \
+  --routing=true --standalone=true \
+  --e2eTestRunner=playwright --unitTestRunner=vitest \
+  --packageManager=bun --nxCloud=skip
 ```
 
-For an **existing repo** that needs Angular added to it (e.g., the brickcitylabor.com case where React stays for marketing):
+Existing repo + Angular added (e.g. React stays for marketing):
 
 ```bash
-npx nx@latest init                        # converts repo to Nx workspace
-npx nx add @nx/angular@latest             # adds Angular plugin
+npx nx@latest init                  # convert to Nx workspace
+npx nx add @nx/angular@latest       # add Angular plugin
 npx nx g @nx/angular:application dashboard \
   --standalone --routing --style=css \
   --bundler=esbuild --e2eTestRunner=playwright
 ```
 
-Apps land under `apps/<name>/`. Shared libs under `libs/<scope>/<name>/` (use scopes like `feature`, `ui`, `data-access`, `util`).
+Apps → `apps/<name>/`. Shared libs → `libs/<scope>/<name>/` (scopes: `feature`, `ui`, `data-access`, `util`).
 
-## Angular CLI MCP integration
-
-The **Angular CLI MCP** server (`@angular/cli@latest mcp`) is wired into Claude Code at user scope so Claude can drive `ng generate`, `ng build`, `ng test`, `ng update` deterministically:
+## Angular CLI MCP
 
 ```bash
 claude mcp add --scope user --transport stdio angular-cli -- npx -y @angular/cli@latest mcp
 ```
 
-Tools exposed: `mcp__angular-cli__generate`, `mcp__angular-cli__update`, `mcp__angular-cli__list_workspaces`, etc. Use these instead of free-hand shell `ng g` invocations — the MCP wrapper validates schema before exec and returns structured diffs.
+Tools: `mcp__angular-cli__generate`, `mcp__angular-cli__update`, `mcp__angular-cli__list_workspaces`. Use these instead of free-hand `ng g`.
 
-For Nx-specific generators (workspace, lib, generators), invoke Nx via Bash:
+Nx-specific generators via Bash:
 ```bash
 npx nx g @nx/angular:component <name> --project=<app> --standalone
 npx nx g @nx/angular:library <name> --directory=libs/ui --standalone
@@ -73,12 +65,12 @@ npx nx g @nx/angular:library <name> --directory=libs/ui --standalone
 
 ## Required Nx plugins
 - `@nx/angular` — Angular generators + executors
-- `@nx/playwright` — Playwright E2E generator
-- `@nx/vite` — Vite/Vitest unit-test runner
+- `@nx/playwright` — Playwright E2E
+- `@nx/vite` — Vite/Vitest runner
 - `@nx/eslint` — ESLint executor
-- `@nx/js` — TypeScript libs
+- `@nx/js` — TS libs
 
-## Standard app skeleton (per Angular 21 + Nx)
+## Standard app skeleton
 
 ```
 apps/<app>/
@@ -101,31 +93,18 @@ libs/
 ├── util/                          # pure helpers
 ```
 
-## Routing convention (typed, lazy)
+## Routing (typed, lazy)
 
 ```ts
-// app.routes.ts
-import { Route } from '@angular/router';
-
 export const appRoutes: Route[] = [
-  {
-    path: '',
-    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
-  },
-  {
-    path: 'bookings',
-    loadChildren: () => import('./features/bookings/bookings.routes').then(m => m.BOOKINGS_ROUTES),
-  },
-  // ...
+  { path: '', loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent) },
+  { path: 'bookings', loadChildren: () => import('./features/bookings/bookings.routes').then(m => m.BOOKINGS_ROUTES) },
 ];
 ```
 
-## Service skeleton (signals-first)
+## Service (signals-first)
 
 ```ts
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-
 @Injectable({ providedIn: 'root' })
 export class RoleService {
   private http = inject(HttpClient);
@@ -138,66 +117,46 @@ export class RoleService {
 ## HTTP interceptor (typed, functional)
 
 ```ts
-// app.config.ts
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { authInterceptor, tenantInterceptor, roleInterceptor } from './core/interceptors';
-
 export const appConfig = {
   providers: [
-    provideHttpClient(withFetch(), withInterceptors([
-      authInterceptor, tenantInterceptor, roleInterceptor,
-    ])),
-    // ...
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor, tenantInterceptor, roleInterceptor])),
   ],
 };
 ```
 
-## Banned in Angular 21 + Nx projects
-- ❌ NgModules (use standalone)
-- ❌ Template-driven forms (use Reactive Forms with typed FormGroup)
-- ❌ RxJS subjects for component state (use signals)
-- ❌ Angular Material / PrimeNG / Taiga UI / NG-ZORRO / Kendo / Syncfusion — ANY primary UI kit other than Spartan UI. Spartan + CDK + Floating UI only.
-- ❌ ngx-translate / Transloco (use Angular built-in `@angular/localize`)
-- ❌ ts-node / nodemon (Node 22 native TS works for tooling; use Nx executors)
-- ❌ Karma + Jasmine (use Vitest)
-- ❌ Protractor (use Playwright)
-- ❌ Inline `[ngStyle]` / `[ngClass]` for static bindings (use `class` / `style` directly)
-- ❌ Two-way binding shorthand `[(ngModel)]` in Reactive-Forms context
+## Banned
+- ❌ NgModules (standalone only)
+- ❌ Template-driven forms
+- ❌ RxJS subjects for component state (signals)
+- ❌ Any UI kit other than Spartan + CDK + Floating UI
+- ❌ ngx-translate / Transloco (use `@angular/localize`)
+- ❌ ts-node / nodemon (Node 22 native TS + Nx executors)
+- ❌ Karma + Jasmine (Vitest)
+- ❌ Protractor (Playwright)
+- ❌ `[ngStyle]` / `[ngClass]` for static bindings (use `class` / `style`)
+- ❌ `[(ngModel)]` in Reactive-Forms context
 
-## Build + test commands (Nx canonical)
+## Build + test (Nx canonical)
 ```bash
 npx nx serve <app>                # dev server
-npx nx build <app>                # production build via esbuild
-npx nx test <app>                 # Vitest unit tests
+npx nx build <app>                # production via esbuild
+npx nx test <app>                 # Vitest units
 npx nx e2e <app>-e2e              # Playwright E2E
-npx nx affected --target=test     # only changed projects (CI speed)
+npx nx affected --target=test     # only changed (CI speed)
 npx nx affected --target=build
 npx nx graph                      # dependency graph
-npx nx migrate latest             # version bump (uses MCP under the hood when wired)
+npx nx migrate latest             # version bump
 ```
 
-## Migration of existing Angular projects to Angular 21 + Nx
-
-For projects already on Angular 17-20 standalone:
+## Migration (existing Angular → 21 + Nx)
+For Angular 17-20 standalone:
 1. `npx nx@latest init` → convert to Nx workspace
 2. `npx nx migrate @nx/angular@latest` → bump Nx + Angular plugins
 3. `npx nx migrate --run-migrations` → apply auto-migrations
-4. `npx ng update @angular/core@21 @angular/cli@21` → bump Angular to 21
-5. Run `npx nx affected --target=test --base=HEAD~1` to verify nothing broke
+4. `npx ng update @angular/core@21 @angular/cli@21` → bump to 21
+5. `npx nx affected --target=test --base=HEAD~1` to verify
 
-For projects still on NgModules: defer to a dedicated migration wave; standalone-conversion is non-trivial and not part of every Angular-update turn.
-
-## Reference incident (***2026-05-26 — brickcitylabor.com Wave 25***)
-- User's brief said "Angular 18+" but the global Frontend Stack rule pins Angular 21. Per `[[prompt-as-training-signal]]` §3 the brief was a wrong-assumption signal — Brian corrected: *"cancel the Angular 18 and use Angular 21 and integrate the Angular MCP and also use nx"*.
-- The corrected stack now lives in this rule. Project memory `project_dashboard_angular` updated accordingly.
-- The Angular CLI MCP was added at user scope alongside Context7.
+NgModules projects → defer to dedicated migration wave.
 
 ## See
-- `~/.claude/CLAUDE.md` § Frontend Stack — the original two-stacks rule
-- [[frontend-stack]] (universal rule the user-level override extends)
-- [[rxjs-first-angular]] — SUPREME: every backend call is an observable, signals only at the template boundary. Polling floor + SSE/WS ceiling.
-- [[10-experience-and-design-system]] — design tokens + brand colors apply to Angular apps too
-- [[e2e-tdd-organization]] — Playwright TDD-RED first; Nx's `nx e2e` invokes it
-- [[e2e-visual-inspection]] — random snapshots + new-section AI vision on every Angular feature
-- [[context-spillover]] — touching one feature in an Nx workspace = sweep its sibling libs
-- [[prompt-as-training-signal]] — the reference incident above is the gradient that birthed this rule
+- `frontend-stack.md` · `rxjs-first-angular.md` · `10-experience-and-design-system` · `e2e-tdd-organization.md` · `e2e-visual-inspection.md` · `context-spillover.md` · `prompt-as-training-signal.md`

@@ -1,4 +1,4 @@
-# Opus Quota Fallback (***SUPREME — graceful degradation, never block work***)
+# Opus Quota Fallback
 
 When Opus weekly quota is exhausted or unreachable, the main thread MUST silently fall back to Sonnet without dropping work. No `/model` re-toggle needed each turn. No agent spawn failures left dangling. Brian keeps shipping; quality dips slightly, throughput stays.
 
@@ -12,7 +12,7 @@ When Opus weekly quota is exhausted or unreachable, the main thread MUST silentl
 
 When ANY signal fires, the main thread sets internal `OPUS_AVAILABLE=false` for the remainder of the session.
 
-## Fallback rules (***apply at agent spawn time***)
+## Fallback rules
 
 ### Agent frontmatter convention
 Every agent that declares `model: opus` (or `model: claude-opus-4-7` / `claude-opus-4-6`) MUST also declare:
@@ -53,10 +53,10 @@ Total session quality dip during fallback: ~5-10% on Brian's typical workload. A
 ## What NOT to do during fallback
 
 - Don't run `/supreme-polish`, `/audit-everything`, `/100-ideas`, or any rule that fans out >5 Opus agents — Sonnet bucket will burn faster than expected. Defer until weekly reset.
-- Don't trigger `[[source-site-enhancement]]` § Parallel-agent playbook (9-agent fan-out) — the orchestrator still expects Opus-quality decomposition. Wait for reset OR run the canonical 9 sequentially on Sonnet.
+- Don't trigger ``source-site-enhancement`` § Parallel-agent playbook (9-agent fan-out) — the orchestrator still expects Opus-quality decomposition. Wait for reset OR run the canonical 9 sequentially on Sonnet.
 - Don't downgrade `effort` on security-reviewer when reviewing payment / auth / encryption code — better to defer that work until Opus returns than ship a Sonnet-only security pass on sensitive surfaces.
 
-## Detection helper script (***optional but recommended***)
+## Detection helper script
 
 Ship `~/.claude/hooks/opus-quota-check.sh`:
 
@@ -74,15 +74,15 @@ exit 0
 
 The Monitor can call `opus-quota-check.sh || sub_agent_model=claude-sonnet-4-6` before each spawn. If the script isn't shipped, fall back to checking the flag file + env var inline.
 
-## Auto-restore (***when quota refills***)
+## Auto-restore
 
 - **Weekly reset**: every Monday 9am America/New_York, the all-models bucket resets. The fallback flag file (`~/.claude/.opus-disabled`) should be deleted at that time. If the user wants permanent Sonnet-only mode, they can `touch` it again.
 - **Explicit user override**: `/model claude-opus-4-7` (or any opus alias) re-enables Opus for the session, regardless of the flag file. Treat user `/model` selection as authoritative.
 - **Transient 429 backoff**: 429-triggered fallbacks expire after 5 minutes. After 5 minutes, the main thread can try Opus again — if it 429s again, re-set the flag for another 5 minutes. Avoids permanent fallback from a single rate-limit blip.
 
-## End-of-turn report (***surface the fallback state***)
+## End-of-turn report
 
-When `OPUS_AVAILABLE=false`, the end-of-turn report (per `[[always]]`) must include:
+When `OPUS_AVAILABLE=false`, the end-of-turn report (per ``always``) must include:
 
 ```
 **Model:** Sonnet 4.6 (Opus quota exhausted — auto-fallback active until Mon 9am ET)
@@ -98,8 +98,8 @@ This preempts the next-day "why did my session degrade?" question.
 
 ## Cross-link
 
-- `[[model-routing]]` — defines which agent uses which model; this rule overlays the quota-aware fallback
-- `[[brian-preferences]]` — pick ONE, never options; this rule reinforces "just keep working" instead of asking permission to switch
-- `[[monitor-orchestration]]` — the Monitor reads the fallback signals before each parallel spawn
-- `[[full-autonomy]]` — fallback execution counts as authorized work, no permission prompt
-- `[[verification-loop]]` — fallback doesn't change the deploy gate; Sonnet still runs E2E + a11y verification
+- ``model-routing`` — defines which agent uses which model; this rule overlays the quota-aware fallback
+- ``brian-preferences`` — pick ONE, never options; this rule reinforces "just keep working" instead of asking permission to switch
+- ``monitor-orchestration`` — the Monitor reads the fallback signals before each parallel spawn
+- ``full-autonomy`` — fallback execution counts as authorized work, no permission prompt
+- ``verification-loop`` — fallback doesn't change the deploy gate; Sonnet still runs E2E + a11y verification

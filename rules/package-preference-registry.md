@@ -1,4 +1,4 @@
-# Package Preference Registry (***SUPREME — the durable, reasoned tech registry***)
+# Package Preference Registry
 
 The canonical list of PREFERRED packages + the decision discipline. **Listing ≠ installing.** A package enters the codebase ONLY when a real business requirement perfectly fits it. Every dependency must have a reason. Avoid bloat, demos-as-features, duplicate architectures, shallow integrations.
 
@@ -29,7 +29,7 @@ The canonical list of PREFERRED packages + the decision discipline. **Listing �
 - ⏳ **AG Grid Community** — ONLY for heavy enterprise grids (100k+ rows); Community license; master/detail is Enterprise-only.
 
 ### Forms / validation
-- ✅ **Zod** — every runtime boundary (already core per [[zod-everywhere]]).
+- ✅ **Zod** — every runtime boundary (already core per `zod-everywhere`).
 - ✅ **Angular Reactive Forms** — typed forms.
 - ✅ **zod-validation-error** — human-readable error formatting.
 - ✅ **zod-to-json-schema** — forms/docs/AI-tools/generated interfaces.
@@ -73,10 +73,10 @@ The canonical list of PREFERRED packages + the decision discipline. **Listing �
 - ✅ **@sentry/angular** (already wired) · **posthog-js** (already wired) · **Vitest** (units) · **@playwright/test** + **Playwright** (E2E + browser automation). OTel-compatible abstractions for traces.
 
 ### Payments
-- 🔌 **stripe** — ONLY when billing is required (per [[payments-routing]]: Square for accept-money default; Stripe for SaaS billing/payouts). Behind adapter.
+- 🔌 **stripe** — ONLY when billing is required (per `payments-routing`: Square for accept-money default; Stripe for SaaS billing/payouts). Behind adapter.
 
 ### AI / agents
-- ⏳ **Vercel AI SDK** (streaming/tool-calling/structured-output/provider abstraction — has Angular hooks) · **assistant-ui** (only where an assistant UI truly fits). 🔌 **Cloudflare AI Gateway**/**Vectorize**/**Sandbox SDK** (adapter-only). ⏳ **Ollama**/**vLLM**/**transformers.js** (prefer local/self-host where practical). ⏳ **LangChain.js**/**LlamaIndex.js** ONLY where they reduce complexity. Every AI output Zod-validated + fallback + traced per [[contract-first-ai]]+[[ai-agent-supervisor]].
+- ⏳ **Vercel AI SDK** (streaming/tool-calling/structured-output/provider abstraction — has Angular hooks) · **assistant-ui** (only where an assistant UI truly fits). 🔌 **Cloudflare AI Gateway**/**Vectorize**/**Sandbox SDK** (adapter-only). ⏳ **Ollama**/**vLLM**/**transformers.js** (prefer local/self-host where practical). ⏳ **LangChain.js**/**LlamaIndex.js** ONLY where they reduce complexity. Every AI output Zod-validated + fallback + traced per `contract-first-ai`+`ai-agent-supervisor`.
 
 ### Crawling / workflows / automation
 - ⏳ **Inngest** / **Cloudflare Workflows** (+ Dynamic) — deploys/imports/crawls/AI-jobs/notifications/billing/scheduled ops; typed input + Zod + status + retries + trace-id + idempotency. ⏳ **Crawlee** (OSS crawl/import). 🔌 **Firecrawl**/**browser-use** — only if license/deployment fit.
@@ -85,8 +85,6 @@ The canonical list of PREFERRED packages + the decision discipline. **Listing �
 `purpose · philosophy · when to use · when NOT · setup/config · advanced APIs · pitfalls · license · ProjectSites relevance · install now/later/adapter`
 
 ## See
-- [[stack-selector]] · [[angular-large-app-supervisor]] · [[spartan-ui-design-system]] · [[cloudflare-hostable-supervisor]]
-- [[zod-everywhere]] · [[contract-first-ai]] · [[payments-routing]] · [[auto-meta-work]]
+- `stack-selector` · `angular-large-app-supervisor` · `spartan-ui-design-system` · `cloudflare-hostable-supervisor`
+- `zod-everywhere` · `contract-first-ai` · `payments-routing` · `auto-meta-work`
 
-## Reference incident (***2026-05-29 — supervisor knowledge-system upgrade***)
-Brian's directive: build a permanent reasoned package registry; Spartan-only UI; Angular built-in i18n; Cloudflare-hostable behind adapters; install only on perfect business fit. This registry is the durable home; the 18 supervisor skills (stack-selector, angular-large-app-supervisor, spartan-ui-design-system, validation/forms/media/viz/motion/collab/auth/notifications/database/observability/ai/workflow/crawling-testing/cloudflare-hostable) reference it. Remaining skills authored in sequenced waves.

@@ -1,4 +1,4 @@
-# Auto-Integrate Recommendations (***SUPREME — every prompt, every report***)
+# Auto-Integrate Recommendations
 
 ## Mandate
 - The `Recs:` section at the end of a report is the FAILURE MODE for most line items. The default action is to SHIP, not to RECOMMEND.
@@ -22,14 +22,9 @@
 - Surfacing the same Rec across multiple turns without implementing — if it's in Recs twice, it should already be code by turn 2
 - Mixing implementable items with genuine-need-input items in the same Recs block — segment them: implementable goes to Changes, true-blockers stay in Recs
 
-## Reference incident (***2026-05-25 — music.megabyte.space share + AI chat***)
-- Turn N: ended with 30+ items in Recs ("top 10 AI chat features", "top 20 share ideas")
-- Brian followup: *"Integrate all your recommendations"* → *"best recommendations i mean"* → *"automatically in the future, integrate this into ~/.claude and ~/.agentskills"*
-- THAT IS THIS RULE. The followup signals the failure mode this rule exists to prevent: deferring the implementable to Recs when the user expects ship-by-default.
-
 ## Cross-link
-- [[extra-mile]] — do unprompted improvements (this rule says: don't defer the ones already identified)
-- [[supreme-polish]] — 100-ideas audit, applies extra-mile + auto-integrate-recs at scale
-- [[brian-preferences]] — pick ONE, just do it, never ask permission
-- [[full-autonomy]] — implementation counts as authorized work
-- [[monitor-orchestration]] — multi-faceted briefs decompose into parallel ship-now agents, not deferred Recs
+- `extra-mile` — do unprompted improvements (this rule says: don't defer the ones already identified)
+- `supreme-polish` — 100-ideas audit, applies extra-mile + auto-integrate-recs at scale
+- `brian-preferences` — pick ONE, just do it, never ask permission
+- `full-autonomy` — implementation counts as authorized work
+- `monitor-orchestration` — multi-faceted briefs decompose into parallel ship-now agents, not deferred Recs

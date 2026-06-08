@@ -1,4 +1,4 @@
-# Extra Mile (***SUPREME — every prompt, every feature, every fix***)
+# Extra Mile
 
 ## Mandate
 - After completing the literal request, ask: "What would a human developer NEVER program but that would bring real value?" Then build it.
@@ -41,7 +41,7 @@
 - NEVER cap effort prematurely — explore every branch of "what could make this better"
 
 ## Anti-patterns
-- Don't ask permission to do extra-mile work — just do it ([[brian-preferences]])
+- Don't ask permission to do extra-mile work — just do it (`brian-preferences`)
 - Don't list "could do X" in Recs when X takes 5min — do X
 - Don't add features the user explicitly didn't want
 - Don't add complexity for its own sake — every extra must serve UX/DX/observability/aesthetic
@@ -57,19 +57,9 @@
 
 If all 5 = ship inline.
 
-## Reference incident (***2026-05-24 — music.megabyte.space BPM/key chips***)
-Brian asked to "fix all these CSP/TT errors". The literal request was console hygiene. The extra-mile delivery:
-- ✓ Fixed every CSP/TT violation
-- ✓ ALSO extracted BPM + key per track via audio analysis (aubio + KS algorithm)
-- ✓ ALSO rendered them inline as chips on track rows + in the now-playing playbar
-- ✓ ALSO seeded engine.bpm from authoritative meta so visualizers snap to musical tempo immediately
-- ✓ ALSO upgraded 6 static visualizers to leverage tempoPhase + bands + drop primitives
-
-Brian's followup was a quality nudge: "Make the chips inhabit existing empty space instead of expanding the layout. Also infuse this 'go the extra mile' principle into ~/.claude so it sticks." THAT'S the bar — extra mile work should be VISIBLE in the right surface with no layout cost.
-
 ## See
-- [[competitor-research]] — on website builds the "extra mile" floor isn't "feels nice", it's "≥15% better than every competitor on every rubric dimension" — that gate is what extra-mile work is iterating toward
-- [[proactive-improvements]] — the "just feels right" criterion in lighter form; this rule is the supreme weighted version
-- [[supreme-polish]] — the 100-ideas audit run (extra-mile applied at scale)
-- [[brian-preferences]] — pick ONE, never ask permission, just do it
-- [[full-autonomy]] — extra mile counts as authorized work
+- `competitor-research` — on website builds the "extra mile" floor isn't "feels nice", it's "≥15% better than every competitor on every rubric dimension" — that gate is what extra-mile work is iterating toward
+- `proactive-improvements` — the "just feels right" criterion in lighter form; this rule is the supreme weighted version
+- `supreme-polish` — the 100-ideas audit run (extra-mile applied at scale)
+- `brian-preferences` — pick ONE, never ask permission, just do it
+- `full-autonomy` — extra mile counts as authorized work

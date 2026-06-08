@@ -1,4 +1,4 @@
-# Feature Module Architecture (***SUPREME — every post-launch feature, every project***)
+# Feature Module Architecture
 
 Every meaningful new product capability lands as a **feature module**. A scattered service file, a loose route handler, or a bare UI component without a flag is drift — and drift is a merge-blocker.
 
@@ -49,7 +49,7 @@ Every module ships with `enabled=0, rollout_percent=0, stage='experimental'`. No
 - Auto-appears in `/admin/feature-flags` with zero extra code
 - `risk_notes` field: one sentence describing what breaks when disabled
 
-See [[feature-flags]] for full promotion lifecycle (experimental → beta → stable → deprecated → killswitch).
+See `feature-flags` for full promotion lifecycle (experimental → beta → stable → deprecated → killswitch).
 
 ## Drift-detection script
 
@@ -77,22 +77,18 @@ Fix drift before landing — never defer to a follow-up PR.
 
 ## Cross-links
 
-- [[feature-flags]] — D1 schema, KV cache, admin UI, promotion lifecycle, killswitch
-- [[verification-loop]] — deploy + prod-E2E mandate applies to every feature module
-- [[e2e-tdd-organization]] — `e2e/<slug>/` spec layout, hermetic contract, parallel runner
-- [[monitor-orchestration]] — multi-feature briefs fan out one agent per module
-- [[auto-integrate-recs]] — if a feature is identified, ship it in the same turn behind a flag
+- `feature-flags` — D1 schema, KV cache, admin UI, promotion lifecycle, killswitch
+- `verification-loop` — deploy + prod-E2E mandate applies to every feature module
+- `e2e-tdd-organization` — `e2e/<slug>/` spec layout, hermetic contract, parallel runner
+- `monitor-orchestration` — multi-feature briefs fan out one agent per module
+- `auto-integrate-recs` — if a feature is identified, ship it in the same turn behind a flag
 - `docs/architecture/feature-modules.md` — canonical reference for the full module spec
 - `docs/architecture/feature-flags.md` — D1 + KV + admin UI implementation details
 - `libs/features/donations_engine/` — canonical reference implementation
 
-## Reference incident (***2026-05-28 — projectsites.dev Wave 2 architecture***)
-
-Phase 16 of the Wave 2 architecture prompt established that all post-launch features (donations engine, invoicing, schedule heatmap, carbon footprint, AI SQL, etc.) must be implemented as typed modules with colocated concerns rather than scattered across `src/routes/` + `src/services/`. The feature-migration-5 agent landed `libs/features/donations_engine/` as the first canonical example. This rule encodes the discipline so future agents apply it without prompting.
-
 ## See
 
 - `~/.claude/CLAUDE.md` § Feature Flags (SUPREME) — the user-level policy this rule details
-- [[code-style]] — TypeScript strict + Zod everywhere, both apply inside modules
-- [[always]] — Hard Gates still apply post-feature-module (deploy, E2E, a11y, perf)
-- [[brian-preferences]] — pick ONE, just do it; modules let us ship dark and promote with confidence
+- `code-style` — TypeScript strict + Zod everywhere, both apply inside modules
+- `always` — Hard Gates still apply post-feature-module (deploy, E2E, a11y, perf)
+- `brian-preferences` — pick ONE, just do it; modules let us ship dark and promote with confidence

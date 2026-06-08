@@ -1,15 +1,15 @@
-# Context Spillover (***SUPREME — when working on X, harvest the context for adjacent gains***)
+# Context Spillover
 
 Every time you open a file, read a directory, or load a feature into working context, you've paid the cognitive cost of understanding that surface. Don't leave that context on the table. Before closing the file, scan it AND its siblings for adjacent gaps in: aesthetics, documentation, test coverage. Fix the small ones inline. Surface the big ones in the same turn's report.
 
-Different from `[[extra-mile]]` (which is "do unprompted improvements anywhere") and from `[[proactive-improvements]]` (which is "fix the obvious nit in THE file you're touching"). Context-spillover is the discipline that says: *the file's siblings — same dir, same feature — are already loaded; check them too while you're here.*
+Different from ``extra-mile`` (which is "do unprompted improvements anywhere") and from ``proactive-improvements`` (which is "fix the obvious nit in THE file you're touching"). Context-spillover is the discipline that says: *the file's siblings — same dir, same feature — are already loaded; check them too while you're here.*
 
 ## The principle
 - Loading context is expensive. Re-loading it next turn is doubly expensive.
 - When you read `src/web/components/Booking.tsx`, you understand the booking domain for ~30 minutes. Use those 30 minutes to also improve `BookingRecurring.tsx`, `booking/PostBookingUpsell.tsx`, the `booking/` E2E specs, and `docs/booking.md` — IF they have visible gaps.
 - The cost ceiling: <20% extra wall-time on top of the literal task. Past 20%, surface in the report instead.
 
-## The triple sweep (***runs after the literal task, before the end-of-turn report***)
+## The triple sweep
 
 For every file you edited or every feature surface you touched, check three adjacent dimensions:
 
@@ -24,8 +24,8 @@ For every file you edited or every feature surface you touched, check three adja
 
 ### 3. Test coverage
 - For every file you edited, check: does it have a sibling spec? Was the spec last updated within the same calendar week as the code? Does the spec exercise the code path you just changed?
-- If a sibling spec is missing OR stale, write/update it per `[[e2e-tdd-organization]]` — same turn.
-- For UI changes: also extend `<feature>/visual.spec.ts` with a new `randomSnapshot` step covering the changed surface per `[[e2e-visual-inspection]]`.
+- If a sibling spec is missing OR stale, write/update it per ``e2e-tdd-organization`` — same turn.
+- For UI changes: also extend `<feature>/visual.spec.ts` with a new `randomSnapshot` step covering the changed surface per ``e2e-visual-inspection``.
 
 ## Concrete patterns
 
@@ -48,7 +48,7 @@ For every file you edited or every feature surface you touched, check three adja
 - Check the feature inventory `e2e/FEATURES.md` — does the new feature need a row? Add it.
 - Does it deserve a `docs/<feature>.md`? Write it.
 - Does `CLAUDE.md` need a routes/components mention? Add it.
-- Does the new feature have parallel-runner-ready specs per `[[e2e-tdd-organization]]`? Make sure.
+- Does the new feature have parallel-runner-ready specs per ``e2e-tdd-organization``? Make sure.
 
 ## Cost discipline
 - Triple sweep MUST stay under 20% of the literal task's wall-time.
@@ -69,14 +69,10 @@ For every file you edited or every feature surface you touched, check three adja
 
 If all 4 = ship inline.
 
-## Reference incident (***2026-05-26 — brickcitylabor.com Wave 23***)
-- User issued: *"working with ~/.agentskills, whenever you are working somewhere on particular feature, take the time to also perfect, improve the aesthetics, documentation, and tests with any part of the app that could benefit from leveraging the same context."*
-- The gradient: existing `[[extra-mile]]` and `[[proactive-improvements]]` covered "do unprompted improvements" and "fix obvious nits in THIS file," but neither captured the context-locality angle: while a feature's surface is already loaded in working context, its SIBLINGS (same dir, same feature) are also cheap to improve. Captured here as a SUPREME complement.
-
 ## See
-- [[extra-mile]] — unprompted improvements (any surface, any time)
-- [[proactive-improvements]] — fix obvious nits in the file you're touching
-- [[supreme-polish]] — periodic full-surface audit (this rule = continuous adjacent-surface polish)
-- [[auto-integrate-recs]] — don't defer to Recs what you can ship now
-- [[e2e-tdd-organization]] + [[e2e-visual-inspection]] — the test-coverage dimension of the triple sweep
-- [[prompt-as-training-signal]] — this rule itself was born from a prompt's gradient
+- `extra-mile` — unprompted improvements (any surface, any time)
+- `proactive-improvements` — fix obvious nits in the file you're touching
+- `supreme-polish` — periodic full-surface audit (this rule = continuous adjacent-surface polish)
+- `auto-integrate-recs` — don't defer to Recs what you can ship now
+- `e2e-tdd-organization` + `e2e-visual-inspection` — the test-coverage dimension of the triple sweep
+- `prompt-as-training-signal` — this rule itself was born from a prompt's gradient

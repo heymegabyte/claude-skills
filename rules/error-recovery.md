@@ -36,7 +36,7 @@
 - **CPU exceeded** (10ms free / 50ms paid default) → split into `ctx.waitUntil()`
 - **Memory exceeded** → stream instead of buffer
 - **Unhandled rejection** → `ctx.passThroughOnException()` for graceful degradation
-- **Binding missing** → check `wrangler.jsonc` `[vars]` / `[[d1_databases]]` / `[[kv_namespaces]]` + `secrets.required` declaration
+- **Binding missing** → check `wrangler.jsonc` `[vars]` / ``d1_databases`` / ``kv_namespaces`` + `secrets.required` declaration
 - WebSocket payload now 32 MiB — frame larger messages
 
 ## Durable Objects

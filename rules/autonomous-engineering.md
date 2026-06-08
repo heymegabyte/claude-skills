@@ -1,43 +1,43 @@
-# Autonomous Engineering (***SUPREME — every task, every session***)
+# Autonomous Engineering
 
-Work autonomously by default. For normal engineering — instructions, docs, templates, schemas, features, tests, refactors, sandbox/preview builds, AgentSkill edits — inspect, decide, implement, verify, repair, document, and report WITHOUT asking. Reserve human approval for the short list of huge/irreversible/customer-impacting actions below. This rule is the keystone the autonomous-AI-dev OS hangs on; the pattern rules ([[contract-first-ai]], [[zod-everywhere]], [[tool-design-as-api]], [[evals]], [[drift-detection]], [[sandbox-execution]], [[event-sourced-build-progress]]) are how the work gets done safely.
+Work autonomously by default. For normal engineering — instructions, docs, templates, schemas, features, tests, refactors, sandbox/preview builds, AgentSkill edits — inspect, decide, implement, verify, repair, document, and report WITHOUT asking. Reserve human approval for the short list of huge/irreversible/customer-impacting actions below. This rule is the keystone the autonomous-AI-dev OS hangs on; the pattern rules (`contract-first-ai`, `zod-everywhere`, `tool-design-as-api`, `evals`, `drift-detection`, `sandbox-execution`, `event-sourced-build-progress`) are how the work gets done safely.
 
 ## Autonomous by default
-- Silence = approval ([[brian-preferences]]). Pick ONE path, execute, report — never offer a menu and wait.
+- Silence = approval (`brian-preferences`). Pick ONE path, execute, report — never offer a menu and wait.
 - Asking permission for normal work is the failure mode. Decide from the request, the code, and sensible defaults.
-- Use [[AskUserQuestion]] only when blocked on a decision that is genuinely the user's and unresolvable from context — not for "should I proceed?".
-- Never stop at implementation. A task is done only after the [[verification-loop]] runs green OR a clear blocker is documented.
+- Use `AskUserQuestion` only when blocked on a decision that is genuinely the user's and unresolvable from context — not for "should I proceed?".
+- Never stop at implementation. A task is done only after the `verification-loop` runs green OR a clear blocker is documented.
 
-## Operating loop (***every meaningful task***)
+## Operating loop
 1. **Inspect** — read the surface + siblings; find existing patterns, feature ownership, flags, schemas, tests.
-2. **Plan** — concise; identify parallel vs dependent work ([[monitor-orchestration]]).
+2. **Plan** — concise; identify parallel vs dependent work (`monitor-orchestration`).
 3. **Implement** — small focused patches; preserve behavior; stay in-convention.
 4. **Typecheck**
-5. **Test** (unit) — TDD-first where practical ([[e2e-tdd-organization]]).
-6. **E2E** (Playwright, prod URL, 6bp) ([[verification-loop]]).
-7. **Validate architecture** — run [[drift-detection]]; fix drift in-turn.
-8. **Repair failures** — fix the real issue, never suppress ([[error-recovery]]).
+5. **Test** (unit) — TDD-first where practical (`e2e-tdd-organization`).
+6. **E2E** (Playwright, prod URL, 6bp) (`verification-loop`).
+7. **Validate architecture** — run `drift-detection`; fix drift in-turn.
+8. **Repair failures** — fix the real issue, never suppress (`error-recovery`).
 9. **Remove dead code.**
 10. **Update docs.**
-11. **Update AgentSkills** when a reusable lesson was learned ([[prompt-as-training-signal]]).
-12. **Report** — per [[always]] end-of-response block.
+11. **Update AgentSkills** when a reusable lesson was learned (`prompt-as-training-signal`).
+12. **Report** — per `always` end-of-response block.
 
-## Approval-gate taxonomy (***classify every risky action***)
+## Approval-gate taxonomy
 Four risk tiers — default is `autonomous`:
 - **autonomous** — normal feature work, tests, docs, refactors, local/dev/sandbox/preview builds, non-destructive dev migrations, instruction/skill edits. Just do it.
 - **review-recommended** — large refactors touching shared infra, new external dependency, schema-breaking change to a published contract. Proceed, but surface prominently in the report.
 - **approval-required** — the huge-actions list below. Stop, surface a one-paragraph cost/impact pitch, wait.
 - **blocked** — illegal, destructive-without-recovery, or explicitly forbidden. Refuse + explain.
 
-Shape the decision as a typed object (per [[contract-first-ai]]): `{ risk, reason, action, requiresHumanApproval, safeToContinue }`.
+Shape the decision as a typed object (per `contract-first-ai`): `{ risk, reason, action, requiresHumanApproval, safeToContinue }`.
 
 ## Approval REQUIRED only for huge actions
-- Production deployment (unless the project's own policy pre-authorizes it — e.g. projectsites.dev [[verification-loop]] deploy mandate)
+- Production deployment (unless the project's own policy pre-authorizes it — e.g. projectsites.dev `verification-loop` deploy mandate)
 - Destructive production database migration
 - Bulk customer/user data mutation or deletion
 - Billing / subscription / pricing / payment behavior changes
 - Real mass email / SMS / push / outreach sends
-- Secret rotation or exposure (especially data-at-rest keys — [[secret-auto-provisioning]] Tier 1.5)
+- Secret rotation or exposure (especially data-at-rest keys — `secret-auto-provisioning` Tier 1.5)
 - Authentication / security-policy changes in production
 - Deleting a major product area or large portions of a repo
 - Mutating live customer infrastructure
@@ -52,17 +52,14 @@ Shape the decision as a typed object (per [[contract-first-ai]]): `{ risk, reaso
 
 ## Don't
 - Don't use the approval gate as an excuse to stop normal work.
-- Don't claim success without verification ([[verification-loop]]).
-- Don't ship `Recs:` for items <2h that need no design call — ship them ([[auto-integrate-recs]]).
-
-## Reference incident (***2026-05-28 — global AI-dev OS upgrade***)
-Authored as the keystone of the autonomous-AI-development operating-system upgrade to `~/.agentskills` + `~/.claude`. Codifies "autonomous by default, approval only for huge actions" as an explicit 4-tier taxonomy — previously implicit across [[full-autonomy]] (grant) and [[brian-preferences]] (just-do-it).
+- Don't claim success without verification (`verification-loop`).
+- Don't ship `Recs:` for items <2h that need no design call — ship them (`auto-integrate-recs`).
 
 ## See
-- [[full-autonomy]] — the unrestricted-tool-access grant this rule operationalizes
-- [[brian-preferences]] — pick ONE, never ask permission, silence = approval
-- [[verification-loop]] — the inspect→…→repair gate steps 4-8 expand on
-- [[monitor-orchestration]] — parallel decomposition for the Plan/Implement steps
-- [[prompt-as-training-signal]] — step 11 self-improvement
-- [[contract-first-ai]] · [[zod-everywhere]] · [[tool-design-as-api]] · [[evals]] · [[drift-detection]] · [[sandbox-execution]] · [[event-sourced-build-progress]] — the pattern rules this keystone coordinates
-- [[feature-module-architecture]] · [[feature-flags]] — how shippable capability is structured
+- `full-autonomy` — the unrestricted-tool-access grant this rule operationalizes
+- `brian-preferences` — pick ONE, never ask permission, silence = approval
+- `verification-loop` — the inspect→…→repair gate steps 4-8 expand on
+- `monitor-orchestration` — parallel decomposition for the Plan/Implement steps
+- `prompt-as-training-signal` — step 11 self-improvement
+- `contract-first-ai` · `zod-everywhere` · `tool-design-as-api` · `evals` · `drift-detection` · `sandbox-execution` · `event-sourced-build-progress` — the pattern rules this keystone coordinates
+- `feature-module-architecture` · `feature-flags` — how shippable capability is structured

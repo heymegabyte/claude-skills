@@ -36,17 +36,17 @@
 - **Haiku** — architecture, security, complex logic, multi-file refactors
 
 ## Agent routing
-- **Opus** — architect, completeness-checker, security-reviewer, visual-qa, meta-orchestrator (each has `model_fallback: claude-sonnet-4-6` + `effort_fallback: high` per `[[opus-quota-fallback]]`)
+- **Opus** — architect, completeness-checker, security-reviewer, visual-qa, meta-orchestrator (each has `model_fallback: claude-sonnet-4-6` + `effort_fallback: high` per ``opus-quota-fallback``)
 - **Sonnet** — code-simplifier, deploy-verifier, test-writer, dependency-auditor, migration-agent, performance-profiler, incident-responder
 - **Haiku** — seo-auditor, content-writer, accessibility-auditor, cost-estimator, changelog-generator
 
-## Quota-aware routing (***fires on Opus exhaustion — see `[[opus-quota-fallback]]`***)
+## Quota-aware routing
 - When the user has switched the session to Sonnet (`/model claude-sonnet-4-6`), Opus-pinned agents transparently read their `model_fallback` field and spawn as Sonnet
 - When `~/.claude/.opus-disabled` flag file exists OR `CLAUDE_OPUS_DISABLED=true` is exported, same fallback fires
 - When an Opus API call 429s on `rate_limit` / `quota_exceeded`, the Monitor sets an in-memory `OPUS_AVAILABLE=false` for the next 5 minutes
 - Fast Mode (`/fast`) auto-disables when `OPUS_AVAILABLE=false` — no user prompt needed
 - Sonnet fallback is ~5-10% quality drop on Brian's typical workload — acceptable to keep shipping; never blocks work
-- Defer `[[supreme-polish]]` / `[[source-site-enhancement]]` § 9-agent fan-out / payment+auth security reviews until Opus restores
+- Defer ``supreme-polish`` / ``source-site-enhancement`` § 9-agent fan-out / payment+auth security reviews until Opus restores
 
 ## Effort parameter
 - **`xhigh`** — architecture / security / planning on Opus 4.7
@@ -78,4 +78,4 @@ Match effort to task complexity.
 
 Hierarchical compounds gains over flat fanout. Sub-agent prompts 100–300 words — beyond that you're cloning context, not specializing.
 
-Spawned specialists for batch test/feature work run on the standing `CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` default per [[parallel-subagent-economy]] — Opus orchestrates, Sonnet builds. Opus-pinned reviewers (architect/security/visual-qa/meta-orchestrator) override that default with an explicit `model: opus` on the spawn; the call-level model param takes precedence over the env default.
+Spawned specialists for batch test/feature work run on the standing `CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` default per `parallel-subagent-economy` — Opus orchestrates, Sonnet builds. Opus-pinned reviewers (architect/security/visual-qa/meta-orchestrator) override that default with an explicit `model: opus` on the spawn; the call-level model param takes precedence over the env default.

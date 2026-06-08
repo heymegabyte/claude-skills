@@ -27,385 +27,113 @@ submodules:
 # 12 — Media Orchestration
 
 ## Submodules
-
 - **media-prompts** — prompt templates, Ideogram v3 API
 - **compression-pipeline** — Python code, format tables, CF Image Transforms, CLS, broken image detection
-- **og-image-generation** — Satori edge-rendered OG images, KV / R2 cache, meta-tag helper
-- **image-optimization** — Sharp processing, responsive srcset, WebP / AVIF, blur placeholders, R2 pipeline
-- **image-profiling** — GPT-4o vision batch profiling — quality + placement + colors per image, pre-digest for builders
-- **lightbox-classifier** — per-image eligibility — `kind!=logo` + ≥1024×768 + score≥7, logo grids → hover-grayscale-to-color
-- **social-brand-hex** — canonical brand-color map per social platform, hover / focus / active states, per-platform CSS class generation
-- **notebooklm-pipeline** — per-site podcast via ElevenLabs Studio + infographic gallery via Vega-Lite / Recraft / GPT-Image-2 + explainer video via HeyGen + Cloudflare Stream embed + RSS feed + JSON-LD + cost ceiling $3.50/site, runs Phase 0 in parallel with Media Slot Manifest, paired with `notebooklm-orchestrator` agent
+- **og-image-generation** — Satori edge-rendered OG, KV / R2 cache, meta-tag helper
+- **image-optimization** — Sharp processing, responsive srcset, WebP/AVIF, blur placeholders, R2 pipeline
+- **image-profiling** — GPT-4o vision batch profiling
+- **lightbox-classifier** — per-image eligibility — `kind!=logo` + ≥1024×768 + score≥7
+- **social-brand-hex** — canonical brand-color map per social platform
+- **notebooklm-pipeline** — per-site podcast via ElevenLabs Studio + infographic via Vega-Lite/Recraft/GPT-Image-2 + HeyGen video + CF Stream + RSS + JSON-LD + cost ceiling $3.50/site
 
 ## Strategy by Section
-
 - **Hero** — GPT Image 1.5 / Sora
 - **Features** — GPT Image 1.5 / SVG
 - **How It Works** — GPT Image 1.5
 - **Testimonials** — stock
 - **About** — stock / real
 - **Blog** — GPT Image 1.5
-- **Social** — Satori OG 1200x630
+- **Social** — Satori OG 1200×630
 - **Icons** — Ideogram v3 + processing
 
-**Pre-gen** — communication goal? Brand style? Dimensions? Format? Budget? Stock or generated?
+Pre-gen: communication goal? Brand style? Dimensions? Format? Budget? Stock or generated?
 
 ## Visual Inspection (MANDATORY)
-
-Read every image before deploy. Check: blur, artifacts, watermarks, wrong colors, AI hallucinations, gibberish text. Failed: regenerate improved prompt. Quality: 2x retina, no artifacts, brand palette, consistent style, no uncanny valley.
+Read every image before deploy. Check: blur, artifacts, watermarks, wrong colors, AI hallucinations, gibberish text. Failed = regenerate w/ improved prompt. Quality: 2× retina, no artifacts, brand palette, consistent style, no uncanny valley.
 
 ## Brian's Style
-
-- **Space / cosmic** — `#00E5FF` + `#7C3AED`, deep black (`#060610`)
-- **Connections / dots** — quantum, neural, constellation
+- Space/cosmic — `#00E5FF` + `#7C3AED`, deep black (`#060610`)
+- Connections/dots — quantum, neural, constellation
 - "Ultra realistic" scenes
 - Transparent logos
 - Simpler always
-- **Motifs** — squirrels, turtles
+- Motifs — squirrels, turtles
 
 ## Image Generation
-
 - **GPT Image 1.5** preferred (best quality)
 - **GPT Image 1** for speed
-- **GPT Image 1-mini** for bulk / drafts
-- **Fallback** — `scripts/image_gen.py`
+- **GPT Image 1-mini** for bulk/drafts
+- Fallback: `scripts/image_gen.py`
 - Be specific, include colors, specify avoidances
 - Product screenshots: browser rendering via Playwright on live URL
 
-## DALL-E First Slot-Fill (***BRIAN'S STATED PREFERENCE — CANONICAL — UNIVERSAL***)
+## DALL-E First Slot-Fill (CANONICAL — UNIVERSAL)
+DALL-E (gpt-image-1.5 / gpt-image-1) is PRIMARY originator for every image slot the source-resolution chain didn't fill from real-entity sources (Places / uploads / scrape).
 
-DALL-E (gpt-image-1.5 / gpt-image-1 — colloquially "DALL-E") is the PRIMARY originator for every image slot the source-resolution chain didn't naturally fill from real-entity sources (Places / uploads / scrape).
-
-- After real-entity sources exhaust, DALL-E is invoked BEFORE generic stock — per-slot prompt produces tighter topic match than any stock library
-- Stock APIs run as parallel speed-pass fallback (instant return if DALL-E hangs >15s) but DALL-E output preferred at curation
-- Quote: "DALL-E can literally create the ultra-realistic perfect photo for any given photo spot, so rely on that fact"
-- Encoded as DEFAULT BEHAVIOR, not opt-in
+- After real-entity sources exhaust, DALL-E invoked BEFORE generic stock — per-slot prompt produces tighter topic match than any stock library
+- Stock APIs run parallel speed-pass fallback (instant return if DALL-E hangs >15s) but DALL-E output preferred at curation
 - See skill 15 `media-acquisition` Media-Slot-Manifest + Fail-CLOSED auto-regenerate (5 attempts, prompt-refinement loop, $0.40 worst-case ceiling per slot)
 
-## Per-Slot Prompt Mandatory Fields (***UNIVERSAL — BUILD-BREAKING — `validate-image-prompts.mjs` + `validate-dalle-slot-fill.mjs`***)
-
-Every DALL-E call MUST encode 6 fields in the prompt, drawn from the slot record in `_media_slots.json`:
-
+## Per-Slot Prompt Mandatory Fields (BUILD-BREAKING — `validate-image-prompts.mjs` + `validate-dalle-slot-fill.mjs`)
+Every DALL-E call MUST encode 6 fields from `_media_slots.json`:
 1. Page topic + intent verbatim from `topic_intent`
 2. Brand palette tokens from `_brand.json.colors` (inline hex)
 3. Composition + aspect ratio matching `aspect`
 4. Subject specificity (NEVER "people" — always "octogenarian volunteer plating soup, soft window light, documentary style")
-5. Photographic technical specs (camera, lens, lighting, depth of field, e.g. "shot on Hasselblad, 85mm prime, golden hour, shallow DoF")
+5. Photographic technical specs (camera, lens, lighting, DoF — "shot on Hasselblad, 85mm prime, golden hour, shallow DoF")
 6. Negative prompt block ("no text, no watermarks, no logos, no extra fingers, no AI artifacts, no stock-photo cliches")
 
-Generic "create a hero image" prompts FAIL the validator. Same template applies to FLUX, Recraft, Stability — reuse slot-prompt across providers with fallback chain.
-
-## Fail-CLOSED Auto-Regenerate (***ZERO MISSING IMAGES — UNIVERSAL — BUILD-BREAKING — `validate-no-empty-slots.mjs`***)
-
-Every slot in `_media_slots.json` MUST end the build with `filled_url != null AND filled_score >= relevance_floor` (default 8/10 via GPT-4o vision).
-
-**Failure modes** (Pexels returns nothing, DALL-E returns NSFW-flagged, scraped image broken, vision relevance below floor) trigger immediate auto-regeneration via DALL-E with REFINED prompt — NEVER silent skip, NEVER substitute brand-gradient unless 5 regen attempts exhausted.
-
-- Refined prompt synthesized via gpt-4o reading `(original_prompt, vision_critique_of_what_was_wrong, relevance_floor)` and tightening with what to ADD + REMOVE
-- Hard ceiling 5 attempts × $0.08/img = $0.40/slot worst case
-- After exhaustion: log to `_unfillable_slots.json`, ship with brand-gradient floor (prevents 404), surface in dashboard for manual replacement, build marked `published_with_warnings`
-- Default behavior is regen-until-pass
-
-### "DALL-E" terminology reconciliation
-When Brian or skill prose says "DALL-E", treat it as colloquial shorthand for the current OpenAI Images API (gpt-image-1.5 quality / gpt-image-1 balanced / gpt-image-1-mini bulk). The literal `dall-e-3` model id deprecated May 12, 2026 — never call that endpoint. Implementation always uses gpt-image-1.5 by default; the user-facing concept stays "DALL-E" because that's the brand language in user feedback. Sora video deprecates Sept 24, 2026.
-
-### Per-slot purpose-crafted prompt requirement (***UNIVERSAL — BUILD-BREAKING — no generic prompts***)
-Every generated image gets a per-slot prompt that names:
-1. Route + section the image lives in (`/about hero`, `/services card-3`, `/blog/post-x feature`)
-2. Page topic + intent (subject specificity — "octogenarian volunteer plating soup, soft window light, documentary realism" NOT "people helping")
-3. Brand palette tokens (e.g. "matte navy #060610 + cyan accent #00E5FF")
-4. Composition + aspect ratio (16:9 hero / 1:1 card / 4:5 portrait / 3:2 editorial)
-5. Negative prompt (no text overlays, no watermarks, no extra fingers, no logos, no AI artifacts)
-6. Stylistic anchor (matched to brand-element extraction — "documentary photography" / "minimal editorial" / "warm golden-hour")
-
-Generic prompts ("create a hero image for nonprofit") rejected at the prompt-prep step. Same per-slot prompt template applies across providers — gpt-image-1.5, Ideogram, Stability, Recraft — fallback chain reuses the slot prompt verbatim.
-
-Validator (`validate-image-prompts.mjs`) — every entry in `_assets.json.generated[]` must include `slot_prompt: { route, section, intent, palette, aspect, negative, style }` — missing fields = fail.
-
-### Hero media preference order (***UNIVERSAL — full-multimedia experience***)
-Every hero / page-banner section ranks media in this order:
-1. Original-source-hero asset preserved at ≥7/10 quality
-2. **Pexels Video API** HD loop (free, MP4 ≤2MB, 4-8s, autoplay + muted + loop + playsinline + poster)
-3. Coverr / Mixkit free video
-4. gpt-image-1.5 generated still with brand-converged prompt
-5. Pexels / Pixabay photo
-6. Brand-gradient with motif overlay (LAST RESORT)
-
-Video-over-still preference holds whenever ≥1 Pexels Video result scores ≥0.7 topical-relevance — sites should feel cinematic, not catalog.
-
-Ship `<video autoplay muted loop playsinline preload="metadata" poster="...">` with `<source type="video/mp4">` + `prefers-reduced-motion: reduce` fallback to poster image.
-
-Pexels Video API: `https://api.pexels.com/videos/search?query=<topic>&orientation=landscape&size=large&per_page=10` requires `PEXELS_API_KEY`.
-
-Build gate (`validate-hero-media.mjs`) — every `<section data-hero>` must have `<video>`, `<picture>`, OR `[style*=background-image]` — empty or solid-color hero = fail.
-
-### Publication / journal imagery rule (***UNIVERSAL — BUILD-BREAKING — never irrelevant stock***)
-Publication / paper / case-study / press-mention tile imagery comes from EXACTLY one of three sources, in priority:
-1. The source page's own asset (the journal's logo PNG, the paper's figure-1, the press article's hero image — extracted by skill 15 `publication-deeplink-resolver` during scrape)
-2. The journal / publisher's official logo via Logo.dev / Brandfetch / Wikipedia og:image (when paper-specific asset unavailable)
-3. gpt-image-1.5 generated abstract that visualizes the paper's topic with per-slot prompt referencing the paper's title + keywords (e.g. for "pharmaceutical corruption in developing countries" → "abstract visualization of medication and shadow over a globe, editorial illustration, matte navy + amber accent")
-
-NEVER generic stock photos of doctors / books / labs / handshakes — they look templated and signal "AI slop".
-
-Validator (`validate-publication-imagery.mjs`) — every `[data-card-type=publication] img[src]` must resolve to either `_publications.json[].source_image_url`, `_publications.json[].journal_logo_url`, or `_publications.json[].generated_image_url` — generic stock host = fail.
-
-Reference incident: `lone-mountain-global-3` (2026-05-02) `/publications` shipped duplicate doctor stock photos across 8 papers — drove this rule.
-
-### Lightbox grouping consistency (***UNIVERSAL — BUILD-BREAKING — match design grouping***)
-Every lightbox-eligible image (`kind!=logo` AND ≥1024×768 AND quality≥7) inherits `data-gallery="<section-slug>"` from its enclosing section — services-section images all share `data-gallery="services"`, gallery-section images share `data-gallery="gallery"`, team images share `data-gallery="team"`.
-
-- NEVER assign per-image unique gallery IDs (creates lightbox carousels of 1 image each = broken UX)
-- NEVER cross-group images from different topical sections into one carousel
-- Each `[data-zoomable]` MUST also carry `data-caption-title` + `data-caption-description` data attributes; lightbox modal renders them in a bottom strip and screen-reader `aria-describedby`
-
-Validator (`validate-lightbox-grouping.mjs`) — for every section with ≥2 lightbox-eligible images, all share the SAME `data-gallery`; missing caption attrs = fail.
-
-Reference incident: `lone-mountain-global-3` (2026-05-02) gallery section split same-topic images across 4 separate lightbox groups — only 2 of 8 images visible per modal — drove this rule.
-
-### Social-button brand-hex hover / focus / active (***UNIVERSAL — BUILD-BREAKING — every social link uses canonical brand hex***)
-Every social-platform link (Facebook, X, LinkedIn, Instagram, YouTube, TikTok, Pinterest, GitHub, Discord, Bluesky, Threads, WhatsApp, Reddit, Snapchat) MUST swap to the platform's official brand hex on `:hover`, `:focus-visible`, AND `:active` — never a generic site-accent color.
-
-Canonical map (`social-brand-hex.json` shipped in template):
-- **FB** — `#1877F2`
-- **X** — `#000`
-- **LinkedIn** — `#0A66C2`
-- **Instagram** — `linear-gradient(45deg,#F58529→#DD2A7B→#8134AF→#515BD4)`
-- **YouTube** — `#FF0000`
-- **TikTok** — `#000` with cyan / magenta dual-shadow `0 0 8px #00F2EA, 0 0 8px #FF0050`
-- **Pinterest** — `#BD081C`
-- **GitHub** — `#181717`
-- **Discord** — `#5865F2`
-- **Bluesky** — `#0085FF`
-- **Threads** — `#000`
-- **WhatsApp** — `#25D366`
-- **Reddit** — `#FF4500`
-- **Snapchat** — `#FFFC00`
-
-Default state is monochrome (currentColor or `--text-muted`); hover / focus / active fills with brand hex (color OR background depending on icon-only vs filled-pill design).
-
-Validator (`validate-social-brand-hex.mjs`) — for every `[data-social=<platform>]` element, force `:hover` via Playwright + sample computed-style — must match the canonical hex (or gradient for Instagram) within ΔE<5.
-
-Reference incident: `lone-mountain-global-3` (2026-05-02) social row used generic brand-accent on hover for all 5 platforms instead of platform-specific colors — drove this rule. Cross-ref `always.md` "Every social link" — same data, this is the build gate that enforces it.
-
-## Logo (NON-NEGOTIABLE)
-
-### Discovery
-- Logo.dev, Brandfetch, scrape header, Google Images, favicon, social
-- High quality: use
-- Low: AI-enhance
-- Favicon only: upscale
-
-### Generation (if none)
-- 3 Ideogram v3 variants (A=lockup, B=icon, C=wordmark)
-- Single GPT-4o call rates all 3 (1-10)
-- Winner <7: regenerate losing slot only (max 2 rounds)
-- Cost: ~$0.05 total (3 Ideogram + 1 GPT-4o `detail:low`)
-
-### Assets
-- `favicon.ico` (16+32+48)
-- 16 / 32 / 180 / 192 / 512 PNGs
-- `logo-header`
-- `logo-mark`
-- `og-image` 1200x630
-
-### Auto-favicon pipeline (***UNIVERSAL — BUILD-BREAKING — EVERY DEPLOY OF EVERY PROJECT — no exceptions for SaaS-from-template***)
-Every site (new build, rebuild, SaaS-from-template, single-page MVP, internal tool) MUST ship the full 9-asset favicon kit + og card + maskable icons + `site.webmanifest` BEFORE first deploy. Skipping = build fail at deploy gate (skill 08 asset-existence step).
-
-**Pipeline order** — primary path uses `npx @realfavicongenerator/cli` (RealFaviconGenerator API, requires `REAL_FAVICON_GENERATOR_API_KEY` from https://realfavicongenerator.net/api/), fallback to ImageMagick local pipeline when API key absent.
-
-Both produce identical canonical 9-asset set:
-- `favicon.ico` (multi-size 16+32+48)
-- `favicon.svg` (master, ≤2KB inline-friendly)
-- `favicon-16x16.png`
-- `favicon-32x32.png`
-- `favicon-48x48.png`
-- `favicon-96x96.png`
-- `apple-touch-icon.png` (180×180)
-- `android-chrome-192x192.png`
-- `android-chrome-256x256.png`
-- `android-chrome-384x384.png`
-- `android-chrome-512x512.png`
-- `maskable-192x192.png` (10% safe-zone padding for adaptive icons)
-- `maskable-512x512.png`
-
-**RealFaviconGenerator CLI:**
-```bash
-npx @realfavicongenerator/cli generate --master logo-1024.png --output public/ --background "#060610" --theme-color "#060610" --app-name "<App>" --app-short-name "<Short>"
-```
-
-**ImageMagick fallback (no API key):**
-```bash
-magick logo-1024.png -fuzz 8% -transparent white -trim +repage logo-clean.png
-```
-(transparent bg first), then bulk resize per size + `magick favicon-16x16.png favicon-32x32.png favicon-48x48.png favicon.ico` for multi-size `.ico` + maskable variants from a separate solid-bg source canvas (NEVER reuse transparent logo for maskable — adaptive masks require solid bg + 10% safe-zone).
-
-Source logo MUST be ≥1024×1024 transparent-PNG (regenerate at higher res via Ideogram / gpt-image-1.5 if source is sub-512).
-
-**Head tags MUST appear in static HTML (NOT injected via React / router):**
-```html
-<link rel="icon" href="/favicon.ico" sizes="any"/>
-<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
-<link rel="mask-icon" href="/favicon.svg" color="<brand-accent>"/>
-<link rel="manifest" href="/site.webmanifest"/>
-```
-
-SVG favicon master pinned by `<link rel="mask-icon" color="<brand-accent>"/>` for Safari pinned-tab.
-
-Validator (`validate-favicon-kit.mjs` shipped via skill 08) — post-build, asserts every file in canonical 9-asset set exists in `dist/` AND every link tag listed above present in static `dist/index.html`; fail with diagnostic listing missing assets.
-
-Reference incident: `pdf.megabyte.space` (2026-05-02) shipped without favicon kit + og.png + `site.webmanifest` — drove this rule.
-
-### OG card generation (***UNIVERSAL — BUILD-BREAKING — every site needs `og.jpg` | `og.png` ≤100KB***)
-Every site ships `og.jpg` (preferred — JPEG compresses photographic gradients better than PNG, target ≤80KB) OR `og.png` (only when transparency required, target ≤100KB) at 1200×630 in `public/`.
-
-Template ships `scripts/render-og.mjs` (Playwright + HTML / CSS template) — renders branded card with logo + tagline + URL footer, NEVER raw scraped photo + NEVER stock image.
-
-- Render at `deviceScaleFactor:1` (NOT 2 — 2x doubles file size, OG scrapers downsample anyway)
-- Brand-converged colors from `_brand.json` palette + display font
-- **Compress** — `magick og.png -strip -quality 85 og.jpg` for JPEG; `magick og.png -strip -define png:compression-level=9 -colors 200 og.png` for PNG
-- Per-route OG (skill 12 `og-image-generation.md` Satori edge-render) for `/blog/<slug>` + `/team/<slug>` etc; static homepage uses `public/og.jpg`
-
-**Head tags MUST:**
-```html
-<meta property="og:image" content="https://<host>/og.jpg"/>
-<meta property="og:image:secure_url" content="https://<host>/og.jpg"/>
-<meta property="og:image:width" content="1200"/>
-<meta property="og:image:height" content="630"/>
-<meta property="og:image:type" content="image/jpeg"/>
-<meta property="og:image:alt" content="<brand-specific descriptive alt>"/>
-```
-+ matching `<meta name="twitter:image"/>` + `<meta name="twitter:image:alt"/>`.
-
-Validator (`validate-og-card.mjs`) — asserts og file exists in `dist`, dimensions exactly 1200×630, file size ≤100KB, MIME matches og:image:type meta — ANY mismatch = fail.
-
-### Logo background transparency (NON-NEGOTIABLE)
-Every logo file shipped MUST be transparent-background PNG. Run `magick logo.png -fuzz 8% -transparent white -trim +repage logo-clean.png` after acquisition (whether scraped, generated, or uploaded).
-
-White-bg logos on dark hero = a white rectangle floating over the page = looks broken. Verify via Sharp: `(await sharp(buf).raw().toBuffer()).readUInt8(3) < 255` for ≥1% of corner pixels. Build gate: corner-pixel sample shows alpha<255 OR fail.
-
-### Institutional logo lookup (NON-NEGOTIABLE — universities, journals, sponsors, partners)
-When research data lists institutional names (Boston University, Harvard, Nature Journal, Forbes, Microsoft Partner), look up each via Logo.dev / Brandfetch / Wikipedia og:image / official site favicon scrape — NEVER text-only badges.
-
-- Cache to `r2://logos/{slug-of-institution}.svg|.png`
-- Render in dedicated `.logo-grid` (skill 12 `lightbox-classifier.md` hover-grayscale-to-color)
-- `aria-label` includes full institutional name
-- Each links to official site (`target="_blank" rel="noopener"`)
-- Build gate: every institution mentioned in `_research.json.affiliations[]|publications[].source|sponsors[]|partners[]` has a resolved logo file or fail with diagnostic listing missing names
-
-### PWA manifest `screenshots[]` (***NON-NEGOTIABLE***)
-Every site ships a `site.webmanifest` with a `screenshots[]` array — desktop wide 1920×1080 + mobile narrow 390×844 + optional cover 1280×720.
-
-Captured via Playwright on `http://localhost:4173` (built site) AFTER prerender + before R2 upload. NEVER stock mockup PNGs — must be real screenshots of THIS site. Each ≤200KB JPEG q=85. See skill 06 `pwa-kit.md` for full manifest template + Playwright capture command.
-
-### OpenAI key
-Load from `~/.claude/.env` via `source ~/.claude/.env`. Manage at https://platform.openai.com/api-keys. Replicate at https://replicate.com/account/api-tokens. Ideogram at https://developer.ideogram.ai/keys.
-
-### Gates
-- Legible 32px + 512px
-- Transparent bg
-- Brand palette
-- No artifacts
-- Dark + light
-- GPT-4o ≥7/10
-
-## Video (Sora)
-
-- **Hero bg** — 4-8s muted autoplay loop
-- **Explainer** — 15-30s
-- **Demo** — 5-10s
-- **Model** — sora-2 / sora-2-pro
-- 1280x720
-- **Delivery** — autoplay muted loop playsinline poster
-- <2MB hero
-- Lazy below fold
-- Sora deprecates Sept 24, 2026 — evaluate alternatives before then
-
-## Social Previews + AI Search Optimization
-
-- **PWA screenshots** — Playwright on live URL (never mockups). Wide 1920x1080 + narrow 390x844
-- **OG** — 1200x630 per page (MANDATORY). Edge-rendered via Satori + resvg (see `og-image-generation.md`)
-
-### AI Search (GEO)
-OG images now consumed by ChatGPT, Perplexity, Google AI Overviews. Ensure:
-- Descriptive og:title (40-60 words quotable)
-- Structured JSON-LD on every page
-- FAQ sections for AI extraction
-- Clear entity definitions
-
-ChatGPT favors Wikipedia / G2; Perplexity favors Reddit / YouTube; Google AI Overviews favor traditionally ranked pages.
-
-## Stock
-
-Pexels (`PEXELS_API_KEY`), Pixabay (`PIXABAY_API_KEY`). Review 5+, prefer candid / diverse / mood-matching. WebP, alt text.
-
-## Critique Loop (max 3)
-
-Communicates? Brand-matching? Strong composition? Consistent palette? Legible? Premium? No artifacts? Issues: adjust prompt, regenerate. Score 1-10 on 8 criteria (see `templates/PROMPTS.md`). Overall <7: regenerate.
-
-## Per-Page Topic-Relevance Gate (***UNIVERSAL — BUILD-BREAKING — vision-LLM scored — njsk-light 2026-05-02***)
-
-Every `<img>` rendered on every route MUST score ≥8/10 on per-page semantic relevance via GPT-4o vision before R2 upload.
-
-### Scoring prompt names
-- (a) Page topic + intent loaded from `_research.json.routes[].topic` (e.g. `/volunteer="people contributing time/labor"`, `/women-and-children-services="women+children specifically NOT mixed-gender adults"`, `/soup-kitchen="meal service to those in need"`, `/donate="generosity+community impact"`)
-- (b) Image subject + composition extracted via vision-LLM caption pass
-- (c) Brand-tone fit (warm vs corporate vs documentary)
-
-### Hard fails (recurring njsk-light incidents 2026-05-02)
-- Lightbulb on `/volunteer`
-- Mixed-gender adults on women + children services page
-- Generic stock corporate handshake on soup-kitchen page
-- Abstract gradient where original-source-hero exists at quality ≥7/10
-
-### Hero preference order STRICT (NO substitution at lower priority when higher-priority candidate available)
-1. Original-source-hero IF quality ≥7/10
-2. Pexels-video-loop matching topic
-3. Pexels-image scoring ≥8 on relevance
-4. DALL-E per-slot prompt (skill 12 `templates/PROMPTS.md`) naming page topic + brand palette + subject specificity
-5. Brand-gradient fallback (only when 1-4 all fail)
-
-Picking lucky-stock instead of crawled-original = fail. Validator: `validate-image-relevance.mjs` (skill 15 `quality-gates`). Cross-ref `always.md` "Every page-rendered image" + "Every page (media density)".
-
-## Performance Budget
-
-- Total images <500KB
-- Largest <200KB
-- Hero LCP <2.5s
-- Total media <3MB
-- Requests <15
-- **Hero** — eager + preload + `fetchpriority=high`
-- **Others** — lazy
-- **All** — `decoding=async`
-- WebP + AVIF via CF Image Transforms (`format=auto`)
-- srcset 320 / 640 / 1280 / 1920w
-- Inline SVGs <2KB
-- 1s LCP delay = 7% conversion loss
-
-## Fallback Chain
-
-1. **GPT Image 1.5** (scenes / hero / OG — best quality)
-2. **Ideogram v3** (logos / icons)
-3. **GPT Image 1-mini** (bulk drafts)
-4. **Pexels** (200/hr)
-5. **Pixabay** (100/hr)
-6. **Replicate** (specialty)
-
-All keys: project `.env.local` or shared key pool. `~/.claude/.env` for shared keys (`OPENAI_API_KEY`, etc).
-
-## Design Phase API Scan (EVERY NEW PROJECT)
-
-Before first design: scan `get-secret` vault for available media APIs.
-
-### Check
-- `OPENAI_API_KEY` (GPT Image)
-- `PEXELS_API_KEY` (stock photos)
-- `PIXABAY_API_KEY` (stock)
-- `REPLICATE_API_TOKEN` (Flux / specialty)
-- `IDEOGRAM_API_KEY` (logos)
-
-Also scan for: embedded video APIs (YouTube Data API, Vimeo), background video sources (Pexels Video API supports free HD video), high-res content APIs (NASA / APOD for space themes, Giphy for motion).
-
-Map available APIs to section needs before generating any media. Always provide exact API key management URLs when prompting user for missing keys.
+Generic prompts FAIL validator. Same template applies to FLUX, Recraft, Stability — reuse slot-prompt across providers w/ fallback chain.
+
+## Fail-CLOSED Auto-Regenerate (BUILD-BREAKING — `validate-no-empty-slots.mjs`)
+Every slot in `_media_slots.json` MUST end build w/ `filled_url != null AND filled_score >= relevance_floor` (default 8/10 via GPT-4o vision).
+
+Failure modes (Pexels returns nothing, DALL-E NSFW-flagged, scraped image broken, vision relevance below floor) trigger immediate auto-regeneration via DALL-E w/ REFINED prompt — NEVER silent skip, NEVER substitute brand-gradient unless 5 regen attempts exhausted.
+
+Build orchestrator's `media_pipeline_orchestrator` sub-agent owns this loop. Submodule: `media-acquisition.md` § Fail-CLOSED chain.
+
+## Logo / Icon Generation
+- **Ideogram v3** for logos (best text rendering)
+- **Recraft V3** for vector-style icons
+- Output: PNG transparent + SVG (if possible)
+- Process: bg removal → favicon set (16/32/180/192/512 + maskable)
+- Brand mark MUST be vector-clean — no AI artifacts on edges
+
+## Video Generation
+- **Sora** for primary cinematic content
+- Veo for narrative stitching (7-8 × 8-sec clips → 60-sec arc)
+- HeyGen for explainer + spokesperson
+- All include captions VTT + transcript
+- `prefers-reduced-motion` → static poster fallback
+
+## OG Image (1200×630)
+- Satori edge-rendered from template
+- Per-route unique
+- BRANDED CARD never raw photo
+- ≤100KB
+- Cached in KV 7d / R2 forever
+
+## Stock Photography
+- **Pexels** first (free, high quality, API)
+- **Pixabay** second
+- Never: Unsplash (generic, overused), iStock/Getty (paid, unnecessary)
+- Critique-and-remix loop max 3 rounds
+- AI vision rates each candidate; <7/10 = reject + regenerate
+
+## Asset Compression Pipeline
+- AVIF primary (94% browser support, 20-30% smaller than WebP)
+- WebP fallback (Safari 14+)
+- JPEG legacy
+- Sharp: 320 / 640 / 1280 / 1920w responsive srcset
+- Blur placeholder generation
+- Dominant color extraction → CSS bg fill while loading
+- R2 upload pipeline per-extension content-type
+
+## Performance Budgets
+- Total images per page ≤500KB
+- Largest single image ≤200KB
+- Hero LCP image `fetchpriority="high"` + preload link
+- `loading="lazy"` on every other image
+- `decoding="async"` always
+
+## See submodules for: media-prompts, compression-pipeline, og-image-generation, image-optimization, image-profiling, lightbox-classifier, social-brand-hex, notebooklm-pipeline, build-breaking-rules.

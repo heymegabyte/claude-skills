@@ -1,4 +1,4 @@
-# Proactive Improvements (***UNIVERSAL — every step of every prompt***)
+# Proactive Improvements
 
 At nearly every step of any prompt — when an adequate-context AI agent (Opus 4.7 or Sonnet 4.6) sees the surrounding code, the current change, and the user's broader intent — it MUST pause and ask: *"Is there an improvement, upgrade, polish, feature addition, refactor, accessibility fix, performance tweak, copy polish, or safety net that would obviously make this surface better, even if it sits outside the literal scope of the prompt?"*
 
@@ -6,7 +6,7 @@ If yes AND the change "just feels right" (low risk, high taste-payoff, doesn't r
 
 The bar is not "would this be technically correct to defer" — the bar is **"would Brian wish I had just done this when he opens the PR?"** If yes, do it.
 
-## WHEN_TO_FIRE (***the AI literally checks this question after every meaningful tool call***)
+## WHEN_TO_FIRE
 - After editing a component → does the file have other obvious nits (deprecated API, missing aria, dead import, off-brand copy, missing `data-bcl-*` analytics attr, hardcoded color that should use a token, a magic number)? If yes, fix them in the same edit.
 - After creating a new route → does it deserve a sitemap entry, OG card, JSON-LD block, breadcrumb, mobile-first layout, accent-color flourish, footer link, related-links section, or analytics CTA wiring? Add them.
 - After running a build → did the validator surface ORANGE/yellow warnings that are 1-line meta-desc fixes? Fix them in this same turn instead of next.
@@ -17,7 +17,7 @@ The bar is not "would this be technically correct to defer" — the bar is **"wo
 - After noticing a typo, slop word, off-brand phrase, dated reference, dead link, broken alt text, missing image, double-tap-target violation, contrast issue → fix.
 - After seeing dead code, commented-out blocks, deprecated dependencies, `console.log` debug statements, TODO that's now resolvable → clean.
 
-## WHAT_TO_DO_PROACTIVELY (***the menu — pick whatever fits the surface***)
+## WHAT_TO_DO_PROACTIVELY
 
 ### Visual polish
 - Rounded corners (`rounded-lg|2xl`)
@@ -60,7 +60,7 @@ The bar is not "would this be technically correct to defer" — the bar is **"wo
 - GA4 event, Workers Tracing span name, AI Gateway metadata block on every LLM call
 
 ### Copy
-- Drop banned slop words ("seamless", "robust", "leverage", etc per [[copy-writing]])
+- Drop banned slop words ("seamless", "robust", "leverage", etc per `copy-writing`)
 - Tighten to 100-160 char descriptions
 - Replace passive voice
 - Swap stat claims for cited concrete numbers
@@ -82,26 +82,18 @@ The bar is not "would this be technically correct to defer" — the bar is **"wo
 - Update `e2e/FEATURES.md` matrix when a feature lands
 - Remove `console.log`, remove unused imports
 
-## WHEN_NOT_TO_FIRE (***the brakes***)
+## WHEN_NOT_TO_FIRE
 - If the change requires a real design conversation ("should this be a sidebar or a modal?", "do we want this opinionated default?") — flag in the Recs section, don't unilaterally pick.
 - If the change touches shared infrastructure that would affect other ongoing work without a heads-up (DB migrations, env-var renames, route 301 chains).
 - If the change is genuinely outside the codebase's current quality bar and would set a new precedent without buy-in (introducing a new state library, a new CSS framework, a new test framework, a new auth flow).
 - If you're already mid-task and the proactive bit would add >20% wall time to the current change — finish the current change first, surface the bit in the Recs section.
 - If "just feels right" is actually "I want to flex" — discipline. The bit must serve the user's apparent intent, not the agent's preferences.
 
-## THE_INSTINCT (***taste calibration***)
+## THE_INSTINCT
 The phrase "just feels right" is the load-bearing signal. It means: any thoughtful developer reviewing the change would say "yeah, of course you also fixed that — anyone would have." Not "interesting tangent" or "neat side project" or "tempting refactor." If the change is the kind of thing a senior engineer would fold into the same PR without a separate ticket, it qualifies. If it would deserve a separate ticket — defer to Recs.
 
-## Reference incident (***2026-05-22 — bricklabor.com PDF***)
-User clicked the new "Printable flyer (PDF)" footer link, the `download` attribute combined with a 301 redirect from the legacy domain made the browser show an error instead of opening the PDF. The agent had already added the link but didn't proactively check:
-- Whether the `download` attribute through a 301 was robust
-- Whether the PDF needed an explicit `Content-Disposition: inline` header in `_headers`
-- Whether the CSP `connect-src` should include both old + new canonical domains
-
-Each was a 30-second fix the agent should have folded into the same change instead of waiting for the user to report the error. Rule exists so the next analogous "you shipped the feature but the supporting plumbing was an afterthought" failure converts into "you shipped the feature AND the supporting plumbing in the same turn."
-
 ## Cross-link
-- [[auto-meta-work]] — the analytics/Sentry/AI-Gateway provisioning rule — the *meta-work* version of this principle
-- [[always]] — the explicit Hard-Gate version — what MUST be there
-- [[brian-preferences]] — "just do it", "never ask permission" — same instinct
-- [[verification-loop]] — the verify-everything-you-touched discipline
+- `auto-meta-work` — the analytics/Sentry/AI-Gateway provisioning rule — the *meta-work* version of this principle
+- `always` — the explicit Hard-Gate version — what MUST be there
+- `brian-preferences` — "just do it", "never ask permission" — same instinct
+- `verification-loop` — the verify-everything-you-touched discipline

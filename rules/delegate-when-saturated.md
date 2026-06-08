@@ -1,4 +1,4 @@
-# Delegate When Saturated (***SUPREME — bounded mechanical work → fresh-context subagent***)
+# Delegate When Saturated
 
 When the orchestrator (main thread) is deep in a long session AND the remaining work is
 **bounded + mechanical** (renames, codemods, repetitive sub-batches, find-replace-verify
@@ -14,7 +14,7 @@ perform large mechanical refactors while saturated.
   identifiers to descriptive names across N files, migrate, verify") AND
 - A clean-context agent could do the unit reliably with a short brief.
 
-## The minimal-brief contract (***why fresh agents fail without it***)
+## The minimal-brief contract
 - Pass the **recipe** (the exact step sequence + gotchas), the **scope** (the specific
   files/identifiers — found by a quick grep the orchestrator runs FIRST), the **verify
   gates** (typecheck + tests + the project's gate command), and "commit when green."
@@ -24,16 +24,16 @@ perform large mechanical refactors while saturated.
 - Keep the brief 150-400 words. Include collision-checks + the "scope edits to SPECIFIC
   identifiers, never blanket" rule so it can't corrupt sibling work.
 
-## Parallelism (***spawn multiple — but mind the hot files***)
+## Parallelism
 - Sub-batches that touch DISJOINT files → fan out parallel agents (single message).
 - Sub-batches that all edit a HOT shared file (mounts in `index.ts`, an allowlist, a
   barrel export) → either run fresh agents SEQUENTIALLY, or give each a worktree
   (`isolation: "worktree"`) and merge with care. Naive parallel edits to one hot file
-  collide. Per [[monitor-orchestration]] the orchestrator decomposes; per [[full-autonomy]]
+  collide. Per `monitor-orchestration` the orchestrator decomposes; per `full-autonomy`
   sub-agent prompts stay 100-300 words.
 - "Too much for one agent" → split into more sub-batches, more agents — not a bigger brief.
 
-## Constraint — subagents inherit the project CLAUDE.md (***the real headroom limit***)
+## Constraint — subagents inherit the project CLAUDE.md
 A subagent is NOT a blank slate: it loads the project's `CLAUDE.md` + the global rules into
 its context before your brief. In a **CLAUDE.md-heavy repo** (brickcitylabor's is ~20k
 tokens), that base already eats most of the window — so a subagent that reads even one large
@@ -53,20 +53,9 @@ file ("prompt too long", repeatedly seen 2026-06-08) dies before doing useful wo
 - Spawn the fresh agent(s) with the minimal brief.
 - On return: run the gate, fold/verify, sequence the next unit. Don't re-do the agent's work.
 
-## Reference incident (***2026-06-08 — brickcitylabor wave-rename***)
-After an extremely long session, the orchestrator was hand-grinding a ~150-file
-`waveN_*`→descriptive rename one sub-batch per turn, context-saturated. Brian: *"can't you
-just execute the file name changes by loading a FRESH CONTEXT and passing the minimum amount
-of sufficient information for the slave agent to complete it in. Then, if it's too much work
-still, spawn multiple agents in the future."* Correct: the rename is bounded + mechanical
-(recipe in [[naming-no-transient-prefixes]]), so it should be delegated to clean-context
-agents with surgical briefs, not performed by the saturated orchestrator. The earlier
-"prompt too long" agent failures were caused by briefs that had agents read the whole
-`index.ts` — fixed by the minimal-brief contract above.
-
 ## See
-- [[monitor-orchestration]] — decomposition + parallel fan-out shell
-- [[full-autonomy]] — sub-agent prompt sizing (100-300 words)
-- [[naming-no-transient-prefixes]] — the rename recipe a delegated agent follows
-- [[agent-selection]] — specialist-vs-generic + the diversity gate
-- [[prompt-as-training-signal]] — this rule was itself extracted from a correcting prompt
+- `monitor-orchestration` — decomposition + parallel fan-out shell
+- `full-autonomy` — sub-agent prompt sizing (100-300 words)
+- `naming-no-transient-prefixes` — the rename recipe a delegated agent follows
+- `agent-selection` — specialist-vs-generic + the diversity gate
+- `prompt-as-training-signal` — this rule was itself extracted from a correcting prompt

@@ -1,4 +1,4 @@
-# Fetch Defaults (***EVERY HTTP REQUEST FROM CLI/SCRIPT***)
+# Fetch Defaults
 
 ## Mandate
 - Raw fetch/curl/WebFetch/Node fetch/Bun fetch/Python requests = realistic browser UA mandatory

@@ -1,4 +1,4 @@
-# Payments Routing (***SUPREME — every payment-touching feature, every project***)
+# Payments Routing
 
 ## Core rule — decision tree, not absolutism
 - **Square = default for accepting money.** Stripe = default for sending money (payouts).
@@ -56,7 +56,7 @@ If ≥2 match → Stripe Billing owns the subscription rail. Square is not force
   - Stripe uses `Idempotency-Key` header (24-hr dedupe)
 - D1 dedupe table `payment_events(event_id, source, processed_at)` with UNIQUE constraint = bullet-proof double-charge prevention
 
-## Donation tier UX (***default for every nonprofit accept-money page***)
+## Donation tier UX
 - Preset buttons: $10/$25/$50/$100/$250/$1000 + custom amount
 - "Make this monthly" toggle (Square Subscriptions $/mo)
 - "In honor of" / "in memory of" toggle (memorial wall integration)
@@ -86,13 +86,13 @@ If ≥2 match → Stripe Billing owns the subscription rail. Square is not force
 6. Otherwise full Stripe removal: uninstall package + delete `STRIPE_*` env vars + remove all `import Stripe from 'stripe'` + remove webhook handler + drop `stripe_events` D1 table
 
 ## E-commerce surfaces
-- E-commerce sites (product catalog + cart + checkout + inventory) route payments through the **Medusa.js** Square or Stripe plugin, NOT directly — Medusa owns the order state machine + idempotency. Full mandate: [[ecommerce-stack]].
+- E-commerce sites (product catalog + cart + checkout + inventory) route payments through the **Medusa.js** Square or Stripe plugin, NOT directly — Medusa owns the order state machine + idempotency. Full mandate: `ecommerce-stack`.
 - The Square-vs-Stripe decision tree above still applies — Medusa just sits in front of it.
 
 ## See
-- [[ecommerce-stack]] (Medusa.js mandate for every e-commerce backend; payment plugins sit on top of this rule)
-- [[13-observability-and-growth/square-payments]] (full Square integration playbook)
-- [[13-observability-and-growth/stripe-billing]] (SaaS-billing-ONLY scope — re-titled)
-- [[auto-meta-work]] (template stub updated)
-- [[code-style]] (webhook signature verification)
-- [[error-recovery]] (idempotency + retry patterns)
+- `ecommerce-stack` (Medusa.js mandate for every e-commerce backend; payment plugins sit on top of this rule)
+- `13-observability-and-growth/square-payments` (full Square integration playbook)
+- `13-observability-and-growth/stripe-billing` (SaaS-billing-ONLY scope — re-titled)
+- `auto-meta-work` (template stub updated)
+- `code-style` (webhook signature verification)
+- `error-recovery` (idempotency + retry patterns)

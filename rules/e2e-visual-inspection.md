@@ -1,17 +1,17 @@
-# E2E Visual Inspection (***SUPREME — every test run, random sampling + new-section AI vision***)
+# E2E Visual Inspection
 
 Every Playwright run randomly captures a sample of in-test screenshots and diffs them against committed baselines. Every never-before-seen route or component gets a mandatory AI-vision pass on first render. Tests that look correct but render broken are the silent killer — this rule kills them.
 
 ## Two surfaces, two contracts
 
-### Surface 1 — Random snapshot sampling (***runs inside every spec, gates every PR***)
+### Surface 1 — Random snapshot sampling
 - Each test step has a 30% chance of triggering `await randomSnapshot(page, 'step-name')`.
 - Sample seeded by `${TEST_TITLE}:${STEP_NAME}:${SHARD_INDEX}` — same spec on same shard always samples the same steps (reproducible).
 - First run on a step = baseline written to `e2e/__snapshots__/<feature>/<spec>/<step>.png`. Subsequent runs = `pixelmatch` diff with `threshold: 0.1` (10% per-pixel tolerance) AND `maxDiffPixelRatio: 0.005` (0.5% of total image area).
 - Diff exceeds either threshold → test fails with the diff image attached as a Playwright trace artifact.
 - Anti-aliasing + font rendering masked via `page.addStyleTag` with `* { font-smooth: never !important }` before snapshot.
 
-### Surface 2 — New-section AI vision pass (***first render of any never-seen surface***)
+### Surface 2 — New-section AI vision pass
 - `e2e/__seen-routes__.json` is the durable inventory: every route + component combination ever screenshot'd by the suite, keyed by `<route>:<viewport>`.
 - Before any spec's first interaction with a route, helper `assertNewSection(page, routeKey)` checks the inventory. If unknown → mandatory full-viewport screenshot + AI-vision call.
 - AI vision rubric (sent to GPT-4o or Claude Sonnet 4.6 via vision endpoint):
@@ -107,8 +107,8 @@ test.describe('booking funnel', () => {
 - `__seen-routes__.json` updates are commit-back-to-main from the merge runner, not from individual shard runners (avoid write conflicts). Shards APPEND to a temp file; the merge step deduplicates.
 
 ## See
-- [[e2e-tdd-organization]] — the layout this rule plugs into; `_helpers/snapshot.ts` lives there
-- [[verification-loop]] — visual regression tier
-- [[context-spillover]] — when working on a UI surface, also extend its visual coverage in the same turn
-- [[quality-metrics]] § A11y — axe-core integration sits next to this
-- [[ai-vision-qa]] (if present) — full AI vision rubric details
+- `e2e-tdd-organization` — the layout this rule plugs into; `_helpers/snapshot.ts` lives there
+- `verification-loop` — visual regression tier
+- `context-spillover` — when working on a UI surface, also extend its visual coverage in the same turn
+- `quality-metrics` § A11y — axe-core integration sits next to this
+- `ai-vision-qa` (if present) — full AI vision rubric details

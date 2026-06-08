@@ -7,8 +7,8 @@
 
 ## Text output
 - Half normal length.
-- Descriptions: 100–160 chars.
-- Headlines: 4–8 words.
+- Descriptions: 100-160 chars.
+- Headlines: 4-8 words.
 - Paragraphs: 2 sentences max.
 
 ## Code output
@@ -29,7 +29,7 @@ Open-source only.
 - `drop-in` → paste-ready
 - `make sure` → non-negotiable
 - `the whole thing` → never truncate
-- `make it shorter` → reduce 40–60%
+- `make it shorter` → reduce 40-60%
 - `simpler` → reduce complexity
 - `Now...` → chain to previous turn
 - `can you` → rhetorical (just do it)
@@ -53,7 +53,7 @@ Open-source only.
 - Say "the system is ready"
 
 ## URLs — always deep-linked
-When asking Brian for anything (API keys, dashboards, settings), give the exact URL — never "go to X".
+When asking Brian for anything (API keys, dashboards, settings), give exact URL — never "go to X".
 
 Examples:
 - `https://platform.openai.com/api-keys` — not "go to OpenAI dashboard"
@@ -67,7 +67,7 @@ Every URL clickable, every URL specific.
 - **Emdash projects** (`~/emdash-projects/*`) → commit freely, never push. Brian pushes from frontend/PR.
 - `How to improve?` → always find 50 more things, explore every branch, never cap effort.
 
-## Skill/Rule File Format (***NON-NEGOTIABLE***)
+## Skill/Rule File Format
 All `.md` files in `~/.claude/` and `~/.agentskills/` use **human-readable bullets** (unordered) or **numbered lists** (when priority/weight matters). Stay concise — bullets not paragraphs, fragments where they read clean, no padding.
 
 ### Do
@@ -76,7 +76,7 @@ All `.md` files in `~/.claude/` and `~/.agentskills/` use **human-readable bulle
 - Use `### Subheaders` to group related bullets
 - Use `**bold**` for keywords inside bullets
 - Use backticks for paths, commands, code identifiers
-- Preserve `[[cross-links]]` to sibling rules
+- Preserve `cross-links` to sibling rules
 - Keep bullet text tight: one idea per bullet, ≤2 lines
 - Match new sibling density — read 10 lines of a sibling rule before writing
 
@@ -89,7 +89,6 @@ All `.md` files in `~/.claude/` and `~/.agentskills/` use **human-readable bulle
 - Don't use markdown tables for simple mappings — use definition-style bullets (`- **key** — value`)
 
 ### Pattern: priority list
-When weight matters, number them:
 1. Highest priority
 2. Next
 3. Then
@@ -99,7 +98,7 @@ When weight matters, number them:
 - **Another term** — its meaning
 
 ### Pattern: do/don't
-Use `### Do` / `### Don't` subheaders so the contrast is scannable.
+Use `### Do` / `### Don't` subheaders so contrast is scannable.
 
 ## See
-- [[prompt-as-training-signal]] — every prompt extraction protocol; Brian re-issuing a follow-up is the strongest signal the prior turn was incomplete
+- `prompt-as-training-signal.md`

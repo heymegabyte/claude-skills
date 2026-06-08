@@ -1,4 +1,4 @@
-# Motion + Interaction Supervisor (***SUPREME — fast, useful, reduced-motion-safe, every large app***)
+# Motion + Interaction Supervisor
 
 Motion serves clarity and perceived speed, never spectacle. `prefers-reduced-motion` is always honored. Right tool per job. The motion arm of the supervisor system.
 
@@ -17,14 +17,12 @@ Motion serves clarity and perceived speed, never spectacle. `prefers-reduced-mot
 
 ## Rules
 - **Respect `prefers-reduced-motion`** on every animation — snap to final state, never hide content from reduced-motion users
-- **Fast + useful** — animation budget serves perceived performance; INP ≤ 200ms per [[quality-metrics]]
+- **Fast + useful** — animation budget serves perceived performance; INP ≤ 200ms per `quality-metrics`
 - `transform`/`opacity` only on the hot path; `will-change` sparingly
 - Don't reach for Theatre.js/Rive/lottie unless the simpler Motion default genuinely can't do it
 - SortableJS for every reorder surface (keyboard-accessible drag alternative per WCAG 2.2 2.5.7)
 - Lazy-load FullCalendar/Embla/Rive (`@defer`) — never in the initial bundle
 
 ## See
-- [[package-preference-registry]] · [[angular-large-app-supervisor]] · [[spartan-ui-design-system]] · [[visualization-maps-diagrams-supervisor]] · [[quality-metrics]] · [[cinematic-ui-patterns]]
+- `package-preference-registry` · `angular-large-app-supervisor` · `spartan-ui-design-system` · `visualization-maps-diagrams-supervisor` · `quality-metrics` · `cinematic-ui-patterns`
 
-## Reference incident (***2026-05-29 — supervisor knowledge-system upgrade, wave 2***)
-Brief: Motion for most UI animation (reduced-motion respected); Theatre.js timeline-grade only; Rive interactive vector only; lottie lightweight playback only; Embla where carousel valuable; SortableJS for ordering; FullCalendar where scheduling exists; Tippy.js for tooltips. Authored wave 2; package decisions in [[package-preference-registry]].

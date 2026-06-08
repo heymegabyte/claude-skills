@@ -1,13 +1,13 @@
-# Cinematic UI Patterns (***UNIVERSAL — every projectsites.dev surface, every Angular app***)
+# Cinematic UI Patterns
 
-## Standing rule (***NON-NEGOTIABLE***)
+## Standing rule
 - Every numeric stat on every projectsites.dev surface (marketing, admin, generated sites, dashboards) renders through `<app-rolling-counter>` — NEVER a static text node
 - Every section, card, stat, and CTA fades + translates 16px up on first paint via `[appReveal]` — NEVER ships static
 - No exceptions without a stated reason inline (e.g. `<!-- no rolling-counter: SSR-critical above-the-fold integer -->`)
 - Reusable components live in `src/app/components/` and `src/app/directives/` — every page imports them, never re-implements
 - Drift = audit fail in Turn-3 visual QA + Playwright `e2e/cinematic-ui.spec.ts` regression
 
-## Reusable components (***shipped 2026-05-24***)
+## Reusable components
 - `<app-rolling-counter>` — `src/app/components/rolling-counter/rolling-counter.component.ts`
 - `<app-before-after-slider>` — `src/app/components/before-after-slider/before-after-slider.component.ts`
 - `appReveal` directive — `src/app/directives/reveal.directive.ts`
@@ -87,18 +87,10 @@
 - All interactive elements have `:focus-visible` outline of `var(--ps-accent)`
 
 ## See
-- [[always]] § Cmd+K mandate (same per-input focus discipline)
-- [[always]] § Accessibility (WCAG 2.2 AA + axe 0 violations)
-- [[text-contrast]] (palette tokens + dark-first ink-mix pattern)
-- [[copy-writing]] (anti-slop applies to stat labels too)
-- [[proactive-improvements]] (any new numeric stat that ships without `<app-rolling-counter>` is a Recs-section "just-feels-right" miss)
-- [[gorgeous-by-default]] (the every-element generalization: enumerable values → pills, every element animated + `0.333s`)
+- `always` § Cmd+K mandate (same per-input focus discipline)
+- `always` § Accessibility (WCAG 2.2 AA + axe 0 violations)
+- `text-contrast` (palette tokens + dark-first ink-mix pattern)
+- `copy-writing` (anti-slop applies to stat labels too)
+- `proactive-improvements` (any new numeric stat that ships without `<app-rolling-counter>` is a Recs-section "just-feels-right" miss)
+- `gorgeous-by-default` (the every-element generalization: enumerable values → pills, every element animated + `0.333s`)
 
-## Reference incident (***2026-05-24 — projectsites.dev marketing homepage***)
-User requested: "every counter must roll, every section must animate on first paint." Reusable components shipped:
-- `<app-rolling-counter>` replacing four static stat numbers (sites created, uptime %, build seconds, edge locations)
-- `appReveal` directive applied to every section + every card + every stat block
-- `<app-before-after-slider>` introduced between hero and social-proof to visualize the generic-vs-projectsites quality delta
-- `<app-trust-strip>` row of "Built on" logos (Cloudflare, D1, R2, Workers AI, bolt.diy)
-
-Standing rule from this point forward: every numeric stat on every projectsites.dev surface uses `<app-rolling-counter>`. Every section animates in on first paint via `appReveal`. No exceptions without a stated reason in a code comment.

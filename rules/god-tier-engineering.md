@@ -1,4 +1,4 @@
-# God-Tier Engineering Patterns (***SUPREME — apply at every step, every iteration***)
+# God-Tier Engineering Patterns
 
 The principle: every iteration must ship at least one move a senior engineer would call "actually that's the right call" — not just feature-completeness. Code that merely works is the floor. Code that makes the next iteration faster, the next bug rarer, the next handoff cleaner — that's the goal.
 
@@ -94,9 +94,9 @@ This rule captures the patterns validated in production across projectsites.dev 
 - Cross-reference from PR descriptions when applicable.
 
 ## See
-- [[always]] — universal must-have surfaces (the floor)
-- [[brian-preferences]] — communication + style
-- [[verification-loop]] — deploy + E2E mandate (the safety net)
-- [[monitor-orchestration]] — multi-faceted brief decomposition
-- [[supreme-polish]] — 100-ideas audit pass
-- [[cinematic-ui-patterns]] — rolling-counter + appReveal + before-after slider primitives
+- `always` — universal must-have surfaces (the floor)
+- `brian-preferences` — communication + style
+- `verification-loop` — deploy + E2E mandate (the safety net)
+- `monitor-orchestration` — multi-faceted brief decomposition
+- `supreme-polish` — 100-ideas audit pass
+- `cinematic-ui-patterns` — rolling-counter + appReveal + before-after slider primitives
