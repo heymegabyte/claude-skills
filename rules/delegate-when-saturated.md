@@ -1,0 +1,57 @@
+# Delegate When Saturated (***SUPREME — bounded mechanical work → fresh-context subagent***)
+
+When the orchestrator (main thread) is deep in a long session AND the remaining work is
+**bounded + mechanical** (renames, codemods, repetitive sub-batches, find-replace-verify
+loops), do NOT grind it out in the saturated main context. Error rate rises with context
+depth, and the work doesn't need the accumulated context. Instead, spawn a **FRESH-CONTEXT
+subagent** with the **minimum sufficient brief** to complete one bounded unit, verify, and
+commit. The orchestrator coordinates, sequences, and verifies — it does not personally
+perform large mechanical refactors while saturated.
+
+## When this fires
+- The main thread has been running a long session (high context use) AND
+- The remaining work is repetitive/mechanical with a known recipe (e.g. "rename `waveN_*`
+  identifiers to descriptive names across N files, migrate, verify") AND
+- A clean-context agent could do the unit reliably with a short brief.
+
+## The minimal-brief contract (***why fresh agents fail without it***)
+- Pass the **recipe** (the exact step sequence + gotchas), the **scope** (the specific
+  files/identifiers — found by a quick grep the orchestrator runs FIRST), the **verify
+  gates** (typecheck + tests + the project's gate command), and "commit when green."
+- **Never tell the agent to read a huge shared file wholesale** (e.g. a 1000-line
+  `index.ts` / `App.tsx`) — that blows its context ("prompt too long", the failure mode
+  seen 2026-06-08). Give it the exact identifiers/line-targets to grep + edit in place.
+- Keep the brief 150-400 words. Include collision-checks + the "scope edits to SPECIFIC
+  identifiers, never blanket" rule so it can't corrupt sibling work.
+
+## Parallelism (***spawn multiple — but mind the hot files***)
+- Sub-batches that touch DISJOINT files → fan out parallel agents (single message).
+- Sub-batches that all edit a HOT shared file (mounts in `index.ts`, an allowlist, a
+  barrel export) → either run fresh agents SEQUENTIALLY, or give each a worktree
+  (`isolation: "worktree"`) and merge with care. Naive parallel edits to one hot file
+  collide. Per [[monitor-orchestration]] the orchestrator decomposes; per [[full-autonomy]]
+  sub-agent prompts stay 100-300 words.
+- "Too much for one agent" → split into more sub-batches, more agents — not a bigger brief.
+
+## The orchestrator's job during delegation
+- Pre-flight the grep/collision-check (cheap, scopes the brief).
+- Spawn the fresh agent(s) with the minimal brief.
+- On return: run the gate, fold/verify, sequence the next unit. Don't re-do the agent's work.
+
+## Reference incident (***2026-06-08 — brickcitylabor wave-rename***)
+After an extremely long session, the orchestrator was hand-grinding a ~150-file
+`waveN_*`→descriptive rename one sub-batch per turn, context-saturated. Brian: *"can't you
+just execute the file name changes by loading a FRESH CONTEXT and passing the minimum amount
+of sufficient information for the slave agent to complete it in. Then, if it's too much work
+still, spawn multiple agents in the future."* Correct: the rename is bounded + mechanical
+(recipe in [[naming-no-transient-prefixes]]), so it should be delegated to clean-context
+agents with surgical briefs, not performed by the saturated orchestrator. The earlier
+"prompt too long" agent failures were caused by briefs that had agents read the whole
+`index.ts` — fixed by the minimal-brief contract above.
+
+## See
+- [[monitor-orchestration]] — decomposition + parallel fan-out shell
+- [[full-autonomy]] — sub-agent prompt sizing (100-300 words)
+- [[naming-no-transient-prefixes]] — the rename recipe a delegated agent follows
+- [[agent-selection]] — specialist-vs-generic + the diversity gate
+- [[prompt-as-training-signal]] — this rule was itself extracted from a correcting prompt
