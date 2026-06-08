@@ -33,6 +33,21 @@ perform large mechanical refactors while saturated.
   sub-agent prompts stay 100-300 words.
 - "Too much for one agent" → split into more sub-batches, more agents — not a bigger brief.
 
+## Constraint — subagents inherit the project CLAUDE.md (***the real headroom limit***)
+A subagent is NOT a blank slate: it loads the project's `CLAUDE.md` + the global rules into
+its context before your brief. In a **CLAUDE.md-heavy repo** (brickcitylabor's is ~20k
+tokens), that base already eats most of the window — so a subagent that reads even one large
+file ("prompt too long", repeatedly seen 2026-06-08) dies before doing useful work. Therefore:
+- The biggest "fresh context" lever is a **fresh MAIN session**, not a subagent. When the
+  orchestrator is saturated and the work is bounded, the cleanest move is often to surface the
+  exact recipe + scope to the user and let them re-run it in a new session where the main
+  agent has full headroom — OR continue in-session only if the unit is tiny.
+- If delegating to a subagent in a CLAUDE.md-heavy repo: the agent must read **near-zero**
+  files (give it the literal line targets + `perl` commands; no exploratory reads), and the
+  brief must be <250 words. Even then, expect failures — have a fallback.
+- Consider a leaner agent type (e.g. `Explore` for read-only) or trimming the project
+  CLAUDE.md if subagent delegation is needed often.
+
 ## The orchestrator's job during delegation
 - Pre-flight the grep/collision-check (cheap, scopes the brief).
 - Spawn the fresh agent(s) with the minimal brief.
