@@ -77,3 +77,5 @@ Match effort to task complexity.
 3. **Grunts** — Haiku, `low`
 
 Hierarchical compounds gains over flat fanout. Sub-agent prompts 100–300 words — beyond that you're cloning context, not specializing.
+
+Spawned specialists for batch test/feature work run on the standing `CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` default per [[parallel-subagent-economy]] — Opus orchestrates, Sonnet builds. Opus-pinned reviewers (architect/security/visual-qa/meta-orchestrator) override that default with an explicit `model: opus` on the spawn; the call-level model param takes precedence over the env default.

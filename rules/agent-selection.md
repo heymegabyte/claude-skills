@@ -92,6 +92,8 @@ Emit this table BEFORE spawning any agents:
 
 **Rejected-agent note** (always present): `Specialists considered but not spawned: <Agent> / <Reason not needed>`.
 
+Fan-out WIDTH for test-writing + feature/test-impl batches (sweet spot 3-4, hard ceiling 6, batch beyond 6) is governed by [[parallel-subagent-economy]]; this rule still assigns WHICH specialist owns each unit. Spawned specialists run on the standing `CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` default — EXCEPT security/architect/visual-qa/payment reviewers, which pass an explicit `model: opus` so the Sonnet default never silently downgrades a sensitive review.
+
 ## Agent Diversity Review gate (KEYSTONE — runs in final review)
 The `agent-diversity-reviewer` MUST verify: too many generic workers? each role distinct? a specialist missing? work duplicated across agents? any vague output? did reviewers collectively cover architecture + code-quality + tests + UX + security + observability? a new reusable agent needed? should an existing def be split / merged / renamed / deprecated? did this run leave the system better for the next run?
 
@@ -141,6 +143,7 @@ Every spawned specialist inherits Brian's stack ([[brian-preferences]]):
 Parallel runs were defaulting too many work units to generic `general-purpose` workers — weak specialization, duplicated effort, shallow reviews — fixed by this specialist-first taxonomy + the mandatory diversity gate.
 
 ## See
+- [[parallel-subagent-economy]] — default fan-out width (sweet spot 3-4, hard ceiling 6) + Sonnet specialists for the two heavy batch workloads (test-writing, feature/test impl)
 - [[monitor-orchestration]] — the fan-out shell this rule assigns agents within
 - [[autonomous-engineering]] — risk-tier + approval gate every assignment respects
 - [[full-autonomy]] — the unrestricted-tool grant specialists operate under

@@ -31,6 +31,7 @@ External blockers do NOT block the parallel work — surface at end-of-turn with
 - Use `isolation: "worktree"` when an agent does heavy file rewrites that might race with the main thread
 - The Monitor (main thread) does foreground edits + waits via the system's completion notification
 - **NEVER** polls / sleeps / tails agent output files
+- For Brian's two recurring heavy workloads (test-writing batches + feature/test-impl batches), the fan-out WIDTH (sweet spot 3-4, hard ceiling 6, batch beyond 6), the Sonnet-specialist cost default, and the token guardrails are set by [[parallel-subagent-economy]] — this rule decides IF the Monitor fires; that rule decides how WIDE + on what MODEL
 
 ## Sequencing rule
 - Dependent passes wait via a single `Agent` call that runs AFTER prerequisites complete, OR the main thread chains them itself
