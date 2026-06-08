@@ -92,6 +92,7 @@
 - [[text-contrast]] (palette tokens + dark-first ink-mix pattern)
 - [[copy-writing]] (anti-slop applies to stat labels too)
 - [[proactive-improvements]] (any new numeric stat that ships without `<app-rolling-counter>` is a Recs-section "just-feels-right" miss)
+- [[gorgeous-by-default]] (the every-element generalization: enumerable values → pills, every element animated + `0.333s`)
 
 ## Reference incident (***2026-05-24 — projectsites.dev marketing homepage***)
 User requested: "every counter must roll, every section must animate on first paint." Reusable components shipped:

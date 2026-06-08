@@ -7,7 +7,7 @@
 - Anthropic prompt caching saves 90% on repeated prefixes — random skill activation order defeats it
 
 ## Rules load order (alphabetical, never reorder mid-session)
-- agent-selection → always → auto-meta-work → autonomous-engineering → brian-preferences → citations → code-style → computer-use-safety → contract-first-ai → copy-writing → drift-detection → error-recovery → evals → event-sourced-build-progress → fetch-defaults → full-autonomy → hono-api → i18n-by-demographics → image-quality → logo-contrast → model-routing → monitor-orchestration → opus-quota-fallback → parallel-subagent-economy → payments-routing → prompt-cache → quality-metrics → sandbox-execution → secret-auto-provisioning → secret-provisioning → source-site-enhancement → text-contrast → timeline-authenticity → tool-design-as-api → verification-loop → zod-everywhere
+- agent-selection → always → auto-meta-work → autonomous-engineering → brian-preferences → citations → code-style → computer-use-safety → contract-first-ai → copy-writing → drift-detection → error-recovery → evals → event-sourced-build-progress → fetch-defaults → full-autonomy → gorgeous-by-default → hono-api → i18n-by-demographics → image-quality → logo-contrast → model-routing → monitor-orchestration → opus-quota-fallback → parallel-subagent-economy → payments-routing → prompt-cache → quality-metrics → sandbox-execution → secret-auto-provisioning → secret-provisioning → source-site-enhancement → text-contrast → timeline-authenticity → tool-design-as-api → verification-loop → zod-everywhere
 - Skills: description always in context, full content only on activation
 - Submodules: load on demand, never preload all
 
