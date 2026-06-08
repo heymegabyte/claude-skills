@@ -83,13 +83,3 @@ Then write the GENERALIZED rule, not the project-specific instance. Project inst
 ## Self-reinforcement
 
 This rule is also subject to itself. If a future prompt teaches that prompt-extraction missed a dimension, append a §8 / §9 / §N prompt-shape entry above with the new pattern and reference incident.
-
-## See
-- `monitor-orchestration` — Follow-up shortcoming feedback loop (was the only place this pattern lived; now elevated to SUPREME universal here)
-- `brian-preferences` — "How to improve? always find 50 more things"
-- `auto-integrate-recs` — same instinct in the recs direction (don't surface what you could ship)
-- `extra-mile` — what to ship UNPROMPTED; this rule = what to learn FROM the prompt
-- `supreme-polish` — periodic full-surface audit; this rule = continuous per-prompt audit
-- `autonomous-engineering` — "investigate before overwriting unfamiliar state" applies to prompts too, not just files
-- 04-preference-and-memory — memory write protocol
-- 01-operating-system — value extraction triggers (already lists 6 categories — this rule sharpens the "every prompt" interpretation)

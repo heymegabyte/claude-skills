@@ -96,6 +96,3 @@ Every clickable / form field / nav link / API endpoint / modal / keyboard shortc
   4. Screenshot artifacts uploaded to R2
 - No feature without ≥1 test
 - No bug fix without ≥1 regression test
-
-## See
-- `e2e-tdd-organization.md` · `e2e-visual-inspection.md` · `context-spillover.md` · `prompt-as-training-signal.md`

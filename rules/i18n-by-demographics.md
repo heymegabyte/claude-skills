@@ -82,9 +82,3 @@ Unlisted geographies: query ACS/equivalent and apply the ≥10% rule fresh.
 - English-only site for an entity serving a community where ≥10% speak another language at home
 - Newark NJ nonprofit serving 36% Hispanic + significant Brazilian-Portuguese population MUST ship `/es/*` AND `/pt/*`
 - English-only = exclusion of one-third the served community = ethical failure + AI search miss + ADA Title II 2027 compliance risk (effective communication standard)
-
-## See
-- `source-site-enhancement`
-- `always` (hreflang requirements)
-- `15-site-generation/page-set-expansion` (locale × standard-page-set multiplier)
-- `copy-writing` (anti-slop applies per language)

@@ -31,8 +31,6 @@ Even with the user's REAL Chrome and live sessions, desktop Computer Use breaks 
 
 When ≥2 of these apply, switch to **paste-collaboration**: generate a tight bulleted list of `{secret_name} ← {vendor_console_URL} ({how_to_locate_value})`, ask the user to paste values back in one message. Per-secret wall-time: 30 sec. Strictly faster than driving the browser at any 2FA-gated vendor.
 
-Reference incident (2026-05-26, projectsites.dev): attempted to provision Twilio + GA4 + GCP + Stability + Unsplash + Whois via desktop Computer Use. Hit Stripe page-unload modal, then Emdash chat absorbed `cmd+l` keystrokes. CF_API_TOKEN + CF_ZONE_ID (both bash-doable via CF API) shipped autonomously; switched to paste-collab for the remaining 12. Rule: when API-doable, use API; when 2FA-walled, paste-collab beats Computer Use.
-
 ## Focus discipline
 - Keyboard events (`key`, `type`, `cmd+l`, `cmd+t`, `Return`) target the CURRENTLY-FOCUSED window, NOT the window in the last screenshot
 - Brian's chat client (Emdash / Claude Desktop / terminal) and his Chrome window are separate windows; my screenshot can show one while keystrokes route to the other

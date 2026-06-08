@@ -2,7 +2,7 @@
 name: "deploy-and-runtime-verification"
 description: "MANDATORY deploy after every code change. Typecheck → deploy → purge CDN → E2E on production → visual verify → fix-forward loop. Workers Builds native CI/CD, D1 Time Travel PIT recovery, D1→R2 long-term backups, wrangler rollback, wrangler secrets management, structured observability, cross-browser smoke tests, rollback procedures, and GitHub auto-configuration."
 metadata:
-  version: "2.2.0"
+  version: "2.1.0"
   updated: "2026-05-03"
   effort: "high"
   model: "sonnet"
@@ -11,269 +11,104 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - launch-day-sequence.md
-  - ci-cd-pipeline.md
-  - uptime-and-health.md
-  - changelog-and-releases.md
-  - backup-and-disaster-recovery.md
-  - gh-fix-ci.md
-  - service-worker.md
-  - font-subsetting.md
-  - critical-css.md
-  - pipeline-health-check.md
+  - workers-builds.md
+  - d1-backups.md
+  - rollback.md
+  - github-config.md
 ---
 
 # 08 — Deploy and Runtime Verification
 
-## Submodules
+## Mandatory deploy loop (every code change)
+1. Build + typecheck
+2. `wrangler deploy` (or platform equivalent)
+3. Purge CDN (`wrangler cache purge` or `curl -X POST https://api.cloudflare.com/client/v4/zones/{id}/purge_cache`)
+4. Fetch each changed route on PROD URL via curl + Playwright
+5. Assert new content / headers / JSON-LD / status live
+6. AI vision QA at 6 viewports (per `_kernel/standards.md#breakpoints`)
+7. Fix-forward (max 3 redeploys) — never silently fail
+8. Only then mark DONE
 
-- **launch-day-sequence** — go-live checklist, sitemap, social
-- **ci-cd-pipeline** — GH Actions, PR tests, previews
-- **uptime-and-health** — endpoints, UptimeRobot, `/status`
-- **changelog-and-releases** — conventional commits, semver
-- **backup-and-disaster-recovery** — D1 Time Travel, D1 → R2, KV dump, restore
-- **gh-fix-ci** — debug failing PR checks
-- **service-worker** — Workbox cache strategies, offline fallback, background sync, push
-- **font-subsetting** — glyphhanger, WOFF2, self-host R2, preload, budget ≤100KB
-- **critical-css** — critters inline above-fold CSS, Angular built-in, Hono SSR, LCP ≤2.5s
+"Local typecheck + build pass" is NOT done. Per `rules/verification-loop.md`.
 
-## Mandatory Deploy Rule (***HARD GATE — paired with `~/.claude/rules/auto-deploy.md`***)
+## Auth fallback chain
+- `CLOUDFLARE_API_TOKEN` from `/Users/Apple/.local/bin/get-secret`
+- On 401: `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL`
+- Both stale: prompt `! npx wrangler login`, resume deploy automatically once fresh
+- NEVER silently skip deploy because creds missing — surface as blocker
 
-### Triggers
-ANY `Edit | Write | NotebookEdit | MultiEdit` on a tracked file in a deployable repo (`~/emdash-projects/*` + every CF / Vercel / Netlify project).
+## Workers Builds (native CI/CD)
+- Configure in `wrangler.jsonc` `build` block
+- Auto-deploys on push to `main` per `rules/main-only-branch.md`
+- Workers Builds runs `npm install` + `npm run build` + `wrangler deploy`
+- Secrets injected via dashboard or `wrangler secret put` per `rules/secret-provisioning.md`
 
-Does NOT trigger on: reading, memory writes, analysis, planning, agent dispatch.
+## Secrets management
+- Per `rules/secret-provisioning.md` + `rules/secret-auto-provisioning.md`
+- `wrangler secret put KEY` — runtime secrets
+- `wrangler secret list` — names only, never values
+- Two-way mirror: every prod secret also in chezmoi (`~/.local/share/chezmoi/home/.chezmoitemplates/secrets/{KEY}`)
+- `scripts/check-secrets.mjs --audit` runs before every deploy
 
-### Exceptions (***THE ONLY VALID SKIPS***)
-- User explicit "don't deploy" / "wait" / "plan only"
-- Missing credentials (warn + render missing-key block from `rules/api-key-gate.md`)
-- No deploy target (no `wrangler.toml` + no `vercel.json` + no `netlify.toml`)
-- Edit outside source tree
+## D1 backup strategy
+- **Time Travel** — 30-day PIT, free, `wrangler d1 time-travel restore <db> --timestamp=<ts>`
+- **D1 → R2 long-term** — `wrangler d1 export <db> --output=backup.sql` + upload to R2 daily via cron
+- **Pre-migration safety** — `wrangler d1 export` BEFORE applying any destructive migration
+- 1 TB storage limit per account, 10 GB per database
 
-### Enforcement
-- "Tests pass" + "build clean" ≠ done
-- "Live URL reflects HEAD + zero console errors + curl 200" = done
-- Receipt mandatory: commit SHA + deploy ID + live HTTP code + console-error count
-- Brian 2026-05-15: production-lag past end-of-turn = build fail
-- See `~/.claude/rules/auto-deploy.md` for trigger surface + receipt format
+## Rollback procedures
+- **Worker** — `wrangler rollback <version-id>` in <30s
+- **D1** — Time Travel PIT to known-good timestamp
+- **R2** — bucket versioning enabled; revert via object version
+- **Combined deploy** — log `{commit, version_id, timestamp}` to D1 after every deploy; rollback target one query away
 
-## Deploy Sequence
+## Auto-rollback gates (gradual deployment)
+- 1% → watch error rate 5 min
+- 10% → watch 5 min
+- 100%
+- Auto-rollback at p99 error >1% or LCP regression >20%
 
-1. `tsc --noEmit`
-2. lint (`eslint --fix && prettier --write`)
-3. build (if exists)
-4. **Asset-existence gate** (***UNIVERSAL — BUILD-BREAKING — fails deploy on missing assets***) — grep `dist/` (or build output dir) for canonical 11-asset minimum set: `favicon.ico | favicon.svg | favicon-16x16.png | favicon-32x32.png | favicon-48x48.png | favicon-96x96.png | apple-touch-icon.png | android-chrome-192x192.png | android-chrome-512x512.png | maskable-192x192.png | maskable-512x512.png | og.jpg (or og.png ≤100KB) | site.webmanifest | robots.txt | sitemap.xml | humans.txt | .well-known/security.txt`. Any missing = fail; trigger skill 12 auto-favicon pipeline + OG card generator BEFORE retry. Validators: `validate-favicon-kit.mjs | validate-og-card.mjs | validate-route-metadata.mjs` (per skill 12). NEVER ship a deploy with 404s on these paths — `pdf.megabyte.space` (2026-05-02) shipped without favicon kit + `og.png` 404'd, drove this rule.
-5. **Analytics gate** (***ALL THREE REQUIRED***) — Sentry missing → install `@sentry/cloudflare` + wrap + `mcp__sentry__create_project` + `SENTRY_DSN` secret | PostHog missing → add snippet to HTML (persistence:'memory', cookie-free) + CSP | GTM missing → add container snippet (head + noscript body) + CSP
-6. `wrangler deploy`
-7. purge cache
-8. wait 3-5s
-9. **Live URL gate** (***curl every asset path post-deploy***) — for each path in asset-existence gate, `curl -I -o /dev/null -w '%{http_code}' https://<host><path>` MUST return 200; any 404 = auto-rerun deploy + alert
-10. Playwright E2E
-11. visual verify 1280 + 375px
-12. fix if needed, loop
+## Browser console gate
+Per `rules/verification-loop.md` § Console-error gate:
+- Console errors = NOT done
+- CSP report-uri violations = build fail
+- Trusted Types violations = build fail
+- Deprecation warnings = build fail
+- Third-party script errors = build fail
+- Run as part of `npm run e2e:prod` Playwright suite
 
-## Workers Builds (Native CI/CD — Preferred)
+## Cross-browser smoke
+Per `_kernel/standards.md#breakpoints` × 3 browsers (Chromium, Firefox, WebKit):
+- Homepage loads
+- Primary CTA clickable
+- Form submit succeeds (Turnstile invisible)
+- No console errors at any breakpoint
+- Lighthouse Perf ≥75 + A11y ≥95
 
-Connect GitHub / GitLab in CF dashboard → auto-build + deploy on push. No self-hosted Git required. Config via `wrangler.toml` `[build]` section:
+## Observability check post-deploy
+Verify each is firing:
+- Sentry — recent events in dashboard
+- PostHog — recent pageviews + captures
+- Workers Tracing — recent traces in Axiom (Tier 2)
+- AI Gateway — recent LLM calls logged (Tier 3)
+- GA4 — recent events (Tier 2)
 
-```toml
-[build]
-command = "npm run build"
-watch_dir = "src"
+Missing = blocker.
 
-[build.upload]
-format = "modules"
-main = "./dist/worker.js"
+## GitHub auto-configuration
+- New project: `gh repo create` w/ template
+- Add CF Workers Builds via dashboard or API
+- Wire OIDC + `cloudflare/wrangler-action@v3` for CI
+- Trust policy: GitHub OIDC token verifies repo + branch
+- No long-lived `CLOUDFLARE_API_TOKEN` in repo secrets
+
+## Per-deploy CHANGELOG entry
+Every deploy logs to `CHANGELOG.md`:
+```md
+## [version] — YYYY-MM-DD
+### Added / Changed / Fixed
+- ...
 ```
+Auto-generated by `changelog-generator` agent from conventional commits.
 
-- Env-specific builds: separate `[env.staging]` + `[env.production]` blocks
-- Deploy hooks: `CF_PAGES_BRANCH`, `CF_PAGES_COMMIT_SHA` env vars auto-set
-- Preview URLs auto-generated per branch
-- Workers Builds preferred over GH Actions for standard repos
-
-## GitHub Actions (External — Full Control)
-
-`cloudflare/wrangler-action@v3` with `CLOUDFLARE_API_TOKEN` → deploy → purge → smoke test. Gate: lint + typecheck + vitest before deploy job. Use when: monorepo, custom build steps, cross-service orchestration.
-
-## Wrangler Best Practices
-
-- Secrets: `wrangler secret put KEY` (never in source) | `.dev.vars` local (gitignored) | `--secrets-file` for CI batch
-- Set `compatibility_date` to today on new projects
-- Run `wrangler types` to generate binding types (never hand-write Env)
-- Each env = separate Worker with distinct bindings
-- `nodejs_compat` flag for Node built-ins
-- Version: check `wrangler --version` ≥ 3.4.0 for Time Travel support
-
-## Workers Observability
-
-- Enable logs + traces before first production deploy
-- Structured JSON: `console.log({event, userId, duration})` — searchable + filterable in CF dashboard
-- Use `console.error` / `console.warn` for severity
-- Control cost via `head_sampling_rate`
-- Never `passThroughOnException()` — explicit try/catch only
-- Never store request-scoped data in module-level globals (isolate reuse = cross-request leaks)
-- Tail Workers for real-time log streaming
-
-## Cache Strategy
-
-- Purge everything after every deploy
-- Static: `max-age=31536000, immutable`
-- HTML: `max-age=0, must-revalidate`
-- API: `no-store`
-- Use CF Cache API + KV for edge caching
-
-Purge:
-```bash
-curl -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/purge_cache" \
-  -H "Authorization: Bearer $CF_API_TOKEN" --data '{"purge_everything":true}'
-```
-
-## D1 Time Travel (Always-On PIT Recovery)
-
-No config needed. Paid: 30-day lookback. Free: 7-day. CLI commands (requires Wrangler ≥3.4.0):
-
-```bash
-# List bookmarks (timestamps available for restore)
-wrangler d1 time-travel info DB_NAME
-
-# Restore to specific timestamp (destructive — overwrites in place)
-wrangler d1 time-travel restore DB_NAME --timestamp=UNIX_EPOCH_SECONDS
-
-# Restore to bookmark ID
-wrangler d1 time-travel restore DB_NAME --bookmark=BOOKMARK_ID
-
-# Save current state as named bookmark before risky migration
-wrangler d1 time-travel info DB_NAME  # note current bookmark, pass to restore if migration fails
-```
-
-Returns previous bookmark for undo. No clone / fork support. Use for: accidental deletes, bad migrations, data corruption.
-
-## D1 → R2 Long-Term Backup
-
-Retention beyond 30 days: Cron trigger (`0 0 * * *`) → Workflow calls D1 export endpoint → polls for signed URL → streams SQL dump to R2 `d1-backups/{date}/`. Built-in Workflow retries. R2 lifecycle rules auto-delete after 90 days. Zero egress on restore.
-
-```bash
-# Manual export
-wrangler d1 export DB_NAME --output=backup-$(date +%Y%m%d).sql
-
-# Restore from exported SQL
-wrangler d1 execute DB_NAME --file=backup-20260101.sql
-```
-
-## Rollback
-
-- **Fix forward** (default) — small, quick, no corruption, no active user impact
-- **Rollback trigger** — critical (auth / payments), corruption risk, complex, active users
-
-```bash
-# List recent deployments
-wrangler deployments list
-
-# Rollback to specific deployment (last stable = omit [deployment-id])
-wrangler rollback [deployment-id]
-
-# Rollback specific environment
-wrangler rollback --env production [deployment-id]
-```
-
-P1 auto-rollback: Sentry alert → Inngest → `wrangler rollback` → Slack + SMS.
-
-## Wrangler Secrets Management
-
-```bash
-# Set secret (interactive prompt for value)
-wrangler secret put SECRET_NAME
-
-# Set secret for specific env
-wrangler secret put SECRET_NAME --env production
-
-# Batch secrets from file in CI
-wrangler secret bulk .secrets.json
-
-# List secrets (names only, values never exposed)
-wrangler secret list
-
-# Delete secret
-wrangler secret delete SECRET_NAME
-```
-
-Never commit secrets. `.dev.vars` = local only (gitignored). CI: use GitHub Secrets → `--secrets-file` or individual `wrangler secret put`.
-
-## Post-Deploy Checklist (MUST RUN BEFORE REPORTING)
-
-### Immediate
-- Playwright 200 (not 403 / challenge)
-- No "Just a moment"
-- Newest feature tested E2E
-- AI visual screenshot
-- All pages 200
-- Images / CSS / JS load
-- No console errors
-- JSON-LD + OG + favicon + analytics
-- A11y (skip link, landmarks, focus-visible, reduced-motion)
-- Manifest validates
-- PWA screenshots
-- `humans.txt`
-- `security.txt`
-- Cross-site links
-
-### Visual
-- Layout 1280 + 375px correct
-- No h-scroll / overlap / cutoff
-- Footer bottom
-- Brand colors
-- Typography
-- Crisp images
-- Hover states
-
-### Functional
-- Nav
-- Forms
-- Auth
-- APIs
-- Error pages
-- Rate limiting
-- CSP
-- CORS
-- `/health` returns 200 + JSON
-
-## Post-Deploy Automation (CI)
-
-```yaml
-- run: curl -sf "$PROD_URL/health" | jq .status
-- run: npx playwright test tests/smoke.spec.ts
-- run: curl -X POST .../purge_cache --data '{"purge_everything":true}'
-```
-
-Cross-browser: Chromium every deploy. Firefox + WebKit first deploy only. Playwright `toHaveScreenshot()` for visual regression baseline.
-
-## Environment Parity
-
-Watch: CSP | CORS | CDN caching | DNS | TLS | env vars | rate limiting | Worker size. Always test prod. Env-specific secrets: `wrangler secret put KEY --env staging`.
-
-## Workflows v2 Awareness
-
-Rearchitected control plane (April 2026): higher concurrency + creation rate limits. Use for: D1 exports, long-running multi-step jobs, auto-remediation pipelines. Queues for single-step fan-out. `ctx.waitUntil()` for background work after response (30s limit).
-
-## Post-Build Critique (MANDATORY)
-
-Generate self-critique (visual, content, performance, a11y, SEO, security). Deliver to:
-- `/admin` dashboard
-- Email (Resend to brian@megabyte.space)
-- Top 3 in conversation
-
-### /admin (MANDATORY every site)
-- AI chat
-- Build history
-- Critique history
-- Quick actions (purge, tests, analytics)
-- Protected by API key or CF Access
-
-## Third-Party Health (every deploy)
-- YouTube embeds
-- Google Maps
-- Stripe sessions
-- GA4 / GTM fires
-
-## GitHub Auto-Config (first deploy)
-`gh repo edit --description / --homepage / --add-topic`
+## See submodules: workers-builds.md, d1-backups.md, rollback.md, github-config.md.

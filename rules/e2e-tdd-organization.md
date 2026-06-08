@@ -124,6 +124,3 @@ export default defineConfig({
 - **SessionStart hook** at `~/.claude/hooks/session-start-reminders.py` emits one-line reminder of four SUPREME rules at top of every fresh session.
 - Wired in `~/.claude/settings.json` § `hooks.PostToolUse` + `hooks.SessionStart`.
 - Per `01-operating-system` philosophy `hooks > rules > skills > prompts` — hooks turn this from documentation-I-might-read into enforcement-the-harness-applies.
-
-## See
-- `verification-loop.md` · `e2e-visual-inspection.md` · `code-style.md` § Testing · `brian-preferences.md` · `prompt-as-training-signal.md`

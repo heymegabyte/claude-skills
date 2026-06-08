@@ -21,7 +21,10 @@
 
 ## Every site (REQUIRED)
 - `site.webmanifest` w/ `screenshots[]` 3+ form_factor:"wide"|"narrow", `shortcuts[]`, `share_target`, `file_handlers`, `protocol_handlers` for store listings
-- `robots.txt` w/ explicit Allow/Disallow per AI crawler: GPTBot, ClaudeBot, Claude-User, Claude-SearchBot, PerplexityBot, Google-Extended, CCBot, Bytespider — never default
+- `robots.txt` — split AI crawlers by purpose, never blanket-block (blanket = removed from AI answers entirely):
+  - **Allow (search/retrieval — keeps you cited in ChatGPT/Perplexity/AI Overviews)**: `OAI-SearchBot`, `Claude-SearchBot`, `Claude-User`, `PerplexityBot`
+  - **Disallow (training-only — opt out of model training)**: `GPTBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `CCBot`, `Bytespider`
+  - Explicit `Allow`/`Disallow` per UA — never default
 - `humans.txt`
 - `sitemap.xml` (every `<url>` has `<lastmod>`)
 - `browserconfig.xml`
@@ -73,7 +76,7 @@
 ## Every form
 - Turnstile (invisible, `data-appearance="interaction-only"`, NEVER visible widgets)
 - Zod
-- Resend
+- Resend — every send path passes the `email-deliverability.md` gate (SPF+DKIM+DMARC, RFC 8058 one-click unsub on marketing, spam <0.3%) or mail bounces at SMTP silently
 
 ## Every historical timeline (`timeline-authenticity.md`)
 - Photos ONLY from Wikimedia Commons / Library of Congress / NPGallery / NPS / NYPL Digital / state historical societies / institution's archives / verified press wire
@@ -135,7 +138,12 @@ Frameworks: IEEE EAD, ACM, W3C, UNESCO, EFF, Humane by Design, Ethical OS, Copen
 - Standard = WCAG 2.1 AA
 - HHS Section 504: May 2026 healthcare federal-fund
 
-### Pre-ship harm scan (Ethical OS 8 zones + OWASP 2025)
+### EU — European Accessibility Act (EAA, enforcement live Jun 28 2025)
+- Applies to private-sector e-commerce / banking / telecoms / media selling into the EU
+- Standard = EN 301 549 (≈ WCAG 2.1 AA); micro-enterprises (<10 staff, <€2M rev) exempt
+- Fines up to €3M or 4% of annual revenue per member state — gate any EU-facing build
+
+### Pre-ship harm scan (Ethical OS 8 zones + OWASP 2025 + LLM Top 10)
 - Disinformation
 - Addiction
 - Inequality
@@ -146,12 +154,12 @@ Frameworks: IEEE EAD, ACM, W3C, UNESCO, EFF, Humane by Design, Ethical OS, Copen
 - Bad actors
 - Supply chain (#3)
 - Exceptional conditions (#10)
+- Prompt injection / excessive agency (OWASP LLM Top 10 — any AI surface per `ai-agent-security.md`)
 
 ## End every response with this report
 Render as markdown in chat, NOT via bash:
 
 ```
----
 **⚡ {project}** · `{branch}` · {time}
 
 **Changes:**

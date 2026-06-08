@@ -27,7 +27,3 @@ Durable, long-running, and scheduled work runs as typed workflows with status, r
 - **Validate + sanitize all crawled content** per `validation-error-handling-supervisor` (treat as untrusted)
 - **Respect robots.txt, legal constraints, rate limits, customer authorization** per `fetch-defaults`
 - **Store crawl runs** with status, logs, timing, errors, extracted artifacts, trace IDs
-
-## See
-- `package-preference-registry` · `cloudflare-lock-in-is-leverage` · `event-sourced-build-progress` · `validation-error-handling-supervisor` · `observability-ops-supervisor` · `crawling-testing-browser-supervisor` · `notifications-email-webhooks-supervisor` · `fetch-defaults`
-

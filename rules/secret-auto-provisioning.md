@@ -168,6 +168,3 @@ Every "set this secret manually" rec = code smell. Before surfacing:
 4. Tier 4? Surface w/ deeplinked URL + reason + estimated wall time.
 
 If rec doesn't specify tier, rec itself is the gap.
-
-## See
-- `secret-provisioning.md` (downstream push) · `full-autonomy.md` · `brian-preferences.md` · `auto-meta-work.md` · `verification-loop.md` · `computer-use-safety.md` · `payments-routing.md` · `fetch-defaults.md`

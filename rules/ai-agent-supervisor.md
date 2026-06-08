@@ -25,7 +25,3 @@ AI is foundational to the platform per `ai-permanence` — never a bolt-on, neve
 - **Prefer local/self-hostable** AI where practical (Ollama/vLLM/transformers.js) per cost + privacy
 - **Tenant-scoped + permission-aware + flag-gated** — every AI feature behind a server flag + killswitch + budget/timeout/truncation per `feature-flags`
 - **Evals** for AI-heavy behavior per `evals` — generation quality is tracked like any load-bearing layer
-
-## See
-- `ai-permanence` · `contract-first-ai` · `evals` · `package-preference-registry` · `cloudflare-hostable-supervisor` · `observability-ops-supervisor` · `validation-error-handling-supervisor` · `feature-flags` · `sandbox-execution`
-

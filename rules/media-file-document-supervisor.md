@@ -26,7 +26,3 @@ Uploads are validated, size-capped, type-restricted, compressed, and tenant-safe
 - **OCR output is untrusted** — treat Tesseract.js text as user input: Zod-parse, sanitize, never eval/render-raw
 - **Tenant-safe** — every asset path is org/tenant-scoped; storage behind the `StoragePort` adapter per `cloudflare-hostable-supervisor` (R2 default)
 - Strip EXIF/GPS from user images unless explicitly needed
-
-## See
-- `validation-error-handling-supervisor` · `package-preference-registry` · `cloudflare-hostable-supervisor` · `notifications-email-webhooks-supervisor` · `forms-editors-content-supervisor` · `image-quality`
-

@@ -91,9 +91,3 @@ The bar is not "would this be technically correct to defer" — the bar is **"wo
 
 ## THE_INSTINCT
 The phrase "just feels right" is the load-bearing signal. It means: any thoughtful developer reviewing the change would say "yeah, of course you also fixed that — anyone would have." Not "interesting tangent" or "neat side project" or "tempting refactor." If the change is the kind of thing a senior engineer would fold into the same PR without a separate ticket, it qualifies. If it would deserve a separate ticket — defer to Recs.
-
-## Cross-link
-- `auto-meta-work` — the analytics/Sentry/AI-Gateway provisioning rule — the *meta-work* version of this principle
-- `always` — the explicit Hard-Gate version — what MUST be there
-- `brian-preferences` — "just do it", "never ask permission" — same instinct
-- `verification-loop` — the verify-everything-you-touched discipline

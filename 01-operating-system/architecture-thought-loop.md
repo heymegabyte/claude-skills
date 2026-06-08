@@ -220,8 +220,6 @@ Design for today, document the escape hatch:
 - If the product still works and users still get value, delete it
 - Every feature you DON'T build is maintenance you DON'T have
 
----
-
 ## Execution Pattern
 For every architecture decision:
 1. Phase 0 (pre-mortem, inversion, constraints) — 2 min

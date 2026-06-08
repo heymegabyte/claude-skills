@@ -74,21 +74,3 @@ Fix drift before landing — never defer to a follow-up PR.
 3. Grep `src/routes/` for partial implementations that should be colocated
 4. New module: `npm run gen:feature -- --slug <name>`
 5. Register handlers in root `src/index.ts` via `app.route('/api/<slug>', module.handlers)`
-
-## Cross-links
-
-- `feature-flags` — D1 schema, KV cache, admin UI, promotion lifecycle, killswitch
-- `verification-loop` — deploy + prod-E2E mandate applies to every feature module
-- `e2e-tdd-organization` — `e2e/<slug>/` spec layout, hermetic contract, parallel runner
-- `monitor-orchestration` — multi-feature briefs fan out one agent per module
-- `auto-integrate-recs` — if a feature is identified, ship it in the same turn behind a flag
-- `docs/architecture/feature-modules.md` — canonical reference for the full module spec
-- `docs/architecture/feature-flags.md` — D1 + KV + admin UI implementation details
-- `libs/features/donations_engine/` — canonical reference implementation
-
-## See
-
-- `~/.claude/CLAUDE.md` § Feature Flags (SUPREME) — the user-level policy this rule details
-- `code-style` — TypeScript strict + Zod everywhere, both apply inside modules
-- `always` — Hard Gates still apply post-feature-module (deploy, E2E, a11y, perf)
-- `brian-preferences` — pick ONE, just do it; modules let us ship dark and promote with confidence

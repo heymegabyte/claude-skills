@@ -2,13 +2,6 @@
 
 Every feature beyond a trivial one-file edit ships behind a flag. Default: `enabled=0, rollout_percent=0, stage='experimental'`. Admin promotes through stages + dials rollout % from `/admin/feature-flags`. Nothing ships permanently-on at launch.
 
-## Why
-- **Reversibility**: regression-prone feature flips off via admin UI in <60s — no redeploy.
-- **Gradual rollout**: 5% → 25% → 50% → 100% lets us watch error rates + conversion at each step.
-- **Per-user QA**: pin flag on for `brian@megabyte.space` while off for everyone else.
-- **Compliance**: every mutation audited in `feature_flag_audit` — SOC 2 + GDPR friendly.
-- **Killswitch**: `stage='killswitch'` for instant emergency disable across all users.
-
 ## Architecture (canonical — every emdash project starting w/ njsk.org Wave 6)
 
 Three D1 tables:
@@ -85,6 +78,3 @@ CREATE TABLE IF NOT EXISTS feature_flags (
   updated_at      TEXT NOT NULL DEFAULT (datetime('now'))
 );
 ```
-
-## See
-- `verification-loop.md` · `monitor-orchestration.md` · `brian-preferences.md` · `website-build-doctrine.md`

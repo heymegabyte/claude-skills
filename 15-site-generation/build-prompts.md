@@ -841,6 +841,3 @@ After enhancement, every post must have:
 - Zero raw occurrences of the org's contact strings (email, phone, address) without an anchor wrapper
 
 Run a regex sweep on the serialized `blog-posts.ts` to enforce.
-
-### Reference implementation
-`/Users/apple/.agentskills/15-site-generation/enhance-blog-posts.mjs` (copied from njsk.org build, 2026-04-30). Adapt SITE_SECTIONS array + contact hyperlink table per project. Keep the system prompt's "preserve quotes verbatim" clause unchanged.

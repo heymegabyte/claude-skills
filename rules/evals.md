@@ -4,12 +4,6 @@ AI is foundational to many product surfaces — and like every other foundationa
 
 This rule fires whenever a feature's value depends on model output: site generation, copy synthesis, classification, summarization, prompt-following, design generation. It complements skill 07 (quality-and-verification) + AI-vision QA — evals score the AI's *generation quality*, E2E scores *runtime behavior*.
 
-## Why
-- **Generation quality drifts** as prompts, models, or context evolve — evals catch the regression on the commit that caused it instead of the customer report a week later.
-- **Subjective output needs a rubric**, not a boolean assertion — a dimension score 0-10 beats `expect(out).toBe(...)`.
-- **Regression history** turns "it felt worse" into "feature_module_compliance dropped 8.2 → 6.1 on commit abc".
-- **Schema-validated results** make eval output composable + auditable per ``contract-first-ai``.
-
 ## Each eval case ships ALL of these
 - **Input** — the exact prompt / context / fixture fed to the AI
 - **Expected behavior** — what a passing generation looks like, in plain language
@@ -37,6 +31,22 @@ This rule fires whenever a feature's value depends on model output: site generat
 - `security` — CSP/Trusted Types/secret hygiene, OWASP 2025
 - `prompt_following` — did the output do what the prompt actually asked?
 
+## Three-tier grading (layer cheapest-first, never one big judge)
+1. **Deterministic** — schema valid? format right? under token limit? Fast, free, perfectly reliable. Run on EVERY output as a preflight before paying for any model-graded check.
+2. **LLM-as-judge** — for rubric-scorable subjective cases (instruction-following, tone, conciseness). One judge call with an explicit rubric. Use g-eval (generate steps → apply → score) when the judge must inspect several dimensions; `factuality` when you have ground truth; a cheap classifier/moderation API for narrow labels (toxicity, PII, injection) instead of a general judge.
+3. **Human-in-the-loop** — only where accuracy/vibes/context is paramount. Layers on top of (not instead of) the judge, and feeds corrections back.
+
+## LLM-as-judge discipline (judges drift)
+- **Calibrate against periodic human labels** — without it, judge scoring silently inflates/deflates and your eval numbers stop reflecting reality. Track judge-vs-human agreement; recalibrate on misalignment.
+- Judges have biases, add latency, and can be gamed by the model under test — delimiters separate data from instructions but are NOT a security boundary.
+- Use a strong judge model per `model-routing` (Opus for nuance, Haiku for binary); patterns = single-point score, pairwise compare, reference-based grade.
+
+## Eval-driven development = TDD for AI
+- Eval cases ARE the working spec. Define quality criteria BEFORE tuning a prompt or swapping a model; every change runs against them first.
+- **CI ↔ prod drift is the #1 EDD failure** — when CI evals and production scoring use different definitions they diverge within months. Keep ONE eval definition driving both CI gating and online production scoring.
+- Offline evals (known dataset, reproducible, code or judge scorers) gate deploys; online scoring (LLM-judge on live traces, async, no latency hit) catches prod regressions.
+- Tooling: **Promptfoo** (CLI/YAML, free, built-in red-team — solo + security-conscious) or **Braintrust** (persistent dashboards, prod monitoring, lifecycle governance — teams). Pick one; don't hand-stitch eval + CI + monitoring into three drifting tools.
+
 ## Harness
 - `tools/evals/` — eval cases (`<slug>.cases.ts`), graders (`graders/`), runner (`run.ts`).
 - `pnpm evals` (or `npm run evals`) — runs all cases, validates results, appends to `results/<slug>.ndjson`.
@@ -56,10 +66,3 @@ This rule fires whenever a feature's value depends on model output: site generat
 - Trust a raw AI-judge response without schema validation
 - Overwrite eval results — append, so regression history survives
 - Conflate evals with E2E — evals = generation quality, E2E = runtime behavior
-
-## See
-- `contract-first-ai` — eval `EvalResult` objects are Zod-validated typed contracts
-- `verification-loop` — evals sit alongside the deploy + prod-E2E mandate, scoring generation not runtime
-- `e2e-visual-inspection` — AI-vision QA grades rendered surfaces; evals grade upstream generation quality
-- `drift-detection` — eval-score regression is a drift signal; both gate the merge
-- `model-routing` — AI-judge graders use Opus for nuance, Haiku for cheap binary checks

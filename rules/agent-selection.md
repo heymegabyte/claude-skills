@@ -137,6 +137,3 @@ Every spawned specialist inherits Brian's stack (`brian-preferences.md`):
 - Strong docs — TypeDoc / JSDoc on exports + markdown diagrams
 - PostHog · Sentry · Stripe Link · Nx · Vitest · ESLint · Prettier · Stylelint wired by default
 - Human approval only before huge / irreversible (`autonomous-engineering.md` approval gate)
-
-## See
-- `parallel-subagent-economy.md` · `monitor-orchestration.md` · `autonomous-engineering.md` · `full-autonomy.md` · `model-routing.md` · `drift-detection.md` · `verification-loop.md` · `prompt-as-training-signal.md` · `contract-first-ai.md` · `evals.md` · `brian-preferences.md`

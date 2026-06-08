@@ -174,6 +174,3 @@ Per `monitor-orchestration.md` § Follow-up loop, every gap surfaced that's gene
 - Ship-list (≥7) fully implemented
 - Every Hard Gate from `always.md` green
 - Every generalizable gap folded into relevant rule SAME TURN
-
-## See
-- `competitor-research.md` (rank by closing competitor gap) · `monitor-orchestration.md` · `proactive-improvements.md` · `always.md` · `verification-loop.md` · `auto-meta-work.md` · `source-site-enhancement.md` · `brian-preferences.md` · `full-autonomy.md` · `copy-writing.md` · `citations.md` · `image-quality.md` · `timeline-authenticity.md` · `text-contrast.md` · `logo-contrast.md`

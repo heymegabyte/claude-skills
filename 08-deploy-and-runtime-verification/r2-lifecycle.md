@@ -99,21 +99,6 @@ Without lifecycle rules every deploy is a permanent cost. **Verify with** `npx w
 - Worker upload script (`scripts/deploy-r2.mjs`) MUST delete old artifacts before uploading new ones — never just `--no-prefix` upload that accumulates.
 - Per `~/.claude/rules/builtin-tools-first.md` — probe `wrangler <subcommand> --help` before citing — wrangler v4 r2 object has no `list`. REST endpoint or `aws s3 ls --endpoint-url` are the real list paths.
 
-## Reference incident (2026-05-16 — `project-sites-production`)
-- 4,746 objects total
-- `marketing/` had 1,160 objects of which 1,132 (97.5%) were stale Angular SPA hash-named chunks accumulated over ~138 deploy generations
-- The live homepage is now vanilla HTML and references none of them
-- **Root cause:** Angular admin SPA was previously deployed to `marketing/` prefix instead of `app/`, and deploy script didn't purge before upload
-
-**Fix bundle:**
-1. One-time delete per pattern above
-2. Bucket lifecycle rule `--prefix marketing/ --age-days 30 --action delete`
-3. Deploy script clean-before-upload step
-
-**Net:** bucket from 4,746 → 3,543 objects (-25%).
-
-**Side lesson during the cleanup:** the rule first written for this incident prescribed `wrangler r2 object list` — does NOT exist (only get | put | delete). Always probe CLIs before citing them.
-
 ## See Also
 - `~/.claude/rules/builtin-tools-first.md` (universal vendor-CLI-first rule)
 - `~/.agentskills/08-deploy-and-runtime-verification/SKILL.md` (deploy gate)

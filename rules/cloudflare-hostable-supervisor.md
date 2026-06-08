@@ -20,7 +20,3 @@ Prefer systems that run on Cloudflare (Workers/Pages/D1/R2/KV/DO/Queues/Workflow
 - `QueuePort` — CF Queues | Upstash QStash | in-memory
 - `AiPort` — Workers AI | AI Gateway → any provider | local Ollama
 - `VectorPort` — Vectorize | pgvector (Neon) | in-memory
-
-## See
-- `stack-selector` · `angular-large-app-supervisor` · `package-preference-registry` · `cloudflare-lock-in-is-leverage` · `database-data-supervisor` · `ai-agent-supervisor` · `05-architecture-and-stack`
-

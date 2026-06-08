@@ -65,8 +65,6 @@ Pattern:
 
 Tailwind `underline` class on the anchor remains harmless (overridden); existing `decoration-*` classes become no-ops.
 
-Reference incident (njsk.org contact hero 2026-05-02): rule lived inside `@layer components`, set `color: var(--color-maroon-800)`, used hardcoded `background: var(--color-maroon-700)` — produced double-underline AND faint dark-on-dark hero link.
-
 ## Every desktop site (***CLICK RIPPLE ONLY — UNIVERSAL — megabyte.space reference***)
 
 Desktop-only (`(min-width:768px) and (pointer:fine)` AND NOT `prefers-reduced-motion: reduce`).
@@ -104,8 +102,6 @@ Default state must reserve final box (e.g. always-on `border:2px solid transpare
 
 Build gate: `validate-image-hover.mjs` triggers `:hover` on every image, samples bounding-rect before+after — any dimension shift >0px = fail; CSS grep rejects `img:hover{border|outline|padding|margin|width|height: ...}` rules.
 
-Reference incident: express-heyo-ellicott-city FedEx ShipCenter image flickered a white line on hover (2026-05-02) because `:hover` added a 1px border that pushed neighbors.
-
 ## Every card hover (***NO WHITE-FLASH ON FIRST HOVER — UNIVERSAL — BUILD-BREAKING — extends "Every image hover"***)
 
 Card components (project tiles, blog cards, team cards, service cards, pricing cards) MUST NOT flash white/transparent on first hover before the hover-state CSS kicks in.
@@ -129,8 +125,6 @@ Explicitly set the rest-state value on the base selector:
 Use `will-change: transform, box-shadow` only when hover frequency justifies (otherwise wastes layers). Compositor-only properties: prefer `transform` (translateY) over `top/margin` for lift; prefer `opacity` change on a pseudo-element overlay over `background-color` change on the element.
 
 Validator (`validate-card-hover-no-flicker.mjs`): Playwright records 30fps video of cursor entering card; analyzes frame-by-frame luminance — any single frame >20% brighter than rest-state followed by darker frames = white-flicker fail.
-
-Reference incident: nyfoldingbox.com rebuild (2026-05-02) project cards flashed white on first hover before settling into hover state — drove this rule.
 
 ## Every page transition
 
@@ -165,8 +159,6 @@ Every generated site MUST implement ≥3 advanced browser APIs that provide genu
 
 Validator (`validate-advanced-apis.mjs`): grep dist/ JS bundle for at minimum `AudioContext|webkitAudioContext` (Web Audio) + one of `PointerEvent|pointermove|pointerenter` (Pointer Events) + one of the type-specific APIs above — any missing = fail.
 
-Reference incident: all generated sites (2026-05-04) used only basic DOM manipulation, zero advanced browser APIs — sites felt flat and identical to any generic HTML template — drove this rule.
-
 ## Every entrance animation (***DURATION CAP 600ms + TRANSFORM/OPACITY ONLY — UNIVERSAL — BUILD-BREAKING***)
 
 All entrance/exit/reveal animations MUST:
@@ -180,8 +172,6 @@ All entrance/exit/reveal animations MUST:
 **Stagger delay** max 80ms per sibling item (3 items = 0/80/160ms delay — never 0/200/400ms).
 
 Build gate `validate-animation-timing.mjs`: parse dist/ CSS for `@keyframes` + `transition` + `animation` duration values — fail any individual step >600ms (total chained animations can run longer only via JS sequencing).
-
-Reference incident: nyfoldingbox.projectsites.dev (2026-05-05) — text blocks had 1.2s fade duration, page felt slow and incomplete — drove this rule.
 
 ## Every font load (***FONT-DISPLAY SWAP + METRIC MATCHING — UNIVERSAL — BUILD-BREAKING***)
 
@@ -220,8 +210,6 @@ After 1500ms, if ANY `.reveal:not(.is-visible)` element still exists in DOM, aut
 
 Validator: post-deploy E2E screenshots at t=0, t=200ms, t=2s — assert no text element has opacity <0.1 after 2s; assert no CLS spike between frames.
 
-Reference incidents: lone-mountain-global-3 text-jumping (2026-05-01) + nyfoldingbox text jerk on load (2026-05-05) — both drove this rule.
-
 ## Every `<img>` (***LAZY LOADING + DIMENSIONS + FETCHPRIORITY — UNIVERSAL — BUILD-BREAKING***)
 
 Every `<img>` element in dist/ output MUST have:
@@ -245,8 +233,6 @@ srcset="/assets/hero-640.webp 640w, /assets/hero-1280.webp 1280w, /assets/hero-1
 ```
 
 Validator (`validate-img-attributes.mjs`): grep dist/ HTML — any `<img>` without `width` attr = fail; any `<img>` without `loading` attr = fail; any ATF `<img>` with `loading="lazy"` = fail; any ATF `<img>` without `fetchpriority="high"` = fail.
-
-Reference incident: both lonemountainglobal and nyfoldingbox shipped `<img>` elements with no `width`/`height`/`loading` attrs — CLS measured at 0.42 (far exceeding 0.1 threshold) — drove this rule.
 
 ## Every hero `<video>` (***AUTOPLAY ATTRIBUTES + PRELOAD METADATA — UNIVERSAL — BUILD-BREAKING***)
 
@@ -281,8 +267,6 @@ MUST be self-hosted in R2 as `.mp4` (H.264 baseline, ≤8MB for hero loops) + `.
 
 Validator (`validate-video-attributes.mjs`): every `<video>` in dist/ — assert `muted`, `playsinline`, `preload` is `metadata` or `none` (never `auto`), `poster` set.
 
-Reference incident: nyfoldingbox hero video used `preload="auto"` and no `playsinline` — iOS showed fullscreen overlay on landing — mobile LCP >6s — drove this rule.
-
 ## Every third-party script (***DEFER OR ASYNC — UNIVERSAL — BUILD-BREAKING***)
 
 Every external `<script src>` tag in the HTML `<head>` MUST use `defer` or `async` — no render-blocking scripts.
@@ -301,8 +285,6 @@ The anti-FOUC inline script `<script>…</script>` (no src) MUST remain synchron
 Build gate: grep dist/ HTML for `<script src=` without `defer` or `async` or `type="module"` — any match outside the FOUC whitelist = fail.
 
 Validator (`validate-script-defer.mjs`): parse dist/index.html head — assert every `<script src>` has `defer` | `async` | `type="module"`.
-
-Reference incident: both sites had GTM and PostHog loading as render-blocking `<script>` — Time to First Byte blocked by 340ms — drove this rule.
 
 ## Every site (***CRITICAL CSS INLINED ≤14KB — UNIVERSAL — BUILD-BREAKING***)
 
@@ -326,8 +308,6 @@ Full stylesheet `<link rel="stylesheet">` gets `media="print" onload="this.media
 Build gate: Lighthouse "Eliminate render-blocking resources" audit — zero `<link rel="stylesheet">` in critical path.
 
 Validator (`validate-critical-css.mjs`): assert dist/index.html `<head>` contains `<style id="critical-css">` with `length > 500` chars AND full stylesheet `<link>` has `media="print"` attr.
-
-Reference incident: nyfoldingbox and lonemountainglobal shipped 180KB uncompressed external stylesheets as render-blocking `<link>` — FCP at 2.8s on 3G — drove this rule.
 
 ## Every site (***LATEST-TECH FLEX #1 — VIEW TRANSITIONS ON EVERY NAV — UNIVERSAL — BUILD-BREAKING***)
 

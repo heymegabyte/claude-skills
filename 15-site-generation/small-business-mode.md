@@ -227,12 +227,3 @@ Build cannot ship until:
 6. Mobile sticky CTA bar visible at 375px
 7. Lighthouse Mobile ≥85
 8. Source-fidelity loop passes when source domain exists
-
-## See also
-
-- `rules/always.md` — universal Every-X gates (per-route metadata, Google Maps embed, NAP)
-- `research-pipeline.md` — Google Places integration
-- `local-seo.md` — local SEO playbook (existing in this skill)
-- skill 13 `observability-and-growth` — local conversion events
-- skill 09 `brand-and-content-system` — copy voice + trust surfaces
-- `non-technical-owner-onboarding.md` — owner-side experience

@@ -19,7 +19,3 @@ Vitest for units, Playwright for E2E + browser automation, Crawlee for OSS crawl
 - **Crawlee** for crawl/import — validate + sanitize output, respect robots/rate-limits per `workflow-automation-supervisor`
 - **Add fixtures, mocks, and reproducible CI commands** — every suite is hermetic + parallel-safe
 - License-gated tools (Firecrawl/browser-use) stay behind an adapter + a documented license decision in `package-preference-registry`
-
-## See
-- `package-preference-registry` · `e2e-tdd-organization` · `e2e-visual-inspection` · `verification-loop` · `workflow-automation-supervisor` · `code-style` · `fetch-defaults`
-

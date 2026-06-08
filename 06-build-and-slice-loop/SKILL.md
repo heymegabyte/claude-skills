@@ -2,7 +2,7 @@
 name: "build-and-slice-loop"
 description: "Implements features in vertical slices, always starting with homepage. Enforces anti-placeholder rules — no lorem ipsum, no TODO stubs, no gray boxes. Real content, real images, real interactions. TypeScript strict mode, Zod validation, and structured file organization."
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   updated: "2026-05-03"
   effort: "high"
   model: "sonnet"
@@ -11,274 +11,121 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - easter-eggs.md
-  - domain-provisioning.md
-  - web-manifest-system.md
-  - custom-error-pages.md
-  - contact-forms-and-endpoints.md
-  - blog-and-content-engine.md
-  - onboarding-and-first-run.md
-  - site-search.md
-  - internationalization.md
-  - ai-chat-widget.md
-  - webhook-system.md
-  - admin-dashboard.md
-  - keyboard-shortcuts-and-command-palette.md
-  - empty-states-and-loading.md
-  - notification-system.md
-  - file-uploads-and-storage.md
-  - chat-native-dashboard.md
-  - rich-text-editor.md
-  - data-tables.md
-  - pre-digested-builds.md
-  - realtime-and-websockets.md
-  - copilot-and-ai-features.md
-  - notification-center.md
-  - microcopy-library.md
-  - pwa-kit.md
+  - vertical-slice.md
+  - file-organization.md
+  - anti-placeholder.md
 ---
-
-## Submodules
-
-- **easter-eggs** — hidden URL param Easter egg, canvas-based, dismissible
-- **domain-provisioning** — CF Worker + DNS + SSL auto-provision, animated placeholder
-- **web-manifest-system** — PWA manifest, screenshots, shortcuts, sitemap, robots, humans, security.txt
-- **custom-error-pages** — branded 404 / 500 / 503 / offline, dark theme, navigation
-- **contact-forms-and-endpoints** — Turnstile + Zod + Resend, 8-point test matrix
-- **blog-and-content-engine** — markdown → HTML, RSS, reading time, social sharing, seed posts
-- **onboarding-and-first-run** — welcome modal, guided tour, progress checklist, activation tracking
-- **site-search** — CF AI Search: hybrid semantic + keyword, Cmd+K modal
-- **internationalization** — EN + ES minimum, AI translate at deploy
-- **ai-chat-widget** — Workers AI + Vectorize RAG, auto-indexes at deploy
-- **webhook-system** — Stripe / Clerk / GitHub webhooks, signature verify, D1 idempotency
-- **admin-dashboard** — `/admin` panel, content moderation, bolt.diy editor
-- **keyboard-shortcuts-and-command-palette** — Cmd+K palette, keyboard overlay
-- **empty-states-and-loading** — action-prompting empty states, skeleton screens
-- **notification-system** — OneSignal push + in-app bell
-- **file-uploads-and-storage** — Uppy + R2 resumable uploads, presigned URLs
-- **chat-native-dashboard** — native chat UI
-- **rich-text-editor** — Editor.js + Angular, block JSON, D1 storage
-- **data-tables** — AG Grid server-side pagination, CSV / Excel export
-- **realtime-and-websockets** — Durable Objects WebSocket, presence, typing, cursors, hibernation
-- **copilot-and-ai-features** — CopilotKit + Workers AI, in-app AI, CoAgents
-- **notification-center** — Novu multi-channel: in-app, push, email, SMS, digest
-- **microcopy-library** — brand-voice microcopy dictionary, anti-slop alternatives
-- **pre-digested-builds** — research → profile → build architecture — pre-digest ALL context before expensive AI builder runs
-- **pwa-kit** — full PWA mandatory every site — `site.webmanifest` + icons + `screenshots[]` + Workbox SW + branded `offline.html` + update-flow toast + Lighthouse 100
 
 # 06 — Build and Slice Loop
 
-## Vertical Slice Rules
+## Vertical-slice principle
+Every iteration ships ONE feature end-to-end through every layer (UI → API → DB → tests → deploy). Never half a feature across two passes.
 
-Every increment: visible, testable, end-to-end value. No horizontal layers, stubs, or "coming soon."
+## Homepage FIRST (every project, no exceptions)
+- First slice is always the homepage hero + nav + footer
+- Real H1, real meta tags, real OG card, real JSON-LD
+- Deploy this minimal version BEFORE adding any other route
+- Establishes the design system, the auth layer, the analytics tier, the deploy pipeline
 
-- **Good** — touches all layers (data / API / UI), visible / testable, deployable independently, smallest real value unit
-- **Bad** — "set up DB" (horizontal), "build component library" (premature), "scaffold project" (no value)
-- **Sequence** — Slice 1 = homepage (real content, real images, deployed). Then core features. Then polish.
+Per `rules/website-build-doctrine.md` Phase 0 / Phase 1.
 
-### Strategic Priorities
-Every slice advances: end-user value, conversion psychology (04 / wisdom), brand quality.
+## Anti-placeholder (NON-NEGOTIABLE)
+- ❌ Lorem ipsum
+- ❌ TODO / FIXME / TBD in shipped user-visible strings (source-comment TODOs OK per `rules/todos-are-roadmap.md`)
+- ❌ Gray placeholder boxes / silhouettes (real content or no element)
+- ❌ "Coming soon" without firm date
+- ❌ Stub images / generic SVGs (real photos, AI-generated brand-aligned, or nothing)
+- ❌ "John Doe" / "Jane Doe" / "company.com" / "example.com"
+- ❌ Bracket placeholders `[Insert Name]` / `[Your Title]`
+- ❌ Single-character "x" / "?" labels
 
-### AI-Enriched
-Every slice asks: "can AI make this better?"
-- Static images → AI-generated
-- Manual text → AI meta / alt / translations
-- Basic search → semantic
-- No support → AI chat
-- No video → AI hero video (Sora)
+Per `rules/copy-writing.md` § Production-review copy gate. Build validator greps `dist/` for these patterns.
 
-## Anti-Placeholder Rules (***MANDATORY***)
+## Slice contract (every slice ships ALL of these)
+1. **Types** + **Zod schemas** at boundaries (`rules/zod-everywhere.md`)
+2. **Contract-first API** (typed request/response)
+3. **Loading + empty + error + success states** (4-state system per `10-experience-and-design-system`)
+4. **Accessibility** (axe 0 violations + WCAG 2.2 AA per `_kernel/standards.md#wcag22`)
+5. **6-breakpoint responsive** (per `_kernel/standards.md#breakpoints`)
+6. **Observability** (Sentry breadcrumb + PostHog event + Workers Trace span)
+7. **Tests** (Vitest unit + Playwright E2E from homepage outward per `rules/e2e-tdd-organization.md`)
+8. **Feature flag** where rollout risk exists (`rules/feature-flags.md`)
+9. **Tenant isolation** (`org_id` on every row + every query, 404 on mismatch)
+10. **Docs** (JSDoc on exports + module README)
 
-### Never ship
-- TODO comments
-- Lorem ipsum
-- Gray boxes
-- `console.log` stubs
-- Empty pages behind nav
-- Broken links
-- Non-functional forms / buttons
-- Placeholder images
-- "Coming soon" text
+## File organization
 
-Any placeholder = DEFECT.
-
-### Instead
-- Real thing (even minimal)
-- Real copy (infer from product)
-- Generated / sourced images
-- Working interactions
-
-### Enforcement
-- FCE scan (`07/slop-detection`) runs post-build. Zero findings required
-- Automated grep for `TODO | FIXME | lorem | placeholder | coming.soon` in CI
-
-## Implementation Patterns
-
-### New Project (<5 min)
-- 0-1m: infer type, load profile
-- 1-2m: `wrangler.jsonc` + Hono
-- 2-3m: homepage + content + meta + JSON-LD
-- 3-4m: CSS + favicon
-- 4-5m: deploy + purge + verify
-
-Parallel: media agent (logo, hero) + content agent (keywords, copy).
-
-### Feature Slice
-E2E test first → data layer (Drizzle) → API (Hono + Zod) → UI → wire → test → fix until green → deploy + verify.
-
-### Hono v4.12.12+ Patterns
-Pin >=4.12.12 for 5 CVE fixes: path traversal, cookie bypass, IP restriction bypass.
-
-- Inline handlers (type inference)
-- Factory pattern: `createFactory()` from `hono/factory` for reusable middleware
-- Method chaining for RPC: `const app = new Hono().get(...).post(...)`
-- Export `AppType` for `hc<AppType>()`
-- `app.route('/path', subApp)` for splitting
-- `@hono/zod-validator` all bodies
-- Never destructure `c` (breaks ctx)
-- Use `c.executionCtx.waitUntil()` for background work
-- Stream responses with `c.stream()` or `c.streamText()`
-
-### Angular 21 Patterns
-- Standalone-only (no NgModules)
-- Signals: `signal()`, `computed()`, `effect()` (all stable)
-- `linkedSignal()` for derived state with bidirectional binding
-- `resource()` / `HttpResource` for signal-based async data
-- `viewChild()`, `contentChildren()` signal queries (stable)
-- `input()` signal inputs (stable)
-- Zoneless change detection (default for new projects v21)
-- `@if` / `@for` control flow (not `*ngIf` / `*ngFor`)
-- `inject()` over constructor injection
-- `providedIn:'root'` for tree-shakeable services
-- PrimeNG with design tokens
-- OnPush change detection on all components
-- **Signal Forms** (experimental): model-first declarative forms
-- **Angular MCP Server** (stable): tools `find_examples`, `get_best_practices`, `list_projects`, `ai_tutor`
-- **Vitest** default test runner (replaces Karma)
-- **Angular ARIA** package for a11y
-
-### Drizzle v1.0 + D1
-- `sqliteTable` schema definitions
-- RQBv2 for relational queries
-- `$inferSelect` / `$inferInsert` for type derivation
-- Zod integration: `createInsertSchema` / `createSelectSchema`
-- D1: no `BEGIN` transactions (use batch API)
-- Prepared statements for repeated queries
-- snake_case DB columns, camelCase TS vars
-- Node.js compat polyfill in `wrangler.jsonc`
-- Foreign key constraints order matters in migrations
-
-### Workers Best Practices
-- Never destructure `ctx` — always `c.env.DB`, `c.env.KV`
-- `c.executionCtx.waitUntil()` for non-blocking work
-- Stream large responses
-- `GET /health` → `{status, version, timestamp}`
-- Error envelope: `{error, code?, details?}`
-- KV rate-limit public endpoints
-- Turnstile all forms
-
-## CSS Architecture (2026)
-
-- Cascade layers: `@layer reset, base, tokens, components, utilities, overrides`
-- Native nesting (Sass optional)
-- Container queries replace many `@media`
-- `:has()` replaces JS for parent-based styling
-- Custom properties as design token layer
-- `@starting-style` for enter animations
-- Scroll-driven animations: `animation-timeline: scroll() | view()`
-- View Transitions API (baseline)
-- `text-wrap: balance` headings, `pretty` paragraphs
-- OKLCH for perceptual color manipulation
-- `color-mix()` for blending tokens
-- Anchor positioning for tooltips / dropdowns
-- `@scope` for scoped styling
-
-## Code Quality
-
-- TypeScript strict: `noUncheckedIndexedAccess`, `noImplicitReturns`, `noFallthroughCasesInSwitch`
-- Zod on all external input
-- Sentry in prod
-- Functions ≤50 lines
-- Cyclomatic ≤10
-- Params ≤3
-
-### File org (Worker)
-`src/ index.ts, routes/, middleware/, services/, db/, lib/, types.ts, env.ts`
-
-### File org (Angular + Nx)
-`apps/ web/(Angular), api/(Hono). packages/ shared/(Zod), ui/(components).`
-
-## Content Generation
-
-- **Copy** — infer from product / domain, benefit-oriented, social proof, clear CTAs
-- **Images** — imagegen / Sora hero, Pexels / Pixabay stock, Ideogram logos, WebP / AVIF compressed
-- **Structured data** — Organization, WebSite, WebPage, FAQPage, Product, SoftwareApplication, BreadcrumbList (4+ per page)
-
-## Strict TDD (***MANDATORY***)
-
-Spec (Given / When / Then) → failing E2E (Red) → minimum impl (Green) → refactor → FCE scan → visual verify → deploy.
-
-- **Self-healing** — read error → diagnose → fix → re-run → loop max 5. NEVER `.skip`.
-- **Self-verify** — "A user can [action] which [result] because [impl]." Vague = incomplete.
-
-## Per-Slice Checklist
-
+### Worker (Hono)
 ```
-[ ] End-to-end working, E2E passes, real content/images
-[ ] Responsive (1280+375px), accessible, performant (<2.5s LCP)
-[ ] Error/loading/empty states, transactional emails, idempotent webhooks
-[ ] Graceful degradation for 3rd-party failures
-[ ] Deployed+verified, web-manifest requirements met
-[ ] MANDATORY: 07/completeness visual verification (6 breakpoints)
-[ ] FCE scan zero findings, zero console errors
+src/worker/
+├── index.ts              # entry — Sentry wrapper, route mounts, onError, notFound
+├── db/
+│   ├── schema.ts         # Drizzle source of truth
+│   └── index.ts          # getDb helper
+├── routes/<feature>.ts   # Hono sub-app per feature
+├── lib/<feature>.ts      # business logic, reusable across routes
+├── middleware/           # auth, tenant, rate-limit
+└── types.ts              # Env + Variables
 ```
 
-## Per-Project Checklist (***BUILD-BREAKING — every checkbox is a deploy gate, not a soft suggestion***)
-
+### Frontend (React + Vite)
 ```
-[ ] All features, homepage polished, all nav works, all forms submit
-[ ] Images optimized (WebP/AVIF), JSON-LD (4+), OG card 1200×630 ≤100KB, analytics (Sentry+PostHog+GA4 trifecta), error tracking
-[ ] Legal pages, favicon kit FULL (skill 12 auto-favicon-pipeline — favicon.ico+favicon.svg+favicon-{16,32,48,96}+apple-touch-icon-180+android-chrome-{192,256,384,512}+maskable-{192,512}), PWA site.webmanifest with screenshots[]+shortcuts[]+icons[]+maskable variants, robots.txt, sitemap.xml (every <url> has <lastmod>), humans.txt, .well-known/security.txt
-[ ] og.jpg|og.png exists in dist/ AND referenced in <head> with og:image+twitter:image+og:image:width=1200+og:image:height=630+og:image:type matching MIME+og:image:alt+twitter:image:alt
-[ ] CSP+HSTS+security headers, Lighthouse>=90, a11y>=95, mobile no breaks at 375px
-[ ] prefers-reduced-motion on all animations, prefers-color-scheme support
-[ ] Per-route metadata validator passes (skill 12 + rules/per-route-metadata.md): unique title 50-60 + meta desc 120-156 + canonical + theme-color + ALL og:* + ALL twitter:* + apple-mobile-web-app-* + ≥1 JSON-LD per route
-```
-
-## Asset Generation Triggers (***UNIVERSAL — runs on EVERY project, not just rebuilds***)
-
-The favicon kit + og card + `site.webmanifest` + `robots.txt` + `sitemap.xml` + `humans.txt` + `security.txt` MUST exist BEFORE the first `wrangler deploy`. Trigger paths (priority order):
-
-1. **Template clone** (`gh repo create --template megabytespace/saas-starter`) — template already ships placeholder assets — replace with brand-converged versions in Slice 1 (homepage). NEVER ship the template's placeholder favicon to production.
-2. **One-line prompt** (mode = saas | portfolio | local-business | non-profit | other) — Phase 1 architect spawns a media agent in parallel with frontend agent. Media agent runs skill 12 auto-favicon-pipeline + skill 12 OG card generator + skill 12 maskable-icon generator + skill 06 web-manifest-system BEFORE Slice 1 deploys.
-3. **Full rebuild from existing site** (skill 15 site-generation) — media-acquisition step extracts source logo (≥7/10 quality preserved per "Every site rebuild" rule in `always.md`), then runs same skill 12 pipeline.
-4. **Subsequent slices** — validator (`validate-favicon-kit.mjs` + `validate-og-card.mjs`) runs on every `wrangler deploy` — fail blocks deploy.
-
-**Source for favicon** — existing logo file (best) > inline SVG component in codebase (extract to source PNG via Playwright render at 1024×1024) > Ideogram v3 generation (skill 12 logo discovery chain). Never ship a missing / default favicon.
-
-## Completeness Guarantee
-
-Before done: data layer, API, UI, tests, SEO, analytics, error handling, mobile, docs all complete.
-
-## Reuse Index
-
-Check `~/emdash-projects/*/src/` before building. Contact form, Stripe checkout, Clerk middleware, error pages, analytics, CSP, security headers all reusable. Copy + adapt > write from scratch.
-
-## Gorgeous Loop (***SELF-PROMPT — MANDATORY at deploy***)
-
-Every site, after passing all build gates + Lighthouse + a11y, runs ONE recursive self-critique pass before declaring done. Spawns a fresh Claude Opus 4.7 sub-thread with the `GORGEOUS_LOOP_PROMPT` below + deployed URL + screenshots of all routes at all 6 breakpoints.
-
-Output: markdown list of "felt cheap | felt generic | felt unfinished" observations. Each observation:
-1. Classify as fix-now (≤30min, do it) vs fix-next (write to `.claude/improvements/{date}.md`)
-2. If fix-now → patch + redeploy + re-screenshot
-3. Loop max 3 rounds
-
-Empty list = ship. Never skip — anti-slop floor.
-
-```ts
-const GORGEOUS_LOOP_PROMPT = `You are a senior brand designer at Stripe critiquing this deployed site. The bar is Linear/Vercel/Stripe-level polish — not "looks fine" but "this is the best site in this category I've seen this year." For each route at each breakpoint, return ONLY observations that fall into one of: cheap (looks AI-generated, generic, off-brand) | generic (could be any business in this category, no distinct identity) | unfinished (placeholder feel, missing motion, weak hierarchy, dead whitespace, broken proportions). Format: route|breakpoint|category|observation|severity(1-5)|fix-suggestion. NO praise. NO hedging. NO "consider…" — say what's wrong and how to fix it. Empty list is acceptable ONLY if the site genuinely meets the bar.`;
+src/web/
+├── main.tsx              # entry — router, providers
+├── pages/<Page>.tsx      # one per route
+├── components/
+│   ├── ui/               # shadcn primitives (button, dialog, input)
+│   ├── <feature>/        # feature-specific components
+│   └── shared/           # Header, Footer, ErrorBoundary
+├── lib/                  # api client, auth context, hooks
+└── styles.css            # Tailwind + design tokens
 ```
 
-Pair with skill 15 "Post-Build Self-Improvement Loop" (universal-skill vs template vs one-off classification). Distinct purpose:
-- **gorgeous-loop** — ship-or-iterate aesthetic gate
-- **self-improvement-loop** — learn-for-next-time meta gate
+### Shared
+```
+src/shared/
+├── plans.ts              # pricing tiers
+├── design-styles.ts      # design tokens shared web + worker
+└── pageLayout.ts         # shared layout helpers
+```
+
+### Tests
+```
+e2e/
+├── FEATURES.md           # row-per-feature matrix (CI gate)
+├── _fixtures/            # page objects
+├── _helpers/             # snapshot, axe, breadcrumbs, visual
+├── <feature>/
+│   ├── happy-path.spec.ts
+│   ├── edge-cases.spec.ts
+│   ├── a11y.spec.ts
+│   └── visual.spec.ts
+└── _smoke/               # cross-feature smoke
+```
+
+## Build loop (per slice)
+1. **Write failing test** (Playwright TDD-RED first per `rules/e2e-tdd-organization.md`)
+2. **Author migration** (drizzle/0NNN_<feature>.sql) + update `db/schema.ts`
+3. **Apply locally** (`npm run db:apply:local`)
+4. **Implement** (route, lib, page, components)
+5. **Typecheck** (`npm run typecheck` clean)
+6. **Unit tests** (`npm test` green)
+7. **Run dev** (`npm run dev`) — exercise in browser
+8. **Deploy** (`npm run deploy`)
+9. **Prod E2E** (`npm run e2e:prod` against PROD_URL)
+10. **Verify console** (zero errors, zero CSP violations, zero failed resources)
+11. **AI vision QA** (6bp screenshots → vision rubric ≥8/10)
+12. **Commit + push** (conventional commits per `rules/main-only-branch.md`)
+13. **Update `e2e/FEATURES.md`** + CHANGELOG
+
+## Real content sourcing
+- Copy: brand voice per `09-brand-and-content-system`; never AI-default phrasing
+- Images: real photos > AI-generated brand-aligned > zero (skill 12)
+- Data: real API / Workers AI / D1 query > mocked
+- Testimonials: real attribution > none (never fabricated)
+- Stats: cited per `rules/citations.md`
+
+## When to stop adding sections
+Per `rules/website-build-doctrine.md` Phase 2: keep adding until next would dilute. Stop criterion is "next hurts," never "we have enough."
+
+## See submodules: vertical-slice.md, file-organization.md, anti-placeholder.md.

@@ -72,11 +72,3 @@ export type AiPatch = z.infer<typeof AiPatchSchema>;
 
 ## Reframe
 Earlier draft framed this rule as "never trust AI." Reframed: AI is permanent + foundational; validation is standard hygiene at every runtime boundary per `zod-everywhere`, not skepticism. The rule is unchanged in mechanics — every AI output still flows `output → Zod → typed`. Only the frame: AI is a first-class data source the platform is built on.
-
-## See
-- `zod-everywhere` — Zod is the SSOT at every boundary; this rule is the AI-boundary case
-- `tool-design-as-api` — tool inputs/outputs are contracts, same discipline
-- `evals` — eval cases + results are schema-bound too
-- `event-sourced-build-progress` — build events flow through the same parse pipeline
-- `verification-loop` — every parsed patch ships through deploy + prod-E2E
-- `auto-meta-work` — Structured Outputs wiring; incompatible with Citations, pick one per request

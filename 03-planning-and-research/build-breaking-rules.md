@@ -39,11 +39,6 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 ### Validator
 - `validate-parallel-boot.mjs` — parse `_build_trace.json`, assert ≥7 tasks have overlapping `started_at` windows within 5s of orchestrator boot AND `content_synthesis_task.started_at >= max(boot_tasks.ended_at)`
 
-### Reference
-- Prompt-improvements brainstorm rec #9 (2026-05-10)
-- Sequential boot collapses build to single-threaded LLM-bound waiting
-- LMG iter-4 wasted 8 of 35 min on sequential phases that could have been parallel
-
 ## Every build (***PARALLELISM #2 — DEEP-RESEARCH AGENTS PER ERA/TOPIC — UNIVERSAL — BUILD-BREAKING***)
 
 - Any site with >50yr history OR >10 content categories OR >100 source-corpus pages MUST split research into ≥3 parallel deep-research agents
@@ -60,11 +55,6 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 
 ### Validator
 - `validate-parallel-research.mjs` — assert `research/` contains ≥3 era/topic-segmented JSON files AND their `started_at` windows overlap within 30s
-
-### Reference
-- Prompt-improvements brainstorm rec #10 (2026-05-10) + `~/.claude/rules/historically-rich.md`
-- Single-agent timelines stall at 24 events of generic depth
-- 3-agent fan-out produced 103 events / 46 APA refs on njsk.org rebuild
 
 ## Every build (***PARALLELISM #3 — CRITICAL-PATH OPTIMIZATION + CONCURRENCY FLOOR — UNIVERSAL — BUILD-BREAKING***)
 
@@ -86,10 +76,6 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 
 ### Validator
 - `validate-critical-path.mjs` — assert `_critical_path.json` exists with all phases declared + concurrency floors met in `_build_trace.json` AND total duration ≤ projected wall-clock × 1.5
-
-### Reference
-- Prompt-improvements brainstorm rec #11 (2026-05-10)
-- LMG iter-4 ran sequentially across 35min when critical path optimization would have shipped in ~10min
 
 ## Every build (***PARALLELISM #4 — ASSUMPTION-DRIVEN SLICING WITH CONFIDENCE-TRACKED DECISIONS — UNIVERSAL — BUILD-BREAKING***)
 
@@ -115,8 +101,3 @@ _slice_plan.json[i] = {
 
 ### Validator
 - `validate-slice-confidence.mjs` — assert `_slice_plan.json` has all 5 fields per slice AND no slice with confidence <0.7 lacks fact-check sub-task AND no assumption violation went unlogged
-
-### Reference
-- Prompt-improvements brainstorm rec #12 (2026-05-10) + `~/.claude/CLAUDE.md`
-- "Confidence: architecture decisions state 0-1. Below 0.7→research more."
-- Codifies confidence tracking that already exists in `PROJECT_BRIEF.md` format into binding gate

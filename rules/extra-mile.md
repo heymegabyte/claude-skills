@@ -56,10 +56,3 @@
 5. Does it cost >20% wall-time of the current change? (yes = surface in Recs)
 
 If all 5 = ship inline.
-
-## See
-- `competitor-research` — on website builds the "extra mile" floor isn't "feels nice", it's "≥15% better than every competitor on every rubric dimension" — that gate is what extra-mile work is iterating toward
-- `proactive-improvements` — the "just feels right" criterion in lighter form; this rule is the supreme weighted version
-- `supreme-polish` — the 100-ideas audit run (extra-mile applied at scale)
-- `brian-preferences` — pick ONE, never ask permission, just do it
-- `full-autonomy` — extra mile counts as authorized work

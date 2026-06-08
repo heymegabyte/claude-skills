@@ -42,10 +42,6 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 8 template-levera
 ### Validator
 - `validate-template-origin.mjs` — assert `dist/.template-version` file exists matching current `template.projectsites.dev` SHA AND ≥80% of template files preserved in initial slice 0
 
-### Reference
-- Prompt-improvements brainstorm rec #1 (2026-05-10)
-- LMG iter-4 scaffolded from-scratch wasting 12min on baseline scaffolding that template would have provided in 30s
-
 ## Every build (***TEMPLATE LEVERAGE #2 — HOMEPAGE-FIRST VERTICAL SLICING — UNIVERSAL — BUILD-BREAKING***)
 
 - Every build's slice loop MUST start with homepage slice (`/`) before any secondary route
@@ -65,9 +61,6 @@ Each slice ships independently — partial site is better than full-site-broken.
 ### Validator
 - `validate-homepage-first.mjs` — assert `_slice_log.json[0].route === "/"` AND homepage at HEAD-200 before any other route in build trace
 
-### Reference
-- Prompt-improvements brainstorm rec #2 (2026-05-10) + `~/.agentskills/06-build-and-slice-loop/SKILL.md` "always starting with homepage"
-
 ## Every slice (***TEMPLATE LEVERAGE #3 — ANTI-PLACEHOLDER ENFORCEMENT — UNIVERSAL — BUILD-BREAKING***)
 
 Every slice MUST ship zero placeholders:
@@ -84,9 +77,6 @@ Post-slice grep gate before deploy.
 
 ### Validator
 - `validate-anti-placeholder.mjs` — grep `dist/**/*.{html,css,js,json}` for forbidden patterns (`/lorem ipsum|TODO|FIXME|XXX|placeholder\.com|coming soon|\[your |\bexample\.com\b/i`) — any match = slice FAIL
-
-### Reference
-- Prompt-improvements brainstorm rec #3 (2026-05-10) + `~/.agentskills/06-build-and-slice-loop/SKILL.md` "no lorem ipsum, no TODO stubs, no gray boxes"
 
 ## Every slice (***TEMPLATE LEVERAGE #4 — INCREMENTAL DUAL-VISION CHECKPOINT — UNIVERSAL — BUILD-BREAKING — see ~/.claude/rules/visual-inspection.md***)
 
@@ -118,12 +108,6 @@ Post-slice grep gate before deploy.
 ### Validator
 - `validate-slice-dual-vision.mjs` — assert every slice in `_slice_log.json` has `claude_vision_score >= 8` OR documented `visual_failures` entry AND every hero/ATF + brand-fidelity slice also has `gpt4o_judge_score`
 
-### Reference
-- Prompt-improvements brainstorm rec #4 (2026-05-10) + dual-vision doctrine 2026-05-12
-- *"web development should be done visually to some extent since it's a critical point of it"*
-- Per-slice Claude Vision = zero marginal cost, uncapped within Max 20x rate window — fire on every slice every breakpoint without hesitation
-- See `feedback_visual_inspection_doctrine.md` for canonical doctrine + `~/.claude/rules/visual-inspection.md`
-
 ## Every slice (***TEMPLATE LEVERAGE #5 — SLICE TIME BUDGET (10min HOMEPAGE / 5min ROUTE) — UNIVERSAL — BUILD-BREAKING***)
 
 Every slice MUST complete within budget:
@@ -141,10 +125,6 @@ Exceeding budget = cut scope, ship MVP slice, surface remainder as recommendatio
 ### Validator
 - `validate-slice-budget.mjs` — assert every `_slice_log.json[i].duration_ms` ≤ budget for its slice type AND scope-cuts logged when triggered
 
-### Reference
-- Prompt-improvements brainstorm rec #5 (2026-05-10)
-- LMG iter-4 spent 35min total; budget pressure forces template leverage + parallelism
-
 ## Every slice (***TEMPLATE LEVERAGE #6 — DEPLOYABLE-AT-EVERY-SLICE GATE — UNIVERSAL — BUILD-BREAKING***)
 
 - Every slice MUST end in deployable state
@@ -160,10 +140,6 @@ Exceeding budget = cut scope, ship MVP slice, surface remainder as recommendatio
 ### Validator
 - `validate-deployable-slice.mjs` — assert post-slice staging deploy returns 200 + console-errors === 0 + broken-links === 0 across all 6 breakpoints
 
-### Reference
-- Prompt-improvements brainstorm rec #6 (2026-05-10)
-- Incremental deployment = always-shippable + easier debugging than big-bang reveal
-
 ## Every slice (***TEMPLATE LEVERAGE #7 — REAL CONTENT FROM RESEARCH ARTIFACTS — UNIVERSAL — BUILD-BREAKING***)
 
 - Every slice MUST source its copy + media from build's pre-research artifacts (`_research.json`, `_corpus.json`, `_media_extraction.json`, `_brand.json`)
@@ -176,9 +152,6 @@ Exceeding budget = cut scope, ship MVP slice, surface remainder as recommendatio
 
 ### Validator
 - `validate-real-content.mjs` — assert every `<section data-slice="X">` has at least one cite reference into `_research.json` OR `_corpus.json` AND no quantitative claim ships uncited
-
-### Reference
-- Prompt-improvements brainstorm rec #7 (2026-05-10) + Brian-voice "Sourced facts (***NON-NEGOTIABLE***)"
 
 ## Every slice (***TEMPLATE LEVERAGE #8 — SLICE LOG AS BUILD-OUTPUT ARTIFACT — UNIVERSAL — BUILD-BREAKING***)
 
@@ -193,7 +166,3 @@ Every build MUST emit `_slice_log.json` capturing per-slice metadata:
 
 ### Validator
 - `validate-slice-log.mjs` — assert `_slice_log.json` exists + has entry per slice + all 12 fields populated
-
-### Reference
-- Prompt-improvements brainstorm rec #8 (2026-05-10)
-- Slice log enables progressive-rebuild diff per `~/.claude/projects/-Users-apple-emdash-projects-projectsites-dev/memory/project_progressive_rebuild.md`

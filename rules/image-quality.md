@@ -75,9 +75,3 @@ Search order:
 - iStock
 - Getty (without explicit licensed permission)
 - AI generators for historical timelines (see `timeline-authenticity`)
-
-## Cross-link
-- `timeline-authenticity` — which images may never be AI even hyper-realistic ones
-- `12-media-orchestration` — production pipeline + critique loop
-- `09-brand-and-content-system` — real-brand extraction
-- `copy-writing` — anti-slop

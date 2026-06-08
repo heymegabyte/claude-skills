@@ -44,8 +44,6 @@ Caption shape: `{ title: string, description: string, credit?: string, link?: st
 
 Validator (`validate-lightbox-grouping.mjs`): detects `[data-gallery]` IDs per route — if section has ≥2 images and ≥2 distinct gallery IDs in same `<section>` ancestor = fail. Caption presence gate: every `[data-zoomable]` MUST have a `data-caption-title` AND `data-caption-description` attribute = fail otherwise.
 
-Reference incident: lone-mountain-global-3 (2026-05-01) gallery section split same-topic images into separate lightboxes (only 2 of N visible per modal, captions absent) drove this rule.
-
 ## Every interactive feature (***FUNCTIONALITY VALIDATOR — NOT JUST STYLING — UNIVERSAL — BUILD-BREAKING***)
 
 Every interactive UI element (filter chip, tab, accordion, search input, sort dropdown, toggle, modal, lightbox, mega-menu, infinite-scroll trigger, pagination link, "Load more" button) MUST functionally do the thing its label promises — never render as styled-but-stub UI.
@@ -56,8 +54,6 @@ Every interactive UI element (filter chip, tab, accordion, search input, sort dr
 - Sort dropdown MUST reorder children
 
 Validator (`validate-interactive-functionality.mjs`): Playwright finds every `[data-filter], [role=tab], [aria-controls], [data-search], [data-sort], [data-load-more]` element, simulates click/input, snapshots DOM before+after, asserts measurable difference (count change, attribute toggle, content swap, URL hash update); FAIL on any element where `state-after === state-before`.
-
-Reference incident: njsk-light (2026-05-02) — blog category filter chips were styled-but-non-functional, clicking "News" did nothing — drove this rule.
 
 ## Every blog/news/portfolio listing (***FUNCTIONAL TAXONOMY FILTERS + SEARCH + SORT + URL-SYNC — UNIVERSAL — BUILD-BREAKING***)
 
@@ -86,8 +82,6 @@ Validator (`validate-blog-filters.mjs`): for every route matching `/blog|/news|/
 
 FAIL any step where state-after === state-before OR URL doesn't sync OR pre-applied filter ignores query string.
 
-Reference incident: nyfoldingbox.com (2026-05-02 prior) — blog category list rendered but clicks did nothing, no URL sync, no search — drove this rule.
-
 ## Every filter-chip
 
 - **Inactive state** — outline + accent text on transparent bg
@@ -114,8 +108,6 @@ Every desktop nav with multi-column dropdown/mega-menu MUST implement hover-brid
 
 Validator (`validate-mega-menu-hover.mjs`): Playwright desktop run hovers trigger → moves cursor diagonally toward panel through gap → asserts panel still open after 250ms; second run moves cursor away → asserts close within 200ms. Template ships `<MegaMenu>` component implementing both — never hand-rolled per site.
 
-Reference incident: njsk-light (2026-05-02) — mega-menu closed when cursor crossed gap to panel, forcing users to re-hover trigger — drove this rule.
-
 ## Every clickable element (***POINTER-CURSOR HONESTY — UNIVERSAL — BUILD-BREAKING***)
 
 `cursor: pointer` MUST appear on AND ONLY ON elements that actually do something on click. Hovering a non-clickable element with the pointer cursor = lying to the user about interactivity.
@@ -136,8 +128,6 @@ Reference incident: njsk-light (2026-05-02) — mega-menu closed when cursor cro
 
 Validator (`validate-pointer-cursor-honesty.mjs`): Playwright at 6bp samples computed `cursor` property of every element; for each element with `cursor: pointer`, assert it has `[onclick]` OR `<a href>` ancestor OR `<button>` ancestor OR `[role=button]` OR `[role=link]` OR `[role=tab]` OR `[role=menuitem]` ancestor — FAIL on bare `<p>`/`<div>`/`<span>`/`<section>` with pointer cursor and no click handler.
 
-Reference incident: nyfoldingbox.com (2026-05-02) decorative stat blocks rendered with `cursor: pointer` from inherited parent rule but no click target — users hovered, expected modal, got nothing — drove this rule.
-
 ## Every lightbox close (***SCROLL-POSITION PRESERVATION — UNIVERSAL — BUILD-BREAKING — extends "Every multi-image section"***)
 
 When lightbox modal closes (Esc key, X button, backdrop click, swipe-down on touch), the underlying page scroll position MUST snap back to the EXACT scrollY where the user was when they opened the lightbox — never reset to 0, never jump to top, never lose the scroll context.
@@ -149,8 +139,6 @@ When lightbox modal closes (Esc key, X button, backdrop click, swipe-down on tou
 Same pattern applies to ANY full-screen modal (mobile menu, command palette, video player).
 
 Validator (`validate-modal-scroll-preservation.mjs`): Playwright opens lightbox/modal at `scrollY=2000`, closes via Esc, asserts `window.scrollY === 2000` within 50ms.
-
-Reference incident: lonemountainglobal.com rebuild (2026-05-02) closed lightbox jumped scroll back to top of gallery section — user lost their position in 50-image grid, frustration spike — drove this rule.
 
 ## Every expandable card / "Read More" toggle (***NO CONTENT CROPPING — UNIVERSAL — BUILD-BREAKING***)
 
@@ -164,8 +152,6 @@ Cards/blocks with collapsed-by-default text + "More details" / "Read more" / "Sh
 
 Validator (`validate-expandable-card-no-crop.mjs`): Playwright clicks every `[data-expandable]` toggle, samples post-expand `getBoundingClientRect().height` vs `scrollHeight` — if `clientHeight < scrollHeight` after expand, content is cropped = fail.
 
-Reference incident: nyfoldingbox.com rebuild (2026-05-02) "Paperboard substrate guide" cards expanded but bottom 30% of expanded content was cropped behind a fixed `max-height: 400px` rule on the inner block — drove this rule.
-
 ## Every search input (***MIN VISIBLE WIDTH ≥50ch DESKTOP — UNIVERSAL — BUILD-BREAKING — extends "Every interactive feature"***)
 
 Every `<input type="search">` / `<input data-search>` MUST render at minimum 50 visible characters (`min-width: clamp(20rem, 60vw, 40rem)`) on viewports ≥768px. On viewports <768px the search input MUST stack to full width (`width: 100%`) below adjacent filter chips/sort controls — never crammed into a 200px sliver beside chips.
@@ -176,8 +162,6 @@ Every `<input type="search">` / `<input data-search>` MUST render at minimum 50 
 - Search results dropdown/inline-filter MUST be at least as wide as the input
 
 Validator (`validate-search-input-width.mjs`): Playwright at 1280px samples `[type=search], [data-search]` input bounding-rect width — fail if `<320px`; at 375px sample width — fail if input shares row with chips.
-
-Reference incident: njsk.org blog page rebuild (2026-05-02) blog search input rendered at ~180px crammed beside category chips on desktop, ran off-screen on mobile — drove this rule.
 
 ## Every full-width visual section (***FULL-VIEWPORT BREAKOUT FOR HERO/MEDIA — UNIVERSAL — BUILD-BREAKING***)
 
@@ -192,8 +176,6 @@ Site shells MUST distinguish between text-content sections (constrained `max-wid
 - **Text paragraphs / blog body** — stay constrained at 65ch — full-bleed text destroys readability
 
 Validator (`validate-full-bleed-sections.mjs`): for every page, snapshot section bounding-rect widths — fail if hero `<section>` width < `100vw` (allowing 1px scrollbar tolerance), fail if `<table data-comparison>` overflows its container instead of breaking out, fail if `<p>` text-block exceeds 75ch (over-wide reading line).
-
-Reference incident: nyfoldingbox.com rebuild (2026-05-02) hero image was constrained to `max-width: 1100px` with thick side gutters, paperboard comparison table cropped right columns behind hidden overflow — drove this rule.
 
 ## Every vertical-stack interactive section (***LEVERAGE FULL SCREEN REAL-ESTATE — UNIVERSAL — BUILD-BREAKING — extends "Every full-width visual section"***)
 
@@ -216,8 +198,6 @@ Structure About/Services/History-style pages as sibling `<section>` elements eac
 Do NOT wrap all content in a single `max-w-3xl` and then nest everything inside it. Component-level heading + intro paragraph inside a `max-w-7xl` section may use an inner `<div className="max-w-3xl">` for the heading copy specifically — the interactive surface below it spans the full container.
 
 Validator (`validate-vertical-stack-width.mjs`): Playwright at 1280px finds `[data-timeline], [data-stat-rollup], [data-partner-strip], [data-pastor-grid], ol.grid, dl.grid, [data-dossier], details.accordion` — assert each parent `<section>` `width >= 1024px` (i.e. not constrained by `max-w-3xl ≈ 768px` or `max-w-4xl ≈ 896px`). Fail code: `vertical-stack.constrained-by-prose-container`.
-
-Reference incident: njsk.org `/about` (2026-05-11) — entire 200-event timeline, 25-pastor grid, founding-facts dl, dossier spotlight all wrapped in a single `max-w-3xl` prose container — timeline alternating cards crammed into 768px, pastor grid showed 2-col max, dossier looked like a sidebar widget. Brian directive: *"leverage more screen real-estate because the timeline could basically be full-width across the screen. As a matter of fact, when vertically, in all circumstances note this in the skills."* Restructured into 8 sibling sections (prose `max-w-3xl`, structured `max-w-7xl`, timeline full-bleed) — drove this rule.
 
 ## Every site at every viewport (***FULL-SCREEN REAL-ESTATE UTILIZATION — UNIVERSAL — BUILD-BREAKING — supersedes hard pixel `max-width` shells***)
 
@@ -250,8 +230,6 @@ Fail codes:
 - `real-estate.cramped-mobile`
 - `real-estate.fixed-pixel-shell`
 - `real-estate.inner-cap-overrides-container`
-
-Reference incident: ghost.megabyte.space cinema redesign (2026-05-11) — outer container widened to 1680px but `.timeline-vertical { max-width: 960px }`, `.dossier-intro p { max-width: 640px }`, `.entropy-section` 50/50 grid all kept the canvas narrow on a 1920px display, prompting Brian directive: *"Make the timeline and other sections take up more space when it's full-screen. Make a note of it to make all websites fully responsive from full-screen to mobile-responsive, it should always use all of the screen real estate - save that in the skills."* Fix bundle = override every inner cap with `min(<cinema-cap>, <viewport-pct>)`, add ultrawide tier bumps (1920/2400px), set `width: 100%; max-width: none` on every full-canvas section — drove this rule.
 
 ## Every gallery image / carousel image (***LIGHTBOX MUST OPEN ON CLICK — UNIVERSAL — BUILD-BREAKING — extends "Every multi-image section"***)
 
@@ -293,8 +271,6 @@ Validator (`validate-lightbox-opens-on-click.mjs`): Playwright on every route, f
 
 Fail codes: `lightbox.not_opened` | `lightbox.empty_modal` | `lightbox.html_wiring_incomplete`.
 
-Reference incident: lonemountainglobal + nyfoldingbox (2026-05-06) only first gallery image opened lightbox — root cause React async render vs DOMContentLoaded timing — drove MutationObserver mandate.
-
 ## Every site nav/header (***SOLID BACKGROUND — NEVER TRANSPARENT — UNIVERSAL — BUILD-BREAKING***)
 
 Nav/header MUST have a solid, opaque background at ALL times — including on the homepage hero, on hero-scroll overlap, on mobile drawer open, on any route. Transparent or `background: none` headers let hero content bleed through the nav, making nav items illegible and the page look unfinished.
@@ -305,8 +281,6 @@ Implementation: nav base CSS `background-color: var(--nav-bg, var(--bg-primary))
 
 Build gate: Playwright screenshots nav at scrollY=0 on every route — samples computed `background-color` at nav centroid — any `rgba(* * * / 0)` or `transparent` = fail. Nav text/logo must contrast nav bg by ≥4.5:1 at 6bp. Sticky nav must maintain solid bg on scroll — never `position:sticky` with `background: transparent`.
 
-Reference incident: lonemountainglobal.projectsites.dev (2026-05-05) — transparent header let hero image bleed through nav links, links unreadable — drove this rule.
-
 ## Every site nav/header (***Z-INDEX STACK + CLIP PREVENTION — UNIVERSAL — BUILD-BREAKING***)
 
 Nav MUST have `z-index: ≥100` and MUST NOT be clipped by hero sections, sliders (Swiper/Splide/Glide), or `overflow: hidden` parent wrappers.
@@ -314,8 +288,6 @@ Nav MUST have `z-index: ≥100` and MUST NOT be clipped by hero sections, slider
 Pattern: if any hero/slider sets its own stacking context (`transform`, `will-change`, `filter`, `isolation`), the nav MUST live OUTSIDE that stacking context in the DOM.
 
 Validator: at 6bp, Playwright samples nav `getBoundingClientRect().top` — assert nav is always visible (top ≥ 0) AND that nav element is NOT contained inside any element with `overflow:hidden`.
-
-Reference incident: lonemountainglobal.projectsites.dev (2026-05-05) — hero slider z-context clipped nav icons.
 
 ## Every section (***VISUAL DISTINCTION — ALTERNATING TREATMENT — UNIVERSAL — BUILD-BREAKING***)
 
@@ -341,8 +313,6 @@ When generating cards:
 
 Validator (`validate-card-image-uniformity.mjs`): for each `[data-card-grid]`, compute `cards_with_img / total_cards` — if `> 0` and `< 1.0` = fail (must be all-or-nothing).
 
-Reference incident: multiple builds (2026-05) — 3 cards had photos, 2 had gradient placeholders — drove this rule.
-
 ## Every lightbox (***CSS BACKGROUND-IMAGE EXCLUDED — UNIVERSAL — BUILD-BREAKING — extends "Every gallery image"***)
 
 CSS `background-image: url(...)` properties are NEVER lightbox-eligible regardless of size, quality, or context. Only `<img src>` and `<picture><source>` elements are lightbox-eligible.
@@ -356,8 +326,6 @@ CSS `background-image: url(...)` properties are NEVER lightbox-eligible regardle
 Implementation: lightbox auto-wiring script MUST query `[data-gallery] img` (HTMLImageElement only) — NEVER walk `getComputedStyle(el).backgroundImage` from section elements.
 
 Validator: assert no `[data-gallery]` section has a lightbox click listener attached to a non-`<img>` DOM element.
-
-Reference incident: nyfoldingbox.projectsites.dev (2026-05-05) — section bg images triggered broken lightbox that showed empty modal — drove this rule.
 
 ## Every anchor-wrapped image (***LINK NAVIGATION WINS — UNIVERSAL — BUILD-BREAKING — extends "Every gallery image"***)
 
@@ -374,8 +342,6 @@ Lightbox handlers MUST early-return on `img.closest('a[href]')` and skip cursor:
 Validator (`validate-anchor-image-no-lightbox.mjs`): Playwright finds every `a[href] img` on `/blog`, `/news`, `/portfolio`, listing pages — clicks each, asserts URL changes (navigation) AND no `[role="dialog"]` opens within 300ms.
 
 Fail code: `lightbox.intercepts_link_navigation`.
-
-Reference incident: njsk.org `/blog` (2026-05-08) — clicking blog post featured image opened lightbox instead of navigating to the article — drove this rule.
 
 ## Every photo/image (***GROUPING LABEL + SECTION SLUG — UNIVERSAL — BUILD-BREAKING — extends "Every multi-image section"***)
 
@@ -414,8 +380,6 @@ Validator (`validate-comparison-table-fullbleed.mjs`): for every `<table data-co
 - At 1280px assert table renders full-bleed (width ≥ container 100vw - allowable scrollbar) AND no right column is clipped (rightmost cell `right` ≤ viewport width)
 - At 375px assert table reflows to stacked cards (no horizontal scroll)
 
-Reference incident: nyfoldingbox.com paperboard guide (2026-05-02) comparison table cropped right 2 columns behind container `overflow: hidden` because table wasn't full-bleed — drove this rule.
-
 ## Every page depth > 1 (***BREADCRUMBS — UNIVERSAL — BUILD-BREAKING***)
 
 Every route whose URL depth is ≥2 (e.g. `/blog/post-slug`, `/team/jane-doe`, `/services/consulting`) MUST render a visible breadcrumb nav immediately below the page header / above the page H1 — never inside the hero, never inside the footer.
@@ -440,8 +404,6 @@ Visual separators rendered via CSS `::after { content: "/" }` NOT embedded in HT
 
 Validator (`validate-breadcrumbs.mjs`): for every route with URL depth ≥2, assert `nav[aria-label="Breadcrumb"]` present + `[itemtype*="BreadcrumbList"]` in head JSON-LD.
 
-Reference incident: lonemountainglobal.projectsites.dev `/publications` sub-pages and nyfoldingbox `/services/<slug>` had no breadcrumbs — users lost context on every deep page — drove this rule.
-
 ## Every site (***SKIP-TO-CONTENT FIRST FOCUSABLE — UNIVERSAL — BUILD-BREAKING — WCAG 2.4.1***)
 
 The FIRST focusable element in every HTML page MUST be:
@@ -462,8 +424,6 @@ Validator (`validate-skip-link.mjs`): Playwright tabs to first focusable element
 
 Fail codes: `a11y.skip_link_missing` | `a11y.skip_link_not_first` | `a11y.skip_target_missing`.
 
-Reference incident: both lonemountainglobal and nyfoldingbox shipped with zero skip-link (WCAG 2.4.1 fail) — keyboard-only users are forced to tab through entire nav on every page — drove this rule.
-
 ## Every site (***BACK-TO-TOP BUTTON — UNIVERSAL — BUILD-BREAKING***)
 
 Every site with any page whose scrollable content exceeds two viewports MUST include a back-to-top button:
@@ -482,8 +442,6 @@ Rendered `position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500`.
 
 Validator (`validate-back-to-top.mjs`): Playwright scrolls to `scrollY=1000`, asserts button visible + `aria-label="Back to top"` + click scrolls to 0 within 1s.
 
-Reference incident: nyfoldingbox long-form product spec page had no back-to-top — users scrolled 3000px to reach nav — drove this rule.
-
 ## Every accordion / collapsible / "Read More" (***SMOOTH HEIGHT + ARIA STATE — UNIVERSAL — BUILD-BREAKING — extends "Every expandable card"***)
 
 Every accordion panel MUST animate height smoothly:
@@ -501,8 +459,6 @@ Animation disabled when `prefers-reduced-motion: reduce` (instant toggle). NEVER
 
 Validator (`validate-accordion-aria.mjs`): Playwright clicks every `[aria-expanded]` button, asserts panel height grows from 0 AND `aria-expanded` toggles AND panel `aria-hidden` toggles AND content visible after animation.
 
-Reference incident: lonemountainglobal publications section had accordion-style abstracts that snapped open instantly with no ARIA state — drove this rule.
-
 ## Every modal dialog (***FOCUS TRAP + RESTORATION — UNIVERSAL — BUILD-BREAKING — WCAG 2.4.3***)
 
 Every modal/dialog (`role="dialog"`, `role="alertdialog"`, lightbox, mobile menu overlay) MUST:
@@ -517,8 +473,6 @@ Native `<dialog>` element preferred (browser handles some of this natively with 
 Validator (`validate-modal-focus-trap.mjs`): Playwright opens each dialog/lightbox, presses Tab × 10, asserts focus stays within modal bounds at all times; then closes via Esc, asserts focus returned to trigger element.
 
 Fail codes: `a11y.focus_escapes_modal` | `a11y.focus_not_restored`.
-
-Reference incident: both sites' mobile nav menus opened but Tab moved focus behind the overlay to page content — keyboard users could interact with hidden content — drove this rule.
 
 ## Every form (***ASSOCIATED LABELS + AUTOCOMPLETE + LOADING STATE — UNIVERSAL — BUILD-BREAKING***)
 
@@ -536,8 +490,6 @@ Every form gets invisible Turnstile CAPTCHA (`data-appearance="interaction-only"
 
 Validator (`validate-form-accessibility.mjs`): for every `<form>`, assert every `<input>:not([type="hidden"])` has a `<label>` or `aria-label`, every field has `autocomplete` attr, submit button has loading-state implementation (spinner class or `aria-busy`).
 
-Reference incident: nyfoldingbox contact form had placeholder-only labels — form submission showed no loading state — success state showed generic "Sent" with no next steps — drove this rule.
-
 ## Every `<table>` (***CAPTION + SCOPE HEADERS — UNIVERSAL — BUILD-BREAKING***)
 
 Every `<table>` MUST have:
@@ -549,8 +501,6 @@ Every `<table>` MUST have:
 Striped rows via CSS `tbody tr:nth-child(even) { background: var(--row-alt) }`. Responsive reflow at mobile: table stacks as definition-list cards via CSS `display: grid` with `data-label` attrs (per full-bleed rule).
 
 Validator (`validate-table-accessibility.mjs`): grep dist/ for `<table` — assert every table has `<caption>`, every `<th>` has `scope` attribute, no `<td>` exists in `<thead>`.
-
-Reference incident: nyfoldingbox.projectsites.dev product comparison table had no `<caption>`, no `scope` headers — screen reader users heard a flat data stream with no context — drove this rule.
 
 ## Every SVG icon (***ACCESSIBLE LABELING — UNIVERSAL — BUILD-BREAKING***)
 
@@ -568,8 +518,6 @@ Every decorative `<svg>` (used only for visual effect alongside text) MUST have 
 SVGs inside `<button>` or `<a>` where the parent already has accessible text: ALWAYS decorative pattern.
 
 Validator (`validate-svg-accessibility.mjs`): for every `<svg>` NOT inside `<button>/<a>` with visible text — assert either `aria-hidden="true" focusable="false"` OR `role="img" aria-labelledby` present.
-
-Reference incident: both sites had social icon SVGs with no accessible labels — screen readers read raw path data — drove this rule.
 
 ## Every site (***LATEST-TECH EXPERIENCE #1 — CONTAINER QUERIES OVER MEDIA QUERIES — UNIVERSAL — BUILD-BREAKING***)
 

@@ -109,8 +109,6 @@
 - [ ] API documentation accurate (if public API)
 - [ ] Internal architecture docs (repo-map) up to date
 
----
-
 ## Launch Log
 
 | Step | Completed | Time | Notes |

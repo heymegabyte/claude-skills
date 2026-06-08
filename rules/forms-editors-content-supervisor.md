@@ -35,7 +35,3 @@ Schema-driven forms and migratable, versioned editor state. Reactive Forms + NGX
 - **Payload CMS** — content management where it's a real feature
 - **Blockly** — visual logic only when it fits
 - **pdf-lib** — PDF generation/edit (reports, exports, proposals, invoices, site packets) — see `media-file-document-supervisor`
-
-## See
-- `validation-error-handling-supervisor` · `package-preference-registry` · `angular-large-app-supervisor` · `spartan-ui-design-system` · `media-file-document-supervisor` · `collaboration-sync-supervisor`
-

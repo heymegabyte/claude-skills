@@ -157,6 +157,3 @@ For Angular 17-20 standalone:
 5. `npx nx affected --target=test --base=HEAD~1` to verify
 
 NgModules projects → defer to dedicated migration wave.
-
-## See
-- `frontend-stack.md` · `rxjs-first-angular.md` · `10-experience-and-design-system` · `e2e-tdd-organization.md` · `e2e-visual-inspection.md` · `context-spillover.md` · `prompt-as-training-signal.md`

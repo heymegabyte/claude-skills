@@ -95,25 +95,26 @@
 
 ## Accessibility (WCAG 2.2 AA)
 
-### 9 new 2.2 criteria
-- 2.4.11 Focus Appearance
-- 2.4.12 Focus Not Obscured (Min)
-- 2.4.13 Focus Not Obscured (Enhanced)
-- 2.5.7 Dragging Movements
-- 2.5.8 Target Size (Min 24px)
-- 3.2.6 Consistent Help
-- 3.3.7 Redundant Entry
-- 3.3.8 Accessible Auth (Min)
-- 3.3.9 Accessible Auth (Enhanced)
+### 9 new 2.2 criteria (correct numbers + level — common to mislabel)
+- 2.4.11 Focus Not Obscured (Minimum) — **AA**
+- 2.4.12 Focus Not Obscured (Enhanced) — AAA
+- 2.4.13 Focus Appearance — AAA
+- 2.5.7 Dragging Movements — **AA**
+- 2.5.8 Target Size (Minimum, 24px) — **AA**
+- 3.2.6 Consistent Help — A
+- 3.3.7 Redundant Entry — A
+- 3.3.8 Accessible Authentication (Minimum) — **AA**
+- 3.3.9 Accessible Authentication (Enhanced) — AAA
 
-- axe-core auto-tests ONLY 2.5.8 — 8 others require manual review or axe DevTools Pro
+- **"axe 0 violations ≠ accessible."** axe-core auto-tests ONLY 2.5.8 of the 9; it catches ~57% of issues by volume and fully automates ~30% of WCAG SC. The 6 AA-level criteria above (2.4.11, 2.5.7, 2.5.8, 3.2.6→A, 3.3.7→A, 3.3.8) need MANUAL review — bake a manual-checklist gate into the a11y pass, never claim AA from a green axe run alone.
 
 ### ADA deadlines (DOJ Title II, extended Apr 2026 IFR)
 - ≥50K pop → Apr 26 2027
 - <50K / special districts → Apr 26 2028
 - Standard = WCAG 2.1 AA
 - HHS Section 504: May 2026 for federal-fund healthcare
-- WCAG 3.0 Working Draft (~2029) — target 2.2 AA
+- **EU EAA** enforcement live Jun 28 2025 (EN 301 549 ≈ WCAG 2.1 AA) for EU-facing e-commerce/banking/media — fines to €3M / 4% rev
+- WCAG 3.0 Working Draft published Mar 3 2026 (Bronze/Silver/Gold tiers, ~174 requirements; CR ~Q4 2027) — keep targeting 2.2 AA, 2.x not deprecated for years
 
 ## Bash
 - camelCase fns, UPPER_CASE vars

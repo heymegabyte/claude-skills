@@ -21,7 +21,3 @@ Major user actions emit telemetry; frontend errors and backend logs are captured
 - **Admin health/status panels** — surface workflow runs, error rates, queue depth, AI spend
 - **Analytics optional for local reproducibility** — the app runs fully with telemetry disabled (no hard dependency on a vendor key)
 - Tiered vendor stack per `auto-meta-work` (solo → PostHog + Workers Tracing; enterprise → add Sentry/GA4/Axiom)
-
-## See
-- `package-preference-registry` · `auto-meta-work` · `auth-permissions-security-supervisor` · `ai-agent-supervisor` · `workflow-automation-supervisor` · `database-data-supervisor` · `validation-error-handling-supervisor`
-

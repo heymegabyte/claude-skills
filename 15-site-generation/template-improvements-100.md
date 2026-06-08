@@ -136,8 +136,6 @@ Brian (2026-05-11): *"Come up with 100 ideas + recommendations + upgrades on how
 99. **Schema.org Markup Validator** — runs `validator.schema.org` against live URL post-deploy; warnings logged, errors fail build.
 100. **Auto land-grab on first deploy** — Namecheap (domain reserved), npm (package name held), X+IG+TikTok (@handles claimed), GitHub org; defensive only, costs ~$50/site amortized.
 
----
-
 ## Top-10 quick wins (highest ROI, ship FIRST)
 
 **Effort scale**: S=≤4h, M=≤1d, L=≤3d, XL=≤1w. **Impact**: speed = wall-clock saved per build; quality = downstream defect reduction.
@@ -157,8 +155,6 @@ Brian (2026-05-11): *"Come up with 100 ideas + recommendations + upgrades on how
 
 Sum of top-10 wins on a single full build: **~35-65 minutes saved per site**, plus $2-4/site cost reduction. Wall-clock target: 12-25min → ≤90s achievable when combined.
 
----
-
 ## Integration roadmap (phased)
 
 - **Phase 1 (this week — speed wins, ship first)** — 81, 83, 31, 82, 71, 88, 89. Touches `apps/builder/src/{generator,pipeline}` + `apps/builder/prompts/_creativity_preamble.txt`. No template changes.
@@ -168,8 +164,6 @@ Sum of top-10 wins on a single full build: **~35-65 minutes saved per site**, pl
 - **Phase 5 (ongoing — distribution)** — 91-100. Run on every new site provision.
 
 Block library (50 blocks) is Phase 2 prerequisite — see `15-site-generation/homepage-block-library.md`.
-
----
 
 ## Reference
 

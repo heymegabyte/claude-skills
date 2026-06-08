@@ -99,6 +99,3 @@ All `.md` files in `~/.claude/` and `~/.agentskills/` use **human-readable bulle
 
 ### Pattern: do/don't
 Use `### Do` / `### Don't` subheaders so contrast is scannable.
-
-## See
-- `prompt-as-training-signal.md`

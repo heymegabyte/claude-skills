@@ -55,8 +55,3 @@ The build pipeline, domain provisioning, AI generation, and billing all have ric
 - **Frontend bell:** headless `@novu/js ^3` (no CSS) → `new Novu({ applicationIdentifier, subscriber: { subscriberId } })`; `notifications.list({limit})` → `data.notifications`, `notifications.count({filters:[{read:false}]})` → `data.counts[0].count`, `notifications.read({notificationId})`. Connects to Novu Cloud (`api.novu.co/v1/inbox/{session,notifications,count}`). Render your own Spartan bell + dropdown (defensive field reads: `id`/`_id`, `isRead`/`read`, `body`/`content`). `@novu/js` pulls a CommonJS `event-target-polyfill` → non-fatal esbuild ESM warning.
 - **Server triggers are a separate wave** — the bell shows "all caught up" until worker workflows fire via `@novu/api` (the secret key). Verify the bell by asserting the 3 `api.novu.co/v1/inbox` calls, not by expecting data.
 - Reference: `pages/admin-v2/sections/notif-bell.component.ts`.
-
-## See
-- `supervisor-skills-index` · `package-preference-registry` · `spartan-ui-design-system` · `stack-selector`
-- `event-sourced-build-progress` · `workflow-automation-supervisor` · `ai-agent-supervisor` · `auth-permissions-security-supervisor` · `validation-error-handling-supervisor` · `media-file-document-supervisor`
-- `contract-first-ai` · `zod-everywhere` · `cloudflare-hostable-supervisor` · `auto-meta-work` · `secret-provisioning`

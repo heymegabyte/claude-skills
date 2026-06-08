@@ -93,6 +93,3 @@ Precedes `website-build-doctrine.md` Phase 0. Phase 0 gathers facts about OUR su
 - `_competitor_inspiration.md` — patterns worth borrowing (committed)
 - `_competitor_gaps.md` — markets to own (committed)
 - `_competitor_loop_log.ndjson` — every Phase 6 iteration's per-dim score + gate verdict (committed; auditable)
-
-## See
-- `website-build-doctrine.md` · `16-cinematic-website-prime-directive` · `02-goal-and-brief` · `09-brand-and-content-system` · `source-site-enhancement.md` · `fetch-defaults.md` · `monitor-orchestration.md` · `extra-mile.md` · `supreme-polish.md` · `citations.md` · `i18n-by-demographics.md` · `15-site-generation/research-pipeline` · `god-tier-engineering.md` · `brian-preferences.md`

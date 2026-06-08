@@ -24,7 +24,3 @@ Insight: **chart cards · metric cards** (`<app-rolling-counter>` per `cinematic
 
 ## Migration note (ProjectSites admin)
 The admin currently has PrimeNG installed + a `CockpitPreset` + custom Tailwind sections. Migrate to Spartan **incrementally** — stand up the Spartan shell + pattern library first, convert modules onto it, then remove PrimeNG + the preset LAST (never rip the dep before Spartan replaces it, or the live admin breaks).
-
-## See
-- `stack-selector` · `angular-large-app-supervisor` · `package-preference-registry`
-- `text-contrast` · `cinematic-ui-patterns` · `motion-interaction-supervisor` · `forms-editors-content-supervisor` · `visualization-maps-diagrams-supervisor`

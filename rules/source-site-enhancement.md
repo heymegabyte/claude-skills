@@ -113,6 +113,3 @@ Rebuild prompts trigger `monitor-orchestration.md` per `always.md` line 10. Moni
 - BEFORE doing requested work: append gap to `monitor-orchestration.md` § Known shortcomings AND cross-link from relevant rule
 - Rule update part of turn, never deferred
 - Per `brian-preferences.md` "How to improve? → always find 50 more things, explore every branch, never cap effort" — exhaust improvement surface in-turn
-
-## See
-- `monitor-orchestration.md` (Monitor + Known shortcomings #7) · `i18n-by-demographics.md` · `15-site-generation/page-set-expansion.md` · `15-site-generation/source-fidelity-loop.md` · `15-site-generation/SKILL` URL preservation · `always.md` · `citations.md` · `copy-writing.md` · `full-autonomy.md`

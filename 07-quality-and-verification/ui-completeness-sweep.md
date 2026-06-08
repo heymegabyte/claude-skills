@@ -34,7 +34,7 @@ for (const btn of await page.locator('button, [role="button"], a.btn').all()) {
   const ariaDisabled = await btn.getAttribute('aria-disabled');
   if (disabled || ariaDisabled) findings.push(`Disabled button: "${text}" — needs implementation or removal`);
   if (!disabled) {
-    await btn.click({ timeout: 3000 }).catch(() => 
+    await btn.click({ timeout: 3000 }).catch(() =>
       findings.push(`Button "${text}" — click does nothing or errors`)
     );
   }
@@ -63,7 +63,7 @@ for (const img of await page.locator('img').all()) {
   const natural = await img.evaluate(el => el.naturalWidth);
   if (!natural || natural === 0) findings.push(`Broken image: ${src}`);
   if (!alt) findings.push(`Missing alt text: ${src}`);
-  if (src?.includes('placeholder') || src?.includes('via.placeholder')) 
+  if (src?.includes('placeholder') || src?.includes('via.placeholder'))
     findings.push(`Placeholder image: ${src}`);
 }
 

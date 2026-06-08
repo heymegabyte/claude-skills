@@ -162,6 +162,3 @@ Anything less than all 100 is in-progress.
 109. **Hard gate page count** — deployed site MUST have `keep_count + standard_gap_count + jewel_count + locale_count*(keep+standard+jewel)` pages. Nonprofits min: `keep + 14 standard + 10 jewels`. Build fails when deployed-route-count < expected.
 
 110. **Monitor-fire on first tool-call message** — rebuild prompt is multi-faceted (≥7 independent work units: crawl → classify → org-type-infer → demographic-i18n → jewel-content-author → IA-normalize → Squarespace-dedupe → deploy-verify). Sequential = build fail. See `rules/source-site-enhancement.md` § Parallel-agent playbook.
-
-## See
-- `rules/website-build-doctrine.md` · `rules/competitor-research.md` · `rules/source-site-enhancement.md` · `rules/i18n-by-demographics.md` · `rules/thin-source-amplification.md` · `rules/always.md` · `15-site-generation/page-set-expansion.md`

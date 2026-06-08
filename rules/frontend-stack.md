@@ -9,12 +9,6 @@ Never write hand-rolled HTML files for any user-facing surface.
 - Hand-rolling `public/index.html` + `public/pricing.html` + `public/about.html` etc. = build fail.
 - No "just one static HTML file" exceptions. Even 1-page site uses the Vite or Angular scaffold.
 
-## Why
-- Component reuse, type safety, route-aware metadata not optional.
-- SSR/SSG mandatory for SEO + AI search visibility per `always.md` and `cinematic-website-prime-directive`.
-- One CSS file per page diverges, drift compounds, a11y regressions ship silently.
-- The two stacks cover 99% of cases.
-
 ## React 19 + Vite + SSR (default)
 
 ### Core
@@ -147,6 +141,3 @@ Never write hand-rolled HTML files for any user-facing surface.
 - E-commerce (product catalog + cart + checkout + inventory) pairs React+Vite or Angular+Ionic frontend with **Medusa.js** headless commerce backend per `ecommerce-stack.md`
 - Never roll your own cart/checkout/inventory schema
 - Medusa Next.js starter NOT permitted
-
-## See
-- `always.md` · `ecommerce-stack.md` · `cinematic-website-prime-directive` · `code-style.md` · `brian-preferences.md` · `verification-loop.md`

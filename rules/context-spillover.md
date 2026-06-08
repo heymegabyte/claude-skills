@@ -68,11 +68,3 @@ For every file you edited or every feature surface you touched, check three adja
 4. Does it require new patterns / precedent? (yes = surface in Recs)
 
 If all 4 = ship inline.
-
-## See
-- `extra-mile` — unprompted improvements (any surface, any time)
-- `proactive-improvements` — fix obvious nits in the file you're touching
-- `supreme-polish` — periodic full-surface audit (this rule = continuous adjacent-surface polish)
-- `auto-integrate-recs` — don't defer to Recs what you can ship now
-- `e2e-tdd-organization` + `e2e-visual-inspection` — the test-coverage dimension of the triple sweep
-- `prompt-as-training-signal` — this rule itself was born from a prompt's gradient

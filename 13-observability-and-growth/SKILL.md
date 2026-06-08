@@ -4,296 +4,139 @@ description: "Full instrumentation from day one. PostHog consolidates product an
 metadata:
   version: "2.1.0"
   updated: "2026-05-03"
-  context: "fork"
-  effort: "medium"
+  effort: "high"
   model: "sonnet"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
+  - posthog.md
+  - ga4-gtm.md
+  - sentry.md
   - stripe-billing.md
-  - analytics-configuration.md
-  - user-feedback-collection.md
-  - feature-flags-and-experiments.md
-  - email-marketing-and-listmonk.md
-  - sentry-alert-rules.md
-  - conversion-optimization.md
+  - square-payments.md
+  - listmonk.md
+  - plg-framework.md
+  - programmatic-seo.md
+  - incident-remediation.md
+  - geo-ai-search.md
+  - local-conversions.md
 ---
 
 # 13 — Observability and Growth
 
-## Submodules
-
-- **stripe-billing** — free + $50/mo, donation presets, auto Products / Prices, webhook best practices
-- **analytics-configuration** — GA4 14-step, GTM, PostHog, flags, A/B, funnels
-- **user-feedback-collection** — 5-star widget, `/admin/feedback`, NPS, testimonials
-- **feature-flags-and-experiments** — PostHog flags, A/B tests, gradual rollout, kill switches, lifecycle management
-- **email-marketing-and-listmonk** — Listmonk on Coolify, Resend SMTP relay, campaigns, subscribers, Go templates, double opt-in
-- **sentry-alert-rules** — auto-configured alerts at first deploy, Slack integration, deploy silence
-
-## Stack (Consolidation Strategy — ***ALL AUTO-PROVISION***)
-
-- **PostHog** (`posthog.megabyte.space`, self-hosted, cookie-free) = product analytics + feature flags + A/B tests + session recording + error tracking (100K errors/mo free)
-- **Sentry** (`sentry.megabyte.space`) = deep error tracking + performance + replays
-- **GA4 via GTM** = marketing analytics + server-side tagging
-- **Listmonk on Coolify** = newsletters
-- **Resend** = transactional email (React Email v6 components)
-- **OneSignal** = push
-
-### Auto-provision mandate (***EVERY PROJECT — ZERO-INTERACTION***)
-
-Canonical script `~/.agentskills/bin/provision-analytics.sh <project_slug> <primary_domain> [worker_name]` — idempotent, end-of-scaffold, creates GA4 property + web-stream + GTM container + PostHog project + Sentry project.
-
-Outputs `${TMPDIR}/provision-analytics-<slug>/analytics.env` (`VITE_GA4_ID`, `VITE_GTM_ID`, `VITE_POSTHOG_KEY`, `VITE_POSTHOG_HOST`, `SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`).
-
-Flags:
-- `WRANGLER_PUSH=1` pushes `SENTRY_DSN` to worker
-- `LOCAL_ENV=./.env.local` merges `VITE_*` into project env
-
-One-time master tokens (chezmoi):
-- `POSTHOG_PERSONAL_API_KEY` (https://us.posthog.com/settings/user-api-keys)
-- `SENTRY_AUTH_TOKEN` (https://sentry.io/settings/account/api/auth-tokens/)
-- GCP ADC: `gcloud auth application-default login --scopes=openid,https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/analytics.edit,https://www.googleapis.com/auth/tagmanager.edit.containers`
-
-Auto-wired into `saas-starter/scripts/scaffold.sh` Step 5b. Missing any one provider on a project → run the script. Never ship a page without all four firing.
-
-- **Sentry** — `Sentry.withSentry()` with `initialScope.tags:{project,service}` so events filter in shared inbox
-- **PostHog** — snippet on every HTML page, `persistence:'memory'` cookie-free, CSP `script-src` + `connect-src` posthog domain
-- **GA4 / GTM** — GTM container snippet (head + noscript body), CSP `googletagmanager.com` + `google-analytics.com` + `analytics.google.com`
-- PostHog consolidates 3-4 separate tools. Sentry adds depth (stack traces + user experience + business impact together)
-- GTM is ONLY script loader except Sentry early init
-
-## GA4 + GTM Best Practices (2026)
-
-- **GTM-first** — centralize measurement via GTM for no-code updates, version control, preview mode
-- Use Google Tag (replaces old GA4 Config Tag)
-- **Custom dimensions over separate events** — add `form_type`, `user_type` context rather than `form_submit_contact` vs `form_submit_signup`
-- One data stream per property
-- Internal traffic filter by IP
-- Extend retention to 14 months (default 2mo)
-- Enable Google Signals for cross-device
-- Quality > quantity: focused measurement plan, not 70+ events
-- Quarterly audits
-
-### Server-side tagging
-Route measurement through your own server before 3rd parties. Recovers ~33% data lost to ad blockers. Standard for serious analytics in 2026.
-
-### CSP
-- `script-src googletagmanager.com google-analytics.com *.posthog.com`
-- `connect-src analytics.google.com *.posthog.com *.sentry.io`
-
-## PostHog
-
-Default API key: stored in Claude memory (`reference_posthog_key.md`) — host: `https://us.i.posthog.com`
-
-```typescript
-posthog.init(POSTHOG_KEY, { api_host: 'https://us.i.posthog.com', capture_pageview: true, capture_pageleave: true, autocapture: true, session_recording: { maskAllInputs: true }, persistence: 'memory' });
-```
-
-### Events
-`page_view`, `cta_click`, `form_submit`, `signup_start` / `complete`, `feature_used`, `upgrade_click`, `error_displayed`.
-
-- **Naming** — snake_case, present-tense verbs
-- Consistent IDs across platforms
-- Prefer server-side event logging
-- Reverse proxy to bypass ad blockers
-
-### PostHog AI (2026)
-- In-app AI chat connected to product data — queries data, creates insights, writes SQL, creates feature flags, edits filters via natural language
-- **LLM analytics** for AI-native teams — track token usage, model performance, prompt latency
-- **Data warehouse** with 36 managed sources (Stripe, HubSpot, Salesforce, etc.) — query across product + billing + CRM data in one place
-
-### Feature flags best practices
-- Phased rollout 1% → 10% → 50% → 100% with cohorts
-- Positive booleans (`is_premium_user` not `is_not_premium_user`)
-- Target <20-30 active flags per service (>50 = flag sprawl)
-- Flag at 100% with no targeting = remove and hardcode
-- Sticky flags for experiment consistency
-- Integration with product analytics = see feature impact on conversion / retention / revenue directly
-
-## Sentry (***AUTO-PROVISION — EVERY PROJECT***)
-
-```typescript
-Sentry.init({ dsn: 'https://KEY@sentry.megabyte.space/ID', environment: 'production', tracesSampleRate: 0.1, replaysOnErrorSampleRate: 1.0 });
-```
-
-### Auto-provision mandate
-`~/.agentskills/bin/provision-analytics.sh` creates the Sentry project (REST `/api/0/teams/megabyte-labs/megabyte-labs/projects/` with platform `javascript-cloudflare-workers`), fetches the DSN, and (with `WRANGLER_PUSH=1`) sets `SENTRY_DSN` via `wrangler secret put`.
-
-Wrap with `Sentry.withSentry()` from `@sentry/cloudflare` (Workers) or `Sentry.init()` from `@sentry/node` (Node).
-
-MUST set `initialScope.tags:{project,service}` so events filter cleanly in shared megabyte-labs inbox.
-
-**Full-stack traces** — `tracesSampleRate`, `app.onError() → Sentry.captureException` with route + userId tags, breadcrumbs before risky ops, `SENTRY_RELEASE` env for deploy tracking. Transaction sampling 20% controls costs. Prioritize issues by endpoint failure count on core user journeys.
-
-## Incident Auto-Remediation
-
-Sentry alerts → webhook → Inngest function. Auto-classify severity (P1-P4).
-- **P1** — auto-rollback + Slack alert + SMS to Brian
-- **P2-P3** — auto-create GitHub issue + Slack notification
-- **P4** — log and batch report
-
-Post-incident: auto-generate timeline from Sentry + deploy logs.
-
-## Stripe
-
-- **Webhook-first architecture**
-- Always verify signatures with official libraries
-- **Idempotent processing** — log event IDs, handle duplicates
-- Async queue processing at scale
-
-### Key events
-- `checkout.session.completed` → provision
-- `customer.subscription.created` → record
-- `customer.subscription.updated` → plan changes
-- `customer.subscription.deleted` → revoke
-- `invoice.payment_succeeded` → confirm
-- `invoice.payment_failed` → dunning
-- `trial_will_end` → notify
-
-Stripe retries 3 days with exponential backoff.
-
-### Pricing
-- 3 tiers (Free / Pro / Enterprise)
-- Highlight Pro
-- Annual default (20% discount)
-- Stripe Link for one-click (+7% conversion lift)
-
-## Email (Resend + Listmonk)
-
-### Resend
-React Email v6 components → Resend API → delivery. Server-side only (never expose API key). Use Row / Column / Section primitives (table-based for Outlook). Collaborative templates with versioning / rollback.
-
-### Listmonk
-v6.1.0, Coolify deploy, Neon PostgreSQL backend. Use Resend as SMTP relay (best deliverability + self-hosted control). Double opt-in. CF Worker proxy for public subscribe / unsubscribe endpoints. Go templates with subscriber attributes.
-
-### Patterns
-- **Transactional** — Resend API
-- **Marketing** — Listmonk campaigns
-- **Lifecycle** — onboarding drips, re-engagement, churn prevention
-
-## Growth (distribution > technology)
-
-### PLG 7-Layer Framework
-- **L1-GTM** — product-led channels, no-login entry points, product-led SEO / AEO / GEO
-- **L2-Information** — pricing pages, case studies, template galleries
-- **L3-Conversion** — strategic freemium, billing gates at friction points
-- **L4-Activation** — friction-reducing onboarding, in-product checklists
-- **L5-Retention** — habit loops, feature releases
-- **L6-Monetization** — pricing tiers aligned with segments
-- **L7-Expansion** — complementary features, land-and-expand
-
-**Fix most broken layer + 1-2 below. Downstream without upstream = waste.** AI copilot features = core to PLG in 2026, not bolt-on.
-
-### Viral Loops (K ≥ 0.20)
-- **Baked-in sharing** — brand in every output (shared links, exports, collab, templates)
-- Notion templates = every share is viral loop
-- Calendly links = every scheduling is exposure
-- K>1 = self-growing (rare; most PLG <1 but still reduces CAC)
-- 3-6 months initial traction, 12-18 months sustainable growth
-- 100 → 124 users across 2 referral cycles, zero paid
-
-### Programmatic SEO (5 Proven Page Types)
-1. **Integration pages** — "[Tool A] + [Tool B] integration" (Zapier: 16.2M monthly visitors)
-2. **Alternative / comparison** — "[Competitor] alternatives" with feature comparisons
-3. **Use case / industry** — vertical-specific variations (Jira for agile, Jira for incident mgmt)
-4. **Template / resource libraries** — downloadable assets driving signups
-5. **Location / segment** — geographic or customer-segment variations
-
-**Implementation** — 90 days. Days 1-14 foundation, 15-30 build, 31-45 pilot (50 pages, 100% human review), 46-60 iterate, 61-90 scale. 300+ unique words/page, 30-40% content differentiation.
-
-Indexing 2-4 weeks, traffic 4-8 weeks, growth 3-6 months. ROI 6-12 months.
-
-### AI Search Optimization (GEO)
-- Lead with concise quotable answers (40-60 words)
-- Explicit entity definitions
-- FAQ sections
-- Statistics with sources
-- Structured data + comparison tables
-- JSON-LD accuracy: 16% → 54% with structured data
-- ChatGPT favors Wikipedia / G2; Perplexity favors Reddit / YouTube; Google AI Overviews favor traditionally ranked
-
-### Launch Day
-- PH + HN + X + LinkedIn simultaneous
-- PH: engagement signals > upvotes, first 3hrs critical
-- Pre-launch: 5-email waitlist (problem → solution → proof → access → launch)
-- Target: 500-1000 signups day one
-
-### Pricing Psychology
-- Outcome-first ("Save 10hrs/week" > features, +34% conversion)
-- 3 tiers max (+31% vs 4+)
-- Decoy middle → +35-50% premium
-- Anchor highest first
-- Hybrid base + usage (38% higher revenue growth)
-
-## A/B Testing
-
-`posthog.getFeatureFlag('exp')` then track conversion. One per page, min 100 conversions per variant, full week minimum, document hypothesis. Check segments across plans / devices.
-
-## Health
-
-```typescript
-app.get('/health', (c) => c.json({ status:'ok', version: env.VERSION, timestamp: new Date().toISOString() }));
-```
-
-### Alerts
-- Errors >1%
-- P95 >500ms
-- Uptime <99.9%
-- Cache <80%
-- CPU >10ms
-
-## Integration Harmony
-
-- GTM = only loader (except Sentry)
-- No double-counting (GTM dedup)
-- Every action: GA4 + PostHog + Sentry breadcrumb
-- Stripe webhook to PostHog + GA4 + Sentry
-
-## Autonomous Monitoring (to Idea Engine)
-
-After 1+ day:
-- Sentry errors (auto-fix via Inngest)
-- PostHog bounce (suggest UX)
-- Low CTR (suggest copy)
-- GA4 queries (keywords)
-- Lighthouse (investigate)
-
-## Custom Events
-
-`donate_click`, `newsletter_signup`, `scroll_depth` (25 / 50 / 75 / 100), `video_play`, `external_link_click`.
-
-Scroll: track thresholds once with passive listener.
-
-## Local Business Conversion Events (***NOT SAAS***)
-
-Local businesses don't have trial-to-paid funnels. Track physical-world intent signals:
-
-### Primary — highest intent
-- **`phone_click`** — `tel:` link clicked
-- **`direction_click`** — Google Maps directions clicked
-- **`form_submit`** — Contact / booking form submitted
-- **`booking_click`** — External booking CTA (OpenTable, Calendly)
-
-### Secondary
-- **`email_click`** — `mailto:` link clicked
-- **`chat_open`** — Live chat widget opened
-- **`review_click`** — "Leave a Review" CTA clicked
-
-### Micro
-- **`menu_download`** — PDF menu / brochure downloaded
-- **`coupon_claim`** — Special offer clicked
-- **`social_click`** — Social media profile link clicked
-
-**Local funnel** — `Visit → Engagement (scroll 50%+) → Micro (menu/gallery) → Macro (call/directions/form/booking)`. Typical: 3-8% macro conversion. Alert if rate drops >20% WoW.
-
-Auto-inject tracking on all `tel:` and Maps links in generated sites (see skill 15 `build-prompts.md`).
-
-## Key Discovery
-
-1. Project `.env.local`
-2. Shared pool
-3. Coolify env
-4. `~/.config/emdash/`
-5. Prompt once, store permanently
+## Instrumentation tiers
+Per `_kernel/standards.md#integrations`:
+- **Tier 1 (solo)** — PostHog + Workers Tracing OTLP (2 vendors max, cookie-free, free tier covers <10k MAU)
+- **Tier 2 (enterprise)** — + Sentry @sentry/cloudflare v9 + GA4/GTM + Axiom
+- **Tier 3 (LLM-heavy >10k calls/mo)** — + AI Gateway
+
+## PostHog (Tier 1 cornerstone)
+- Snippet on every HTML page w/ `persistence:'memory'` (cookie-free)
+- `capture_pageview` + `capture_pageleave` + `autocapture:true`
+- Unified platform: product analytics + feature flags + session replay + error tracking
+- CSP: `script-src` + `connect-src` for posthog domain
+- Per-feature event naming: `<feature>:<action>` (`signup:complete`, `editor:save`, `share:copy`)
+
+## Sentry (Tier 2)
+- `@sentry/cloudflare` v9 + `withSentry` wrapper
+- Project created via `mcp__sentry__create_project` (org:`megabyte-labs`)
+- `SENTRY_DSN` via `wrangler secret put`
+- Pattern: `withSentry(env => ({ dsn, tracesSampleRate: 1.0, sendDefaultPii: false }), worker)`
+- Breadcrumbs before risky ops; capture exception w/ context tags (`worker` | `route` | `userId`)
+- Release tracking via `SENTRY_RELEASE` env
+- Focus on exceptions; Workers Tracing handles I/O spans
+
+## Workers Tracing (Tier 1 + Tier 2)
+- `[observability] enabled = true` in `wrangler.jsonc` — zero-config OTel I/O tracing
+- Free until Mar 1 2026 then billed
+- Export to Axiom (cheapest at edge), Honeycomb (BubbleUp), Grafana, Datadog via `@opentelemetry/exporter-trace-otlp-http`
+
+## GA4 + GTM (Tier 2 only)
+- GTM container snippet (head script + noscript iframe after body)
+- CSP: `googletagmanager.com` + `google-analytics.com` + `analytics.google.com` + `region1.google-analytics.com`
+- Server-side tagging when privacy-critical (EU traffic)
+- Custom dimensions over custom events (cheaper, more queryable)
+
+## AI Gateway (Tier 3)
+- `env.AI.run()` auto-routes through Gateway
+- Direct Anthropic: `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/anthropic/v1/messages`
+- Caching + rate-limit + fallback + per-call logging
+
+## Stripe (SaaS billing only — per `rules/payments-routing.md`)
+- Webhook-first w/ idempotent processing (D1 dedupe table `payment_events(event_id, source, processed_at)` UNIQUE)
+- `Stripe-Signature` HMAC + 5-min replay window
+- Mint products + prices via MCP (idempotent via `lookup_key`)
+- Subscription state machine in D1
+- `STRIPE_WEBHOOK_SECRET` via `POST /v1/webhook_endpoints`
+
+## Square (accept-money default — per `rules/payments-routing.md`)
+- Square Web Payments SDK card form + Apple Pay + Google Pay + Cash App Pay
+- Square Subscriptions for recurring giving
+- `Square-Signature` HMAC-SHA256 w/ 6-hr replay window
+- Idempotency: `idempotency_key` UUID per request (24-hr dedupe)
+- Nonprofit verified-501c3 discount (2.6%+10¢ vs 3.5%+15¢)
+
+## Listmonk (newsletter — self-hosted on Coolify)
+- Resend SMTP relay (`LISTMONK_FROM_EMAIL`)
+- `listmonkSendTx(env, { templateAlias, ... })` via KV-cached alias→id map
+- Templates in `emails/*.html` synced via `scripts/listmonk-sync.mjs`
+- Auth: `Authorization: token <user>:<key>` (Listmonk 3.x API-user pattern)
+
+## PLG 7-Layer Framework
+1. **Discovery** — SEO + AI search + word-of-mouth + paid
+2. **Sign-up** — passwordless preferred (Clerk M2M JWT)
+3. **Activation** — first-value-in-X-min metric (aha moment per `rules/feature-flags.md` instrumentation)
+4. **Engagement** — DAU/MAU ratio, session depth
+5. **Retention** — D1/D7/D30 cohort
+6. **Revenue** — upgrade trigger, expansion
+7. **Referral** — viral coefficient, two-sided rewards
+
+Instrument each layer with PostHog events. Funnel visible in PostHog dashboard.
+
+## Programmatic SEO (5 page types)
+- **Integration** (`/integrations/{tool}`)
+- **Comparison** (`/compare/{a}-vs-{b}`)
+- **Use-case** (`/for/{audience}`)
+- **Template** (`/templates/{type}`)
+- **Location** (`/{city}-{service}`)
+
+Each unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal links + 1+ outbound citation. Cap 200 pages per axis to avoid thin-content. Per `rules/copy-writing.md` § pSEO + `rules/thin-source-amplification.md`.
+
+## GEO / AI search
+- Quotable answer blocks 40-60 words (LLM citation magnet)
+- FAQPage schema highest AI-citation rate (ChatGPT / Perplexity / Google AI Overviews)
+- JSON-LD facts MUST also appear as visible HTML body text
+- Lead paragraphs answer query in <40 words
+- EEAT: author bio + `Person` schema + `sameAs` + dated revision + ownership statement
+- `llms.txt` at site root (DX-only, <0.3% adoption — not build gate)
+
+## Local-business conversions
+Track per `local-conversions.md` submodule:
+- `phone_click` — `tel:` link
+- `direction_click` — Google Maps directions
+- `form_submit` — contact / quote
+- `booking_click` — Calendly / Cal.com / direct
+- `chat_click` — live chat opened
+- `review_click` — Google Business / Yelp redirect
+
+Each fires PostHog + Sentry breadcrumb + (Tier 2) GA4 conversion event.
+
+## CRO patterns
+- Sticky CTA bar on mobile (phone + book)
+- Scroll-progress bar (subtle)
+- Exit-intent modal (only on cart/pricing pages, not blogs)
+- Social proof near every CTA ("Trusted by N customers")
+- Urgency without dark patterns ("3 spots left this week" if true)
+- Trust strip above fold (logos, accreditations, real licenses)
+- Single primary CTA per surface; secondaries de-emphasized
+
+## Incident auto-remediation
+Sentry → Inngest pipeline:
+1. Sentry webhook on `event.alert.triggered`
+2. Inngest function dispatches `incident-responder` agent
+3. Agent reads event → traces to source file → proposes fix → opens PR via gh MCP
+4. PR auto-merges if all CI gates pass per `rules/ai-seniority.md`
+
+## See submodules: posthog, ga4-gtm, sentry, stripe-billing, square-payments, listmonk, plg-framework, programmatic-seo, incident-remediation, geo-ai-search, local-conversions.

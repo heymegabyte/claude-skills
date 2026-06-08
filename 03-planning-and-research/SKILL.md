@@ -2,182 +2,96 @@
 name: "planning-and-research"
 description: "Deep web research, competitor scanning, technology evaluation, and implementation planning. Decomposes work into vertical slices, identifies parallel workstreams, tracks assumptions with confidence levels, and designs the critical path for minimum wall-clock time."
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   updated: "2026-05-03"
-  context: "fork"
-  agent: "Explore"
   effort: "high"
   model: "opus"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
-submodules:
-  - competitive-analysis.md
 ---
-
-## Submodules
-
-- **competitive-analysis.md** — WebSearch 3-5 competitors → Firecrawl/WebFetch scrape homepage + pricing → Playwright screenshots 375 + 1280px → comparison table → winning patterns. Stagehand for dynamic competitor sites.
 
 # 03 — Planning and Research
 
-## Research Through Three Goals
+## Deep research protocol
+Before any non-trivial implementation:
+1. Web search top 50 results for primary keyphrase
+2. Read top 10 in depth — extract directives + counter-arguments
+3. Cross-ref against existing rule mesh
+4. Confidence-track every claim 0-1
 
-1. **End-user value** — what do users need? What frustrates them about existing solutions?
-2. **Business psychology** — what conversion patterns work? What pricing anchors exist?
-3. **Brand positioning** — how does this differentiate vs. the competitive field?
+Use `web_search_20260209` + `web_fetch_20260209` (free when paired with `code_execution_20260120`).
 
-### Aggressive API / Service Discovery
-During planning, scan:
-- MCP servers (`05/mcp-and-cloud-integrations`)
-- API keys (`05/shared-api-pool`)
-- Coolify services
-- AI APIs (OpenAI, Workers AI, Ideogram)
-- Communication APIs (Slack, Discord)
-- Automation hooks (Zapier, n8n, Inngest)
+## Competitor scanning
+For every website build, run `rules/competitor-research.md` Phase -1 BEFORE Phase 0:
+- Identify top 5-10 audience-comparable sites
+- Score each on 100-pt rubric (10 dims × 10pts)
+- Set ≥15% beat-floor for Phase 6 loop termination
 
-## Research Protocol
+## Technology evaluation
+For every new dep / framework / service consideration:
+1. **Already have equivalent?** → use it
+2. **Feature truly needed?** → if speculative, defer
+3. **License?** → OSS free only (per `rules/brian-preferences.md` priority order)
+4. **CF compat?** → adapter pattern per `rules/cloudflare-hostable-supervisor.md`
+5. **Bundle/perf impact?** → measure before commit
+6. **Lighter existing solution?** → prefer
+7. Decide: install now · defer · adapter-only · reject + document why
 
-- **When** — New domain, unfamiliar tech, design decisions, performance optimization, verifiable claims, idea engine needs evidence, GEO/AI-search positioning, competitor site analysis.
-- **Methods** — WebSearch, documentation, codebase archaeology, API exploration, visual research (competitor screenshots), programmatic SEO keyword analysis, Stagehand for JS-heavy competitor sites, Firecrawl for bulk multi-page scraping.
-- **Output** — Findings + implications + recommendations + confidence (high/medium/low) + sources. Return ≤200 words from subagents — never raw file dumps.
+## Implementation planning
 
-## Agent Orchestration for Research
+### Decomposition
+- Identify atomic units (file × layer)
+- Mark dependencies between units
+- Distinguish independent vs serial chains
 
-Single agent matches or outperforms multi-agent on 64% of tasks (MASS framework: optimize agent prompts and topology jointly). Use multi-agent only for 4+ independent parallel tasks where fan-out cuts wall-clock time by 75%.
+### Vertical slicing
+Per `06-build-and-slice-loop`:
+- Each slice ships through every layer (UI → API → DB → tests → deploy)
+- Homepage FIRST (no exceptions)
+- Slice = one feature, not one layer
 
-- **Single agent** — Most research tasks, sequential dependencies, context needed across steps
-- **Fan-out / fan-in** — 4+ independent parallel tracks (competitor scrape ×5, keyword ×5, screenshot ×5)
-- **Writer / reviewer** — Fresh-context code review: writer implements, separate reviewer session critiques without bias
-- **Orchestrator-worker** — Cross-functional workflows; orchestrator on `claude-opus-4-6`, workers on `claude-sonnet-4-6` (40-60% cost reduction)
+### Parallelism plan
+Per `rules/parallel-subagent-economy.md`:
+- ≥5-min wall-clock saving + independent → fan out
+- Sweet spot 3-4 specialists, ceiling 6
+- Batch beyond 6 in waves
+- Sonnet default; Opus for security/architect/visual-qa overrides
 
-Subagents explore in separate context windows and report summaries back — keep main context clean. Use `context: fork` + `agent: Explore` for read-only research (this skill's own setting).
+### Critical path
+- Identify longest dependency chain
+- Front-load research that gates implementation
+- Parallelize everything off the critical path
+- Wall-clock = max(critical_path, max parallel branch)
 
-## Planning Framework
+## Assumption tracking
+Every assumption logged in `_assumptions.md` with:
+- Claim
+- Confidence 0-1
+- Evidence sources
+- Decision impact if wrong
+- Verification trigger
 
-```
-Goal → Approach (2-3 sentences) → Vertical Slices → Parallel Workstreams → Critical Path → Assumptions (with confidence) → Risks (with mitigation) → Open Questions
-```
+Confidence <0.7 → research more. Per `rules/auto-meta-work.md`.
 
-### Decomposition Rules
-- Vertical slices delivering visible, testable value (never horizontal layers)
-- Smallest correct slice working end-to-end
-- Dependencies explicit, parallel opportunities marked
-- MASS: optimize agent prompts and topology jointly, not separately
+## Three-Layer Knowledge
+Per `~/.claude/CLAUDE.md` § Thinking:
+- L1 = proven (existing rules + patterns)
+- L2 = trending (blog posts, recent papers)
+- L3 = first principles (build from scratch)
 
-## Assumption Tracking
+Prefer L3. Best outcome of research is NOT finding a solution to copy — it's understanding the problem deeply enough to design a better one.
 
-- **High** (evidence from user/domain) — Proceed without asking
-- **Medium** (reasonable inference) — Proceed but document
-- **Low + high impact** — Ask the user
-- **Low + low impact** — Proceed, easy to change
+## Self-Argue (before major decisions)
+Generate strongest counterargument. If you can't defeat it, decision is wrong.
 
-## Technology Evaluation
+## Boil-the-lake
+Marginal cost of completeness is near-zero. When complete costs minutes more than shortcut, do complete. Boil lakes, flag oceans.
 
-1. Works on Cloudflare? (mandatory)
-2. Simplest solution? (prefer)
-3. Well-maintained?
-4. Performant?
-5. Team experience?
-6. Better option exists?
-
-Output: chosen + why, rejected + why, migration path, performance expectations, confidence level (0–1). Below 0.7 → research more before deciding.
-
-## GEO: AI Search Optimization Research
-
-AI search (ChatGPT, Perplexity, Google AI Overviews) surfaces content differently from traditional SEO. Research checklist for any content page:
-
-- JSON-LD structured data present? (LLM accuracy jumps 16% → 54% with structured data)
-- Schema types: Organization, WebSite, SoftwareApplication, FAQPage, HowTo, BreadcrumbList
-- Content structured for extraction: question–answer pairs, numbered steps, comparative tables
-- Quotable answer blocks 40-60 words — LLMs cite these directly
-- Citations from authoritative sources (AI search amplifies domain authority signals)
-- Freshness signals: updated dates in schema, changelogs, recent data
-- `ai.robots.txt`: audit competitor GEO permissions with scanner
-
-## Programmatic SEO Research Methodology
-
-Identify seed terms with high variation potential → build template library → populate from DB/API → monitor indexing via GSC.
-
-### Research phase tasks
-1. **Keyword gap analysis** — competitors' top organic pages via Ahrefs/Semrush
-2. **Template patterns** — `{App} + {Tool} Integration`, `{App} vs {Competitor}`, `{App} for {Industry}`, `How to {Action}`, `{Task} template`
-3. **Volume triage** — 80% automated pages at 100-1K search volume, 20% cornerstone content at 1K+
-4. **Quality floor** — every programmatic page needs unique value — conversion alignment + 2+ internal links
-5. **Tools** — AirOps (AI generation), Surfer SEO (optimization), n8n (data pipelines), Firecrawl (competitor scrape), Stagehand (dynamic sites)
-
-## Prioritization (MoSCoW)
-
-1. **Must** — product broken without
-2. **Should** — expected, significant value
-3. **Could** — nice, polish
-4. **Won't** — out of scope
-
-Sequence: Musts first, then Shoulds, then Coulds.
-
-## Parallel Work Design
-
-### Safe to parallelize
-- Independent features
-- Frontend + backend for different features
-- TDD (test + impl)
-- Media gen + code
-- Docs + testing
-- Logo + infra
-- Analytics + features
-- Competitor scraping (fan-out to 3-5 agents)
-
-### Must be sequential
-- Schema before data-dependent features
-- Auth before auth-dependent
-- Deploy config before first deploy
-- API design before frontend integration
-- GEO schema before content publishing
-
-## Competitor Scanning Tools (2026)
-
-- **WebSearch** — Discover competitors, find pricing pages, market research
-- **WebFetch** — Public homepage / pricing / features scrape (static sites)
-- **Stagehand** — JS-heavy competitor sites, dynamic content, SPA scraping
-- **Firecrawl** (firecrawl.megabyte.space) — Deep crawl, 50-page limit, markdown output, 1 req/sec/domain
-- **Playwright MCP** — Screenshot at 375 + 1280px, visual analysis, interactive flows
-- **BuiltWith / Wappalyzer** — Tech stack detection
-- **Ahrefs / Semrush** — Keyword gap, backlink profile, top pages
-- **`ai.robots.txt` scanner** — GEO permissions audit
-
-## Pre-Flight Checklist (before EVERY build)
-
-```
-[ ] Domain → product type inferred (SKILL_PROFILES.md)
-[ ] SKILL_PROFILES.md → correct profile loaded
-[ ] CONVENTIONS.md loaded
-[ ] Previous MEMORY.md scanned for reusable patterns
-[ ] API keys discovered (scripts/discover-secrets.sh or get-secret)
-[ ] Competitor screenshots (3 min for new products via Stagehand or Playwright)
-[ ] Keyword research (1 primary + 2 longtail per page)
-[ ] GEO schema types identified (4+ JSON-LD per page)
-[ ] Programmatic SEO templates needed? (if content site)
-[ ] Parallel workstreams identified + worktrees planned
-[ ] Critical path identified → longest-pole starts first
-[ ] Agent count justified: 1 unless 4+ independent tracks
-[ ] ToolSearch bulk-load if computer-use tools deferred
-```
-
-## Research Output Format
-
-- **Bad** — dump raw file contents, paste full competitor HTML, return 2000-token findings
-- **Good** — ≤200 words, structured as: **Finding** | **Implication** | **Recommended action** | **Confidence**
-
-Subagents summarize; main thread decides.
-
-## Time Budget (typical new build)
-
-1. **Research + Planning** (10%) — Competitors, keywords, GEO schema, architecture
-2. **Infrastructure** (10%) — Worker, schema, auth, deploy config
-3. **Core Build** (40%) — Homepage + features, real content/images
-4. **Media + Content** (15%) — Logo, hero, OG, copy, translations
-5. **Quality + Polish** (15%) — Tests, a11y, SEO, visual QA, motion
-6. **Deploy + Verify** (10%) — Production deploy, E2E, fix-forward, docs
-
-Wall clock target: 30-45min marketing site, 45-90min SaaS app.
+## Output artifacts
+- `_research.json` — raw findings, source URLs, confidence
+- `_assumptions.md` — tracked claims
+- `PLAN.md` — implementation roadmap w/ parallelism plan + critical path
+- `_decisions.md` — architectural decisions w/ rationale + alternatives
+- `_brief_summary.txt` — 100-word digest for downstream agents

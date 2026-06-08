@@ -338,11 +338,6 @@ Post-build, asserts:
 - Homepage entry has `gpt4o.score >= 8`
 - `vision_spend_cents <= 50`
 
-### Reference incidents
-- **2026-05-09 LMG brand-fidelity regression** — code review said OK; vision diff vs prior build caught regression
-- **2026-05-10 LMG white-on-white footer** — token check passed, DOM-walker + vision caught the rendered failure
-- **2026-05-12 cost discovery** — container uses Max 20x OAuth — Claude Vision FREE, use it everywhere
-
 ## Every form (***UNIVERSAL — HEAVY/PERFECT VALIDATORS — BUILD-BREAKING***)
 Every `<form>` on a generated site MUST enforce strict per-field validation BEFORE network submit. No field is allowed to be loose-typed / empty / unsanitized / out-of-range.
 

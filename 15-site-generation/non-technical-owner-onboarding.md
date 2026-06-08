@@ -161,11 +161,3 @@ A friend's parent (60+, has used Gmail and Google Maps but not GitHub) opens pro
 
 - If any step requires explanation, that step gets simplified or removed
 - Tested quarterly with rotating non-technical reviewers
-
-## See also
-
-- `small-business-mode.md` — what gets built under the hood when owner picks "local business" path
-- `source-fidelity-loop.md` — when owner uploads existing site, fidelity gate runs
-- skill 13 `observability-and-growth` — onboarding funnel events (start, style, email, plan, first-deploy, first-edit, paid-conversion)
-- skill 04 `preference-and-memory` — Voice of the Customer model captures owner's exact language for AI to mirror in copy
-- `apps/project-sites/CLAUDE.md` PART 6+18 — Email infrastructure (Resend/SendGrid) wiring this experience uses

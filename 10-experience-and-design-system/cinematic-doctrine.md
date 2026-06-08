@@ -209,12 +209,6 @@ Six-breakpoint guard. Per breakpoint asserts:
 
 Failure = build broken.
 
-## Reference incident (2026-05-11, mission.megabyte.space)
-
-First cinematic pass added aurora `body::after { position:fixed; inset:-10% }`. In Chromium, position-fixed body pseudo-elements DO contribute to `body.scrollWidth` even though they're out of document flow. Caused 146px horizontal overflow at 1920 (`bodyScrollWidth = 2068`). Fix bundle = `inset: -10%` → `inset: 0` AND `html/body { overflow-x: clip }`.
-
-Lesson: always test `body.scrollWidth` at 1920 after adding fixed-position pseudo overlays. The orbs inside `.hero { overflow:hidden }` were red herrings — they DON'T contribute to `body.scrollWidth` because their containing block clips them.
-
 ## File-map (drop-in CSS bundle path)
 
 Store the canonical bundle at `~/.agentskills/10-experience-and-design-system/cinematic-bundle.css` (next iteration). Include all six layers + delight menu items + reduced-motion overrides. Site-gen skill 15 imports + tokens-swaps colors for brand fit.

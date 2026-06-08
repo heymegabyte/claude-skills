@@ -105,10 +105,3 @@ test.describe('booking funnel', () => {
 ## Parallel-runner integration
 - Random sampling is shard-safe because the seed includes `SHARD_INDEX`. Each shard samples a deterministic subset; combined, the union covers most steps.
 - `__seen-routes__.json` updates are commit-back-to-main from the merge runner, not from individual shard runners (avoid write conflicts). Shards APPEND to a temp file; the merge step deduplicates.
-
-## See
-- `e2e-tdd-organization` — the layout this rule plugs into; `_helpers/snapshot.ts` lives there
-- `verification-loop` — visual regression tier
-- `context-spillover` — when working on a UI surface, also extend its visual coverage in the same turn
-- `quality-metrics` § A11y — axe-core integration sits next to this
-- `ai-vision-qa` (if present) — full AI vision rubric details

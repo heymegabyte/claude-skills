@@ -123,8 +123,6 @@ Lightbulb on `/volunteer` = fail. Mixed-gender adults on `women-and-children-ser
 
 Validator (`validate-image-relevance.mjs`): post-build, GPT-4o scores `(page_topic, image_description) → relevance 0-10` for every image on every route; FAIL any score <8.
 
-Reference incident: njsk-light (2026-05-02) — lucky-stock hero replacing crawled-original hero, lightbulb on `/volunteer`, generic mixed-gender corporate shots on women + children services page — drove this rule.
-
 ## Every blog/article post (***FEATURED IMAGE MANDATORY + DALL-E FALLBACK — UNIVERSAL — BUILD-BREAKING — extends "Every page-rendered image"***)
 
 Every blog/news/article/journal/case-study post MUST have a valid featured image (hero + OG card + listing thumbnail).
@@ -148,8 +146,6 @@ When source-post-image is broken (404 / 5xx / mixed-content / blocked CDN), SKIP
 Vision-LLM scores final image ≥8/10 topic relevance per "Every page-rendered image" rule before accepting; below 8 → regen with refined prompt up to 3 attempts.
 
 Validator (`validate-blog-featured-images.mjs`): every `_corpus.json.posts[]` entry MUST have `featured_image_url` set to a 200-OK file in build output; every `<article>` rendered tile MUST have a `<img>` rendering ≥1024×768; OG card 1200×630 ≤100KB.
-
-Reference incident: njsk.org blog rebuild (2026-05-02) ~30% of imported posts had broken featured images (Squarespace CDN hotlinks 404'd) AND no DALL-E fallback fired — shipped post tiles with broken-image placeholder icons — drove this rule.
 
 ## Every migrated source-site asset (***R2 SELF-HOSTING — NEVER HOTLINK SQUARESPACE/WIX/WP CDNS — UNIVERSAL — BUILD-BREAKING***)
 
@@ -176,8 +172,6 @@ Every image/video/PDF/font/CSS/JS reference inherited from the source site MUST 
 YouTube/Vimeo iframes preserved as-is (those are intentional embeds, not asset hotlinks).
 
 Validator (`validate-no-cdn-hotlinks.mjs`): grep dist/ HTML for hostnames matching `squarespace-cdn|squarespace.com|wixstatic|wix.com|wp.com|wpcomstaging|files.wordpress|cdn.shopify|images.weserv|res.cloudinary` — any match outside whitelist (analytics, fonts, Google CSE) = fail with diagnostic showing source HTML location + suggested local-asset path.
-
-Reference incident: njsk.org rebuild (2026-05-02) footer shipped Squarespace-CDN-hotlinked logo PNG that would 404 the day njsk.org migrates platforms — drove this rule.
 
 ## Every page (media density — ***FAVOR VIDEO + MULTI-SOURCE GENERATION***)
 
@@ -208,8 +202,6 @@ Any NO → regen with prompt refinement explicitly naming the category and physi
 
 Build gate (`validate-business-type-image-match.mjs`): every `[data-slot]` image runs a second GPT-4o-mini call (cheaper, faster) classifying YES/NO category fit — any NO in final build output = fail with slot ID, image URL, and rejection reason logged.
 
-Reference incident: nyfoldingbox.projectsites.dev (2026-05-04) shipped shirts and clothing items on a packaging/box manufacturing homepage — topic-relevance score was ≥8 (shirts are "product packaging" adjacent) but the subject is categorically wrong for a B2B box factory — drove this rule.
-
 ## Every site rebuild with known source domain (***PRIMARY DOMAIN MEDIA EXTRACTION MANDATORY — BEFORE ANY AI GENERATION***)
 
 Before invoking DALL-E or any stock API, crawler MUST fully extract ALL media from the source business domain (not only the pages scraped, but every image/video/PDF linked or embedded across the full site).
@@ -228,8 +220,6 @@ NEVER start AI image generation until step (5) exhausted. `_media_slots.json` MU
 
 Validator (`validate-source-media-extraction.mjs`): when `_research.json.source_domain` set, assert `_assets.json.extracted_images.length >= 1` (at least one image pulled from source domain before AI generation ran).
 
-Reference incident: megabytespace.projectsites.dev (2026-05-04) built with zero images from megabyte.space despite source domain having extensive product screenshots, team photos, and case studies — entire site used AI-only imagery when real brand assets existed — drove this rule.
-
 ## Every team headshot (***1:1 SQUARE CROP + CONSISTENT STYLE — UNIVERSAL — BUILD-BREAKING***)
 
 Every person/staff/team member photo MUST be:
@@ -241,8 +231,6 @@ Every person/staff/team member photo MUST be:
 - (f) Face detection required — if Sharp face-detect returns 0 faces, reject the image and regenerate
 
 Validator (`validate-team-headshots.mjs`): for every `[data-card-type=person]` element, assert `<img>` exists with natural aspect ratio between 0.9 and 1.1 AND rendered bounding-rect is square within 5%.
-
-Reference incident: lonemountainglobal shipped team cards with mixed portrait/landscape headshots and one member's card had no photo at all — drove this rule.
 
 ## Every listing-grid image (***CONSISTENT ASPECT RATIO WITHIN GRID — UNIVERSAL — BUILD-BREAKING***)
 
@@ -259,8 +247,6 @@ Mixed aspect ratios in one grid (some cards at 16:9, others at 4:3, others at un
 
 Validator (`validate-grid-image-aspect.mjs`): for every `[data-card-grid]`, compute `getBoundingClientRect()` of each `<img>` inside — if `max(width/height) - min(width/height) > 0.05` across images = fail (aspect ratio too inconsistent).
 
-Reference incident: nyfoldingbox product grid had feature images at 16:9 mixed with square product shots mixed with portrait photos — grid looked broken at every breakpoint — drove this rule.
-
 ## Every page render (***ALT-TEXT DEDUP BAN — UNIVERSAL — BUILD-BREAKING***)
 
 No two `<img>` elements on the same rendered route may share identical alt text (case-insensitive, whitespace-normalized).
@@ -275,8 +261,6 @@ Template ships `src/lib/altText.ts` with `dedupeAltText<T>(assets)` that appends
 Build pipeline rule: every loop rendering `<img>` from a data array MUST pipe the array through `dedupeAltText()` before mapping to JSX — never `.map(a => <img alt={a.alt} />)` raw.
 
 Validator (`validate-alt-dedup.mjs`): per-route DOM walk extracts every `<img alt>`, normalizes (`alt.trim().toLowerCase().replace(/\s+/g, ' ')`), counts occurrences, fails on any duplicate AND on any empty alt that lacks `role="presentation"` or `aria-hidden="true"`.
-
-Reference incident: lonemountainglobal `/team` shipped 6 cards with `alt="Team headshot"` and `/services` shipped 4 case-study tiles with `alt="Project image"` — drove this rule.
 
 ## Every route (***PER-ROUTE OG IMAGE — UNIVERSAL — BUILD-BREAKING***)
 
@@ -306,8 +290,6 @@ Validator (`validate-route-og-image.mjs`): grep dist HTML for `<meta property="o
 
 Same checks apply to `twitter:image`.
 
-Reference incident: lonemountainglobal shipped 12 routes all sharing `/og-image.png` (generic site-wide card showing only logo) — LinkedIn/Twitter previews showed identical card for blog posts, services pages, contact, and team — undermined social CTR — drove this rule.
-
 ## Every inline SVG in dist/ (***SVGO COMPRESSED — UNIVERSAL — BUILD-BREAKING***)
 
 All `<svg>` elements embedded inline in HTML or referenced as SVG files MUST pass SVGO optimization as a build step: removes unused defs, eliminates redundant attrs (`fill="none"` on `<path fill="none">`), collapses transforms, dedups shared symbols. Expected size reduction: 30-60% from raw SVG.
@@ -326,8 +308,6 @@ Preserving `viewBox` for responsive scaling.
 - Legacy `xmlns:xlink` stripped
 
 Validator (`validate-svgo.mjs`): compute ratio `svgo_size / original_size` for every `.svg` file in dist/ — if ratio >0.85 (less than 15% reduction achieved), flag file for manual review (may already be optimized) — if ratio === 1.0 (no optimization ran), fail.
-
-Reference incident: both sites shipped un-optimized SVG icons with 3× their necessary file size — 48 icon SVGs added 180KB to initial load — drove this rule.
 
 ## Every page rendering a street address (***PROGRESSIVE-ENHANCEMENT MAPS CONTEXT — UNIVERSAL — BUILD-BREAKING — extends "Every site with a physical address"***)
 
@@ -365,8 +345,6 @@ Validator (`validate-address-map-adjacency.mjs`): for every page render of an ad
 Fail codes: `address.map_adjacency_missing` | `address.map_widget_excess` | `address.geo_jsonld_missing`.
 
 **Footer NAP exemption** — the always-present footer-block address (site-wide, ambient) requires only the single small footer embed per the parent rule below — it does NOT trigger this per-section adjacency rule.
-
-Reference incident: njsk.org `/we-need` (2026-05-11) rendered `"22 Mulberry Street, Newark, NJ 07102"` as the drop-off destination for in-kind donations with zero map context — drivers parsing the address from a phone screen had no spatial anchor; Brian: *"anytime we use an address like, '22 Mulberry Street, Newark, NJ 07102', we should consider presenting that in a visual that includes Google Maps — progressively enhancing websites with information that helps humans contextually identify the key points of any given screen"* — drove this rule.
 
 ## Every site with a physical address (***FULL-WIDTH GOOGLE MAPS WIDGET — UNIVERSAL — BUILD-BREAKING for local-business + non-profit + restaurant + medical + retail + any site with NAP***)
 

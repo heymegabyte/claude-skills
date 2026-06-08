@@ -18,11 +18,15 @@ Permissions are enforced server-side, always. Client-only checks are UX, never s
 - **Hash API keys** — store a hash, compare on use; show the plaintext once at creation only
 - **Verify webhook signatures** before parsing per `notifications-email-webhooks-supervisor`
 - **Rate limit** public + auth endpoints (Turnstile on forms, @upstash/ratelimit on APIs)
-- **Safe sessions** — httpOnly + secure + SameSite; rotate on privilege change; short-lived + refresh
-- **Secret scanning** — detect-secrets in pre-commit; never log tokens/secrets (redact at the boundary)
+- **Safe sessions** — httpOnly + secure + SameSite; rotate on privilege change; short-lived + refresh; `Partitioned` (CHIPS) on cross-site/iframe session cookies per `quality-metrics`
+- **Passkeys/WebAuthn primary** — phishing-resistant, domain-bound; server MUST verify `rpId` + `origin` + `userPresence` on every assertion; OTP as fallback only
+- **JWT hardening** — reject `alg:none`; validate `exp`/`aud`/`iss`/`sub`/`scope` on every request (not just signature); prefer sender-constrained tokens (DPoP RFC 9449 or mTLS) so a stolen bearer is useless
+- **Secret scanning** — Gitleaks pre-commit (block) + TruffleHog `--only-verified` CI sweep; never log tokens/secrets (redact at the boundary)
 - **SSR-safe + XSS-safe** rendering — Trusted Types, CSP Level 3 nonce per `quality-metrics`; sanitize all user/OCR/AI/CMS content
 - **Sandbox dangerous execution** — generated/untrusted code runs in an isolated sandbox per `sandbox-execution`, never the main runtime
+- **AI surfaces** — prompt injection / excessive agency / MCP tool-poisoning are first-class threats; every model boundary follows `ai-agent-security.md`
 
 ## See
-- `package-preference-registry` · `validation-error-handling-supervisor` · `notifications-email-webhooks-supervisor` · `sandbox-execution` · `drift-detection` · `autonomous-engineering` · `quality-metrics` · `cloudflare-hostable-supervisor`
-
+- `ai-agent-security` — prompt-injection, MCP, supply-chain, secret-scanning for AI/agent surfaces
+- `quality-metrics` — CSP nonce, CHIPS, SRI, security headers
+- `sandbox-execution` · `notifications-email-webhooks-supervisor` · `validation-error-handling-supervisor`

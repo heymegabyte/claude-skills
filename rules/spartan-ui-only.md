@@ -53,12 +53,3 @@ projects with shipped PrimeNG do NOT rip-and-replace. They:
 
 This is the same pattern as the Wave 25 React → Angular dashboard migration
 documented in `brickcitylabor.com/docs/wave25-unified-dashboard.md`.
-
-## See
-
-- `angular-nx-monorepo` — the workspace shell Spartan UI lives inside
-- `frontend-stack` — the universal frontend-stack mandate (React+Vite default
-  OR Angular when explicitly chosen)
-- `code-style` — extended to remove the PrimeNG-for-admin mandate
-- `rxjs-first-angular` — RxJS at every backend edge inside Spartan components
-- `brian-preferences` — pick ONE, never options; Spartan-only IS the one

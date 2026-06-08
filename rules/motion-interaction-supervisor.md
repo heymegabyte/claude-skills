@@ -22,7 +22,3 @@ Motion serves clarity and perceived speed, never spectacle. `prefers-reduced-mot
 - Don't reach for Theatre.js/Rive/lottie unless the simpler Motion default genuinely can't do it
 - SortableJS for every reorder surface (keyboard-accessible drag alternative per WCAG 2.2 2.5.7)
 - Lazy-load FullCalendar/Embla/Rive (`@defer`) — never in the initial bundle
-
-## See
-- `package-preference-registry` · `angular-large-app-supervisor` · `spartan-ui-design-system` · `visualization-maps-diagrams-supervisor` · `quality-metrics` · `cinematic-ui-patterns`
-

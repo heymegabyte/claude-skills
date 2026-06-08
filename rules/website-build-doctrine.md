@@ -204,6 +204,3 @@ Website-build prompt → Monitor decomposes in ORDER, fans out parallel within e
 7. Phase 7-8 continuous overlays
 
 Ship per `verification-loop.md` deploy + prod-E2E mandate.
-
-## See
-- `monitor-orchestration.md` · `extra-mile.md` · `auto-integrate-recs.md` · `supreme-polish.md` · `proactive-improvements.md` · `source-site-enhancement.md` · `thin-source-amplification.md` · `citations.md` · `i18n-by-demographics.md` · `12-media-orchestration` · `14-independent-idea-engine` · `15-site-generation` · `16-cinematic-website-prime-directive` · `cinematic-ui-patterns.md` · `image-quality.md` · `timeline-authenticity.md` · `copy-writing.md` · `brian-preferences.md` · `full-autonomy.md` · `prompt-cache.md` · `model-routing.md` · `verification-loop.md`

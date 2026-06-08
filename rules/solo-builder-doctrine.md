@@ -25,9 +25,3 @@ The clusters below name the heresies and link to the per-cluster rules. Each clu
 - **Main-only** — branches add coordination tax. Worktrees give isolation without the merge ceremony.
 - **TODOs allowed** — TODOs are intentionality markers. Banning them just pushes the same intention into invisible head-space.
 - **No A/B for taste** — A/B-testing button copy is what teams do when nobody has authority. Solo + AI + taste = pick + ship.
-
-## See
-- `brian-preferences` — pick ONE, just do it, never ask permission, never offer options. The Solo Builder Doctrine IS the operational expression of that preference.
-- `full-autonomy` — the unrestricted-tool grant that makes the autonomy practical.
-- `autonomous-engineering` — the 4-tier risk gate that survives all this. Approval-required gates still apply to genuinely huge/destructive actions (charging money, dropping prod tables, bulk customer outreach). The doctrine eliminates RITUAL gates, not SAFETY gates.
-- `prompt-as-training-signal` — §8 doctrine-contradicting-brief check. The Solo Builder Doctrine is part of the durable layer agents push back against contradiction on.

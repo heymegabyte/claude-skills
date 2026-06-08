@@ -135,12 +135,3 @@ Email to operator via Resend (skill 13 notifications) with subject `Source-fidel
 ```
 
 Validator reads override, logs `[validate-source-fidelity] override active for [...] — gate bypassed`, exits 0. Override is single-use (deleted after build) and audit-logged. AI never writes the override file.
-
-## See also
-
-- `validate-source-fidelity.mjs` — the gate itself
-- skill 09 `brand-color-extraction` — `_brand.json` palette+fonts via GPT-4o vision
-- skill 12 `media-acquisition.md` — logo extraction priority chain
-- skill 12 `image-generation.md` — GPT Image 1.5 image-conditioning for hero re-render
-- `apps/project-sites/.claude/agents/source-fidelity-fixer.md` (task #35) — fixer agent
-- `rules/always.md` "Every site rebuild source site exists logo walks + theme match + brand-splash" — universal rule this loop enforces

@@ -88,11 +88,3 @@ If ≥2 match → Stripe Billing owns the subscription rail. Square is not force
 ## E-commerce surfaces
 - E-commerce sites (product catalog + cart + checkout + inventory) route payments through the **Medusa.js** Square or Stripe plugin, NOT directly — Medusa owns the order state machine + idempotency. Full mandate: `ecommerce-stack`.
 - The Square-vs-Stripe decision tree above still applies — Medusa just sits in front of it.
-
-## See
-- `ecommerce-stack` (Medusa.js mandate for every e-commerce backend; payment plugins sit on top of this rule)
-- `13-observability-and-growth/square-payments` (full Square integration playbook)
-- `13-observability-and-growth/stripe-billing` (SaaS-billing-ONLY scope — re-titled)
-- `auto-meta-work` (template stub updated)
-- `code-style` (webhook signature verification)
-- `error-recovery` (idempotency + retry patterns)

@@ -2,228 +2,104 @@
 name: "preference-and-memory"
 description: "Captures and evolves user preferences with confidence levels. Maintains Voice of the Customer model with exact language, dissatisfaction and aspiration signals. Handles promotion/demotion, global vs project scoping, auto memory system, and Omi wearable data integration."
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   updated: "2026-05-03"
   effort: "medium"
-  model: "sonnet"
+  model: "haiku"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
-submodules:
-  - wisdom-and-human-psychology.md
-  - brian-voc-data.md
-  - brian-decision-model.md
 ---
-
-## Submodules
-
-- **wisdom-and-human-psychology.md** — Timeless principles from behavioral psychology, philosophy, and self-help classics applied to product building. Ethical persuasion only.
-- **brian-voc-data.md** — Voice of the Customer data from 3,102 ChatGPT conversations — exact language, dissatisfaction signals, interaction velocity, prompt patterns.
-- **brian-decision-model.md** — Decision-making patterns: how Brian evaluates tools, services, architecture, and vendors. Weighted criteria, rejection signals.
 
 # 04 — Preference and Memory
 
-## Voice of the Customer (VoC)
+## Auto-memory system
+Persistent file-based memory at `/Users/Apple/.claude/projects/<encoded-path>/memory/`. Write directly via Write tool.
 
-Captures exact language, frustrations, ambitions, standards:
-- What they consider weak / shallow / slow / ugly / incomplete / unacceptable
-- What they consider elite / complete / beautiful / fast / worth shipping
-- Repeated phrases signaling deep preferences, emotional intensity markers
+## Memory types
+- **user** — role, goals, responsibilities, knowledge
+- **feedback** — guidance on how to approach work (corrections AND confirmations)
+- **project** — ongoing initiatives, bugs, incidents, who/why/when
+- **reference** — pointers to external resources
 
-### VoC Model Structure
-`Desired Outcome → Dissatisfaction Signals (exact quotes) → Aspiration Signals (praise/standards) → Implications for: Product, UX, Copy, Architecture, Completeness, Speed, Refinement`
+## Capture triggers
+- User explicitly says "remember X" / "save Y" → save immediately
+- Correction ("no not that", "don't") → feedback memory
+- Confirmation of unusual approach ("yes exactly", "perfect") → feedback memory
+- New role / preference / responsibility detail → user memory
+- Project milestone / decision / deadline → project memory
+- External system reference ("check the Linear project X") → reference memory
 
-### VoC Rules
-- Capture exact language when specific; infer implications but label them
-- Never fabricate; distinguish literal from inferred
-- Update on: priority changes, corrections, redefined "done", strong emphasis, `***PROCESS THIS***`
-
-### VoC Storage
-- **Global** — `~/.claude/projects/-Users-apple-emdash-projects-megabyte-space/memory/voc_global.md`
-- **Project** — `PROJECT_BRIEF.md` VoC section or `VOC.md`
-
-## Preference Taxonomy
-
-### Confidence levels
-- **Confirmed** (explicitly stated/demonstrated) — Always follow
-- **Strong** (confirmed without pushback) — Follow by default
-- **Inferred** (consistent pattern) — Follow, verify if high stakes
-- **Weak** (single observation) — Note, don't rely on
-- **Experimental** (trying, uncommitted) — Apply in context, don't propagate
-
-### Scope storage
-- **Global** — `~/.claude/projects/<project>/memory/`
-- **Project** — Project `CLAUDE.md` or brief
-- **Session** — In-context only
-- **Experimental** — Memory with expiry note
-
-## Preference Evolution
-
-### Promotion
-- Weak → repeated → Inferred → user confirmation → Confirmed
-- User explicit statement → immediately Confirmed
-- Accepted non-obvious choice → Strong
-
-### Demotion
-- User contradicts → re-evaluate
-- Context changes → scope-check
-- 30+ days unobserved → mark stale
-
-### Never promote on pattern alone
-- Tech choices
-- Design aesthetics
-- Business models
-- Feature scope
-
-### Can promote on pattern alone
-- Code style
-- Communication style
-- Review depth
-- Testing thoroughness
-
-## Capture Triggers
-
-Capture when:
-- User corrects
-- Confirms
-- Expresses frustration / delight
-- Uses `***TEXT***`
-- Writes `***PROCESS THIS***`
-- Asks to remember
-
-Capture: the rule + why + how to apply + scope + confidence.
-
-Don't capture:
-- One-time debug decisions
-- Derivable tech details
-- Temporary workarounds
-- Info already in `CLAUDE.md`
-
-## Auto Memory System
-
-### Storage
-- `~/.claude/projects/<project>/memory/` — `<project>` derived from git repo; all worktrees share one directory
-- Custom: `autoMemoryDirectory` setting (allowed in policy / local / user settings; NOT project settings)
-
-### Memory types
-- **`user`** — global across all projects: `~/.claude/agent-memory/<name>/`
-- **`project`** — scoped to repo: `.claude/agent-memory/<name>/`
-- **`local`** — machine-local: `.claude/agent-memory-local/<name>/`
-- **`feedback`** — corrections / patterns observed from Brian's responses
-- **`reference`** — factual data, API docs, architecture decisions
-
-### Directory structure
-```
-~/.claude/projects/<project>/memory/
-├── MEMORY.md          # Index — loaded every session (first 200 lines or 25KB)
-├── debugging.md       # Topic files — loaded on demand by Claude
-├── api-conventions.md
-└── voc_global.md
-```
-
-### Loading rules
-- First 200 lines of `MEMORY.md` OR 25KB (whichever first) loaded at session start
-- Topic files NOT loaded at startup — Claude reads on demand
-- Keep `MEMORY.md` as index only; move detail to topic files
-
-### Auto Dream maintenance
-- Converts relative dates → absolute
-- Deletes contradicted facts (e.g., Express → Fastify swap removes old entry)
-- Prevents memory decay over 20+ sessions
-
-### Toggle
-- `/memory` command
-- `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`
-- Requires v2.1.59+
-
-### Subagent Memory Scopes
-```yaml
-memory: user     # ~/.claude/agent-memory/<name>/
-memory: project  # .claude/agent-memory/<name>/
-memory: local    # .claude/agent-memory-local/<name>/
-```
-First 200 lines or 25KB of each subagent's `MEMORY.md` loaded at startup. Read/Write/Edit tools auto-enabled when memory is active.
-
-## Memory File Format
-
-### MEMORY.md (index)
-One-line descriptions linking to topic files. Never dump raw data here. Brian's MEMORY.md: `~/.claude/projects/-Users-apple-emdash-projects-megabyte-space/memory/MEMORY.md`.
+## Memory file format
 
 ```markdown
-- [Topic Name](topic-file.md) — one-line description of what's inside
-```
-
-### Topic file types and paths
-- **`user_*.md`** — Brian's profile, career, community work (personal/universal)
-- **`feedback_*.md`** — corrections, patterns observed (auto-captured every prompt)
-- **`tech_preferences_confirmed.md`** — always/never list with mention counts
-- **`common_mistakes.md`** — response / build / deploy / design / infra / architecture mistakes
-- **`project_status.md`** — skill architecture, current project states
-- **`reference_*.md`** — Omi wearable config, external tools, factual reference
-
-### Topic files frontmatter
-```yaml
 ---
-name: "topic-name"
-description: "What this file tracks"
-type: preferences|patterns|mistakes|voc|reference|feedback|project
+name: {short-kebab-case-slug}
+description: {one-line summary — used for relevance ranking}
+metadata:
+  type: {user | feedback | project | reference}
 ---
+
+{memory content}
 ```
 
-### MEMORY.md index rules
-- Every file gets exactly ONE entry
-- Entry format: `- [Title](filename.md) — what's inside (≤12 words)`
-- No sections, no hierarchy — flat list only
-- Session start: scan index, identify relevant files, load on demand
+For feedback/project: lead with rule/fact, then `**Why:**` line + `**How to apply:**` line.
 
-### MEMORY.md template sections
+## Memory routing
+- **Universal (across all projects)** → `~/.claude/`
+- **Project-specific** → `./.claude/` (path-scoped)
+- **Project memory file** → `~/.claude/projects/<encoded-path>/memory/<name>.md` + index in `MEMORY.md`
+
+## MEMORY.md index
+One-line pointer per file:
+```md
+- [Title](file.md) — one-line hook
 ```
-## Confirmed Preferences
-## Patterns That Worked
-## Mistakes to Avoid
-## Pending Skill Updates (YYYY-MM-DD Skill##: desc — priority)
-## Skill Usage Heatmap
-```
+Keep under 200 lines (lines after 200 truncated).
 
-### Hygiene
-- Remove stale (30+ days unobserved)
-- Merge duplicates
-- Verify paths before recommending
-- Distinguish "memory says existed" from "exists now"
-- Scan 3 most recent project MEMORYs for reusable patterns
+## Confidence levels
+- 0.95-1.0 — directly stated by Brian
+- 0.85-0.95 — strongly implied by pattern (3+ confirmations)
+- 0.70-0.85 — inferred from one signal
+- <0.70 — speculative, verify before acting
 
-### CLAUDE.md vs auto memory
-- `CLAUDE.md` = your requirements (rules, enforced)
-- Auto memory = what Claude observed (patterns, emerged)
-- Never put requirements in auto memory — they don't survive compaction reliably
-- `CLAUDE.md` survives `/compact`; auto memory survives as topic files
+Below 0.70 → ask `AskUserQuestion` before persisting.
 
-## Omi Wearable Integration
+## Voice of the Customer model
+- Exact language Brian uses ("pick ONE", "Hey not Hi", "always find 50 more things")
+- Dissatisfaction signals (corrections, re-issued prompts)
+- Aspiration signals (stated goals, ideal-world descriptions)
+- Stylistic preferences (brevity, sharpness, no preamble)
 
-Brian uses Omi AI wearable. Key people: Katie (SJSK), Michael/Mikwel (Penn Station), Nick Buckwick.
+## Brian's preferences (cite from `rules/brian-preferences.md`)
+- Pick ONE, never options
+- Never ask permission, silence = approval
+- "Hey" not "Hi", no preamble
+- Code complete, never truncate
+- Priority: simplicity > cost > speed > compatibility
+- Open-source only
+- Side repos auto-push; emdash projects user-push
 
-### Config locations
-- Keys in chezmoi
-- Configured in `~/.claude.json`
-- MCP server providing voice memories, calendar events, life facts
+## Promotion / demotion
+- Memory recurring across 3+ projects → promote to rule (`~/.claude/plugins/heymegabyte-claude-skills/rules/`)
+- Rule contradicted by repeated correction → demote to memory or remove
+- Per `rules/prompt-as-training-signal.md`
 
-### When `~/Downloads/omi-export.json` exists
-Scan for:
-- Action items (build/create/deploy)
-- Product memories (new ideas mentioned aloud)
-- People to feature (community members)
-- New product ideas
+## Stale memory
+- Memory describing now-incorrect facts (renamed function, removed flag, retired service) → update OR delete
+- Per `rules/prompt-as-training-signal.md` § Before recommending from memory
 
-Extract → cross-reference with `PORTFOLIO.md` → route to appropriate skill. Treat Omi voice data as highest-signal VoC — real-time, unfiltered Brian.
+## Omi wearable integration (future)
+- Capture Brian's voice notes as candidate memory entries
+- Auto-tag by inferred type
+- Surface for review before commit
+- Path: `~/.claude/_omi-inbox/<timestamp>.md`
 
-### Products Brian uses daily (signal for integration decisions)
-- Square Terminal
-- Omi
-- Home Assistant
-- GQ EMF-390
-- Cloudflare
-- Stripe
-- Resend
-- Ideogram
-- AI coding tools (Claude Code primary)
+## Capture protocol (every prompt)
+1. Scan prompt for capture triggers
+2. Determine memory type
+3. Write file w/ frontmatter
+4. Add index entry to `MEMORY.md`
+5. Cross-link siblings via `[[name]]`
+6. Per `rules/prompt-as-training-signal.md` — extract BEFORE doing requested work

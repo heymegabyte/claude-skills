@@ -84,6 +84,3 @@ Lowers old "≥3 units" floor to ~2 substantial units while excluding trivial. I
 - **`CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` — SET (standing default).** Cost cornerstone; highest-ROI single change.
 - **`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` — LEAVE UNSET.** Cross-messaging adds inter-agent chatter overhead; test/feature batches are independent-not-coordinated, so plain parallel Task calls cheaper.
 - **`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` + `CLAUDE_CODE_DISABLE_WORKFLOWS` — LEAVE UNSET.**
-
-## See
-- `monitor-orchestration.md` · `agent-selection.md` · `model-routing.md` · `opus-quota-fallback.md` · `full-autonomy.md` · `prompt-cache.md` · `e2e-tdd-organization.md` · `feature-module-architecture.md` · `verification-loop.md` · `brian-preferences.md`

@@ -90,6 +90,3 @@ typically, generally
 ## Copy-writing exception
 - Brand voice claims ("Sharp. Punchy.") don't need cites — only quantitative/comparative claims do
 - Hero headlines stay sharp; bibliography lives in body + footer
-
-## See
-- `15-site-generation/research-pipeline` (Conf<T> + `_citations.json`) · `15-site-generation/template-system` (Citation / ReferencesList) · `15-site-generation/quality-gates` (build-break) · `14-independent-idea-engine` (evidence) · `copy-writing.md` (banned list)

@@ -21,9 +21,3 @@ codebase read like a changelog instead of a domain model.
 
 ## When you inherit wave-named identifiers
 - Treat them as drift per `drift-detection`. Rename to descriptive names in careful batches: rename the symbol/flag/route + update EVERY caller + migration-rename live DB rows/tables + verify (typecheck + tests + the route's frontend callers) before moving to the next batch. Never rename a live route without updating its callers in the same change.
-
-## See
-- `drift-detection` — wave-named identifiers are drift; fix on sight in batches
-- `code-style` — naming conventions (camelCase/PascalCase/CONSTANT_CASE) this complements
-- `feature-module-architecture` — module slugs are descriptive snake_case ≤32 chars
-- `brian-preferences` — names read like a domain model, not a changelog

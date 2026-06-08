@@ -37,7 +37,3 @@ Zod is the source of truth at every runtime boundary; errors are typed, human-re
 ## Logging
 - Structured logs (pino per `observability-ops-supervisor`) carry `request_id` + `trace_id` + `tenantId` + error taxonomy code
 - Redact secrets at the log boundary (`val.slice(0,7)…val.slice(-3)`)
-
-## See
-- `zod-everywhere` · `contract-first-ai` · `package-preference-registry` · `forms-editors-content-supervisor` · `observability-ops-supervisor` · `auth-permissions-security-supervisor` · `angular-large-app-supervisor` · `hono-api`
-

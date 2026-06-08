@@ -41,9 +41,3 @@ object-fit: contain;
 - `validate-icon-contrast.mjs` — **enforcement: WARNING** (console output, does not fail build)
 - Parses shipped CSS, finds every `.icon|.avatar|.badge|.logo|.brand` class that renders an `<img>`, flags any without an explicit `background:` declaration when the source asset has transparency + dominant-color outside the parent's color range
 - Rationale for warning tier: theme-inversion edge cases are rare enough that catching at code-review + visual-QA (see `image-quality` critique loop) beats blocking deploys
-
-## See
-- `image-quality` (asset extraction + critique)
-- `always` (favicon/manifest icon mandate)
-- `09-brand-and-content-system` (real-brand extraction)
-- `copy-writing` (anti-AI-slop applies to brand assets too — extracted logo + wrong background = AI-slop)

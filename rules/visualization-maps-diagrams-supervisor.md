@@ -22,7 +22,3 @@ Charts exist to help users make decisions, never to decorate. Right tool per job
 - Respect `prefers-reduced-motion` on animated charts per `motion-interaction-supervisor`
 - Accessible: every chart has a text/table fallback + ARIA per `angular-large-app-supervisor`
 - Lazy-load heavy viz libs (`@defer`) — never in the initial bundle
-
-## See
-- `package-preference-registry` · `stack-selector` · `angular-large-app-supervisor` · `motion-interaction-supervisor` · `observability-ops-supervisor` · `cloudflare-hostable-supervisor`
-

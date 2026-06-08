@@ -28,12 +28,12 @@
 - JSRPC payload up to 32 MiB
 
 ## A11y
-- axe-core 0 violations
+- axe-core 0 violations — but **axe 0 ≠ AA conformance** (it auto-tests only 2.5.8 of the 9 new WCAG 2.2 SC, ~57% of issues by volume). Green axe is necessary, never sufficient.
 - Lighthouse ≥ 95
 - Contrast ≥ 4.5:1
-- Target size ≥ 24px (WCAG 2.2 2.5.8 — axe auto-tests this)
-- Focus appearance visible (2.4.11)
-- **Manual review still required** for: 2.4.11 Focus Appearance, 2.4.12/13 Focus Not Obscured, 2.5.7 Dragging, 3.2.6 Consistent Help, 3.3.7 Redundant Entry, 3.3.8/9 Accessible Auth — axe-core cannot auto-detect these
+- Target size ≥ 24px (WCAG 2.2 2.5.8 — the one criterion axe auto-tests)
+- Focus Not Obscured (2.4.11, AA) — focused element never hidden behind sticky headers/footers
+- **Manual review REQUIRED** (axe can't detect): 2.4.11 Focus Not Obscured (AA), 2.4.13 Focus Appearance (AAA), 2.5.7 Dragging (AA), 3.2.6 Consistent Help, 3.3.7 Redundant Entry, 3.3.8 Accessible Auth (AA). Run this checklist every a11y pass.
 
 ## Code
 - Functions ≤ 50 lines
@@ -57,6 +57,11 @@
 - X-XSS-Protection
 - Expect-CT
 - HPKP
+
+### Cookies + integrity
+- **CHIPS** — set `Partitioned` on any cross-site cookie (OAuth iframe, embedded widget) or the session silently breaks under third-party-cookie partitioning. Safari ignores the attribute but partitions independently; Firefox partitions via Total Cookie Protection — test all three.
+- **SRI** — `integrity` (SHA-384) + `crossorigin="anonymous"` on every externally-hosted `<script>`/`<link rel="stylesheet">`; pair with CSP `require-sri-for script style`. Not applied to dynamically-injected scripts — guard those separately.
+- **CSP reporting** — emit BOTH `report-to` AND `report-uri` until report-to has universal support; Trusted Types is Chromium-full / Firefox+Safari-partial.
 
 ## SEO strict
 - Title 50-60 chars HARD

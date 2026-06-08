@@ -72,12 +72,3 @@ Every element a user sees gets a deliberate, beautiful treatment. "Functional bu
 3. Does it have a hover affordance + focus-visible ring? → add them
 4. Is it reduced-motion-safe + contrast-safe? → gate + fix
 5. Would Brian call it gorgeous, not just functional? → if no, iterate
-
-## See
-- `cinematic-ui-patterns` — `<app-rolling-counter>` + `appReveal` + the standing every-stat-animates rule (this rule is the every-element generalization)
-- `proactive-improvements` — "just feels right" per-element polish; this rule sets the floor (pills + `0.333s`)
-- `supreme-polish` — the 100-ideas audit measures against this per-element bar
-- `spartan-ui-design-system` — Angular pill/badge composition on the same contract
-- `text-contrast` — every pill's bg/text pair is contrast-safe (dark→light, light→dark)
-- `brian-preferences` — Progressively-Gorgeous UI Mandate (user-level); never ship "functional but plain"
-- `prompt-as-training-signal` §2 ("always ___") + §6 (explicit meta-instruction) — the prompt shape that birthed this rule

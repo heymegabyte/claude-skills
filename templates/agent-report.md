@@ -5,8 +5,6 @@
 <!-- Fill the Assignment Table BEFORE spawning. Fill one Structured Agent Report per spawned agent. -->
 <!-- The reviewer fills the Reviewer-only addendum + Agent Diversity Review table at fold-back. -->
 
----
-
 ## 1. Agent Assignment Table (***fill BEFORE spawning***)
 
 | Agent | Purpose | Scope | Non-goals | Deliverable | Verification |
@@ -21,8 +19,6 @@
 |-----------------------|-------------------|
 | `<agent-name>` | <why this run didn't warrant it> |
 | | |
-
----
 
 ## 2. Structured Agent Report
 
@@ -39,8 +35,6 @@
 - **Recommended follow-up** — <next-prompt language for anything not shipped this turn>
 - **Should this become a reusable global improvement?** — Yes / No + <reason; if Yes, name the rule/skill/template/command it should land in>
 
----
-
 ## 3. Reviewer-only addendum
 
 <!-- Filled by the agent-diversity-reviewer / completeness reviewer at fold-back, never by the worker agent. -->
@@ -49,8 +43,6 @@
 - **Blocking issues** — <merge-blockers that must be fixed this turn; "none" if clean>
 - **Non-blocking improvements** — <nice-to-haves shipped inline or surfaced in Recs>
 - **Global config improvements recommended** — <rule / skill / template / command edits worth landing in `~/.claude/` or the plugin; "none" if nothing>
-
----
 
 ## 4. Agent Diversity Review table
 

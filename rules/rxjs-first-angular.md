@@ -7,14 +7,6 @@ Every backend interaction in Angular is an **RxJS observable stream**, never a o
 - Component state derived from streams → `Signal<T>` via `toSignal(stream$, { initialValue })`.
 - Service keeps stream observable to compose `retry`, `debounceTime`, `switchMap`, `combineLatest`, `merge`, `share`, `takeUntilDestroyed`, `repeat`, `interval`.
 
-## Why
-- Real-time by default — `repeat({ delay: 5000 })` adds polling without touching the consumer.
-- Cancellation free — `takeUntilDestroyed()` kills inflight HTTP on unmount.
-- Retry is one operator — `retry({ count: 3, delay: (_, n) => timer(2 ** n * 250) })`.
-- Multi-source compose — HTTP + WebSocket + localStorage via `combineLatest`.
-- Search debounced — `valueChanges.pipe(debounceTime(200), switchMap(q => api.search(q)))`.
-- Tests deterministic via `TestScheduler` + marble syntax.
-
 ## Mandate
 
 ### Do
@@ -156,6 +148,3 @@ save() {
 - `eslint-plugin-rxjs` enforces: no nested subscribes, no manual unsubscribe (use `takeUntilDestroyed`), no `firstValueFrom`/`lastValueFrom` in service files.
 - `no-restricted-imports` blocks `rxjs/operators` legacy — import from `rxjs`.
 - TS-strict checks `Observable<T>` return types on every public service method.
-
-## See
-- `angular-nx-monorepo.md` · `frontend-stack.md` · `code-style.md` § Testing · `verification-loop.md` · `e2e-tdd-organization.md`

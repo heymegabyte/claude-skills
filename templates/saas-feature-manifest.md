@@ -320,8 +320,6 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Final GPT-4o critique at all breakpoints
 - [ ] DONE: all ACs pass + completeness-checker approves + GPT-4o zero issues + zero recommendations
 
----
-
 **Total: 30 categories, ~250 acceptance criteria.**
 Each unchecked item = a Playwright test that must pass on production.
 DONE = all checked + GPT-4o zero issues + zero recommendations + completeness-checker approves.

@@ -66,9 +66,3 @@ Example: `'Mathew Brady studio · Library of Congress LC-BH82-4318 · Public Dom
 - Any annual-report retrospective spread
 
 The rule scales: if the surface claims to depict the past, the depiction must be real.
-
-## Cross-link
-- `copy-writing` — banned-authority-signals list
-- `citations` — APA source-hierarchy
-- `09-brand-and-content-system` — real-brand-extraction philosophy
-- `12-media-orchestration` — stock-curation rules

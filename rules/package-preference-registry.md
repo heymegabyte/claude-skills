@@ -83,8 +83,3 @@ The canonical list of PREFERRED packages + the decision discipline. **Listing �
 
 ## Per-package full-detail template (fill as each is adopted)
 `purpose · philosophy · when to use · when NOT · setup/config · advanced APIs · pitfalls · license · ProjectSites relevance · install now/later/adapter`
-
-## See
-- `stack-selector` · `angular-large-app-supervisor` · `spartan-ui-design-system` · `cloudflare-hostable-supervisor`
-- `zod-everywhere` · `contract-first-ai` · `payments-routing` · `auto-meta-work`
-

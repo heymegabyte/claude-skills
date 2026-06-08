@@ -95,11 +95,3 @@ When `OPUS_AVAILABLE=true` but weekly is >80%, surface a warning:
 ```
 
 This preempts the next-day "why did my session degrade?" question.
-
-## Cross-link
-
-- ``model-routing`` — defines which agent uses which model; this rule overlays the quota-aware fallback
-- ``brian-preferences`` — pick ONE, never options; this rule reinforces "just keep working" instead of asking permission to switch
-- ``monitor-orchestration`` — the Monitor reads the fallback signals before each parallel spawn
-- ``full-autonomy`` — fallback execution counts as authorized work, no permission prompt
-- ``verification-loop`` — fallback doesn't change the deploy gate; Sonnet still runs E2E + a11y verification

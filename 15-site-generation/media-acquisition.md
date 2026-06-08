@@ -293,8 +293,6 @@ Every image, video, font, PDF, and JSON file the source site references via thir
 ### Self-hosting policy
 The deployed site MUST self-host every asset on `<slug>.projectsites.dev` (R2-backed) — no `cdn.shopify.com`, no `*.squarespace-cdn.com`, no `*.wp.com`, no `*.wixstatic.com`, no `*.imgix.net`, no `images.ctfassets.net`, no `*.contentful.com`, no `*.cloudinary.com`, no random WordPress upload paths.
 
-**Reference incident**: lonemountainglobal.com 2026-05-02 — footer logo + 8 hero images hotlinked to source WordPress CDN; site visually broke when source WordPress was taken down for maintenance, AND every page load leaked referrer to the source host (privacy + brand-leak risk).
-
 ### Vite plugin (`template/scripts/rewrite-cdn-assets.mjs`)
 Runs as `enforce: 'post'` Vite transform on every `.tsx|.jsx|.ts|.js|.html|.css|.json` file.
 
@@ -406,8 +404,6 @@ For every entry in `_corpus.json.posts[]`:
 - AND dimensions ≥800×600
 
 FAIL on any post missing a hero.
-
-**Reference incident**: njsk.org 2026-05-02 — 14 of 129 imported blog posts had broken Squarespace CDN hero URLs (404), shipped with `<img src="">` rendering as broken-image icon. Fix: featured-image fallback chain runs at corpus-import time, NEVER at first user view.
 
 ## API Priority Chain
 

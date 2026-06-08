@@ -27,8 +27,3 @@ Every screen composes from the `spartan-ui-design-system` pattern library (app-s
 
 ## Supervisor execution loop (per `autonomous-engineering`)
 audit → plan → ONE coherent vertical slice → implement → validate (typecheck) → test → polish UI → harden errors → docs → repeat. Favor finished vertical slices over scattered partials.
-
-## See
-- `stack-selector` · `spartan-ui-design-system` · `angular-nx-monorepo` · `rxjs-first-angular`
-- `validation-error-handling-supervisor` · `package-preference-registry` · `cloudflare-hostable-supervisor`
-- `feature-module-architecture` · `feature-flags` · `e2e-tdd-organization` · `verification-loop`

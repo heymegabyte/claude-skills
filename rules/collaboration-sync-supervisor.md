@@ -16,7 +16,3 @@ Collaboration is added ONLY when realtime, multiplayer, offline, or conflict-saf
 - Tenant-scope every room/doc per `auth-permissions-security-supervisor`
 - Realtime transport behind an adapter (Cloudflare Durable Objects are the CF-native room host per `cloudflare-hostable-supervisor`; partyserver runs on Workers)
 - Server still validates every mutation — CRDT convergence is not authorization
-
-## See
-- `package-preference-registry` · `forms-editors-content-supervisor` · `validation-error-handling-supervisor` · `auth-permissions-security-supervisor` · `cloudflare-hostable-supervisor` · `rxjs-first-angular`
-

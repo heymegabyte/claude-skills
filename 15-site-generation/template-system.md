@@ -118,8 +118,6 @@ html.js-reveal-active main [data-reveal]:not(.reveal-visible) {
 - The `.no-reveal` opt-out is for sections whose own children animate themselves (e.g. `.hero-rise` stagger) so they aren't double-faded by the parent gate
 - The `js-reveal-active` class is required so the gate only activates when JS will subsequently add `.reveal-visible` — non-JS users see content normally
 
-**Reference incident**: njsk.org 2026-05-02 sections flashed visible→invisible→fade-in because RevealOnScroll's useEffect added `.reveal` after first paint.
-
 ## inspect.js (Post-Build Validator)
 
 Runs after `npm run build`. Checks:
@@ -285,21 +283,6 @@ Utility module (not visual). Exports:
 - Keyboard accessible (focus ring, Enter/Space)
 - Mandatory wrapper for any quantitative claim in copy
 
-### ReferencesList.tsx
-- Footer-of-page bibliography
-- Props: `refIds: string[]` (defaults to all cited on page)
-- Renders `<section aria-labelledby="references">` with `<h2 id="references">References</h2>` and ordered list of APA 7th ed entries from `_citations.json`
-- Hanging indent (`text-indent: -2em; padding-left: 2em`)
-- DOI/URL rendered as link
-- JSON-LD `citation: CreativeWork[]` array auto-generated alongside (boosts AI search inclusion 16%→54%, Brewer, 2024)
-
-### SourcedStat.tsx
-- Specialized for hero/section stats
-- Props: `value: string|number`, `label: string`, `refId: string`
-- Renders large number with inline citation badge
-- Auto-applies to any `<Stat>` or numeric copy that needs callout treatment
-- Animated count-up on IntersectionObserver, citation appears with the number (no orphaned stats)
-
 ## Universal Helper Components
 
 ***SHIP IN TEMPLATE — referenced by always.md, MUST exist as code***
@@ -447,8 +430,6 @@ Every `<a>` in body content gets a single animated underline sweep on hover. Thr
 2. `::after` uses `background: currentColor` NOT a hardcoded brand var, so the sweep matches the link's text color in any context (light hero text → light sweep; dark body text → dark sweep)
 3. NEVER set `color` on the auto-apply selector — let the link inherit text color from its parent (`text-maroon-100` on a maroon hero would be defeated by `color: var(--color-maroon-800)` rendering dark-on-dark)
 
-**Reference incident**: njsk.org 2026-05-02 contact hero rendered double-underline + faint dark link on dark maroon bg because the sweep CSS was inside `@layer components` AND set an explicit dark color.
-
 Canonical block:
 ```css
 /* OUTSIDE @layer components — at end of index.css */
@@ -514,8 +495,6 @@ interface BrandLogo {
 }
 ```
 
-**Reference incident**: lonemountainglobal.com 2026-05-02 — header logo had solid white `<rect>` background; on white nav bar = invisible. Validator (`validate-logo-transparent-variant.mjs`) GPT-4o-checks logo bbox vs container computed bg at 6bp.
-
 ### XIcon.tsx (official X brand path — replaces stale Twitter bird)
 Ships in `template/src/components/icons/XIcon.tsx`:
 ```tsx
@@ -531,8 +510,6 @@ export function XIcon({ className = "h-5 w-5", ...props }: React.SVGAttributes<S
 Social-icon barrel `template/src/components/icons/index.ts` exports `XIcon` NOT `TwitterIcon`. All social link components import from this barrel.
 
 **Validator** (`validate-x-not-twitter.mjs`) greps `dist/**/*.{html,js}` for `viewBox="0 0 24 24"` paths starting `M23.643 4.937` (legacy Twitter bird) — any match=fail.
-
-**Reference incident**: njsk.org 2026-05-02 footer rendered Twitter bird; X has been rebranded since 2023.
 
 ### FullBleedSection.tsx (full-viewport-width wrapper — fixes max-width-cropped sections)
 Ships in `template/src/components/FullBleedSection.tsx`:
@@ -555,8 +532,6 @@ export function FullBleedSection({ children, className = "", ...props }: React.H
 - Used for hero gradients, stat rollup bands, comparison tables on mobile, CTA bands
 
 **Validator** (`validate-full-bleed-sections.mjs`): for every `<section data-fullbleed>`, asserts `getBoundingClientRect().width === window.innerWidth` at 6bp.
-
-**Reference incident**: nyfoldingbox.com 2026-05-02 — hero section was constrained inside `max-w-7xl` parent, leaving 100px white gutters on 1920px viewport.
 
 ### ExpandableCard.tsx (FLIP animation, no-crop-on-expand)
 Ships in `template/src/components/ExpandableCard.tsx`. Pattern uses CSS Grid `grid-template-rows: 0fr → 1fr` transition with `min-height: 0; overflow: hidden` on collapsed state, switching to `overflow: visible; max-height: none` AFTER expand transition completes (`onTransitionEnd` handler removes the overflow clip).
@@ -583,8 +558,6 @@ For complex layouts where Grid `0fr→1fr` is insufficient (sibling animation, F
 - **Play** — via `transition: transform 500ms`
 
 **Validator** (`validate-expandable-card-no-crop.mjs`): Playwright clicks each `[data-expandable]`, waits 600ms, asserts `scrollHeight === clientHeight` (no overflow) AND no descendant with `position: absolute` is clipped by `overflow: hidden` ancestor.
-
-**Reference incident**: nyfoldingbox.com 2026-05-02 paperboard substrate guide — expandable cards used `overflow: hidden` post-expand, clipping the tooltip + spec table that grew taller than the original card.
 
 ### R2AssetRewriter (build-time CDN rewrite — self-host all source images)
 Ships in `template/scripts/rewrite-cdn-assets.mjs`. Runs as Vite plugin AND as post-build pass:
@@ -620,8 +593,6 @@ export function r2AssetRewriter(): Plugin {
 Survives source-site CDN expiration, paywall, geofencing, robots block.
 
 **Companion validator** — `validate-no-cdn-hotlinks.mjs` greps `dist/**/*.{html,js,css}` for hostnames in `cdnHosts[]` array; any match=fail.
-
-**Reference incident**: lonemountainglobal.com 2026-05-02 — footer logo + 8 hero images hotlinked to original WordPress CDN; would 404 the day they migrate hosting.
 
 ### Stripe-first DonationForm (***supersedes prior DonationForm spec — Stripe-Checkout-only, no PayPal fallback***)
 Prior DonationForm spec ALSO listed external-platform fallbacks (Donorbox/Givebutter/Classy/Bonterra). Three-site review showed njsk.org `/donate` shipped a PayPal link as primary CTA, looked dated + low-trust.
@@ -660,8 +631,6 @@ interface DonationFormProps {
 ```
 
 **Validator** (`validate-donation-stripe-first.mjs`): for every site with `_research.json.category === 'non-profit'`, asserts `/donate` route exists AND DonationForm primary CTA is `<button type="submit">` posting to `/api/sites/<id>/donate-checkout` (NOT `<a href="https://paypal.com/...">` or external donation URL); external-platform link MUST appear ONLY inside `<section data-donate-section="other-ways">`.
-
-**Reference incident**: njsk.org 2026-05-02 `/donate` shipped a PayPal `<a>` button as primary CTA, no Stripe Connect, no preset amounts.
 
 ## DonationForm — Non-Profit /donate Page Spec (***EXPANDED***)
 

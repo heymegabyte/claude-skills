@@ -416,7 +416,3 @@ All loaded via `get-secret KEY` or sourced from `${CLAUDE_ENV_FILE}` per CLAUDE.
 - `validate-podcast-rss.mjs` — asserts `/podcast.xml` returns 200 with valid RSS 2.0 + iTunes namespace + ≥1 `<item>` element with `<enclosure type="audio/mpeg">`. Failures: `rss.missing` | `rss.invalid` | `rss.no_episodes`
 
 All four wired into `build_validators.ts` between R2 upload and `published` status. Initial deploy in `report` mode, flip to `strict` once template ships clean.
-
-## Reference incidents
-
-Pipeline-introduced rule (no historical incident yet — proactive 2026-05-02). First production run on next site build will inform refinements. Memory entry `feedback_notebooklm_pipeline.md` tracks the rationale + Brian's stated requirement for the artifact set.

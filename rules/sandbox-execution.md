@@ -47,10 +47,3 @@ export interface WebsiteWorkspaceProvider {
 
 ## Reframe
 Earlier draft framed sandboxes as a guard against "untrusted AI code." Reframed: AI is permanent + foundational; sandboxes are how every build artifact gets validated before promotion — the discipline applies to all build outputs, AI-authored is just the dominant one. Mechanics unchanged.
-
-## See
-- `event-sourced-build-progress` — the sandbox streams typed build events to dashboards
-- `contract-first-ai` — generated output validated against a contract before promotion
-- `god-tier-engineering` — pattern #8 (Container DO auto-restart/hibernate/ring-buffer) for the sandbox runtime
-- `verification-loop` — promotion is gated by the same build + test + preview discipline
-- `full-autonomy` — spawning + driving sandboxes counts as authorized infrastructure

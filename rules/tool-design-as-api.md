@@ -4,13 +4,6 @@ Every tool the AI builds or wields — a script, a generator, an automation entr
 
 This rule fires on every "write a script / build a generator / add a tool / expose an automation" prompt. It complements ``hono-api`` (HTTP edge) and extends the same contract discipline inward to every callable surface.
 
-## Why
-- **Hard-to-misuse beats powerful**: a narrow tool with a typed contract can't be pointed at the wrong target by a confused agent.
-- **Typed I/O = composability**: `runAffectedTests(input)` returning a Zod-validated result chains cleanly into the next step.
-- **Safe-by-default = no footguns**: idempotent where practical, dry-run first, no destructive default path.
-- **Tests + docs = the AI can re-discover the tool** without re-reading source six weeks later.
-- **MCP tools are APIs too** — same bar, no exemption.
-
 ## The contract
 - **Zod input schema** — narrow, named fields; reject unknown keys (`.strict()`); no free-form `command` string.
 - **Zod output schema** — typed result envelope `{ ok, data?, error?, correlationId }`; never return raw stdout.
@@ -54,11 +47,3 @@ This rule fires on every "write a script / build a generator / add a tool / expo
 - Prefer the official vendor MCP per ``full-autonomy`` § MCP spec before building a custom server.
 - Custom MCP servers MUST validate every tool's params with Zod and return structured results, never prose blobs.
 - Computer-use tools follow the access-tier + focus discipline in ``computer-use-safety`` — that IS their safe-by-default contract.
-
-## See
-- `contract-first-ai` — typed I/O contracts at every AI boundary; this rule is the tool-surface arm
-- `zod-everywhere` — Zod is the source of truth for every input + output schema
-- `evals` — `runFeatureEval` is itself a typed tool; eval results are Zod-validated
-- `full-autonomy` — authorized to wield every tool; this rule sets the bar for building new ones
-- `hono-api` — HTTP-edge contract; same discipline pushed inward to scripts + generators
-- `computer-use-safety` — computer-use tools are APIs too; tiers + focus = their safe-by-default contract

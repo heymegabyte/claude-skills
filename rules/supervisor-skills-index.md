@@ -26,4 +26,3 @@ Listing ≠ installing. Per-package: already-have? · truly-needed? · license(O
 
 ## Expansion plan
 ◐ entries are real doctrine NOW (usable + crosslinked). Net-new ones (forms-editors, media, viz, motion, collab, notifications, ai-agent, workflow, crawling-testing, cloudflare-hostable) get expanded to standalone full docs in subsequent waves; validation/auth/observability/database substantially live in the ↪ rules already.
-

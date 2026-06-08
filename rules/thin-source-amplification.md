@@ -148,12 +148,3 @@ Skip `Person` if no real bio. Skip `Review`/`AggregateRating` until real reviews
 - `{org-type}/lead-magnets.json` — checklist + schedule + warning-signs PDF outlines
 
 Corpus = durable asset; every new {org-type} site reuses + adds.
-
-## Reference patterns
-- Soup kitchen w/ 8-page Squarespace → 24-route nonprofit standard + 10 jewels + 5 evergreen posts on hunger stats + glossary of food-security terms + 1 lead magnet
-- Plumber w/ Facebook-only → 50-page: home + about + 12 service + 30 neighborhood pSEO + FAQ + blog (5 posts) + glossary + emergency-response landing + 2 lead magnets
-- Solo lawyer bare-bones → 35-page: home + about + 8 practice-area + fee-structure + 12 FAQ + 5 evergreen + glossary + "what to bring to consultation" + lead magnet
-- New restaurant IG-only → 25-page: home + menu (real photos) + party-booking + allergens + sourcing + neighborhood × 3 + chef-bio + 5 evergreen on cuisine + reservation system
-
-## See
-- `source-site-enhancement.md` · `09-brand-and-content-system` · `15-site-generation` · `13-observability-and-growth/programmatic-seo` · `copy-writing.md` · `image-quality.md` · `timeline-authenticity.md` · `citations.md` · `always.md` · `i18n-by-demographics.md` · `full-autonomy.md`

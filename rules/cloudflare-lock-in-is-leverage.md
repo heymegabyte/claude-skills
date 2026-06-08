@@ -30,11 +30,3 @@ This is heretical to every senior architect's training. It is correct for THIS s
 
 ## What the team-shop wisdom got right (and doesn't apply here)
 - "Vendor lock-in" wisdom assumes: (a) you have the headcount to migrate, (b) you'll outgrow the vendor's pricing, (c) the vendor's roadmap may diverge from yours. For a solo SaaS at <$100k/mo on CF Workers, none of those hold. CF stays 10-100× cheaper than AWS-equivalent through the lifetime of the platform.
-
-## See
-- `solo-builder-doctrine` — umbrella
-- `05-architecture-and-stack` — CF-first decision tree + Neon/Upstash fallback conditions
-- `god-tier-engineering` — patterns that exploit CF specifics
-- `hono-api` — Hono + CF idioms (WorkerEntrypoint RPC, JSRPC, Sessions API, Time Travel, Workflows v2)
-- `code-style` — typed bindings via `wrangler types`, Drizzle RQBv2 + D1
-- `no-staging-doctrine` — instant-rollback muscle uses CF-specific primitives (Time Travel, wrangler rollback, R2 versioning)

@@ -79,8 +79,6 @@ Every page must run through:
 - Universal hyperlink mandate
 - ≥2 contextual internal links to sibling routes + ≥1 outbound link to canonical sources/journals/orgs/PDFs
 
-**Reference incident**: njsk.org rebuild (2026-05-01 prior) shipped homepage-only output, missed all 129 blog posts + `/mass-schedule` + `/faq` + `/we-need` from projectsites.dev one-line prompt. Fixed by enforcing full-sitemap walk + per-route generation + URL preservation gate in skill 15. Same gap will not recur.
-
 ## Every site rebuild (media+video — both extracted)
 
 ***IMAGES AND VIDEO BOTH EXTRACTED***
@@ -161,11 +159,6 @@ Every vision call logs `vision_provider`, `auth_mode`, `cost_cents` to D1 `audit
 - Assert `audit_logs` shows `auth_mode='max-oauth'` for every Claude Vision call (API-key fallback = warning)
 - Assert build-cap `SUM(cost_cents) WHERE vision_provider='gpt-4o' AND build_id=<id> <= 50`
 
-### Reference incidents
-- 2026-05-09 LMG brand regression (code-only review missed earlier-was-better)
-- 2026-05-10 LMG white-on-white footer (design-token check passed, rendered DOM failed)
-- 2026-05-12 cost discovery (Max 20x covers Claude Vision FREE → no reason to ration)
-
 ## Every site (gorgeous loop pre-deploy)
 
 Final critique-and-edit LLM pass — "Make this website even more beautiful + gorgeous + creative + intuitive + clever + witty + interesting + cool" — max 3 rounds, each round applies concrete edits. Runs AFTER content/build, BEFORE deploy.
@@ -218,8 +211,6 @@ NEVER ship a non-profit/SaaS/service site without stat-rollup when stats exist.
 ### Validator (`validate-stat-counter-section.mjs`)
 For sites with `_research.json.stats[].length >= 3`, assert `dist/index.html` contains `<section data-section="stats">` with ≥3 `[data-stat-counter]` children AND each counter has `data-stat-end` numeric attribute.
 
-**Reference incident**: njsk-light (2026-05-02) shipped without "Our Impact in Numbers" rollup despite NJSK having decades of donor+volunteer+meals stats.
-
 ## Every site rebuild (cross-site _redirects + canonical chain)
 
 ***BETWEEN OLD+NEW LIVE INSTANCES — UNIVERSAL — BUILD-BREAKING when both resolve***
@@ -236,8 +227,6 @@ When rebuilding under new hosting/URL while old URL still resolves (test/preview
 
 ### Validator (`validate-cross-site-redirects.mjs`)
 When env `OLD_SITE_URL` set, fetch original sitemap, intersect with new sitemap, assert every original URL appears in `_redirects` OR resolves identically via canonical chain.
-
-**Reference incident**: njsk-light (2026-05-02) — rebuilt without redirect chain from njsk.org, 120+ blog URLs would 404 if njsk.org migrates.
 
 ## Every site rebuild (complete blog/content corpus import)
 
@@ -261,8 +250,6 @@ When source detected as having a blog (path matches `/blog|/news|/articles|/jour
 - Assert `_corpus.json.posts.length >= source_blog_post_count * 1.0`
 - Assert blog index renders ALL posts via pagination
 - Assert ≥2 functional filter taxonomies (category + tag minimum)
-
-**Reference incident**: njsk-light (2026-05-02) shipped without 120+ NJSK blog articles AND filter chips were stub UI.
 
 ## Every donation/give CTA (Stripe-first GiveDirectly UX)
 
@@ -299,8 +286,6 @@ For sites tagged non-profit/church/school, assert `/donate` (or homepage donate 
 
 PayPal/Venmo/Zelle/check options live in collapsible "Other ways to give" expander BELOW Stripe form, never as default tab.
 
-**Reference incident**: njsk.org rebuild (2026-05-02) shipped PayPal-default with one-time-default amount + no impact statement + no monthly cadence.
-
 ## Every publication card (enriched)
 
 ***ABSTRACT + JOURNAL + PDF + YEAR + AUTHORS — UNIVERSAL — BUILD-BREAKING — extends "Every publication tile"***
@@ -326,8 +311,6 @@ For every `[data-card-type=publication]`, assert presence of:
 - `data-abstract`, `data-authors`, `data-journal`, `data-year` attributes
 - At least one CTA `<a href>` pointing to external host
 - Year-divider elements present in listing page
-
-**Reference incident**: lonemountainglobal.projectsites.dev (2026-05-05) publications page showed bare title + minimal metadata with no abstracts, no author links, no PDF access.
 
 ## Every publication tile (deeplink or redirect)
 
@@ -355,8 +338,6 @@ Persist `_publications.json[].deeplink_url` BEFORE Phase 1 build.
 - Every `[data-card-type=publication]` element href MUST point to external host
 - `_redirects` MUST cover any internal `/publications/<slug>` URLs from sitemap
 
-**Reference incident**: lone-mountain-global-3 (2026-05-01) `/portfolio/pharmaceutical-corruption-developing-countries` and 4 sibling routes shipped as duplicate-content internal stubs.
-
 ## Every site with blog source corpus (rebuild as blog)
 
 ***SITE_TYPE OVERRIDE — UNIVERSAL — BUILD-BREAKING***
@@ -383,8 +364,6 @@ When `_research.json.source_blog_post_count >= 5`:
 - Assert homepage route renders `[data-section="blog-index"]`
 - Assert `_corpus.json.posts.length >= source_blog_post_count`
 
-**Reference incident**: thebestsites.projectsites.dev (2026-05-04) built as generic 4-page agency site when source thebestsites.io had extensive blog corpus.
-
 ## Every site rebuild (source-site contact info preservation)
 
 ***UNIVERSAL — BUILD-BREAKING***
@@ -407,8 +386,6 @@ Scrape source `/contact`, `/staff`, `/team`, `/about`, `/leadership`, `/board`, 
 When source site detected as having contact directory (`>3 mailto:` links OR named-person contact pages):
 - Assert `_contacts.json[].length >= source_contact_count * 0.95` (allow 5% drop for spam-trap mailto's)
 - Assert `dist/contact.html` renders ≥`source_contact_count * 0.95` distinct mailto: hyperlinks
-
-**Reference incident**: njsk.org rebuild (2026-05-02) source had ~14 named-person staff emails (deacons, social workers, finance, kitchen leadership) but rebuild collapsed everything to single `info@njsk.org` placeholder.
 
 ## Every site with ≥2 team members in research (team page mandatory)
 
@@ -438,8 +415,6 @@ A dedicated `/team` route MUST be generated (OR integrated as a section-with-anc
 ### Validator (`validate-team-page.mjs`)
 When `_research.json.team.length >= 2`, assert `/team` route exists (200 OK) OR `/about#team` section has `[data-section="team"]` with ≥2 `[data-card-type="person"]` children.
 
-**Reference incident**: lonemountainglobal had extensive faculty/researcher bios in source but the rebuild shipped no team section.
-
 ## Every site (branded 404 + 500 error pages)
 
 ***UNIVERSAL — BUILD-BREAKING***
@@ -465,8 +440,6 @@ When `_research.json.team.length >= 2`, assert `/team` route exists (200 OK) OR 
 ### Validator (`validate-error-pages.mjs`)
 - Assert `sites/<slug>/404.html` exists in R2 AND contains `<h1>` + logo `<img>` + homepage `<a href="/">` + search `<input>`
 - Assert `curl <site-url>/nonexistent-path-xyz` returns HTTP 404 (not 200 with empty body or CF default)
-
-**Reference incident**: both lonemountainglobal and nyfoldingbox returned bare CF Workers 404 with no branding on any broken URL.
 
 ## Every professional-services or consulting site (process / how-it-works section)
 
@@ -496,8 +469,6 @@ Between hero and testimonials/social proof.
 ### Validator (`validate-process-section.mjs`)
 For sites with qualifying category, assert homepage HTML contains `[data-section="process"]` OR `[data-section="how-it-works"]` with ≥3 `[data-step]` children, each having `[data-step-number]` + `[data-step-title]`.
 
-**Reference incident**: both lonemountainglobal (research consulting) and nyfoldingbox (manufacturing services) shipped no process/capabilities section.
-
 ## Every company founded ≥20 years ago (heritage timeline section)
 
 ***UNIVERSAL — BUILD-BREAKING***
@@ -518,8 +489,6 @@ When `(current_year - _research.json.founded_year) >= 20` OR source site contain
 When `_research.json.founded_year` set and age ≥20:
 - Assert `/about` HTML has `[data-section="timeline"]` with ≥5 `[data-milestone]` children
 - Assert homepage hero contains `[data-badge="heritage"]`
-
-**Reference incident**: nyfoldingbox.projectsites.dev (founded 1918, 107 years old) shipped with generic hero — zero mention of 107-year heritage or family ownership.
 
 ## Every site with ≥2 testimonials in research
 
@@ -549,8 +518,6 @@ When `_research.json.testimonials.length >= 2`:
 - Assert homepage `[data-section="testimonials"]` exists with ≥2 `<blockquote>` elements, each containing `<cite>`
 - Assert each `<blockquote>` has non-empty text ≥20 chars
 
-**Reference incident**: both sites had testimonials in source research but shipped with zero social proof sections.
-
 ## Every team member (Person JSON-LD)
 
 ***UNIVERSAL — BUILD-BREAKING***
@@ -573,8 +540,6 @@ When `_research.json.testimonials.length >= 2`:
 
 ### Validator (`validate-person-jsonld.mjs`)
 For every `[data-card-type="person"]`, assert adjacent or parent `<script type="application/ld+json">` contains `"@type":"Person"` with non-empty `name`, `jobTitle`, `worksFor.name`.
-
-**Reference incident**: lonemountainglobal shipped 0 `Person` JSON-LD despite having a publications-driven research site.
 
 ## Every testimonials section (AggregateRating + Review JSON-LD)
 
@@ -603,8 +568,6 @@ For every page with `[data-section="testimonials"]`, assert `<script type="appli
 - `"@type":"AggregateRating"` nested in Organization/LocalBusiness
 - ≥1 `"@type":"Review"` block
 
-**Reference incident**: search results for lonemountainglobal and nyfoldingbox showed no star ratings despite client testimonials existing in source content.
-
 ## Every FAQ section (FAQPage JSON-LD validator)
 
 ***UNIVERSAL — BUILD-BREAKING***
@@ -625,8 +588,6 @@ Every page rendering a FAQ section (accordion, numbered Q&A, toggle list, any `<
 For every `[data-section="faq"]` or `<details>` parent with ≥3 children:
 - Assert `<script type="application/ld+json">` contains `"@type":"FAQPage"` with `mainEntity.length >= 3`
 - Each entry has non-empty `name` + `acceptedAnswer.text ≥ 20 chars`
-
-**Reference incident**: nyfoldingbox FAQ stub had 3 placeholder items with no JSON-LD.
 
 ## Every site with extractable source logo (brand colors from logo)
 
@@ -702,8 +663,6 @@ For every page with ≥3 `<h2>` in main content:
 - Each H2 has a corresponding `<a href="#…">` in TOC
 - Each H2 has non-empty `id` attr
 
-**Reference incident**: lonemountainglobal `/research` page had 8 H2 sections with no navigation.
-
 ## Every site rebuild (logo-text-color → navbar polarity)
 
 ***UNIVERSAL — BUILD-BREAKING — extends "BRAND COLORS FROM LOGO"***
@@ -738,8 +697,6 @@ For every dist HTML:
 - Fetch logo `<img>` from header
 - Run GPT-4o vision `text_luminance` check against header bg
 - Fail when contrast <4.5:1
-
-**Reference incident**: lonemountainglobal.projectsites.dev (2026-05-10) shipped white wordmark logo against light cream header background — logo invisible until scrolled past hero. Brian flagged it as ABSOLUTE NON-NEGOTIABLE: "Notice how the logo has white text in it — this means the navbar must be a dark navbar. Also, notice the image colors and choose the colors to be one of those, but do this for each brand and make a big deal about it because we ABSOLUTELY NEED TO make sure that we get the brand colors right every single time, from pre-existing logos."
 
 ## Every site rebuild (progressive iteration enhancement + dual-source scrape)
 
@@ -794,8 +751,6 @@ Reads `sites.iteration_count` at boot, applies goodies `[0..N]` from the queue, 
 ### Premium tier acceleration
 Paid `/create` upgrade flag (`builds.opt_in_premium_multimedia = true`) accelerates the queue 3× per iteration (premium tier costs an extra ~$15 per build for 3 simultaneous goodies).
 
-**Reference incident**: lonemountainglobal (2026-05-10) — Brian explicitly requested "I want it so it improves each time it builds because it can just scrape both websites each time (the original and the previous build), then ensure the build process includes a minimal spend on some unique goodies that are applied each time it is rebuilt".
-
 ## Every publication sub-page (enrich 300-500w supporting parent kw OR 301)
 
 ***UNIVERSAL — BUILD-BREAKING — extends "Every publication tile"***
@@ -835,8 +790,6 @@ For every `/publications/<slug>` route (depth=2), assert:
 - `word_count_in_main >= 300 AND has BlogPosting/ScholarlyArticle JSON-LD AND ≥2 outbound citations`
 - OR `_redirects` covers the slug
 
-**Reference incident**: lonemountainglobal.projectsites.dev (2026-05-10) — Brian directive: "you can include all the previous /publication pages but if you do you must enrich them... 300-500 words and support their parent page's target keywords. But, in this case... we should also include progressive features that improve over new builds".
-
 ## Every linked PDF CV (recent-works expansion + YouTube feature embeds)
 
 ***UNIVERSAL — BUILD-BREAKING — extends "Every linked PDF"***
@@ -870,8 +823,6 @@ When source-site linked PDF (CV/resume/portfolio) extraction yields `_pdf_facts.
 When `_pdf_facts.json.publications[].some(p => p.year >= currentYear - 5)`:
 - Assert `/about` or `/cv` route renders `[data-section="recent-works"]` with ≥3 `[data-card-type="recent-work"]` children
 - AND ≥1 child contains a YouTube `<iframe>` OR `[data-video-embed]` OR `[data-audio-snippet]` OR `[data-infographic]`
-
-**Reference incident**: lonemountainglobal (2026-05-10) — Brian directive: "since https://lonemountainglobal.com has a PDF that's really impressive CV on it, I want you to assume it's your goal to expand on it, especially the recent works, perhaps include relevant YouTube videos in a feature section, add digital immersive interactive experiences..." Dr. Taryn Vian's CV lists multiple peer-reviewed papers and talks from the past 5 years that exist as conference videos on YouTube/Vimeo — site MUST embed those, not just list titles.
 
 ## Every site (digital immersive interactive experiences)
 
@@ -907,8 +858,6 @@ When `iteration_count >= 4`:
 - Each has a working `/api/experience/<name>` endpoint
 - Each has a Turnstile widget
 - Each has a rate-limit copy block
-
-**Reference incident**: lonemountainglobal (2026-05-10) — Brian directive: "add digital immersive interactive experiences that include interactive things like generating images, podcasts, videos, and other assets into the build process".
 
 ## Every build (creativity + love + stars doctrine)
 
@@ -1327,8 +1276,6 @@ The rebuild MUST upgrade `/about` from a generic org-about page into a full mult
 When `_research.json.dominant_founder` resolved (single-founder ratio >0.5):
 - Assert `/about` route renders `[data-section="founder-hero"]` + `[data-section="founder-timeline"]` + `[data-section="founder-publications"]`
 - AND when `iteration_count >= 3`, assert `[data-multimedia="audio"]` + `[data-multimedia="video"]` OR `[data-multimedia="podcast"]` present
-
-**Reference incident**: lonemountainglobal (2026-05-10) — Dr. Taryn Vian is the sole researcher driving every publication, the entire `/about` is her bio, yet rebuild shipped generic "About" page with no multimedia depth. Brian directive: "I want the AI to be intelligent enough to go to https://lonemountainglobal.com and scan the personal brand and then create an amazing digital multimedia profile, that leverages plenty of multimedia, including special AI-generated material that enhances that digital multimedia experience of the brand of Dr. Taryn Vian, by progressively improving the multimedia leveraged by the website."
 
 ## Every site rebuild (TEMPLATE LEVERAGE #1 — mandatory clone-first)
 

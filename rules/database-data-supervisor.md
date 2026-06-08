@@ -24,7 +24,3 @@ Cloudflare-hostable data access first (D1/KV/R2/DO), Neon/Upstash behind adapter
 - **Tenant isolation** — every table carries `org_id`; every query filters by it (defense-in-depth even behind a route gate)
 - **Safe import/export** + **idempotent** operations (re-runnable without double effect)
 - NocoDB only where customers/admins genuinely manage databases — not as a generic admin shortcut
-
-## See
-- `package-preference-registry` · `cloudflare-hostable-supervisor` · `cloudflare-lock-in-is-leverage` · `validation-error-handling-supervisor` · `auth-permissions-security-supervisor` · `code-style` · `hono-api`
-
