@@ -1,5 +1,32 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-22 — security-supply-chain.sh extracted + brew-tool hints + wrapped-control focus rule
+
+### Closes pass-21 Recs
+
+- **`bin/security-supply-chain.sh`** (new) — extracted from inline bash. 4 checks with per-step exit codes + pass/fail/skip tallies:
+  1. GitHub Actions SHA-pinning via `sha-pin-actions.mjs --check`
+  2. `package.json` `git+https://` deps grep
+  3. Gitleaks `detect --redact --verbose`
+  4. Trufflehog `git file://. --only-verified --fail`
+- Robust glob: uses bash array of existing files instead of glob-fallthrough strings (fixed during self-test).
+- Self-tested: pass=2, fail=0, skip=2 (gitleaks/trufflehog optional).
+- shellcheck `-x -S warning` → 0 warnings.
+- shfmt `-i 2 -ci -bn` clean.
+- `commands/security-supply-chain.md` already references the script.
+
+### Installer extended
+- `bin/install-lint-stack.sh` package.json scripts += `security:audit`.
+- New § "Brew tool availability" reports gitleaks/trufflehog/semgrep/shellcheck/shfmt/yamllint/actionlint/hadolint with `brew install` hint per missing tool. Doesn't fail install — informational so projects know what to add for full coverage.
+
+### Bundled doctrine update
+- `rules/gorgeous-by-default.md` § Per-element gorgeous checklist += new "Focus/hover on WRAPPED controls" bullet codifying the `:focus-within` + suppress-inner-ring pattern for search bars / comboboxes / segmented fields. Reference incident: projectsites /admin/apps search bar (2026-06-09).
+
+### Verified
+- shellcheck → 0 warnings across both bin scripts.
+- pack integrity → clean (15/88/14).
+- Self-test of `security-supply-chain.sh` PASS on agentskills repo.
+
 ## 2026-06-09 — pass-21 — lefthook pre-push sha-pin gate + /security-supply-chain unified audit
 
 ### Closes pass-20 Recs

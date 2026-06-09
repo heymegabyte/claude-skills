@@ -182,6 +182,7 @@ const want = {
   'sha-pin': 'node ~/.agentskills/scripts/sha-pin-actions.mjs .github/workflows/*.yml',
   'sha-pin:check': 'node ~/.agentskills/scripts/sha-pin-actions.mjs --check .github/workflows/*.yml',
   'sha-pin:bump': 'node ~/.agentskills/scripts/sha-pin-actions.mjs --bump .github/workflows/*.yml',
+  'security:audit': 'bash ~/.agentskills/bin/security-supply-chain.sh',
 };
 let touched = 0;
 for (const [k, v] of Object.entries(want)) {
@@ -193,6 +194,16 @@ fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + '\n');
 console.error(`  ✓ ${touched} script(s) added/updated`);
 NODE
 fi
+
+# --- 5.5. Brew-tool install hints (gitleaks, trufflehog, semgrep) -----------
+emdashSection "Brew tool availability"
+for tool in gitleaks trufflehog semgrep shellcheck shfmt yamllint actionlint hadolint; do
+  if command -v "$tool" >/dev/null 2>&1; then
+    emdashLog "✓" "$tool installed"
+  else
+    emdashLog "!" "$tool missing — brew install $tool"
+  fi
+done
 
 # --- 6. lefthook install ---------------------------------------------------
 emdashSection "Installing lefthook git hooks"
