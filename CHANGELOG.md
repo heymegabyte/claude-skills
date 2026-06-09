@@ -1,5 +1,26 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-25 — .validate-packs-ignore + always-visible warning counts
+
+### Closes pass-24 Recs
+
+- **`.validate-packs-ignore`** (new) — explicit acknowledgement file for intentionally-broad rules.
+  - Format: one slug per line, `#` comments OK.
+  - Pre-populated with 4 known cases (payments-routing, copy-writing, timeline-authenticity, image-quality) — each documented with why it legitimately spans 3 packs.
+  - Validator reads + skips ignored slugs from warnings.
+- **Always-visible summary** — output now always reports `packs/rules/skills/warnings/ignored` counts (positive signal even at 0). Before: silent on warnings=0.
+- **Hint surface** — when warnings fire, "(silence specific slugs via .validate-packs-ignore)" inline.
+
+### Final pack state
+```
+✓ pack integrity clean — 15 packs, 89 rules, 14 skill dirs, 0 warnings, 4 ignored
+```
+
+### Verified
+- `node scripts/validate-packs.mjs` → exit 0 + clean summary line.
+- Removing the ignore file → 4 warnings re-appear correctly.
+- shellcheck/shfmt clean (no shell changes).
+
 ## 2026-06-09 — pass-24 — validate-packs.mjs schema + multi-pack warning
 
 ### Closes pass-23 Rec — pack validator extended

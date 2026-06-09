@@ -1,0 +1,15 @@
+# .validate-packs-ignore — silence multi-pack warnings for intentionally-broad rules.
+# One slug per line; # comments OK.
+# Per Brian's design, these rules legitimately span multiple concerns.
+
+# Payments span backend service + ecommerce surface + payments-specific
+payments-routing
+
+# Copy-writing applies to content authoring + frontend rendering + full website builds
+copy-writing
+
+# Historical media authenticity applies to content + media pipeline + website builds
+timeline-authenticity
+
+# Image-quality applies to content sourcing + media optimization + website builds
+image-quality

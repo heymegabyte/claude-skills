@@ -11,6 +11,7 @@
  * Warnings (informational, no exit code change):
  *   - Rules referenced by ≥3 packs (multi-concern rules are intentional, but 3+
  *     usually signals over-bundling; review whether the rule is too broad)
+ *   - Silenceable via `.validate-packs-ignore` (one rule slug per line, # comments OK)
  *
  * Exit codes: 0 = clean, 1 = drift detected.
  * Run: node scripts/validate-packs.mjs
@@ -23,6 +24,15 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PACKS = join(ROOT, '_packs');
 const RULES = join(ROOT, 'rules');
+const IGNORE_FILE = join(ROOT, '.validate-packs-ignore');
+
+const ignoredSlugs = new Set();
+if (existsSync(IGNORE_FILE)) {
+  for (const raw of readFileSync(IGNORE_FILE, 'utf8').split(/\r?\n/)) {
+    const line = raw.replace(/#.*$/, '').trim();
+    if (line) ignoredSlugs.add(line);
+  }
+}
 
 const errors = [];
 
@@ -76,7 +86,7 @@ for (const pf of packFiles) {
 // only ≥3 surfaces a warning; ≥2 is allowed silently.
 const warnings = [];
 for (const [slug, packs] of rulePackMap.entries()) {
-  if (packs.length >= 3) {
+  if (packs.length >= 3 && !ignoredSlugs.has(slug)) {
     warnings.push(`rules/${slug}.md: in ${packs.length} packs (${packs.join(', ')}) — consider whether the rule is too broad`);
   }
 }
@@ -91,11 +101,13 @@ if (orphanRules.length > 0) {
 if (warnings.length > 0) {
   console.error(`⚠ ${warnings.length} pack warning(s):`);
   for (const w of warnings) console.error(`  · ${w}`);
-  console.error('');
+  console.error('  (silence specific slugs via .validate-packs-ignore)\n');
 }
 
+const summary = `${packFiles.length} packs, ${ruleFiles.size} rules, ${referencedSkills.size} skill dirs, ${warnings.length} warnings, ${ignoredSlugs.size} ignored`;
+
 if (errors.length === 0) {
-  console.log(`✓ pack integrity clean — ${packFiles.length} packs, ${ruleFiles.size} rules, ${referencedSkills.size} skill dirs`);
+  console.log(`✓ pack integrity clean — ${summary}`);
   process.exit(0);
 }
 
