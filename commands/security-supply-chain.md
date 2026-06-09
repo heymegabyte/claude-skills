@@ -49,6 +49,29 @@ AUDIT
 )
 ```
 
+## JSON mode (CI integration)
+
+Pass `--json` to emit a single uniform envelope per `rules/uniform-json-output.md`:
+
+```bash
+# Full envelope
+bash ~/.agentskills/bin/security-supply-chain.sh . --json
+
+# Pretty-print
+bash ~/.agentskills/bin/security-supply-chain.sh . --json | jq
+
+# Just the summary line
+bash ~/.agentskills/bin/security-supply-chain.sh . --json | jq -r '"pass:\(.summary.pass) fail:\(.summary.fail) skip:\(.summary.skip)"'
+
+# Fail-only filter — list failing checks with details
+bash ~/.agentskills/bin/security-supply-chain.sh . --json | jq '.checks[] | select(.status=="fail")'
+
+# CI gate — exit non-zero if any check failed
+bash ~/.agentskills/bin/security-supply-chain.sh . --json | jq -e '.summary.fail == 0' >/dev/null
+```
+
+Envelope shape: `{meta:{skills_root,project,timestamp,generated_at,git_sha}, checks:[{name,status,details}], summary:{pass,fail,skip,exit}}`. Human-readable report still prints to stderr in JSON mode, so `2>/dev/null` silences it while keeping the JSON on stdout.
+
 ## After clean exit
 
 The agentskills-distributed pre-push lefthook gate (`sha-pin-check` step) runs `--check` mode automatically on every push. This slash command is for on-demand audits + when adding new dependencies.

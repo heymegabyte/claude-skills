@@ -35,9 +35,13 @@ TODAY_MATCH=$(date -u +%Y-%m-%d)
 
 # --- Parse entries via awk ---------------------------------------------------
 # Each entry starts with `## YYYY-MM-DD — <pass-id> — <summary>`.
-META_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Meta helpers from bin/lib/emit-json.sh per rules/uniform-json-output.md.
+SKILLS_ROOT_FOR_LIB="${SKILLS_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
+# shellcheck source=lib/emit-json.sh
+. "$SKILLS_ROOT_FOR_LIB/bin/lib/emit-json.sh"
+META_TS=$(emit_iso_ts)
 META_REPO=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
-META_GIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+META_GIT_SHA=$(emit_git_sha)
 
 awk -v filter="$FILTER" -v today_match="$TODAY_MATCH" -v json="$JSON" \
   -v meta_ts="$META_TS" -v meta_repo="$META_REPO" -v meta_git_sha="$META_GIT_SHA" '

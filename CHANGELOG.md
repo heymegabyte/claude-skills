@@ -1,5 +1,50 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-38 — `bin/lib/emit-json.sh` shared lib + 3-helper refactor
+
+### Closes pass-37 Rec 1 + Rec 2 (jq examples)
+
+- **NEW `bin/lib/emit-json.sh`** — sourceable shared library implementing the uniform-JSON doctrine:
+  - `json_escape <string>` — backslash + double-quote escaping
+  - `emit_iso_ts` — ISO 8601 UTC timestamp
+  - `emit_git_sha [project-dir]` — short HEAD SHA, defaults to `$PWD`, falls back to `"unknown"`
+  - `emit_meta_block <repo> <ts> <sha> [filter]` — canonical `"meta":{repo,generated_at,git_sha[,filter]}` block (no enclosing `{...}`)
+  - `emit_kv_string <key> <value>` + `emit_kv_int <key> <value>` — typed key-value emitters
+- **3 helpers refactored to consume it** — dedupes ~30 lines of timestamp/sha/escape boilerplate across:
+  - `bin/lint-auto-improve.sh` — uses `emit_iso_ts` + `emit_git_sha` + `emit_meta_block` + `json_escape`
+  - `bin/session-recap.sh` — uses `emit_iso_ts` + `emit_git_sha` (meta still emitted inside awk for shape parity)
+  - `bin/security-supply-chain.sh` — uses `emit_iso_ts` + `emit_git_sha` + `json_escape`; envelope gains `meta.generated_at` alongside existing `meta.timestamp` (back-compat preserved)
+- **`commands/security-supply-chain.md` § JSON mode (CI integration)** — 5 `jq` recipe examples added per pass-37 Rec 2:
+  - pretty-print, summary one-liner, fail-only filter, CI gate (`jq -e .summary.fail == 0`), stderr suppression
+
+### Why a shared lib now
+
+3 helpers all emitted the same `meta` shape inline = 3 copies of identical `date -u +...` / `git rev-parse` / escape logic. The lib pulls them into one source of truth that future helpers consume by sourcing — adding a new uniform-JSON helper drops from ~12 lines of boilerplate to 3 (source + call 2 functions). Per `rules/lint-doctrine.md` § Codified incidents: when 3 callers diverge on shape, the lib is justified; when 2 callers diverge, defer.
+
+### Back-compat
+
+- `security-supply-chain.sh` `meta` keeps `timestamp` (existing key) AND adds `generated_at` (canonical key). Both carry the same value. Allows callers reading `.meta.timestamp` to keep working while new callers can adopt `.meta.generated_at` per the doctrine.
+- All 3 JSON envelopes parse-clean via `python3 -m json.tool` post-refactor; payload shapes unchanged.
+
+### Verification
+
+```bash
+shellcheck -x -S warning bin/lib/emit-json.sh bin/{lint-auto-improve,session-recap,security-supply-chain}.sh  # clean
+shfmt -i 2 -ci -bn -w bin/lib/emit-json.sh                                                                      # idempotent
+# All 3 envelopes parse:
+bash bin/lint-auto-improve.sh /tmp/test --json     | python3 -m json.tool >/dev/null  # OK
+CHANGELOG=/tmp/cl.md bash bin/session-recap.sh --json | python3 -m json.tool >/dev/null  # OK
+bash bin/security-supply-chain.sh /tmp --json      | python3 -m json.tool >/dev/null  # OK
+```
+
+### Next candidates (pass-39)
+
+- `session-recap` as a Claude Code SessionStart hook (auto-context-restore on every fresh session) — Brian-voice should opt in/out before wiring
+- Adopt `emit_meta_block` inside `session-recap.sh`'s awk BEGIN (currently still inline — shape parity with old envelope kept it inline; could refactor)
+- Audit `monitor-orchestration.md` for whether the pass-N closure-loop pattern deserves a §Known-shortcomings entry
+
+---
+
 ## 2026-06-09 — pass-37 — lint-auto-improve --json + recap aggregation scripts
 
 ### Closes both pass-36 Recs (dogfooding the just-codified doctrine)

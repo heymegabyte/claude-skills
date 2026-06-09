@@ -188,27 +188,32 @@ emdashLog "i" "Codify a rule: copy proposal to AI prompt, generate YAML, drop in
 emdashLog "  " "$SEMGREP_CUSTOM_DIR/<topic>.yml"
 emdashLog "i" "Cross-link in rules/lint-doctrine.md § Codified incidents"
 
-# --- JSON emit per rules/uniform-json-output.md ----------------------------
+# --- JSON emit per rules/uniform-json-output.md (uses bin/lib/emit-json.sh) ---
 if [ "$JSON" = "1" ]; then
-  META_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-  META_GIT_SHA=$(git -C "$PROJECT" rev-parse --short HEAD 2>/dev/null || echo "unknown")
-  # Build proposals array from CLUSTERED ≥3 hits
+  # shellcheck source=lib/emit-json.sh
+  . "$SKILLS_ROOT/bin/lib/emit-json.sh"
+
+  META_TS=$(emit_iso_ts)
+  META_GIT_SHA=$(emit_git_sha "$PROJECT")
+  FILTER_VAL="default"
+  [ "$AUTO_DRAFT" = "1" ] && FILTER_VAL="auto-draft"
+
   PROPOSALS_JSON="["
   FIRST=1
+  TMPF=$(mktemp)
   echo "$CLUSTERED" | awk '$1 >= 3' | while read -r count pattern; do
     [ -z "$pattern" ] && continue
     if [ "$FIRST" = "1" ]; then FIRST=0; else PROPOSALS_JSON="${PROPOSALS_JSON},"; fi
-    PROPOSALS_JSON="${PROPOSALS_JSON}{\"pattern\":\"${pattern}\",\"count\":${count}}"
-    echo "$PROPOSALS_JSON" >/tmp/lint-auto-improve-proposals-$$
+    PROPOSALS_JSON="${PROPOSALS_JSON}{\"pattern\":\"$(json_escape "$pattern")\",\"count\":${count}}"
+    printf '%s' "$PROPOSALS_JSON" >"$TMPF"
   done
-  PROPOSALS_JSON=$(cat /tmp/lint-auto-improve-proposals-$$ 2>/dev/null || echo "[")
-  rm -f /tmp/lint-auto-improve-proposals-$$
+  PROPOSALS_JSON=$(cat "$TMPF" 2>/dev/null || echo "[")
+  rm -f "$TMPF"
   PROPOSALS_JSON="${PROPOSALS_JSON}]"
 
-  printf '{"meta":{"repo":"%s","generated_at":"%s","git_sha":"%s","filter":"%s"},"proposals":%s,"summary":{"total":%d,"draft_emitted":%d,"draft_validated":%d,"draft_path":"%s","proposal_path":"%s"}}\n' \
-    "$PROJECT" "$META_TS" "$META_GIT_SHA" \
-    "$([ "$AUTO_DRAFT" = "1" ] && echo "auto-draft" || echo "default")" \
+  printf '{%s,"proposals":%s,"summary":{"total":%d,"draft_emitted":%d,"draft_validated":%d,"draft_path":"%s","proposal_path":"%s"}}\n' \
+    "$(emit_meta_block "$PROJECT" "$META_TS" "$META_GIT_SHA" "$FILTER_VAL")" \
     "$PROPOSALS_JSON" \
     "${TOTAL_PATTERNS:-0}" "$DRAFT_EMITTED" "$DRAFT_VALIDATED" \
-    "$DRAFT_PATH" "$PROPOSAL_FILE"
+    "$(json_escape "$DRAFT_PATH")" "$(json_escape "$PROPOSAL_FILE")"
 fi
