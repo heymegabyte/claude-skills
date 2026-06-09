@@ -1,5 +1,27 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-17 — Generalized version-drift-check + fetch-defaults cross-link
+
+### Closes pass-16 Recs
+
+- **Workflow generalized**: `chromium-freshness.yml` → `version-drift-check.yml`. Now probes 4 dependencies:
+  - **Chrome stable** (`chromiumdash.appspot.com`) → threshold 5 majors
+  - **wrangler npm** → threshold 2 majors
+  - **@anthropic-ai/sdk npm** → track-only (rules ref version-agnostically)
+  - **Node LTS** (`nodejs.org/dist/index.json`) → threshold 2 majors
+- Each probe writes structured outputs to `$GITHUB_OUTPUT`. A single `actions/github-script@v8` step iterates probes and opens deduped issues per-drift (label = `{name}-drift` + `version-drift`).
+- Manual `workflow_dispatch` trigger preserved.
+- `actions/setup-node@v5` ensures `npm view` works.
+
+### `rules/fetch-defaults.md` cross-linked to implementation
+- Rule now points at `15-site-generation/_real-ua.mjs` as the implementation location ("update both the rule line AND the constant in one commit").
+- References the drift gate workflow so future agents know the auto-check exists.
+
+### Verified
+- actionlint → 0 issues across `.github/workflows/{publish,version-drift-check}.yml`.
+- pack integrity → clean (15/88/14).
+- File rename via `git mv` preserves history.
+
 ## 2026-06-09 — pass-16 — DRY shared UA constant + chromiumdash CI freshness probe
 
 ### Closes pass-15 Recs

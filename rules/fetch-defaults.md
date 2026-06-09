@@ -24,6 +24,8 @@ paths:
 - Desktop: `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36`
 - iOS (for mobile-only sites): `Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1`
 - Verified Chrome stable via `https://chromiumdash.appspot.com/fetch_releases?channel=Stable` (2026-06-08 → 149.0.7827.55)
+- **Implementation lives at `15-site-generation/_real-ua.mjs`** (exports `REAL_UA_DESKTOP`, `REAL_UA_IOS`, `REAL_HEADERS`). Every site-generation script imports from there — no inline hardcoded UAs. Update both the rule's UA line AND the constant in one commit.
+- **Drift gate**: `.github/workflows/version-drift-check.yml` (weekly Mondays 09:17 UTC) auto-opens a deduped issue when Chrome stable drifts ≥5 majors from the pinned constant.
 
 ## Companion headers (always pair with UA)
 

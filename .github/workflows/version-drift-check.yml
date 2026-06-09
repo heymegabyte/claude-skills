@@ -1,0 +1,124 @@
+name: Version Drift Check (Chrome / Node / wrangler / Anthropic SDK)
+
+on:
+  schedule:
+    - cron: '17 9 * * 1'  # Mondays 09:17 UTC — quarterly cadence per fetch-defaults.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Probe Chrome stable vs pinned
+        id: chrome
+        run: |
+          CURRENT=$(curl -sf 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Mac&num=1' | jq -r '.[0].version')
+          MAJOR_CURRENT=$(echo "$CURRENT" | cut -d. -f1)
+          MAJOR_PINNED=$(grep -oE 'Chrome/[0-9]+' 15-site-generation/_real-ua.mjs | head -1 | grep -oE '[0-9]+')
+          DRIFT=$((MAJOR_CURRENT - MAJOR_PINNED))
+          {
+            echo "name=Chrome stable"
+            echo "current=$CURRENT"
+            echo "pinned=$MAJOR_PINNED"
+            echo "drift=$DRIFT"
+            echo "threshold=5"
+            echo "fix-loc=rules/fetch-defaults.md + 15-site-generation/_real-ua.mjs"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Probe wrangler npm vs rule
+        id: wrangler
+        run: |
+          CURRENT=$(npm view wrangler version)
+          MAJOR_CURRENT=$(echo "$CURRENT" | cut -d. -f1)
+          PINNED=$(grep -oE 'wrangler@[0-9]+' rules/auto-meta-work.md rules/code-style.md rules/hono-api.md 2>/dev/null | head -1 | grep -oE '[0-9]+' || echo "$MAJOR_CURRENT")
+          DRIFT=$((MAJOR_CURRENT - PINNED))
+          {
+            echo "name=wrangler"
+            echo "current=$CURRENT"
+            echo "pinned=$PINNED"
+            echo "drift=$DRIFT"
+            echo "threshold=2"
+            echo "fix-loc=rules/code-style.md + rules/hono-api.md"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Probe @anthropic-ai/sdk npm (track-only)
+        id: anthropic
+        run: |
+          CURRENT=$(npm view @anthropic-ai/sdk version)
+          {
+            echo "name=@anthropic-ai/sdk"
+            echo "current=$CURRENT"
+            echo "pinned=$CURRENT"
+            echo "drift=0"
+            echo "threshold=99"
+            echo "fix-loc=rules/e2e-visual-inspection.md"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Probe Node LTS
+        id: node
+        run: |
+          LATEST_LTS=$(curl -sf 'https://nodejs.org/dist/index.json' | jq -r 'map(select(.lts != false)) | .[0].version' | sed 's/^v//')
+          MAJOR_LTS=$(echo "$LATEST_LTS" | cut -d. -f1)
+          PINNED=$(grep -oE 'Node [0-9]+ LTS|node:[0-9]+' rules/code-style.md | head -1 | grep -oE '[0-9]+' || echo "$MAJOR_LTS")
+          DRIFT=$((MAJOR_LTS - PINNED))
+          {
+            echo "name=Node LTS"
+            echo "current=v$LATEST_LTS"
+            echo "pinned=$PINNED"
+            echo "drift=$DRIFT"
+            echo "threshold=2"
+            echo "fix-loc=rules/code-style.md + rules/angular-nx-monorepo.md"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Summarize + open issues per probe
+        uses: actions/github-script@v8
+        env:
+          PROBES_JSON: |
+            [
+              ${{ toJSON(steps.chrome.outputs) }},
+              ${{ toJSON(steps.wrangler.outputs) }},
+              ${{ toJSON(steps.anthropic.outputs) }},
+              ${{ toJSON(steps.node.outputs) }}
+            ]
+        with:
+          script: |
+            const probes = JSON.parse(process.env.PROBES_JSON);
+            for (const p of probes) {
+              core.info(`${p.name}: current=${p.current} pinned=${p.pinned} drift=${p.drift} (threshold=${p.threshold})`);
+              const drift = parseInt(p.drift || '0', 10);
+              const thr = parseInt(p.threshold || '99', 10);
+              if (drift < thr) continue;
+              const label = `${(p.name || 'dep').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-drift`;
+              const {data: existing} = await github.rest.issues.listForRepo({
+                owner: context.repo.owner, repo: context.repo.repo,
+                labels: label, state: 'open',
+              });
+              if (existing.length > 0) continue;
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: `${p.name} drift: pinned ${p.pinned} vs current ${p.current}`,
+                labels: [label, 'version-drift'],
+                body: [
+                  `Auto-detected via quarterly version-drift probe.`,
+                  ``,
+                  `**${p.name}** current: \`${p.current}\``,
+                  `**${p.name}** pinned: \`${p.pinned}\``,
+                  `Drift: **${p.drift} versions** (threshold: ${p.threshold})`,
+                  ``,
+                  `Fix locations: ${p['fix-loc']}`,
+                  ``,
+                  `Close this issue once the pinned version is bumped.`,
+                ].join('\n'),
+              });
+            }
