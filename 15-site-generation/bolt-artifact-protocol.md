@@ -158,7 +158,7 @@ When using Anthropic streaming API:
 
 ## Cost & Throughput
 
-- Claude Opus 4.8 at $15/MTok input, $75/MTok output (same pricing as 4.7; zero-cost upgrade)
+- Claude Opus 4.8 at $5/MTok input, $25/MTok output (same as 4.7/4.6; Fast Mode $10/$50, down from 4.7's $30/$150). Verified 2026-05-28 per Anthropic pricing docs.
 - Typical site artifact: ~80K output tokens (40 files × 2K avg) = $6/site
 - Parallel generation (concurrent businesses) bounded only by Anthropic rate limits + container capacity
 - Llama 3.1 70B baseline was ~$0.30/site → upgrade pays for itself when conversion lift > 5% of LTV

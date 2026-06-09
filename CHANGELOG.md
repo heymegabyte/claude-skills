@@ -1,5 +1,62 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-59 — Opus 4 pricing correction (web-verified) + extend cross-rule discipline
+
+### Closes pass-58 candidates 1 (verify Opus 4 pricing) + 2 (extend codified discipline to skill-dirs)
+
+### Web-verified Opus 4.8 pricing
+
+Web verification via Anthropic docs + multiple 2026 pricing aggregators (`platform.claude.com/docs/en/about-claude/pricing`, `pricepertoken.com`, `finout.io`, `amnic.com`):
+
+- **Claude Opus 4.8**: **$5 / $25 per MTok** input / output (verified May 28, 2026)
+- Fast Mode Opus 4.8: $10 / $50 (down from 4.7's $30 / $150 — structural drop)
+- Opus 4.7 / 4.6: also $5 / $25 — Opus 4.x series shares this rate
+- US-only inference: 1.1× → $5.50 / $27.50
+- Sonnet 4.6: $3 / $15 · Haiku 4.5: $1 / $5
+- Discounts: prompt caching saves up to 90% on cached input, batch saves 50%
+
+### Pass-58's pricing claim was BACKWARDS
+
+In pass-58 I asserted "Opus 4 series is $15/$75" and claimed `model-routing.md:18` ($5/$25) was incorrect. This was WRONG. `bolt-artifact-protocol.md:161` had the stale value ($15/$75) — likely carried over from Opus 3 pricing era. Pass-58 preserved the stale value AND added the parenthetical "same pricing as 4.7; zero-cost upgrade" which compounded the error.
+
+### Fix to `15-site-generation/bolt-artifact-protocol.md:161`
+
+```diff
+-- Claude Opus 4.8 at $15/MTok input, $75/MTok output (same pricing as 4.7; zero-cost upgrade)
+++ Claude Opus 4.8 at $5/MTok input, $25/MTok output (same as 4.7/4.6; Fast Mode $10/$50, down from 4.7's $30/$150). Verified 2026-05-28 per Anthropic pricing docs.
+```
+
+### Extended `rules/lint-doctrine.md` § Codified incidents
+
+Two new rows added:
+
+1. **Cross-rule consistency drift** (row updated, not new): same-pack-only grep is INSUFFICIENT. Cross-rule consistency audits MUST grep `rules/*.md` AND `[0-9][0-9]-*/**/*.md` AND `agents/*.md` for the same target. Source: pass-58 surfaced 14 prose-recommendations across skill-dirs that pass-51's same-pack-only audit missed.
+2. **Two same-domain claims contradict** (NEW): when one rule asserts a fact (pricing / version / endpoint), grep the corpus for OTHER mentions. If they diverge, web-verify which is current BEFORE flipping. Don't assume the longer-standing value is correct — newer pricing usually wins. Source: pass-58 noted the model-routing vs bolt-artifact-protocol divergence then guessed (wrongly) which was correct.
+
+### Closure-loop confirmation
+
+The lint-doctrine discipline pass-58 codified worked exactly as designed: this pass-59 caught + corrected pass-58's wrong-direction guess WITHIN the same arc, because pass-58's CHANGELOG flagged "needs web verification before flip" as a deliberate deferral. The discipline of "flag-don't-flip-without-verification" + "next pass closes the verification gap" is the closure-loop in action.
+
+### Verification
+
+```bash
+npm run lint                                                            # ✓ 9/9 green
+grep -rn '$15.*$75\|$15/MTok' rules/ [0-9][0-9]-*/                       # 0 hits — stale pricing removed
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-60)
+
+- Audit `02-goal-and-brief/SKILL.md` + `06-build-and-slice-loop/` for any other pricing/version references that may have inherited the stale $15/$75 mental model
+- Add a `bin/check-pricing.sh` (parallels `check-doc-urls.sh`) that flags any pricing reference older than 90 days for re-verification
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-58 — Cross-rule Opus 4.8 sweep (14 mentions across 11 files)
 
 ### Closes pass-51's codified cross-rule version-consistency discipline (retrospectively)
