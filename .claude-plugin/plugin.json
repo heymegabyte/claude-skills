@@ -43,9 +43,7 @@
     "15-site-generation",
     "16-cinematic-website-prime-directive"
   ],
-  "outputStyles": [
-    "output-styles/emdash-concise.md"
-  ],
+  "outputStyles": ["output-styles/emdash-concise.md"],
   "monitors": "monitors/monitors.json",
   "agents": [
     "agents/accessibility-auditor.md",

@@ -3,7 +3,7 @@ name: Validate & Publish Skills
 on:
   push:
     branches: [master, main]
-    tags: ['v*']
+    tags: ["v*"]
   pull_request:
     branches: [master, main]
 
@@ -38,6 +38,10 @@ jobs:
       - name: Self-lint Markdown (whole-repo, pass-43/44/45)
         run: |
           npx --yes markdownlint-cli2@^0.18.1 "**/*.md"
+
+      - name: Self-lint JSON/YAML (Prettier check, pass-46)
+        run: |
+          npx --yes prettier@3 --check "**/*.{json,jsonc,yml,yaml}"
 
       - name: Check doc counts
         run: |
@@ -398,9 +402,10 @@ jobs:
             fi
           done
 
-      - name: Normalize generated markdown (pass-45 — prevents drift on next CI run)
+      - name: Normalize generated markdown + JSON/YAML (pass-45/46 — prevents drift on next CI run)
         run: |
           npx --yes markdownlint-cli2@^0.18.1 --fix "**/*.md" || true
+          npx --yes prettier@3 --write "**/*.{json,jsonc,yml,yaml}" || true
 
       - name: Commit cross-platform files
         run: |
@@ -425,8 +430,8 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
       - name: Publish to npm
         run: npm publish --access public
         env:
@@ -461,7 +466,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
-          node-version: '22'
+          node-version: "22"
       - name: Publish to JSR
         run: npx jsr publish --allow-dirty
         continue-on-error: true

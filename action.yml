@@ -1,23 +1,23 @@
-name: 'Emdash Skills'
-description: 'Install Emdash autonomous product-building skills for AI coding tools (Claude Code, Codex, Cursor, Copilot, and 32+ more)'
-author: 'Brian Zalewski <hey@megabyte.space>'
+name: "Emdash Skills"
+description: "Install Emdash autonomous product-building skills for AI coding tools (Claude Code, Codex, Cursor, Copilot, and 32+ more)"
+author: "Brian Zalewski <hey@megabyte.space>"
 
 branding:
-  icon: 'cpu'
-  color: 'blue'
+  icon: "cpu"
+  color: "blue"
 
 inputs:
   target:
-    description: 'Directory to install skills into'
+    description: "Directory to install skills into"
     required: false
-    default: '.agentskills'
+    default: ".agentskills"
   tool:
-    description: 'Target tool (claude|codex|cursor|copilot|all)'
+    description: "Target tool (claude|codex|cursor|copilot|all)"
     required: false
-    default: 'all'
+    default: "all"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Install skills
       shell: bash

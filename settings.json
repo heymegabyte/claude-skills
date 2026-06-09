@@ -27,10 +27,7 @@
       "Bash(chmod -R 777 /)"
     ],
     "defaultMode": "auto",
-    "additionalDirectories": [
-      "/Users/apple/.agentskills",
-      "/Users/apple/emdash-projects"
-    ]
+    "additionalDirectories": ["/Users/apple/.agentskills", "/Users/apple/emdash-projects"]
   },
   "hooks": {
     "SessionStart": [
@@ -307,11 +304,7 @@
     },
     "enableWeakerNestedSandbox": true,
     "filesystem": {
-      "denyRead": [
-        "/Users/apple/.ssh",
-        "/Users/apple/.gnupg",
-        "/Users/apple/.config/age"
-      ],
+      "denyRead": ["/Users/apple/.ssh", "/Users/apple/.gnupg", "/Users/apple/.config/age"],
       "allowWrite": [
         "/Users/apple/.claude",
         "/Users/apple/.agentskills",
@@ -320,8 +313,30 @@
     }
   },
   "worktree": {
-    "symlinkDirectories": ["node_modules", ".angular", ".nx", ".turbo", "dist", ".wrangler", ".cache", ".vite", ".parcel-cache", ".next"],
-    "sparsePaths": ["src/", "tests/", "package.json", "tsconfig.json", "wrangler.toml", "pyproject.toml", "angular.json", ".claude/", "drizzle/", "e2e/"]
+    "symlinkDirectories": [
+      "node_modules",
+      ".angular",
+      ".nx",
+      ".turbo",
+      "dist",
+      ".wrangler",
+      ".cache",
+      ".vite",
+      ".parcel-cache",
+      ".next"
+    ],
+    "sparsePaths": [
+      "src/",
+      "tests/",
+      "package.json",
+      "tsconfig.json",
+      "wrangler.toml",
+      "pyproject.toml",
+      "angular.json",
+      ".claude/",
+      "drizzle/",
+      "e2e/"
+    ]
   },
   "attribution": {
     "commit": "Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>",
@@ -353,7 +368,16 @@
   },
   "spinnerVerbs": {
     "mode": "append",
-    "verbs": ["orchestrating", "deploying", "auditing", "optimizing", "scanning", "chaining MCPs", "spawning agents", "verifying"]
+    "verbs": [
+      "orchestrating",
+      "deploying",
+      "auditing",
+      "optimizing",
+      "scanning",
+      "chaining MCPs",
+      "spawning agents",
+      "verifying"
+    ]
   },
   "spinnerTipsOverride": {
     "excludeDefault": false,

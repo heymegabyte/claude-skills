@@ -16,13 +16,13 @@ jobs:
 
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: '22'
+          node-version: "22"
 
       # Per rules/ai-agent-security.md § Supply chain — pin upstream tools to commit SHAs,
       # never curl | sh from upstream defaults (mutable + unverified).
       - name: gitleaks scan (action-only, SHA-pinned)
         uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
-        continue-on-error: true  # security-supply-chain.sh handles per-check status
+        continue-on-error: true # security-supply-chain.sh handles per-check status
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

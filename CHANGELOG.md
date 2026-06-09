@@ -1,5 +1,44 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-46 — Prettier JSON/YAML CI gate + sync-job JSON/YAML auto-normalize
+
+### Closes pass-45 candidates 1 (Prettier CI gate) + 2 (sync-job JSON normalize)
+
+- **`.prettierrc.json` + `.prettierignore`** (NEW at repo root) — agentskills repo now owns its own Prettier config independent of `templates/lint-stack/.prettierrc.cjs` (which requires plugins not installed in this repo's node_modules). Conservative defaults: 100 col, 2 spaces, single quotes for code, double quotes for JSON/YAML, LF line endings, trailing commas all. `.prettierignore` excludes the 17 CI-generated cross-platform mirror dirs (`.cursor/`, `.windsurf/`, `.amazonq/`, `.augment/`, `.aiassistant/`, `.kilo/`, `.roo/`, `.continue/`, `.junie/`, `.devin/`, `.openhands/`, `.agents/`, `.trae/`, `.tabnine/`, `.kiro/`, `.void/`, `.bolt/`) — these are regenerated wholesale by `sync-cross-platform`, no point linting them at validate-time.
+- **One-shot `prettier --write "**/*.{json,jsonc,yml,yaml}"`** — touched 7 files: `.markdownlint.jsonc`, `action.yml`, `settings.json`, `.claude-plugin/plugin.json`, `.github/workflows/publish.yml`, `.github/workflows/supply-chain-pr-comment.yml`, `.github/workflows/version-drift-check.yml`. 56 insertions, 34 deletions (mostly indent + trailing-comma normalization). Functional content unchanged.
+- **`.github/workflows/publish.yml` § Self-lint JSON/YAML** — NEW validate-job step right after Self-lint Markdown. Runs `npx prettier@3 --check "**/*.{json,jsonc,yml,yaml}"`. Future JSON/YAML format drift fails CI before merge.
+- **`.github/workflows/publish.yml` § Normalize generated markdown + JSON/YAML** — extended pass-45's sync-job auto-normalize step to also run `prettier --write` on JSON/YAML. Same drift-loop fix as pass-45 but for JSON/YAML: regenerated files (e.g. `.claude-plugin/plugin.json` after `Sync plugin versions`) get auto-formatted before commit.
+
+### Why we own a local `.prettierrc.json`
+
+Without a local config, Prettier's cosmiconfig walks UP the filesystem and found a parent that referenced `prettier-plugin-packagejson` (uninstalled in agentskills). Local `.prettierrc.json` stops the walk + makes the config explicit. Templates' `.prettierrc.cjs` keeps the plugin-rich downstream variant; agentskills' `.prettierrc.json` is the minimal upstream variant.
+
+### Drift-loop fix (now JSON/YAML too)
+
+Same shape as pass-45's markdown loop. Without auto-normalize: `Sync plugin versions` step uses raw `sed` which can produce non-prettier-canonical JSON → validator catches it next push → blocks sync. With: sync writes raw → auto-fix normalizes → commits clean → next push's validator passes.
+
+### Verification
+
+```bash
+actionlint .github/workflows/publish.yml                                  # 0 errors
+yamllint -d "..." .github/workflows/*.yml                                 # 0 errors
+npx prettier@3 --check "**/*.{json,jsonc,yml,yaml}"                       # all matched files use Prettier code style
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Did NOT install Prettier plugins (`prettier-plugin-packagejson`, `prettier-plugin-organize-imports`) — agentskills has no `dependencies` to organize; keep config minimal
+
+### Next candidates (pass-47)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Consider adding `shfmt -d` (diff mode) to CI alongside `shellcheck` for format-drift detection on `bin/*.sh`
+- JSON Schema validation for `_packs/*.yml` (currently validated by `validate-packs.mjs` for cross-link integrity but not schema shape)
+
+---
+
 ## 2026-06-09 — pass-45 — whole-repo `**/*.md` CI gate + sync-cross-platform auto-normalize
 
 ### Closes pass-44 candidates 1 (.claude-plugin sweep) + 2 (widen CI to `**/*.md`)
