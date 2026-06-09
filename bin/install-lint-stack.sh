@@ -162,6 +162,7 @@ const want = {
   'lint:knip': 'knip',
   'lint:jscpd': 'jscpd',
   'precommit:audit': 'lefthook run pre-commit --all-files && lefthook run pre-push --all-files',
+  'lint:improve': 'bash ~/.agentskills/bin/lint-auto-improve.sh',
 };
 let touched = 0;
 for (const [k, v] of Object.entries(want)) {

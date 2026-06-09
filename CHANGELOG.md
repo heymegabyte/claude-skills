@@ -1,5 +1,32 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-12 — lint-auto-improve VERIFIED end-to-end + /improve-lint command
+
+### Self-test PASSED on seeded `.lint-history/`
+- Seeded 6 fake ESLint logs with repeating `@typescript-eslint/no-explicit-any` (6 hits) + `unicorn/prefer-node-protocol` (6 hits) violations + path noise.
+- Script clustered correctly: both rules surfaced; file-path noise filtered by ≥3 threshold.
+- Proposal markdown written to `.lint-history/proposals/proposal-<ts>.md` with the Claude-ready prompt for the top candidate.
+- Workflow narrative explains the codification path.
+- **End-to-end loop now PROVEN to work**, not just designed.
+
+### Bugs fixed in `bin/lint-auto-improve.sh`
+- Regex didn't match `@scope/rule-name` or lowercase rule-ids. Replaced with `@?[a-zA-Z][a-zA-Z0-9_-]+/[a-zA-Z][a-zA-Z0-9_/-]+` covering all ESLint/semgrep/sonarjs shapes.
+- `$count×` unicode-attached variable caused `set -u` unbound-variable error. Wrapped in `${count}` + replaced × with `x`.
+- `printf '- **%sx...'` — leading `-` parsed as printf flag. Added `--` separator before format string.
+
+### New `/improve-lint` slash command
+- `commands/improve-lint.md` registers the explicit invocation surface (auto-registered via sync-desktop-skills hook).
+- Documents the codification workflow: read proposal → AI drafts YAML → drop into semgrep-custom → cross-link → commit.
+
+### `lint:improve` npm script wired
+- Installer's package.json scripts += `"lint:improve": "bash ~/.agentskills/bin/lint-auto-improve.sh"`.
+- `npm run lint:improve` from any installed project triggers the loop.
+
+### Verified
+- shellcheck both bin scripts → 0 warnings.
+- pack integrity → clean (15/88/14).
+- Self-test → PASS (cluster + propose + workflow output all correct).
+
 ## 2026-06-08 — pass-11 — AI auto-improve loop concrete + sonarjs/import + site showcase
 
 ### ESLint chain expanded (per @megabytelabs inspiration)

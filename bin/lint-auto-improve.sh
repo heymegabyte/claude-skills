@@ -57,7 +57,9 @@ fi
 
 # --- 2. Cluster by rule-id ------------------------------------------------
 emdashSection "Clustering violations by rule-id"
-CLUSTERED=$(grep -hoE '(error|warning).*[A-Z][a-z0-9_/-]+/[a-z0-9_-]+' "$HISTORY_DIR"/*.log 2>/dev/null \
+# Match common ESLint/semgrep/sonarjs rule-id shapes:
+#   @scope/rule-name  ·  plugin/rule-name  ·  category/sub/rule
+CLUSTERED=$(grep -hoE '@?[a-zA-Z][a-zA-Z0-9_-]+/[a-zA-Z][a-zA-Z0-9_/-]+' "$HISTORY_DIR"/*.log 2>/dev/null \
   | sort | uniq -c | sort -rn | head -20)
 
 if [ -z "$CLUSTERED" ]; then
@@ -66,7 +68,7 @@ if [ -z "$CLUSTERED" ]; then
 fi
 
 echo "$CLUSTERED" | head -10 | while read -r count rest; do
-  emdashLog "·" "$count× $rest"
+  emdashLog "·" "${count}x ${rest}"
 done
 
 # --- 3. Promote clusters w/ ≥3 hits to proposals --------------------------
@@ -76,7 +78,7 @@ emdashSection "Drafting proposal(s)"
   printf 'Source: `%s/.lint-history/`\n\n' "$PROJECT"
   printf '## Recurring patterns (≥3 hits in 30d window)\n\n'
   echo "$CLUSTERED" | awk '$1 >= 3' | while read -r count pattern; do
-    printf '- **%s× `%s`** — candidate for semgrep rule\n' "$count" "$pattern"
+    printf -- '- **%sx `%s`** — candidate for semgrep rule\n' "$count" "$pattern"
   done
   printf '\n## Suggested next action\n\n'
   printf 'Run `claude` (or hand the top candidate to the AI) with:\n\n'
