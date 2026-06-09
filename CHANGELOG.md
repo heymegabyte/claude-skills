@@ -1,5 +1,83 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-62 — `bin/check-pricing.sh` automation (mechanizes pass-58→61 manual audits)
+
+### Closes pass-61 candidate 1 (`bin/check-pricing.sh` automation)
+
+NEW `bin/check-pricing.sh` (6th caller of `bin/lib/emit-json.sh`):
+
+- Grep-extracts every pricing-like line in `rules/*.md` + `[0-9][0-9]-*/*.md` + cross-cutting docs + `agents/*.md`. Patterns: `$N/MTok`, `$N/GB-month`, `$N/M requests|reads|writes|CPU-ms|rows-read|rows-written`.
+- For each reference, scans ±3 lines for a `verified YYYY-MM-DD` (or `Verified YYYY-MM-DD`) annotation. Computes age in days from today.
+- Tri-state classification:
+  - **current** — annotation found, ≤90 days old (configurable via `--max-age-days=N`)
+  - **stale** — annotation found, >90 days old → exit 1 + re-verify prompt
+  - **unannotated** — no annotation in ±3 lines → soft warning, exit 0
+- Human mode: tree-printer output to stderr ending in summary line + remediation. `--json` mode: uniform envelope per `rules/uniform-json-output.md`.
+
+### Pass-62 audit's current baseline
+
+```text
+▸ Scanning pricing references (max age=90 days)...
+  ✓ 0d      05-architecture-and-stack/SKILL.md:126 (Workers Paid)
+  ✓ 0d      05-architecture-and-stack/SKILL.md:127 (D1)
+  ✓ 0d      05-architecture-and-stack/SKILL.md:128 (R2)
+  ✓ 12d     07-quality-and-verification/eval-driven-development.md:196 (Haiku 4.5)
+  ✓ 12d     15-site-generation/bolt-artifact-protocol.md:161 (Opus 4.8)
+
+━━━ SUMMARY: 5 total · 5 current · 0 stale · 0 unannotated
+✓ all pricing references current
+```
+
+The pass-58→61 manual audit chain validated each of these references. The new script mechanizes the discipline: any future drift surfaces automatically.
+
+### One bug caught in-pass
+
+Initial draft used case-sensitive `grep -E 'verified [0-9]{4}-...'`. `bolt-artifact-protocol.md:161` had `Verified 2026-05-28` (capital V). First run showed 1 unannotated; the file IS annotated. Fixed via `grep -oiE` (case-insensitive) + adjust the strip-prefix logic (`${annot##* }` strips everything before the last space, handling both casings).
+
+### Wired into package.json
+
+- `npm run check:pricing` — human mode, exits non-zero on stale references
+- `npm run check:pricing:json` — JSON envelope for CI consumption
+
+### Why NOT in `bin/lint-all.sh`'s 9-gate suite
+
+Unannotated references shouldn't block commits — they're soft warnings (a pricing reference without a date may be a code-context dollar amount, not a doc reference needing verification). And `stale` would require quarterly cadence at most, not per-commit. The script is designed for periodic cron + on-demand audit, parallel to `bin/check-doc-urls.sh`.
+
+### Closure-loop confirmation
+
+The pass-58→62 arc:
+
+1. Pass-58: cross-rule Opus 4.7 → 4.8 sweep (14 mentions across 11 files)
+2. Pass-59: web-verified Opus 4.8 pricing + extended cross-rule discipline
+3. Pass-60: applied verification to Haiku 3.5 → 4.5 in same file (eval-driven-development)
+4. Pass-61: web-verified Workers + D1 pricing + codified one-search-many-fixes
+5. **Pass-62: mechanized the entire audit** — `bin/check-pricing.sh` runs the discipline as a script
+
+The closure-loop graduated from manual + codified-discipline to mechanical enforcement, the same arc as pass-49→52 (lint-doctrine drift → pre-commit hook).
+
+### Verification
+
+```bash
+npm run lint                                      # ✓ 9/9 green
+npm run check:pricing                              # ✓ 5/5 current
+npm run check:pricing:json | python3 -m json.tool  # valid envelope
+shellcheck -x -S warning bin/check-pricing.sh      # clean
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Did NOT wire into a weekly cron workflow (`bin/check-doc-urls.sh` pattern). Defer to pass-63 if useful — for now `npm run check:pricing` is a manual on-demand audit.
+
+### Next candidates (pass-63)
+
+- Weekly cron workflow for `bin/check-pricing.sh` (parallel to `doc-urls-check.yml`)
+- Add `bin/check-pricing.sh` to `bin/lint-all.sh` as a soft "info" gate (run + report but don't block)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-61 — Cloudflare Workers/D1 pricing correction (web-verified) + codify "one-search-many-fixes"
 
 ### Closes pass-60 candidates 1 (codify multi-fix-from-one-search) + 2 (Workers + D1 pricing audit)
