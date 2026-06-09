@@ -76,6 +76,18 @@ jobs:
             gh issue create --title "$TITLE" --body "${{ steps.body.outputs.body }}" --label doc-urls-check
           fi
 
+      - name: Auto-close tracking issue on clean run (pass-56)
+        if: steps.check.outputs.fail_count == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # If a previous run opened an issue and THIS run is clean, close it with a comment.
+          EXISTING=$(gh issue list --label doc-urls-check --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "✓ Auto-closing: doc-urls-check is clean as of $(date -u +%Y-%m-%dT%H:%M:%SZ). All previously-failing URLs now return 2xx/3xx or are HEAD-rejected (4xx, endpoint exists)."
+            gh issue close "$EXISTING" --reason completed
+          fi
+
       - name: Upload JSON artifact
         if: always()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4.6.2

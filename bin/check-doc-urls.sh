@@ -33,13 +33,27 @@ URL_LIST=()
 URL_STATUSES=()
 URL_CODES=()
 
-# Extract unique URLs from rules/*.md + skill-dir SKILL.md files.
-# Filter placeholder URLs that lack a real TLD (e.g. `third-party-cdn/foo.jpg` in
-# docs examples). Real URLs always have a `.tld` segment in the host.
+# Extract unique URLs from the documentation surface (pass-56 widened scope).
+# Filter (1) URLs without a TLD-dot (e.g. `third-party-cdn`)
+#        (2) RFC 2606 reserved example.com/.org/.net hosts
+#        (3) common doc-placeholder hosts (domain.com, related-site.{com,example})
+#        (4) URLs containing template tokens (YYYY year placeholder, etc.)
 mapfile -t URLS < <(
-  grep -hoE 'https?://[A-Za-z0-9./_-]+' rules/*.md [0-9][0-9]-*/SKILL.md 2>/dev/null \
+  grep -hoE 'https?://[A-Za-z0-9./_-]+' \
+    rules/*.md \
+    [0-9][0-9]-*/SKILL.md \
+    [0-9][0-9]-*/*.md \
+    CONVENTIONS.md \
+    SKILL_PROFILES.md \
+    _router.md \
+    README.md \
+    llms.txt \
+    agents/*.md \
+    2>/dev/null \
     | sed 's/[.,;)]*$//' \
     | awk -F/ '$3 ~ /\./ { print }' \
+    | grep -vE '://([^/]*\.)?(example\.(com|org|net)|domain\.com|related-site\.(com|example))(/|$)' \
+    | grep -vE '(YYYY|2YYY|<[a-z-]+>|\{[a-z-]+\})' \
     | sort -u
 )
 

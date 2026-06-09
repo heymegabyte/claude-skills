@@ -1,5 +1,55 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-56 — Widen URL scope + auto-close workflow + 1st real broken-link find
+
+### Closes pass-55 candidates 1 (auto-close on clean) + 2 (widen URL extraction)
+
+- **`bin/check-doc-urls.sh` widened scope** — added 6 file globs to the URL extraction:
+  - `[0-9][0-9]-*/*.md` (all skill-dir docs, not just SKILL.md)
+  - `CONVENTIONS.md`, `SKILL_PROFILES.md`, `_router.md` (cross-cutting docs)
+  - `README.md`, `llms.txt`, `agents/*.md` (entrypoint + agent surfaces)
+- **Tightened placeholder filter** — beyond the TLD-dot heuristic, dropped:
+  - RFC 2606 reserved: `example.{com,org,net}` and subdomains (`api.example.com`, `cdn.example.com`)
+  - Common doc-placeholder hosts: `domain.com`, `related-site.com`, `related-site.example`
+  - URLs containing template tokens: `YYYY` / `2YYY` (year placeholders) / `<...>` / `{...}` (slot markers)
+- **`.github/workflows/doc-urls-check.yml` § Auto-close tracking issue on clean run** — NEW step. When `fail_count == 0` AND an open `doc-urls-check`-labeled issue exists, closes it with a confirmation comment. Completes the open→close issue loop.
+
+### Scope expansion impact
+
+- URLs scanned: 32 → 181 (5.6× wider)
+- Filter caught: 10 placeholder URLs (RFC 2606 example.com + domain.com + related-site.*) that slipped past the TLD-dot heuristic
+- Found `2YYY` and `<area>` template-token URLs in doc examples — filtered
+
+### Real broken link surfaced
+
+**`https://mcp.resend.com`** in `05-architecture-and-stack/mcp-and-cloud-integrations.md:53` — DNS doesn't resolve (`curl: (6) Could not resolve host`). Context: "Resend MCP (Apr 7, 2026) — official MCP server with HTTP transport. `claude mcp add resend --transport http --url https://mcp.resend.com`". The hostname is likely incorrect (maybe `resend-mcp.com`, `api.resend.com/mcp/sse`, or a `localhost:PORT` proxy form). NOT fixing blindly without authoritative info. The new tracking-issue workflow will surface this on next cron run. Maintainer action: verify against Resend's MCP docs + update the URL.
+
+### Why ship without fixing the URL
+
+`bin/check-doc-urls.sh` exits non-zero (correctly) on this URL. But `npm run lint` (the pre-commit gate) does NOT run `check-doc-urls.sh` — network-dependent + 30s runtime. So shipping the widened scope + filter is clean per the pre-commit gate, while the broken URL is left for a focused follow-up pass. This is the correct separation: structural improvements ship; semantic-content fixes get focused attention.
+
+### Verification
+
+```bash
+shellcheck -x -S warning bin/check-doc-urls.sh                   # clean
+actionlint .github/workflows/doc-urls-check.yml                  # info SC2016 only, exit 0
+bash bin/check-doc-urls.sh                                        # 86 pass · 1 fail · 94 skip (mcp.resend.com)
+npm run lint                                                       # ✓ 9/9 green
+```
+
+### What was NOT done
+
+- Did NOT fix `mcp.resend.com` URL — needs Resend docs verification
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-57)
+
+- Fix `mcp.resend.com` in `05-architecture-and-stack/mcp-and-cloud-integrations.md` (needs web verification of correct Resend MCP URL)
+- SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-55 — Weekly cron workflow for doc-URL health + npm aliases
 
 ### Closes pass-54 candidates 1 (cron workflow) + 2 (`npm run check:urls` alias)
