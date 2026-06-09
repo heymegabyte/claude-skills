@@ -73,8 +73,8 @@ Psychology: reciprocity (teach), social proof near CTAs, authority (depth/number
 
 - Forbidden: white-text-logo on white/cream | dark-text-logo on dark/navy | low-saturation-logo on same-hue bg
 - Resolution: header AND footer themes chosen AFTER logo luminance scan. Dual-theme site needing SAME logo → ship TWO files (`brand-mark-light.svg` for dark bg, `brand-mark-dark.svg` for light bg) + CSS `<picture><source media>` swaps
-- Automate via skill 12 logo-variant-generator (Real-ESRGAN inversion or `magick -channel RGB -negate` for monochrome; color logos with text → DALL-E w/ "same logo on transparent bg w/ text inverted to <opposite-luminance>")
-- Validator: `validate-logo-contrast.mjs` — GPT-4o samples logo bbox + container computed bg at 6bp + pixel sampling, fails if <4.5:1
+- Automate via skill 12 logo-variant-generator (Real-ESRGAN inversion or `magick -channel RGB -negate` for monochrome; color logos with text → GPT Image 1.5 w/ "same logo on transparent bg w/ text inverted to <opposite-luminance>" — DALL-E 2/3 removed from API 2026-05-12, see `platform.openai.com/docs/deprecations`)
+- Validator: `validate-logo-contrast.mjs` — Claude Sonnet 4.6 vision (or current OpenAI multimodal fallback per `rules/e2e-visual-inspection.md`) samples logo bbox + container computed bg at 6bp + pixel sampling, fails if <4.5:1
 
 3a. **Brand-element extraction (logo is gold mine — extract DNA)** — When source logo found, GPT-4o vision returns `{font_family_guess, suggested_heading_font, suggested_body_font, font_weight, letterspacing, has_icon_mark, icon_mark_description, icon_mark_dominant_color, decorative_motif_description, motif_extractable (bool)}`
 

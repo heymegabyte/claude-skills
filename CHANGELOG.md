@@ -1,5 +1,77 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-71 — OpenAI deprecation audit: GPT-4o + DALL-E retired, doctrine fixes
+
+### Closes pass-70 candidate 1 (brand/design skill-dir audit), surfaces wider-scope migration
+
+### Major web-verified find
+
+Pass-71 audit of `09-brand-and-content-system` + `10-experience-and-design-system` for staleness → triggered a corpus-wide OpenAI model deprecation discovery:
+
+- **GPT-4o retired 2026-02-13** per `platform.openai.com/docs/deprecations` (~16 references in the corpus)
+- **DALL-E 2/3 removed from API 2026-05-12** per same source (~10 references)
+- Replacement: GPT Image series (`gpt-image-2`, `gpt-image-1.5`, `gpt-image-1`, `gpt-image-1-mini`) for image gen; current OpenAI multimodal flagship for vision
+
+### Surgical fixes this pass (2 doctrine sources)
+
+- **`rules/e2e-visual-inspection.md`** § AI vision endpoint — `Fallback: GPT-4o via openai SDK` → `current OpenAI multimodal flagship via openai SDK Responses API. NOT GPT-4o — retired 2026-02-13. Use whichever GPT-5-class or later model supports vision in the live openai SDK at the time of call.` Added `Verified 2026-06-09` annotation.
+- **`09-brand-and-content-system/SKILL.md:76-77`** — logo-variant-generator line: `DALL-E` → `GPT Image 1.5` + deprecation note. Validator line: `GPT-4o samples logo bbox` → `Claude Sonnet 4.6 vision (or current OpenAI multimodal fallback per rules/e2e-visual-inspection.md)`.
+
+### Why "current OpenAI multimodal flagship" (not pinning a name)
+
+OpenAI model retirement cadence (GPT-4 → GPT-4o → GPT-5 → ...) is faster than rule-update cadence. Pinning `gpt-5-vision` today means re-pinning every 6-12 months. The semantic specification (`current OpenAI multimodal flagship via Responses API`) survives retirement cycles. The Brian-voice default is Claude Sonnet 4.6; OpenAI is fallback only.
+
+### Wider migration scope deferred (pass-72→ candidate)
+
+The full corpus-wide migration of GPT-4o + DALL-E references would touch:
+
+- `rules/`: source-site-enhancement, website-build-doctrine (2 GPT-4o), copy-writing, timeline-authenticity, always (3 DALL-E)
+- `01-operating-system/`: autonomous-orchestrator, one-line-saas (3 GPT-4o)
+- `03-planning-and-research/`: build-breaking-rules (1 DALL-E)
+- `05-architecture-and-stack/`: ai-technology-integration (6+ GPT-4o), shared-api-pool (already has DALL-E deprecation note)
+- `06-build-and-slice-loop/`: pre-digested-builds, build-breaking-rules (3 mixed)
+- `07-quality-and-verification/`: stagehand-ai-fallback, build-breaking-rules (2)
+- `rules/image-quality.md`: header already says "GPT Image 1.5"
+
+That's ~24 surgical edits across ~14 files. Scope-cap this pass at the doctrine source fix + 1 SKILL.md; the rest follow the codified `lint-doctrine.md § Cross-rule consistency drift` discipline pass-by-pass.
+
+### Pass-58→71 closure-loop summary
+
+- **10 latent bugs caught** (added: GPT-4o + DALL-E corpus-wide deprecation surface — 24 references across 14 files, 2 fixed this pass)
+- **4 disciplines codified** in `lint-doctrine.md` + composed-envelope codified in `uniform-json-output.md`
+- **4 audit scripts mechanized** + 2 lint-all modes + 1 weekly cron
+- `bin/lib/emit-json.sh` lib: 9 callers
+
+### Sources
+
+- [OpenAI Deprecations](https://platform.openai.com/docs/deprecations)
+- [OpenAI Image Generation Guide](https://developers.openai.com/api/docs/guides/image-generation)
+- [OpenAI Changelog](https://platform.openai.com/docs/changelog)
+- [GPT Image - Wikipedia](https://en.wikipedia.org/wiki/GPT_Image)
+- [The new ChatGPT Images is here](https://openai.com/index/new-chatgpt-images-is-here/)
+
+### Verification
+
+```bash
+npm run lint                          # ✓ 9/9 green + 4 info sections clean
+# Remaining GPT-4o references = 14 (down from 16); DALL-E = 9 (down from 10)
+grep -rln 'GPT-4o' rules/ [0-9][0-9]-*/ | wc -l    # was 7 files; now 5 (pass-72 target)
+```
+
+### What was NOT done
+
+- 22 of 24 deprecated-model references — pass-72→ migration scope (cross-rule discipline applied iteratively)
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-72)
+
+- Continue OpenAI deprecation migration: `05-architecture-and-stack/ai-technology-integration.md` (6+ refs, the densest single file)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Build `bin/check-deprecated-models.sh` to mechanize the audit (parallels `check-pricing.sh`)
+
+---
+
 ## 2026-06-09 — pass-70 — Document nested-envelope pattern in `uniform-json-output.md`
 
 ### Closes pass-69 candidate 1 (document composed-envelope pattern)

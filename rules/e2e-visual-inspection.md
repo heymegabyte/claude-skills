@@ -79,8 +79,9 @@ export async function assertNewSection(
 ### AI vision endpoint
 
 - Default: Claude Sonnet 4.6 via `@anthropic-ai/sdk` with the `vision` message-content shape.
-- Fallback: GPT-4o via `openai` SDK.
+- Fallback: current OpenAI multimodal flagship via `openai` SDK Responses API (image input support). **NOT GPT-4o** — retired 2026-02-13 per `platform.openai.com/docs/deprecations`. Use whichever GPT-5-class or later model supports vision in the live `openai` SDK at the time of call.
 - Both keyed via `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` from get-secret.
+- Verified 2026-06-09 per OpenAI deprecation docs.
 - Endpoint stub at `e2e/_helpers/visual.ts` — keep the prompt sharp:
   > "You are auditing a screenshot of a deployed UI page. Rubric: 1) layout sane, 2) contrast ≥ WCAG 2.2 AA, 3) brand colors consistent (#060610 bg, #00E5FF accent), 4) no AI-slop placeholders, 5) no broken images. Return JSON {score: 0-10, notes: string}."
 
