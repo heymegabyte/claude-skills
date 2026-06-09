@@ -48,6 +48,11 @@ party at a pitch, a church, or a client meeting does NOT ship.
 - **Headless browser needs `__client`** — driving suno.com/create with Playwright + injected cookies FAILS auth (logged-out: "Log in" button visible, create panel empty) when the cookie set lacks Clerk's **`__client`** cookie. `clerk_active_context` + `__session` + `__client_uat` are NOT enough on their own. The public landing page has its own "Create" CTA — don't mistake it for the generator (false-positive submit; verify login via screenshot, not a text heuristic).
 - **WHY `__client` keeps missing (the trap, hit 2026-06-09):** `__client` is **HttpOnly**, so it is EXCLUDED from `document.cookie` and from DevTools "copy as cURL"/Network request-cookie copies. The user must read it from **DevTools → Application → Cookies → https://suno.com → row `__client` → copy Value** and paste it explicitly alongside `__session`. Ask for `__client` BY NAME up front; don't accept a generic cookie paste for the browser path.
 
+## CRITICAL (verified 2026-06-09, 4 attempts): headless CREATE silently no-ops
+
+With `__client`+`__session`, headless Chrome (Playwright, `channel:chrome`) **authenticates** (shows `brian404 · N Credits`), enters Advanced mode, and the form **fills** (lyrics/style/title visibly populated). The Advanced toggle is **"Advanced"** (not "Custom"); fields by placeholder: lyrics `/write your rhymes|Magic Wand/`, style `/boogie, female singing/`, title `/Song Title/`; the generate CTA is the **wide (`width>300`) button with exact text `Create`** at the bottom-left (NOT the sidebar "Create" nav, NOT "More"). BUT clicking Create **does nothing** — **credits never drop, no new clips, no error** — Suno's anti-bot silently drops headless generations. Same wall as the API 422. **Confirm success ONLY by a credits decrease**, never by "clicked=true".
+**⇒ Headless generation is NOT viable. The form-fill automation is reusable, but the Create click must happen in a REAL (non-headless) browser** — Desktop Computer Use on the user's Chrome, or the user clicks Create after we pre-fill.
+
 ## Working paths to actually CREATE (pick one)
 
 1. **Desktop Computer Use on the user's REAL Chrome** (per `computer-use-safety` § session-bound flows) — the logged-in page mints the anti-bot token itself. Most reliable. Drive suno.com/create → Custom → paste Lyrics/Styles/Title → Create, ×3.
