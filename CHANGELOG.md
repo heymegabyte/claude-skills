@@ -1,5 +1,41 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-27 — JSON meta block + lint-auto-improve --auto-draft
+
+### Closes pass-26 Rec + Next item
+
+- **`security-supply-chain.sh --json`** now includes `meta` block:
+  ```json
+  {
+    "meta": {
+      "skills_root": "/Users/Apple/.claude/plugins/heymegabyte-claude-skills",
+      "project": "<project-dir>",
+      "timestamp": "2026-06-09T07:03:29Z",
+      "git_sha": "e663398"
+    },
+    "checks": [...],
+    "summary": {...}
+  }
+  ```
+  - PostHog/Sentry/CI dashboard now has full context per audit run.
+- **`bin/lint-auto-improve.sh --auto-draft`** flag — when `ANTHROPIC_API_KEY` set, calls Claude Opus 4.7 directly to draft a semgrep YAML from the top recurring rule-id:
+  - Without flag → manual workflow as before (proposal markdown only).
+  - With flag + no key → clean skip with hint.
+  - With flag + key → POSTs to `https://api.anthropic.com/v1/messages`, writes draft YAML to `.lint-history/proposals/draft-<ts>.yml`.
+  - Curl-based; no SDK dependency.
+  - Idempotent: draft file always per-timestamp.
+
+### Bug fixed during self-test
+- `SKILLS_ROOT` was resolved AFTER `cd "$PROJECT"`, causing relative-path failure when sandboxed. Moved resolution BEFORE the cd.
+- Self-tested with `--auto-draft` flag + unset `ANTHROPIC_API_KEY` → clean skip with helpful message.
+
+### Verified
+- shellcheck `-x -S warning` → 0 across both bin scripts.
+- shfmt clean.
+- JSON mode: valid + populated meta block.
+- `--auto-draft` skip path: works correctly without key.
+- pack integrity → clean (15/89/14, 0 warnings, 4 ignored).
+
 ## 2026-06-09 — pass-26 — security-supply-chain: 5th pack check + --json mode
 
 ### Closes pass-25 Rec + Next item

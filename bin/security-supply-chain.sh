@@ -182,7 +182,10 @@ else
 fi
 
 if [ "$JSON" = "1" ]; then
-  printf '{"checks":['
+  TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  GIT_SHA=$(git -C "$PROJECT" rev-parse --short HEAD 2>/dev/null || echo "unknown")
+  printf '{"meta":{"skills_root":"%s","project":"%s","timestamp":"%s","git_sha":"%s"},"checks":[' \
+    "$SKILLS_ROOT" "$PROJECT" "$TS" "$GIT_SHA"
   for i in "${!CHECK_NAMES[@]}"; do
     [ "$i" -gt 0 ] && printf ','
     printf '{"name":"%s","status":"%s","details":"%s"}' \

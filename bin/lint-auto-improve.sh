@@ -24,14 +24,24 @@
 
 set -euo pipefail
 
-PROJECT="${1:-$PWD}"
+AUTO_DRAFT=0
+ARGS=()
+for arg in "$@"; do
+  case "$arg" in
+    --auto-draft) AUTO_DRAFT=1 ;;
+    *) ARGS+=("$arg") ;;
+  esac
+done
+
+# Resolve SKILLS_ROOT relative to script location BEFORE cd into project
+SKILLS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+PROJECT="${ARGS[0]:-$PWD}"
 [ -d "$PROJECT" ] || {
   echo "ERROR: $PROJECT not a directory" >&2
   exit 1
 }
-cd "$PROJECT"
-
-SKILLS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$PROJECT" || exit 1
 HISTORY_DIR=".lint-history"
 PROPOSAL_DIR="$HISTORY_DIR/proposals"
 SEMGREP_CUSTOM_DIR="$SKILLS_ROOT/templates/lint-stack/semgrep-custom"
@@ -95,9 +105,44 @@ emdashSection "Drafting proposal(s)"
 
 emdashLog "✓" "Proposal written: $PROPOSAL_FILE"
 
+# --- 3.5. Auto-draft via Claude API (opt-in) -------------------------------
+if [ "$AUTO_DRAFT" = "1" ]; then
+  emdashSection "Auto-drafting semgrep rule via Claude API"
+  if [ -z "${ANTHROPIC_API_KEY:-}" ]; then
+    emdashLog "!" "ANTHROPIC_API_KEY not set — skipping auto-draft"
+  elif ! command -v curl >/dev/null 2>&1; then
+    emdashLog "!" "curl not available — skipping auto-draft"
+  else
+    TOP_RULE=$(echo "$CLUSTERED" | awk 'NR==1{print $NF}')
+    DRAFT_FILE="$PROPOSAL_DIR/draft-$TS.yml"
+    PROMPT="Draft a semgrep YAML rule that catches '$TOP_RULE' violations. Use languages: [generic] for cross-file patterns or specific language otherwise. Include a 'paths.include' filter and a clear 'message' citing the owning rule in ~/.agentskills/rules/. Output ONLY the YAML, no preamble."
+    # shellcheck disable=SC2016
+    BODY=$(printf '{"model":"claude-opus-4-7","max_tokens":1024,"messages":[{"role":"user","content":"%s"}]}' "$(echo "$PROMPT" | sed 's/"/\\"/g')")
+    RESPONSE=$(curl -sf https://api.anthropic.com/v1/messages \
+      -H "x-api-key: $ANTHROPIC_API_KEY" \
+      -H "anthropic-version: 2023-06-01" \
+      -H "content-type: application/json" \
+      -d "$BODY" 2>&1 || echo "ERROR")
+    if [ "$RESPONSE" = "ERROR" ] || ! echo "$RESPONSE" | grep -q '"content"'; then
+      emdashLog "!" "Claude API call failed — leaving proposal for manual completion"
+    else
+      echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['content'][0]['text'])" >"$DRAFT_FILE" 2>/dev/null
+      if [ -s "$DRAFT_FILE" ]; then
+        emdashLog "✓" "Draft written: $DRAFT_FILE"
+        emdashLog "i" "Review + move to: $SEMGREP_CUSTOM_DIR/<topic>.yml"
+      else
+        emdashLog "!" "Empty draft — Claude response parse failed"
+      fi
+    fi
+  fi
+fi
+
 # --- 4. Surface to Brian via stdout summary --------------------------------
 emdashSection "Done"
 emdashLog "i" "Review: $PROPOSAL_FILE"
+if [ "$AUTO_DRAFT" = "0" ]; then
+  emdashLog "i" "Auto-draft: add --auto-draft flag w/ ANTHROPIC_API_KEY set"
+fi
 emdashLog "i" "Codify a rule: copy proposal to AI prompt, generate YAML, drop into:"
 emdashLog "  " "$SEMGREP_CUSTOM_DIR/<topic>.yml"
 emdashLog "i" "Cross-link in rules/lint-doctrine.md § Codified incidents"
