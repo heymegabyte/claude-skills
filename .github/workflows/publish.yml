@@ -35,9 +35,12 @@ jobs:
             lefthook.yml \
             .github/workflows/*.yml
 
-      - name: Self-lint Markdown (rules/ + skill-dirs, pass-43)
+      - name: Self-lint Markdown (rules/ + skill-dirs + top-level, pass-43/44)
         run: |
-          npx --yes markdownlint-cli2@^0.18.1 "rules/*.md" "[0-9][0-9]-*/**/*.md"
+          npx --yes markdownlint-cli2@^0.18.1 \
+            "rules/*.md" \
+            "[0-9][0-9]-*/**/*.md" \
+            "*.md"
 
       - name: Check doc counts
         run: |

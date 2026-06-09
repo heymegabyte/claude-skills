@@ -5,26 +5,31 @@ Shared constants and patterns. Reference instead of re-deriving.
 ## Brand Tokens
 
 ### Colors
+
 - **Black** — `#060610`
 - **Cyan** — `#00E5FF`
 - **Blue** — `#50AAE3`
 - **Purple** (cosmic/space only) — `#7C3AED`
 
 ### Fonts
+
 - **Heading** — Sora
 - **Body** — Space Grotesk
 - **Mono** — JetBrains Mono
 
 ### Identity
+
 - **Handle** — HeyMegabyte
 - **Email** — hey@megabyte.space
 
 ### GitHub orgs
+
 - **Products** — HeyMegabyte
 - **Infra** — ProfessorManhattan
 - **Skills + templates** — megabytespace
 
 ### Repos
+
 - **Template** — `megabytespace/saas-starter`
 - **Infra configs** — `ProfessorManhattan/proxmox-configs`, `coolify-configs`
 
@@ -88,6 +93,7 @@ Dark theme FIRST. Purple for cosmic/space only.
 ## Angular 21 Key Changes
 
 ### Angular 21 (Nov 2025)
+
 - Zoneless by default (CLI scaffolds without Zone.js, `provideZonelessChangeDetection()` no longer needed)
 - Vitest default test runner (replaces Karma/Jest)
 - Signal Forms experimental (signal-based reactive forms API)
@@ -95,6 +101,7 @@ Dark theme FIRST. Purple for cosmic/space only.
 - MCP server in CLI for AI-assisted dev
 
 ### Angular 20 (May 2025)
+
 - `effect()` + `linkedSignal` + `toSignal` stable
 - HttpResource
 - `@if` / `@for` / `@switch` / `@defer` control flow (deprecated v20, removed v22)
@@ -102,6 +109,7 @@ Dark theme FIRST. Purple for cosmic/space only.
 - Host bindings type-checked
 
 ### Defaults
+
 - Standalone-only (no NgModules)
 - Signal stores per feature
 - `providedIn:'root'`
@@ -126,6 +134,7 @@ TS 7.0 (mid-2026): Go-based compiler rewrite — track for breaking changes.
 - Node.js compat polyfill in wrangler.jsonc (`"compatibility_flags": ["nodejs_compat"]`)
 
 ### v1 migration
+
 - `journal.json` removed
 - SQL files / snapshots grouped separately — run `drizzle-kit up` to migrate
 - `drizzle-kit drop` removed
@@ -134,10 +143,12 @@ TS 7.0 (mid-2026): Go-based compiler rewrite — track for breaking changes.
 ## CF Workers Limits (2026)
 
 ### Requests + CPU
+
 - **Free** — 100K req/day, 10ms CPU
 - **Paid** — unlimited req, 30s CPU default / 5min max
 
 ### Resources
+
 - **Memory** — 128MB/isolate
 - **Worker size** — 3MB free / 10MB paid
 - **Subrequests** — 50 free / 10K paid
@@ -147,10 +158,12 @@ TS 7.0 (mid-2026): Go-based compiler rewrite — track for breaking changes.
 - **Cron** — 5 free / 250 paid
 
 ### D1 features
+
 - Global read replication (beta): routes reads to nearest replica, 40–60% latency decrease
 - Jurisdiction: `--jurisdiction eu|fedramp` at creation for GDPR/FedRAMP compliance
 
 ### Other
+
 - **Vectorize** — 10M vectors/index, topK 50
 - **Workflows** — 25K step limit (was 1024), `pause()` / `resume()` in local dev
 
@@ -242,11 +255,13 @@ All MCP secrets: active project env file or `get-secret`. Check env vars first, 
 - **Backup** — PBS → R2 + Wasabi
 
 ### CF footprint
+
 - 47 CF Workers
 - 10 D1 DBs
 - 20 R2 buckets
 
 ### Crons
+
 - autorestic — 5min
 - dagu — every 1min
 - ghorg reclone — 4:30am
@@ -256,6 +271,7 @@ All MCP secrets: active project env file or `get-secret`. Check env vars first, 
 70+ services on Coolify follow `{service}.megabyte.space` pattern behind CF Tunnels + Authentik SSO.
 
 ### Key services
+
 - **Coolify** — PaaS
 - **Authentik** — SSO
 - **Sentry** — errors
@@ -305,11 +321,13 @@ Full list via Coolify API.
 ## Media Generation
 
 ### Tools
+
 - **Logo** — Ideogram v3 (`IDEOGRAM_API_KEY`)
 - **Images** — GPT Image 1.5 (`OPENAI_API_KEY`)
 - **Video** — Sora 2 (`scripts/sora.py`)
 
 ### Targets
+
 - **WebP photo** — 80%, <200KB
 - **WebP illustration** — 90%, <150KB
 - **PNG logo** — lossless, <50KB
@@ -372,6 +390,7 @@ export default app;
 - Split large apps: `app.route('/path', subApp)`
 
 ### Conventions
+
 - Error envelope: `{ error: string, code?: string, details?: unknown }`
 - Rate limit public endpoints: KV-based per-IP
 - Turnstile on all forms
@@ -380,6 +399,7 @@ export default app;
 ## Security Headers (OWASP Top 10:2025)
 
 ### OWASP Top 10
+
 - **A01** — Broken Access Control
 - **A02** — Security Misconfiguration
 - **A03** — Software Supply Chain Failures (NEW, was #9)
@@ -392,6 +412,7 @@ export default app;
 - **A10** — Mishandling Exceptional Conditions (NEW)
 
 ### Must add
+
 - `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
@@ -403,12 +424,14 @@ export default app;
 - `Content-Security-Policy: require-trusted-types-for 'script'` (Trusted Types cross-browser Feb 2026)
 
 ### Must remove
+
 - `X-XSS-Protection` (CSP replaces it, creates vulns in old browsers)
 - `Expect-CT` (deprecated)
 - `Server`
 - `X-Powered-By`
 
 ### OWASP Agentic Top 10 (2026)
+
 Relevant for any app calling LLM APIs.
 
 - Prompt injection
@@ -438,6 +461,7 @@ Prefer nonce-based strict CSP with `strict-dynamic`. Test with `Content-Security
 ## Inngest v4 Patterns (BREAKING — Mar 16, 2026)
 
 ### v3 → v4 breaking
+
 - EventSchemas removed → `eventType()` per-event with Standard Schema (Zod/Valibot/ArkType)
 - serve options → client constructor
 - Default mode → cloud (set `isDev:true` for local)
@@ -445,6 +469,7 @@ Prefer nonce-based strict CSP with `strict-dynamic`. Test with `Content-Security
 - CF Workers: `inngest/cloudflare` adapter + `inngest.setEnvVars(c.env)`
 
 ### Setup
+
 - Mount: `app.on(['GET','PUT','POST'], '/api/inngest', (c) => { inngest.setEnvVars(c.env); return serve({ client: inngest, functions })(c.req.raw); })`
 - Step functions: `step.run('id', fn)` (each step idempotent, retried independently)
 - Delays: `step.sleep('id', '1 day')`
@@ -457,12 +482,14 @@ Prefer nonce-based strict CSP with `strict-dynamic`. Test with `Content-Security
 - Parallel step optimization + checkpointing default-on (~50% fewer HTTP requests)
 
 ### New v4
+
 - `step.ai.infer('id', { model, body })` offloads inference to Inngest infra (zero compute during wait)
 - `step.realtime.publish(channel, data)` durable pub/sub
 - `useRealtime(channel)` React hook
 - Local dev: `npx inngest-cli dev` with `INNGEST_DEV=1`
 
 ### Dedup
+
 - Inngest auto-deduplicates by event ID within 24h
 - Use D1 UNIQUE constraint for external side effects
 - `onFailure` callback → Sentry + Slack
@@ -498,6 +525,7 @@ app.post('/api/webhooks/stripe', async (c) => {
 ## SEO (Every Page)
 
 ### Order
+
 1. Keyphrase FIRST
 2. Title 50–60 chars
 3. Meta desc 120–156 chars
@@ -505,6 +533,7 @@ app.post('/api/webhooks/stripe', async (c) => {
 5. Canonical
 
 ### Requirements
+
 - 4+ JSON-LD schemas
 - OG 1200x630
 - 2+ internal links
@@ -512,6 +541,7 @@ app.post('/api/webhooks/stripe', async (c) => {
 - Keyphrase density 0.5–3%
 
 ### Required schema types
+
 - Organization
 - WebSite
 - WebPage
@@ -546,6 +576,7 @@ JSON-LD boosts LLM accuracy 16% → 54% (AI search visibility for ChatGPT / Perp
 ## Clerk Core 3 (Mar 2026 — Breaking)
 
 ### Breaking changes
+
 - `@clerk/clerk-react` → `@clerk/react`
 - `@clerk/clerk-expo` → `@clerk/expo`
 - `<Protect>` / `<SignedIn>` / `<SignedOut>` → unified `<Show when="signed-in|signed-out" />`
@@ -555,15 +586,18 @@ JSON-LD boosts LLM accuracy 16% → 54% (AI search visibility for ChatGPT / Perp
 - Upgrade: `npx @clerk/upgrade` codemod, requires Node 20.9+
 
 ### Clerk CLI (Apr 22 2026)
+
 - `clerk init` — framework detect + scaffold
 - `clerk config` — auth settings
 - `clerk api` — BAPI access
 - `clerk deploy` — coming
 
 ### API Keys GA (Apr 17 2026)
+
 Machine auth — users create delegated API keys for programmatic access. Billing active.
 
 ### SCIM / Directory Sync GA (Apr 16 2026)
+
 - Auto user create / update / deactivate from IdP
 - Custom attribute mapping (beta) into `publicMetadata`
 - Role assignment from IdP groups
@@ -574,26 +608,31 @@ Machine auth — users create delegated API keys for programmatic access. Billin
 Semiannual named releases ("Acacia" → "Dahlia") + monthly additive updates. Pin via `stripe-version` header.
 
 ### Highlights
+
 - **Agentic Commerce Suite** — AI agents pay on behalf of users, Shared Payment Tokens (new auth surface to model)
 - **AI billing** — markup % on token usage
 - **Adaptive Pricing** — local currency in 150+ countries
 - **Decimal quantities** on invoices
 
 ### Billing Meter API v2 (GA)
+
 - Required for all metered prices, token/API-call billing, real-time streaming events
 - `POST /v1/billing/meters` + `POST /v1/billing/meter_events`
 
 ### Entitlements API (GA)
+
 - Feature objects attached to Products, active entitlements returned on subscription
 - Check at API boundary: `GET /v1/entitlements/active_entitlements?customer={id}`
 - Use for plan-tier feature gating
 
 ### Stripe Rate Limit binding
+
 CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate limiting.
 
 ## Playwright (v1.59+)
 
 ### Defaults
+
 - 6 breakpoints: 375, 390, 768, 1024, 1280, 1920
 - axe-core 0 violations
 - No sleeps — `waitFor` / `toBeVisible()`
@@ -604,12 +643,14 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 - `PROD_URL` env var
 
 ### Version highlights
+
 - **v1.57** — Chrome for Testing default (was Chromium), `testConfig.webServer.wait` regex
 - **v1.58** — Timeline Speedboard, Cmd+F in UI mode / Trace Viewer
 - **v1.59** — `page.screencast` (video receipts, action annotations), `browser.bind` (MCP to live browser), Trace CLI for agent debugging
 - **MCP server** — 20+ tools (`browser_click`, `browser_snapshot`, etc.)
 
 ### Stagehand v3 (2026)
+
 - Removed Playwright dep
 - Direct CDP
 - 44% faster on iframes / shadow DOM
@@ -630,6 +671,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 ## Claude Code — Hooks
 
 ### Basics
+
 - 28 event types
 - 5 handler types: command / http / mcp_tool / prompt / agent
 - Exit 0 = success
@@ -640,6 +682,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 - `asyncRewake`: runs background, wakes Claude on exit 2
 
 ### Events (28)
+
 - SessionStart
 - SessionEnd
 - InstructionsLoaded
@@ -670,6 +713,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 - ElicitationResult
 
 ### Extras
+
 - `type: "mcp_tool"` chains MCP operations from hook handlers without Bash
 - Conditional `if` field: permission-rule syntax e.g. `"if": "Bash(git commit *)"` scopes handlers to specific commands
 - Plugin skills support frontmatter-defined hooks
@@ -677,6 +721,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 ## Claude Code — Settings Precedence
 
 ### Precedence (highest first)
+
 1. Managed
 2. CLI args
 3. Local project `.claude/settings.local.json`
@@ -684,6 +729,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 5. User `~/.claude/settings.json`
 
 ### Notes
+
 - Array values merge across scopes
 - Verify active: `/status`
 - `$defaults` in autoMode: append custom allow/deny alongside built-ins instead of replacing
@@ -691,6 +737,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 - `cleanupPeriodDays` sweeps tasks / snapshots / backups
 
 ### New settings
+
 - `effortLevel` (low / medium / high / xhigh)
 - `attribution.commit` + `attribution.pr` (replaces deprecated `includeCoAuthoredBy`)
 - `worktree.symlinkDirectories` + `worktree.sparsePaths`
@@ -713,6 +760,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 ## Claude Code — Agents
 
 ### Locations + invocation
+
 - Subagent locations: managed > `--agents` CLI > `.claude/agents/` > `~/.claude/agents/` > plugin
 - Brian's custom agents: `~/.agentskills/agents/` (18 agents, referenced via `--agents` or symlinked)
 - @ mention invocation with typeahead
@@ -720,17 +768,20 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 - Agent teams (experimental): `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, 3–5 teammates, 5–6 tasks each
 
 ### Model + frontmatter
+
 - Model resolution: env `CLAUDE_CODE_SUBAGENT_MODEL` > invocation param > frontmatter > main model
 - Agent frontmatter `mcpServers` loaded for main-thread agents via `--agent`
 - Agent `hooks:` fire in `--agent` mode
 - Forked subagents: `CLAUDE_CODE_FORK_SUBAGENT=1` for true process isolation
 
 ### Built-in subagents
+
 - **Explore** — Haiku, read-only codebase exploration
 - **Plan** — read-only research + planning
 - **general-purpose** — full tools
 
 ### Extras
+
 - `initialPrompt` frontmatter: auto-submits first turn on spawn
 - Agent persistent memory: `~/.claude/agent-memory/` (opt-in per subagent)
 - `/agents` UI: Running tab (live view + stop) + Library tab (create, color, memory scope)
@@ -740,6 +791,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 ## Claude Code — Slash Commands
 
 ### Built-in
+
 - `/help`
 - `/clear`
 - `/compact`
@@ -760,6 +812,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 - `/vim`
 
 ### Extended
+
 - `/ultrareview` — deep multi-agent code review
 - `/ultraplan` — comprehensive planning
 - `/tui` — terminal UI mode
@@ -781,6 +834,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 `/plugin` command (public beta).
 
 ### Structure
+
 - `.claude-plugin/plugin.json`
 - `commands/`
 - `agents/`
@@ -794,6 +848,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 - `settings.json`
 
 ### Notes
+
 - Install: `/plugin marketplace add user/repo`
 - `claude plugin tag` creates release git tags
 - Marketplaces are git repos with `marketplace.json` — no centralized registry
@@ -821,26 +876,32 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 Renamed from "Claude Code SDK".
 
 ### Python
+
 - `SessionStore` protocol (5 methods)
 - Top-level `skills` option
 
 ### TypeScript
+
 - `agentProgressSummaries` for periodic AI-generated subagent progress
 - `taskBudget` for token-paced tool use
 
 ### Both
+
 - Distributed tracing via `TRACEPARENT` / `TRACESTATE`
 - Parallel MCP reconnection
 
 ### Endpoints
+
 - `POST /v1/agents` — create persistent agent
 - `POST /v1/sessions` — stateful conversations
 - `POST /v1/environments` — sandboxed execution
 
 ### Agent Memory GA (Apr 23 2026)
+
 Managed persistent memory across sessions.
 
 ### `ant` CLI (Apr 8 2026)
+
 - `ant agent create`
 - `ant session run`
 
@@ -855,6 +916,7 @@ New default transport (spec 2025-03-26), replaces deprecated HTTP+SSE.
 ## Prompt Cache Optimization
 
 ### Deterministic order (92% prefix reuse)
+
 1. Tools
 2. System
 3. CLAUDE.md
@@ -864,15 +926,18 @@ New default transport (spec 2025-03-26), replaces deprecated HTTP+SSE.
 7. Conversation
 
 ### Cache TTL + cost
+
 - **5min** — 1.25x cost
 - **1hr** — 2x cost
 - **Reads** — 0.1x (90% savings)
 
 ### Min cacheable
+
 - Opus 4.7 / 4.6 / 4.5 — 4096 tokens
 - Sonnet 4.6 — 2048 tokens
 
 ### Other
+
 - Workspace-level isolation since Feb 5 2026
 - 2M token task: ~$1.15 vs $6.00 with good cache hits
 
@@ -924,6 +989,7 @@ New default transport (spec 2025-03-26), replaces deprecated HTTP+SSE.
 `type(scope): description`
 
 ### Types
+
 - `feat`
 - `fix`
 - `refactor`

@@ -15,6 +15,7 @@
 | everything else | Marketing Site |
 
 ### Ambiguous cases
+
 - Angular + auth + billing → **SaaS**
 - `wrangler.toml` + minimal routes → **Marketing** or **API**
 - DB schema + background jobs → **SaaS**
@@ -40,6 +41,7 @@
 ## SaaS Application
 
 ### Core + refs (load first)
+
 - `05/api-design-and-documentation`
 - `05/auth-and-session-management`
 - `05/background-jobs-and-workflows`
@@ -48,6 +50,7 @@
 - `05/mcp-and-cloud-integrations`
 
 ### Build (06)
+
 - `06/admin-dashboard`
 - `06/ai-chat-widget`
 - `06/data-tables`
@@ -62,21 +65,25 @@
 - `06/webhook-system`
 
 ### Quality (07)
+
 - `07/accessibility-gate`
 - `07/agentic-security`
 - `07/performance-optimization`
 - `07/security-hardening`
 
 ### Deploy (08)
+
 - `08/ci-cd-pipeline`
 - `08/backup-and-disaster-recovery`
 - `08/uptime-and-health`
 
 ### Content (09)
+
 - `09/documentation-and-codebase-hygiene`
 - `09/seo-and-keywords`
 
 ### Growth (13)
+
 - `13/analytics-configuration`
 - `13/conversion-optimization`
 - `13/feature-flags-and-experiments`
@@ -88,11 +95,13 @@
 Trimmed SaaS.
 
 ### Architecture (05)
+
 - `05/api-design-and-documentation`
 - `05/auth-and-session-management`
 - `05/drizzle-orm-and-migrations`
 
 ### Build (06)
+
 - `06/contact-forms-and-endpoints`
 - `06/custom-error-pages`
 - `06/file-uploads-and-storage`
@@ -101,13 +110,16 @@ Trimmed SaaS.
 - `06/webhook-system`
 
 ### Quality (07)
+
 - `07/performance-optimization`
 - `07/security-hardening`
 
 ### Content (09)
+
 - `09/seo-and-keywords`
 
 ### Growth (13)
+
 - `13/conversion-optimization`
 - `13/email-marketing-and-listmonk`
 - `13/feature-flags-and-experiments`
@@ -132,6 +144,7 @@ Trimmed SaaS.
 ## API Service
 
 ### Architecture (05)
+
 - `05/api-design-and-documentation`
 - `05/auth-and-session-management`
 - `05/background-jobs-and-workflows`
@@ -143,23 +156,27 @@ Trimmed SaaS.
 - `05/shared-api-pool`
 
 ### Planning + Build
+
 - `03`
 - `06/realtime-and-websockets`
 - `06/webhook-system`
 
 ### Quality (07)
+
 - `07/agentic-security`
 - `07/contract-testing`
 - `07/performance-optimization`
 - `07/security-hardening`
 
 ### Deploy (08)
+
 - `08/backup-and-disaster-recovery`
 - `08/changelog-and-releases`
 - `08/ci-cd-pipeline`
 - `08/uptime-and-health`
 
 ### Growth (13)
+
 - `13/feature-flags-and-experiments`
 - `13/sentry-alert-rules`
 
@@ -179,12 +196,14 @@ Trimmed SaaS.
 ## Internal Tool
 
 ### Architecture (05)
+
 - `05/api-design-and-documentation`
 - `05/auth-and-session-management`
 - `05/drizzle-orm-and-migrations`
 - `05/enterprise-multi-tenancy`
 
 ### Build (06)
+
 - `06/admin-dashboard`
 - `06/chat-native-dashboard`
 - `06/data-tables`
@@ -193,11 +212,13 @@ Trimmed SaaS.
 - `06/site-search`
 
 ### Quality (07)
+
 - `07/accessibility-gate`
 - `07/agentic-security`
 - `07/security-hardening`
 
 ### Deploy + Growth
+
 - `08/uptime-and-health`
 - `13/analytics-configuration`
 - `13/feature-flags-and-experiments`

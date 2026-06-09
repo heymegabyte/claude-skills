@@ -72,6 +72,7 @@ Route prompts to smallest useful subset. Load `01-operating-system` FIRST always
 ## Agent Library
 
 `~/.agentskills/agents/`:
+
 - `architect`
 - `code-simplifier`
 - `completeness-checker`

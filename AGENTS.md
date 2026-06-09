@@ -34,6 +34,7 @@ This repo is compatible with the agentskills.io open standard. Skills work in Cl
 ## Platform Variants (30 total)
 
 ### Modern formats
+
 - `.cursor/rules/` (MDC)
 - `.windsurf/rules/` (trigger frontmatter)
 - `.augment/rules/` (type frontmatter)
@@ -44,6 +45,7 @@ This repo is compatible with the agentskills.io open standard. Skills work in Cl
 - `.void/rules/`
 
 ### Legacy formats
+
 - `.cursorrules`
 - `.windsurfrules`
 - `.clinerules`
@@ -53,6 +55,7 @@ This repo is compatible with the agentskills.io open standard. Skills work in Cl
 - `.github/copilot-instructions.md`
 
 ### Named formats
+
 - `AGENTS.md`
 - `GEMINI.md`
 - `AMP.md`
@@ -61,6 +64,7 @@ This repo is compatible with the agentskills.io open standard. Skills work in Cl
 - `replit.md`
 
 ### Directory formats
+
 - `.amazonq/rules/`
 - `.junie/`
 - `.trae/rules/`

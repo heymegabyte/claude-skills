@@ -330,6 +330,7 @@ The router loads the smallest useful subset per task — never the full 119 docs
 Copy-paste these as-is. Each one routes through the skill graph and produces a deployed, gate-cleared product. The shorter the prompt, the more the skill engine infers — domain name alone is enough.
 
 ### Build a SaaS from a domain
+
 ```
 Build acmebilling.dev — recurring subscription billing for indie SaaS founders. Stripe-native, Clerk auth, Inngest for retry workflows.
 ```
@@ -340,6 +341,7 @@ Build acmebilling.dev — recurring subscription billing for indie SaaS founders
 - **Output** — live Worker on `acmebilling.dev` with checkout, dashboard, webhook handler, Sentry + PostHog + GA4 wired
 
 ### Rebuild an existing site
+
 ```
 Rebuild brianzalewski.com — pull current site from Wayback if dead, keep every page, modernize design, ship to CF Workers.
 ```
@@ -349,6 +351,7 @@ Rebuild brianzalewski.com — pull current site from Wayback if dead, keep every
 - **Gate** — every original URL = 200 or 301; logo retention; theme match; favicon set via real-favicongenerator
 
 ### Spin up a portfolio from one line
+
 ```
 Make me a portfolio site at brian.dev — I'm a principal engineer, AI builder, Megabyte Labs founder.
 ```
@@ -358,6 +361,7 @@ Make me a portfolio site at brian.dev — I'm a principal engineer, AI builder, 
 - **Output** — dark-first single-page with hero + work + writing + contact
 
 ### Local-business site (NAP + reviews + map)
+
 ```
 Build paterson-dental.com — family dental practice in Paterson NJ, online booking, insurance verification, Spanish/English.
 ```
@@ -367,6 +371,7 @@ Build paterson-dental.com — family dental practice in Paterson NJ, online book
 - **Output** — full-width Maps embed, NAP schema.org `LocalBusiness`, OpenTable/Booksy embed, Twilio SMS booking
 
 ### Non-profit with donation flow
+
 ```
 Build sjsk.org — community clothing distribution for SJSK in Newark, donor portal, impact counter, tax receipt PDFs.
 ```
@@ -376,6 +381,7 @@ Build sjsk.org — community clothing distribution for SJSK in Newark, donor por
 - **Output** — Donate CTA in nav, recurring + one-time, Resend tax receipts, impact counters with IO+rAF roll-in
 
 ### Brainstorm before you build
+
 ```
 What's the highest-ROI thing I can ship this week? Read PORTFOLIO.md, scan current projects, propose 3 ideas with confidence scores.
 ```
@@ -384,6 +390,7 @@ What's the highest-ROI thing I can ship this week? Read PORTFOLIO.md, scan curre
 - **Output** — 3 evidence-backed proposals with `apa_citation` per claim, viral coefficient + AI search visibility scoring, auto-implements `confidence ≥ 0.85` aligned ideas
 
 ### Add a feature to an existing project
+
 ```
 Add a magic-link auth flow to acme.dev — passwordless email via Resend, Clerk session, redirect to /dashboard.
 ```
@@ -392,6 +399,7 @@ Add a magic-link auth flow to acme.dev — passwordless email via Resend, Clerk 
 - **Agents** — test-writer (failing test FIRST) → implementation → deploy-verifier
 
 ### Debug a wedged pipeline
+
 ```
 projectsites.dev workflow stuck on site_id 47 for 3 hours. Diagnose, fix, retrigger.
 ```
@@ -401,6 +409,7 @@ projectsites.dev workflow stuck on site_id 47 for 3 hours. Diagnose, fix, retrig
 - **Sequence** — detect via D1 query → diagnose root cause (CHECK constraint? timeout? OOM?) → fix → verify in isolation → mint session → retrigger via direct worker URL → background monitor
 
 ### Ship a content-driven blog at scale
+
 ```
 Generate 50 programmatic SEO pages for acme.dev — integration|comparison|use-case|template|location templates, GEO-optimized, citations.
 ```
@@ -409,6 +418,7 @@ Generate 50 programmatic SEO pages for acme.dev — integration|comparison|use-c
 - **Output** — 50 unique routes, no templated copy, every quantitative claim cites APA 7th source, Schema.org `Article` with `citation:CreativeWork[]`
 
 ### One-line magic
+
 ```
 ghost.megabyte.space
 ```
