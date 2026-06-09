@@ -34,7 +34,9 @@ pre-commit:
       stage_fixed: true
     yamllint:
       glob: "*.{yml,yaml}"
-      run: yamllint -d "{extends: relaxed, rules: {line-length: disable, document-start: disable, truthy: disable}}" {staged_files}
+      # Single-quoted scalar — inner double-quoted brace-mapping config string must
+      # not be parsed as flow-style YAML by yamllint when this file is itself linted.
+      run: 'yamllint -d "{extends: relaxed, rules: {line-length: disable, document-start: disable, truthy: disable}}" {staged_files}'
     actionlint:
       glob: ".github/workflows/*.{yml,yaml}"
       run: actionlint {staged_files}

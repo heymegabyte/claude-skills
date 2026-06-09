@@ -1,5 +1,46 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-41 — lefthook yamllint quoting fix + lint-stack wire-up verification
+
+### Closes pass-40 Rec 1 (markdownlint wire-up audit) + actually runs yamllint/actionlint/shellcheck per user's tool list
+
+- **`templates/lint-stack/lefthook.yml` line 37 — yamllint quoting fix**: the `yamllint -d "{...}"` config string in `run:` was an unquoted YAML scalar, which yamllint itself flagged as `syntax error: mapping values are not allowed here` at `37:33` (the embedded `{extends: relaxed, rules: {...}}` was being interpreted as flow-style YAML). Wrapped the entire `run:` value in single quotes so the inner double-quoted brace-mapping config string is preserved verbatim. Confirmed: yamllint exit 0 across all 4 YAML files post-fix.
+- **Pass-40 Rec 1 — markdownlint wire-up audit**: VERIFIED — `templates/lint-stack/lefthook.yml:24-26` already has the `markdownlint` pre-commit step wired (`npx --no-install markdownlint-cli2 --fix {staged_files}`). Rec was a false alarm; the wire-up is correct. Closing.
+- **Full user-tool-list sweep this pass**:
+  - `yamllint` (relaxed): 4 files, 0 errors post-fix
+  - `actionlint`: 3 workflows (`publish.yml`, `supply-chain-pr-comment.yml`, `version-drift-check.yml`), 0 errors
+  - `shellcheck -x -S warning`: `bin/*.sh` + `bin/lib/*.sh`, 0 errors
+  - `markdownlint-cli2`: 2 touched files (from pass-40), 0 errors
+
+### Why the bug existed
+
+The lefthook config worked at runtime (lefthook's own YAML parser is lenient) but failed strict yamllint when lefthook.yml was itself the linted file — meta-level bug: the file that wires the linter couldn't pass the linter. Single-quote fix is the canonical YAML escape for `run:` values containing colons + brace-mappings.
+
+### What was NOT done
+
+- Pass-40 Rec 2 (repo-wide markdownlint sweep) — still deferred (large diff, separate pass)
+- Pass-39 candidates 2/3 (SessionStart hook + Python parity) — still gated
+- `lefthook` CLI not installed locally for `lefthook validate` — relied on yamllint as the strict validator instead
+
+### Verification
+
+```bash
+yamllint -d "{extends: relaxed, rules: {line-length: disable, document-start: disable, truthy: disable}}" \
+  templates/lint-stack/lefthook.yml .github/workflows/*.yml lefthook.yml
+# exit 0, no output
+actionlint .github/workflows/*.yml                                              # 0 errors
+shellcheck -x -S warning bin/*.sh bin/lib/*.sh                                  # 0 errors
+```
+
+### Next candidates (pass-42)
+
+- Repo-wide markdownlint sweep (CHANGELOG.md alone shipped MD022/MD032 noise pass-40 didn't touch)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Consider installing `lefthook` CLI into the lint-stack-install script to enable `lefthook validate` in CI
+
+---
+
 ## 2026-06-09 — pass-40 — `monitor-orchestration` § Healthy iteration patterns + markdownlint sweep
 
 ### Closes pass-39 candidate 1 (Healthy-patterns audit) + actually runs markdownlint per user's tool list
