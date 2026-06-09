@@ -12,6 +12,7 @@ Encode a reusable lesson into the `~/.agentskills` side repo per [[prompt-as-tra
 **Inputs** — `$ARGUMENTS` = the lesson (the generalizable pattern, not project specifics).
 
 Steps:
+
 - Generalize first — write the CLASS of gap, not the one-off instance (instance becomes a `## Reference incident`).
 - Locate the owning file (rule / skill / template / command). UPDATE existing, never duplicate.
 - Backup the target file before edit (`cp <file> <file>.bak` or rely on git).

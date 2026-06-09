@@ -16,15 +16,18 @@ paths:
 Permissions are enforced server-side, always. Client-only checks are UX, never security. Tenant isolation, audit trails, hashed keys, verified webhooks, rate limits. The security arm of the supervisor system — companion to the project-level multi-tenant isolation discipline.
 
 ## When this fires
+
 - Any auth surface, permission check, sensitive action, API key, webhook, or cross-tenant boundary
 
 ## Tooling + when to use
+
 - **Better Auth** — auth where it fits the model (sessions, OAuth, passkeys)
 - **@casl/ability** — permissions/abilities (define once, enforce server-side, mirror client-side for UX)
 - **Zod** + **@t3-oss/env-core** — validate auth inputs + secrets config per `validation-error-handling-supervisor`
 - **@upstash/ratelimit** — rate limiting where KV/DO can't (global counters, sliding windows)
 
 ## Rules
+
 - **Enforce permissions server-side** — every mutating/reading handler checks CASL ability against the caller's role/org; never trust a client-only gate
 - **Tenant isolation** — every `:id`/`:siteId` route verifies the resource's `org_id` matches the caller's; return 404 (never 403) on mismatch so existence doesn't leak (the project-level canonical: `siteOrgId` + ownership gate)
 - **Audit logs** — every sensitive action (auth change, billing, delete, permission grant, key mint) writes who/what/before-after/when with a correlation ID
@@ -40,6 +43,7 @@ Permissions are enforced server-side, always. Client-only checks are UX, never s
 - **AI surfaces** — prompt injection / excessive agency / MCP tool-poisoning are first-class threats; every model boundary follows `ai-agent-security.md`
 
 ## See
+
 - `ai-agent-security` — prompt-injection, MCP, supply-chain, secret-scanning for AI/agent surfaces
 - `quality-metrics` — CSP nonce, CHIPS, SRI, security headers
 - `sandbox-execution` · `notifications-email-webhooks-supervisor` · `validation-error-handling-supervisor`

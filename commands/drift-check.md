@@ -12,6 +12,7 @@ Run the drift-detection checklist per [[drift-detection]].
 **Inputs** — `$ARGUMENTS` (optional scope); else the current project + last run.
 
 Checklist:
+
 - Feature drift — UI/route/handler without matching flag, manifest, or `e2e/<slug>/` per [[feature-module-architecture]].
 - Schema drift — Zod schemas duplicated outside the module's `schemas.ts`.
 - Observability drift — Sentry/PostHog events missing `featureSlug` tag.

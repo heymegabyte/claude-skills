@@ -19,6 +19,7 @@ Nothing ships plain. Every element a user can see gets a deliberate, beautiful, 
 Any set of discrete, enumerable values rendered to the screen MUST be a row of styled pills / chips / badges — one per value. Comma-joining them into a sentence (`roles.join(', ')`, `tags.join(' · ')`, `"admin, donor, volunteer"`) is a build-fail-class mistake: it reads as raw data, not designed UI.
 
 ### What this covers (each value = its own pill)
+
 - **Roles / permissions** — `admin · donor · super_admin · volunteer` → 4 pills
 - **Tags / categories / topics / keywords**
 - **Statuses / states** (`active`, `pending`, `paused`) — color-coded per state
@@ -29,6 +30,7 @@ Any set of discrete, enumerable values rendered to the screen MUST be a row of s
 - **Any `string[]` shown to a user** — if it's an array, it's pills
 
 ### Pill contract (every pill)
+
 - One pill per array item — `array.map(...)`, never `array.join(...)`
 - Rounded-full, padded (`px-3 py-1`), small-but-legible type, `font-medium`
 - Brand-token background + contrast-safe text per `text-contrast` (dark pill → light text; light pill → dark text)
@@ -39,6 +41,7 @@ Any set of discrete, enumerable values rendered to the screen MUST be a row of s
 - Empty state is its own pill or a designed "None yet" affordance — never a bare word
 
 ### Anti-pattern (the exact mistake this rule kills)
+
 ```tsx
 // ❌ raw CSV text — reads as a database dump
 roles: {user.roles.join(', ')}
@@ -60,11 +63,13 @@ roles: {user.roles.join(', ')}
 Every element a user sees gets a deliberate, beautiful treatment. "Functional but plain" is incomplete per the user-level Progressively-Gorgeous UI Mandate — this rule operationalizes the per-element bar.
 
 ### The `0.333s` standard
+
 - Default transition duration is **`0.333s`** (`duration-[333ms]` / `transition: ... 0.333s`) for hover, focus, enter, color, transform — unless a faster micro-interaction (≤150ms tap feedback) or a slower cinematic reveal is deliberately chosen
 - Every interactive element declares a `transition` — no instant state jumps
 - Pair every transition with `prefers-reduced-motion: reduce` honoring (snap to final state; never hide content)
 
 ### Per-element gorgeous checklist (apply to every element you render)
+
 - **Transition** — `0.333s` on all state changes (hover/focus/active/enter)
 - **Hover affordance** — lift (`-translate-y-0.5`), glow (`shadow-md`), or tint shift
 - **Focus-visible ring** — brand-color ring ≥3:1, never the UA default outline
@@ -75,10 +80,12 @@ Every element a user sees gets a deliberate, beautiful treatment. "Functional bu
 - **Reduced-motion + contrast-safe** — every animation gated; every text/element pair WCAG AA
 
 ### Where this applies
+
 - Pills, chips, badges, tags, cards, buttons, links, inputs, toggles, avatars, stat blocks, list rows, table cells, nav items, modals, toasts, empty states, dividers, section headers — **every element**, not just the hero
 - Admin + dashboard surfaces too — internal ≠ ugly. The /account, /admin, /me surfaces get the same gorgeous bar as marketing pages
 
 ## Self-critique (before shipping any element)
+
 1. Is any `string[]` rendered as joined text? → convert to pills
 2. Does every interactive element transition at `0.333s`? → add it
 3. Does it have a hover affordance + focus-visible ring? → add them

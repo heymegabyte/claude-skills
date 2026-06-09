@@ -13,11 +13,13 @@ paths:
 # Quality Thresholds
 
 ## Readability
+
 - Flesch ≥ 60
 - Sentences ≤ 25 words
 - Paragraphs ≤ 150 words
 
 ## Performance
+
 - LCP ≤ 2.5s (4-phase: TTFB → load delay → load time → render delay)
 - CLS ≤ 0.1
 - **INP ≤ 200ms** (3-phase: input delay → processing → presentation delay)
@@ -27,6 +29,7 @@ paths:
 - For SPA per-route CWV use **Soft Navigations API** (`softNavs:true` in web-vitals v4+)
 
 ## Budgets
+
 - JS ≤ 200KB gz total/route
 - No single chunk > 250KB gz (code-split React.lazy + manualChunks)
 - CSS ≤ 50KB gz
@@ -40,6 +43,7 @@ paths:
 - JSRPC payload up to 32 MiB
 
 ## A11y
+
 - axe-core 0 violations — but **axe 0 ≠ AA conformance** (it auto-tests only 2.5.8 of the 9 new WCAG 2.2 SC, ~57% of issues by volume). Green axe is necessary, never sufficient.
 - Lighthouse ≥ 95
 - Contrast ≥ 4.5:1
@@ -48,12 +52,15 @@ paths:
 - **Manual review REQUIRED** (axe can't detect): 2.4.11 Focus Not Obscured (AA), 2.4.13 Focus Appearance (AAA), 2.5.7 Dragging (AA), 3.2.6 Consistent Help, 3.3.7 Redundant Entry, 3.3.8 Accessible Auth (AA). Run this checklist every a11y pass.
 
 ## Code
+
 - Functions ≤ 50 lines
 - Cyclomatic ≤ 10
 - Params ≤ 3
 
 ## Security
+
 ### Required headers
+
 - HSTS
 - CSP Level 3 (strict-dynamic + per-response random nonce, never reused)
 - Trusted Types (DOM-XSS prevention)
@@ -66,16 +73,19 @@ paths:
 - CORP
 
 ### Remove
+
 - X-XSS-Protection
 - Expect-CT
 - HPKP
 
 ### Cookies + integrity
+
 - **CHIPS** — set `Partitioned` on any cross-site cookie (OAuth iframe, embedded widget) or the session silently breaks under third-party-cookie partitioning. Safari ignores the attribute but partitions independently; Firefox partitions via Total Cookie Protection — test all three.
 - **SRI** — `integrity` (SHA-384) + `crossorigin="anonymous"` on every externally-hosted `<script>`/`<link rel="stylesheet">`; pair with CSP `require-sri-for script style`. Not applied to dynamically-injected scripts — guard those separately.
 - **CSP reporting** — emit BOTH `report-to` AND `report-uri` until report-to has universal support; Trusted Types is Chromium-full / Firefox+Safari-partial.
 
 ## SEO strict
+
 - Title 50-60 chars HARD
 - Meta desc 120-156 chars HARD
 - Keyphrase 0.5-3%
@@ -91,12 +101,14 @@ paths:
 - BreadcrumbList on multi-level routes (≥2 segments deep)
 
 ## Animation
+
 - transform/opacity only
 - `prefers-reduced-motion` on all
 - `will-change` sparingly
 - Scroll-driven off main thread (Chrome stable, Safari 26+, Firefox unsupported — pair with `prefers-reduced-motion` AND `animation-duration:1ms` Firefox fallback)
 
 ## CSS
+
 - Cascade layers (`@layer reset, base, components, utilities`)
 - Container queries for components (Baseline Widely Available 2025)
 - `:has()` for parent selection (Baseline Newly Available)

@@ -13,6 +13,7 @@ paths:
 The architecture doctrine for large, long-lived Angular apps (dashboards · SaaS · admin · PWA · multi-tenant · workflow systems · website factories · AI consoles · anything that may exceed 200k LOC). Fires whenever `stack-selector` picks Angular. ProjectSites.dev admin is governed by this.
 
 ## Non-negotiable architecture
+
 - **Angular 21+ + Nx** monorepo, standalone components, **signals**, zoneless, strict TS (`strict` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes`). Per `angular-nx-monorepo`.
 - **Angular Router** with **lazy-loaded routes** (one route file per feature) + **feature modules** (`libs/features/<slug>/`). Router scoped to a sub-view: shell (sidebar/topbar) mounts ONCE, only the content outlet swaps. **No full-page reloads on internal nav** (verify with a SPA sentinel + nav-entry count per `e2e-tdd-organization`).
 - **Spartan UI ONLY** + Angular CDK + Floating UI (+ Tippy.js for tooltip ergonomics). NO PrimeNG/Material/other kits. Per `spartan-ui-design-system`.
@@ -22,6 +23,7 @@ The architecture doctrine for large, long-lived Angular apps (dashboards · SaaS
 - **SSR / PWA readiness** where appropriate (`@angular/ssr` behind a Cloudflare adapter per `cloudflare-hostable-supervisor`); app-shell prerender + incremental hydration for authed dashboards.
 
 ## Every feature surface ships ALL of these (the DoD)
+
 - **Types** + **Zod schema** at every boundary (`zod-everywhere` · `validation-error-handling-supervisor`)
 - **Contract-first API** (typed request/response, validated both ends) (`contract-first-ai` · `hono-api`)
 - **Loading · empty · error · success** states (the 4-state system — never a bare spinner or blank)
@@ -33,7 +35,9 @@ The architecture doctrine for large, long-lived Angular apps (dashboards · SaaS
 - **Docs** — JSDoc on exports + a module README
 
 ## Build from reusable patterns, not one-off screens
+
 Every screen composes from the `spartan-ui-design-system` pattern library (app-shell, smart table, 4-state system, command palette, etc.). A new screen that re-implements a shell/table/empty-state from scratch is drift.
 
 ## Supervisor execution loop (per `autonomous-engineering`)
+
 audit → plan → ONE coherent vertical slice → implement → validate (typecheck) → test → polish UI → harden errors → docs → repeat. Favor finished vertical slices over scattered partials.

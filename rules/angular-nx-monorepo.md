@@ -15,6 +15,7 @@ paths:
 When Angular is chosen (`frontend-stack.md`), build inside **Nx monorepo running Angular 21** with **Angular CLI MCP**. Standalone components only. Signals only. No NgModules. No Angular Material. No PrimeNG default. Tailwind v4 + Angular CDK + Spartan UI.
 
 ## Canonical stack
+
 - **Angular 21** pinned `21.x` in `package.json` + `angular.json`.
 - **Nx 20+** wrapper. `nx.json` at repo root. Apps under `apps/`, libs under `libs/`.
 - **Standalone components** ONLY. NgModules banned. `provideRouter` / `provideHttpClient` / `provideAnimationsAsync` in `app.config.ts`.
@@ -70,12 +71,14 @@ claude mcp add --scope user --transport stdio angular-cli -- npx -y @angular/cli
 Tools: `mcp__angular-cli__generate`, `mcp__angular-cli__update`, `mcp__angular-cli__list_workspaces`. Use these instead of free-hand `ng g`.
 
 Nx-specific generators via Bash:
+
 ```bash
 npx nx g @nx/angular:component <name> --project=<app> --standalone
 npx nx g @nx/angular:library <name> --directory=libs/ui --standalone
 ```
 
 ## Required Nx plugins
+
 - `@nx/angular` — Angular generators + executors
 - `@nx/playwright` — Playwright E2E
 - `@nx/vite` — Vite/Vitest runner
@@ -137,6 +140,7 @@ export const appConfig = {
 ```
 
 ## Banned
+
 - ❌ NgModules (standalone only)
 - ❌ Template-driven forms
 - ❌ RxJS subjects for component state (signals)
@@ -149,6 +153,7 @@ export const appConfig = {
 - ❌ `[(ngModel)]` in Reactive-Forms context
 
 ## Build + test (Nx canonical)
+
 ```bash
 npx nx serve <app>                # dev server
 npx nx build <app>                # production via esbuild
@@ -161,7 +166,9 @@ npx nx migrate latest             # version bump
 ```
 
 ## Migration (existing Angular → 21 + Nx)
+
 For Angular 17-20 standalone:
+
 1. `npx nx@latest init` → convert to Nx workspace
 2. `npx nx migrate @nx/angular@latest` → bump Nx + Angular plugins
 3. `npx nx migrate --run-migrations` → apply auto-migrations

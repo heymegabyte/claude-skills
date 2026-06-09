@@ -12,6 +12,7 @@ Run a post-run learning pass per [[prompt-as-training-signal]].
 **Inputs** — `$ARGUMENTS` (optional notes); else introspect the current/last run.
 
 Ask + answer each:
+
 - Missing agents? (a role got done by a generic worker that deserves a specialist per [[agent-selection]])
 - Weak routing? (wrong model/effort, wrong agent picked)
 - Repeated mistakes? (same fix twice → rule)

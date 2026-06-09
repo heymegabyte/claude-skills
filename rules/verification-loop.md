@@ -10,7 +10,9 @@ paths:
 # Verification Loop
 
 ## Deploy + Prod-E2E mandate (EVERY ADD/FIX)
+
 Any code change to deployable project:
+
 1. Build
 2. Deploy
 3. curl / Playwright E2E against PROD URL targeting changed pages/routes/endpoints
@@ -18,30 +20,37 @@ Any code change to deployable project:
 5. Only then report DONE
 
 ### Auth fallback chain
+
 Auth gap (`wrangler whoami` fails, missing `CLOUDFLARE_API_TOKEN`) is NOT a pass:
+
 1. Fetch via `/Users/Apple/.local/bin/get-secret CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`
 2. Fall back to `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL`
 3. If both stale, ask user `! npx wrangler login` and resume from deploy
 
 ### Done definition
+
 - Local typecheck + build pass is NEVER sufficient
 - "DONE" requires change verified live
 - Pages relevant to add/fix MUST each be HTTP-fetched post-deploy and asserted against (new content present, no 5xx, security headers intact, no CSP/console errors)
 
 ## TDD
+
 - Failing Playwright test FIRST → implement → pass
 - Real user flows: homepage → navigate via clicks/keyboard → interact → verify
 - Test account: `test@megabyte.space` (`TEST_USER_PASSWORD`)
 
 ## Code-change flow
+
 Code change → SPEC.md → failing tests (PROD_URL) → implement slice-by-slice → deploy + purge → E2E 6bp → screenshot → AI vision → fix → redeploy (max 3) → DONE when all pass.
 
 ## Ralph Loop
+
 - SPEC.md + progress.md → pick AC → test → build → deploy → verify → mark done → next
 - Context >60% → save + spawn fresh
 - All ACs done → recommendations loop → zero remain
 
 ## Playwright Test Agents (built-in v1.56+)
+
 - **Planner** → Markdown plan
 - **Generator** → test code
 - **Healer** → auto-fix broken selectors
@@ -51,22 +60,26 @@ Code change → SPEC.md → failing tests (PROD_URL) → implement slice-by-slic
 - MCP a11y tree testing preferred over screenshot-based assertions — more reliable, faster, catches real a11y issues
 
 ## Visual regression
+
 - **Percy AI Visual Review** — 3× faster review, 40% OCR-based noise filter — full-page + flows
 - **Chromatic** — component-level via Storybook
 - **pixelmatch** (or Playwright `toHaveScreenshot()`) — local deterministic CI
 - Three-tier: local → PR → deploy
 
 ## INP debugging
+
 - `PerformanceObserver` type:`long-animation-frame` (LoAF, Chrome 123+)
 - For SPA per-route CWV: web-vitals v4+ with `softNavs:true`
 
 ## Hard rules
+
 - No screenshot = not verified
 - No test = not done
 - No deploy = not shipped
 - Crons = monitoring ONLY
 
 ## Console-error gate
+
 - Console errors = not done
 - After every deploy, check browser console for CSP violations, JS errors, failed resource loads
 - Fix ALL before marking complete
@@ -75,28 +88,35 @@ Code change → SPEC.md → failing tests (PROD_URL) → implement slice-by-slic
 - Each = build fail
 
 ## Gradual deploy verification
+
 1. 1% → watch error rate 5 min
 2. 10% → watch 5 min
 3. 100%
+
 - Auto-rollback at p99 error >1% or LCP regression >20%
 
 ## Value extraction every prompt
+
 - Universal → `~/.claude/`
 - Project → `./.claude/` (path-scoped)
 - New projects auto-scaffold `.claude/` + SPEC.md + tests
 
 ## TDD-First + Total-Coverage
+
 Every clickable / form field / nav link / API endpoint / modal / keyboard shortcut / error / empty / loading state has ≥1 Playwright test against PROD.
 
 ### Inventory
+
 - `e2e/FEATURES.md` + `e2e/COVERAGE.yml`
 - CI fails if any feature lacks entry or test
 
 ### Execution
+
 - Tests run `fullyParallel: true` × 4-8 workers × 3 browsers × 6 breakpoints
 - Spawn parallel Playwright Test Agents — one per feature
 
 ### Bug + change protocol
+
 - Bug fix = failing-test-first reproducing the bug
 - Code change:
   1. Write failing test

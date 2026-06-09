@@ -17,6 +17,7 @@ Every Playwright run randomly captures a sample of in-test screenshots and diffs
 ## Two surfaces, two contracts
 
 ### Surface 1 — Random snapshot sampling
+
 - Each test step has a 30% chance of triggering `await randomSnapshot(page, 'step-name')`.
 - Sample seeded by `${TEST_TITLE}:${STEP_NAME}:${SHARD_INDEX}` — same spec on same shard always samples the same steps (reproducible).
 - First run on a step = baseline written to `e2e/__snapshots__/<feature>/<spec>/<step>.png`. Subsequent runs = `pixelmatch` diff with `threshold: 0.1` (10% per-pixel tolerance) AND `maxDiffPixelRatio: 0.005` (0.5% of total image area).
@@ -24,6 +25,7 @@ Every Playwright run randomly captures a sample of in-test screenshots and diffs
 - Anti-aliasing + font rendering masked via `page.addStyleTag` with `* { font-smooth: never !important }` before snapshot.
 
 ### Surface 2 — New-section AI vision pass
+
 - `e2e/__seen-routes__.json` is the durable inventory: every route + component combination ever screenshot'd by the suite, keyed by `<route>:<viewport>`.
 - Before any spec's first interaction with a route, helper `assertNewSection(page, routeKey)` checks the inventory. If unknown → mandatory full-viewport screenshot + AI-vision call.
 - AI vision rubric (sent to GPT-4o or Claude Sonnet 4.6 via vision endpoint):
@@ -75,6 +77,7 @@ export async function assertNewSection(
 ```
 
 ### AI vision endpoint
+
 - Default: Claude Sonnet 4.6 via `@anthropic-ai/sdk` with the `vision` message-content shape.
 - Fallback: GPT-4o via `openai` SDK.
 - Both keyed via `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` from get-secret.
@@ -104,16 +107,19 @@ test.describe('booking funnel', () => {
 ```
 
 ## Cache & cost discipline
+
 - AI vision call ≈ $0.005 per image. Only fires on never-seen routes — typically 5-20 calls per full suite, $0.10 max per CI run.
 - Snapshot baseline images live under `e2e/__snapshots__/` and ARE committed to git. Diff updates require explicit `--update-snapshots` flag + PR review.
 - `__seen-routes__.json` is committed too — its growth tracks the suite's coverage frontier.
 
 ## Anti-patterns
+
 - ❌ Snapshot the entire viewport when only one component changed — scope to the component selector via `locator.screenshot()`.
 - ❌ Set `threshold: 1` to silence flake — fix the flake (anti-aliasing, font load timing, animation) instead.
 - ❌ Skip new-section gate for "internal pages" — the whole point is catching the broken first render.
 - ❌ Stub the AI vision call in CI — costs are trivial and the gate is the value.
 
 ## Parallel-runner integration
+
 - Random sampling is shard-safe because the seed includes `SHARD_INDEX`. Each shard samples a deterministic subset; combined, the union covers most steps.
 - `__seen-routes__.json` updates are commit-back-to-main from the merge runner, not from individual shard runners (avoid write conflicts). Shards APPEND to a temp file; the merge step deduplicates.

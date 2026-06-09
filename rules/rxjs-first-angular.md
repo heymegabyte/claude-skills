@@ -15,6 +15,7 @@ paths:
 Every backend interaction in Angular is an **RxJS observable stream**, never a one-shot promise. Polling is the floor; SSE/WebSockets are the ceiling. Signals only bridge at the template boundary via `toSignal()`. `firstValueFrom()` defeats the contract.
 
 ## Principle
+
 - HTTP / WebSocket / SSE / postMessage / IndexedDB → `Observable<T>`.
 - Component state derived from streams → `Signal<T>` via `toSignal(stream$, { initialValue })`.
 - Service keeps stream observable to compose `retry`, `debounceTime`, `switchMap`, `combineLatest`, `merge`, `share`, `takeUntilDestroyed`, `repeat`, `interval`.
@@ -22,6 +23,7 @@ Every backend interaction in Angular is an **RxJS observable stream**, never a o
 ## Mandate
 
 ### Do
+
 - **HTTP** → `HttpClient` returns Observable. Keep it. NEVER `firstValueFrom(this.http.get(...))` in the service.
 - **WebSocket** → `webSocket()` from `rxjs/webSocket`, never hand-rolled `new WebSocket()`.
 - **SSE** → `fromEventSource()` helper at `libs/util-rxjs/src/from-event-source.ts` OR `fromEvent(source, 'message')`.
@@ -32,6 +34,7 @@ Every backend interaction in Angular is an **RxJS observable stream**, never a o
 - **Retry** → `retry({ count: 3, delay: (_, n) => timer(Math.min(2 ** n * 250, 30_000)) })` on every HTTP. Helper: `libs/util-rxjs/src/retry-with-backoff.ts`.
 
 ### Don't
+
 - ❌ `await firstValueFrom(this.api.foo())` in async function.
 - ❌ `lastValueFrom()` for simplicity.
 - ❌ Hand-rolled `setInterval(() => this.refresh(), 5000)` in a component.
@@ -145,6 +148,7 @@ save() {
 ```
 
 ## Util library (`libs/util-rxjs/`)
+
 - `retryWithBackoff(opts)` — exponential backoff + jitter
 - `fromEventSource(url)` — SSE wrapper
 - `pollWhile(predicate$, interval)` — gated polling
@@ -153,10 +157,12 @@ save() {
 - `cacheFirst(source$, ttlMs)` — TTL-cached observable
 
 ## Testing
+
 - Marble-test every operator chain via `TestScheduler`. Don't `await firstValueFrom()` in tests.
 - For components, prefer `provideExperimentalZonelessChangeDetection()` + `TestBed.runInInjectionContext` + `toSignal` reads.
 
 ## Build gate
+
 - `eslint-plugin-rxjs` enforces: no nested subscribes, no manual unsubscribe (use `takeUntilDestroyed`), no `firstValueFrom`/`lastValueFrom` in service files.
 - `no-restricted-imports` blocks `rxjs/operators` legacy — import from `rxjs`.
 - TS-strict checks `Observable<T>` return types on every public service method.

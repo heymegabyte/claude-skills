@@ -14,6 +14,7 @@ paths:
 # Cinematic UI Patterns
 
 ## Standing rule
+
 - Every numeric stat on every projectsites.dev surface (marketing, admin, generated sites, dashboards) renders through `<app-rolling-counter>` — NEVER a static text node
 - Every section, card, stat, and CTA fades + translates 16px up on first paint via `[appReveal]` — NEVER ships static
 - No exceptions without a stated reason inline (e.g. `<!-- no rolling-counter: SSR-critical above-the-fold integer -->`)
@@ -21,12 +22,14 @@ paths:
 - Drift = audit fail in Turn-3 visual QA + Playwright `e2e/cinematic-ui.spec.ts` regression
 
 ## Reusable components
+
 - `<app-rolling-counter>` — `src/app/components/rolling-counter/rolling-counter.component.ts`
 - `<app-before-after-slider>` — `src/app/components/before-after-slider/before-after-slider.component.ts`
 - `appReveal` directive — `src/app/directives/reveal.directive.ts`
 - `<app-trust-strip>` — `src/app/components/trust-strip/trust-strip.component.ts`
 
 ## Canonical usage — `<app-rolling-counter>`
+
 ```html
 <!-- Integer with thousands separator + plus suffix -->
 <app-rolling-counter [value]="2480" suffix="+" />
@@ -42,6 +45,7 @@ paths:
 ```
 
 ### Behavior contract
+
 - Counts up from `0` to `value` via `requestAnimationFrame` with `easeOutQuart` easing
 - Locale-formats via `Intl.NumberFormat` (default `en-US`, override with `locale`)
 - Fires only when host enters viewport (IntersectionObserver, threshold `0.4`)
@@ -51,6 +55,7 @@ paths:
 - `font-variant-numeric: tabular-nums` baked in so digits don't reflow during count
 
 ## Canonical usage — `appReveal`
+
 ```html
 <!-- Default: 16px rise + fade over 520ms, staggered 80ms by document order -->
 <section appReveal>
@@ -65,6 +70,7 @@ paths:
 ```
 
 ### Behavior contract
+
 - Web Animations API (`Element.animate`) — no CSS keyframes needed, no FOUC, no layout shift
 - Above-the-fold hosts animate on first paint, staggered by document order × 80ms
 - Below-the-fold hosts use IntersectionObserver fallback (threshold `0.12`, rootMargin `0px 0px -6%`)
@@ -73,6 +79,7 @@ paths:
 - Safe-by-default — host's final state is visible; the animation only adds the entrance flourish
 
 ## Canonical usage — `<app-before-after-slider>`
+
 ```html
 <app-before-after-slider
   beforeSrc="/images/compare/generic.svg"
@@ -84,6 +91,7 @@ paths:
 ```
 
 ### Behavior contract
+
 - Pointer (mouse + touch + pen) drag on divider or anywhere on surface
 - Keyboard: `ArrowLeft`/`ArrowRight` ±2%, `Shift+Arrow` ±10%, `Home`/`End` to extremes, `PageUp`/`PageDown` ±10%
 - ARIA: `role="slider"`, `aria-valuenow`, `aria-valuemin=0`, `aria-valuemax=100`, `aria-label`
@@ -92,6 +100,7 @@ paths:
 - `prefers-reduced-motion: reduce` → instant snap, no clip-path transition
 
 ## Component checklist (every Angular component on projectsites.dev)
+
 - Numeric stat → `<app-rolling-counter>` (not raw `{{ value }}`)
 - Section root → `appReveal` (not static or pure `*ngIf` toggle)
 - Image pair / comparison → `<app-before-after-slider>` (not stacked static `<img>`)

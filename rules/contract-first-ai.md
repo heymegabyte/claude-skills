@@ -71,16 +71,26 @@ export type AiPatch = z.infer<typeof AiPatchSchema>;
 ## Validate-on-receipt + repair-or-reject
 
 ### Do
+
 - `safeParse` every AI response at the boundary.
 - On validation failure, send the Zod error back to the model ONCE for a structured repair.
 - Reject + log to Sentry if the repair also fails — typed contracts in, typed contracts out, no raw-text fallthrough.
 - Carry `featureSlug` on every parsed object for traceability per ``feature-module-architecture``.
 
 ### Don't
+
 - Don't `JSON.parse` model text and use it untyped.
 - Don't `as AiPatch` to silence the compiler — that bypasses the runtime contract.
 - Don't act on a partial parse; an invalid contract is a no-op, not a guess.
 - Don't let prose ("here's your plan…") leak into app state.
 
+## AutoRAG escape hatch (managed RAG over R2)
+
+- When the contract is "retrieve + cite over R2-stored docs", AutoRAG / AI Search beats hand-rolled Vectorize + chunker + embedder + retriever pipelines.
+- One endpoint, points at R2 bucket, auto-handles chunking + embedding + indexing + retrieval + generation. Still typed at boundary (Zod schema on the response payload).
+- Source: Cloudflare. (2025, April 7). *AutoRAG open beta*. `developers.cloudflare.com/changelog/post/2025-04-07-autorag-open-beta/`
+- Trade-off: less knob-control than bespoke pipeline. Pick AutoRAG for the common case; reach for Vectorize directly when you need custom retrieval (hybrid BM25+vector, custom rerank, multi-tenant index sharding).
+
 ## Reframe
+
 Earlier draft framed this rule as "never trust AI." Reframed: AI is permanent + foundational; validation is standard hygiene at every runtime boundary per `zod-everywhere`, not skepticism. The rule is unchanged in mechanics — every AI output still flows `output → Zod → typed`. Only the frame: AI is a first-class data source the platform is built on.

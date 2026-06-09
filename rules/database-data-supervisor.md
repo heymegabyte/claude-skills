@@ -17,9 +17,11 @@ paths:
 Cloudflare-hostable data access first (D1/KV/R2/DO), Neon/Upstash behind adapters when CF can't meet the need. Every boundary validated, every table tenant-isolated, every change migrated. The data arm of the supervisor system.
 
 ## When this fires
+
 - Any persistence, cache, search, or analytics-modeling decision
 
 ## Tooling + when to use
+
 - **Cloudflare D1 / KV / R2 / DO** — the DEFAULT per `cloudflare-lock-in-is-leverage`; reach here first
 - **@neondatabase/serverless** — Neon Postgres ONLY when D1 can't meet the need (advanced SQL, RLS, OLAP); front with Hyperdrive; adapter-only via `SqlPort` per `cloudflare-hostable-supervisor`
 - **@upstash/redis** — Redis primitives at scale (sorted sets, streams, locks) when KV/DO can't; adapter-only via `KvPort`
@@ -30,6 +32,7 @@ Cloudflare-hostable data access first (D1/KV/R2/DO), Neon/Upstash behind adapter
 - **dayjs** — date handling everywhere
 
 ## Rules
+
 - **Prefer Cloudflare-hostable access patterns**; isolate Neon/Upstash/Typesense behind typed ports so a swap never rewrites product code
 - **Keep local/dev reproducible** — every adapter has a local impl (Miniflare, local SQLite, in-memory)
 - **Type database access** (Drizzle RQBv2 + Zod per `code-style`); never hand-maintain types beside a schema

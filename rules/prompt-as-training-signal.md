@@ -12,6 +12,7 @@ paths:
 Every user prompt is a training signal. Most are also evidence that the previous turn under-delivered. Treat the prompt as data, extract the wisdom from it, and fold that wisdom back into the durable layer (skills, rules, prefs, memory) IN THE SAME TURN before doing the requested work.
 
 ## The principle
+
 - If the user is prompting again on the same project / same domain / same surface, the prior turn was incomplete in some dimension. The prompt itself names the dimension.
 - A second prompt is never "just more work" — it's a corrective gradient. Capture the gradient, update the model.
 - The cost of capturing the lesson is seconds. The cost of relearning it next month is hours.
@@ -19,6 +20,7 @@ Every user prompt is a training signal. Most are also evidence that the previous
 ## The seven prompt shapes (and what each teaches)
 
 ### 1. "Now do X" / "Also do Y" / "Don't forget Z"
+
 - **What it means:** prior turn under-scoped. X/Y/Z was implicit and got dropped.
 - **What to extract:** the missing element is part of the surface's invariant set.
 - **Where to write it:**
@@ -26,33 +28,40 @@ Every user prompt is a training signal. Most are also evidence that the previous
   - If it's domain-specific → append to the skill that owns that domain
   - If it's a Brian habit → append to `rules/brian-preferences.md`
 
-### 2. "Make sure to ___" / "Always ___" / "Never ___"
+### 2. "Make sure to ___" / "Always___" / "Never ___"
+
 - **What it means:** a hard rule the user expects to be respected, not a request.
 - **Where to write it:** `rules/always.md` (if universal) OR the relevant rule file. Phrasing: declarative, build-fail if violated.
 
-### 3. "Actually ___" / "I meant ___" / "It should be ___"
+### 3. "Actually ___" / "I meant___" / "It should be ___"
+
 - **What it means:** a wrong assumption was baked in. The user just corrected the model.
 - **Where to write it:** `feedback_<topic>.md` memory file with **Why:** + **How to apply:**
 
 ### 4. Re-issuing a near-identical prompt
+
 - **What it means:** the prior turn was wrong-SHAPED, not wrong-CONTENT. Decomposition / monitor-fire / parallelization failed.
 - **Where to write it:** `rules/monitor-orchestration.md` § Known shortcomings — append a new numbered entry: `<symptom>` → `<root cause>` → `<rule that prevents it>`.
 
-### 5. "How can we improve ___" / "What else ___" / "Top N ideas"
+### 5. "How can we improve ___" / "What else___" / "Top N ideas"
+
 - **What it means:** invitation to operate at full extra-mile/auto-integrate-recs surface.
 - **What to extract:** which surface the user is willing to invest in. Worth noting in a project memory entry so future sessions in the same project lead with that surface.
 
-### 6. "Ensure ___ is in ___" / "Save ___ to memory" / "Add ___ to the rules"
+### 6. "Ensure ___is in___" / "Save ___to memory" / "Add___ to the rules"
+
 - **What it means:** explicit meta-instruction. The user is teaching, not asking.
 - **What to do:** highest-priority capture. Write the artifact in this turn. Cross-link from sibling rules so the lesson surfaces in unrelated contexts later.
 
-### 7. "Why didn't ___?" / "How come ___?" / venting
+### 7. "Why didn't ___?" / "How come___?" / venting
+
 - **What it means:** a behavior is violating a prior preference or the user's implicit model.
 - **Where to write it:** `feedback_<topic>.md` memory with the prohibited behavior + reason given. Plus, surface the conflict in `rules/conflict-resolution.md` if applicable.
 
 ## Extraction protocol
 
 For every prompt:
+
 1. **Read the prompt shape** (which of the 7 above?).
 2. **Name the gradient** — what did the prior turn miss / get wrong / under-scope / mis-shape?
 3. **Identify the durable home** — which skill, rule, preference, or memory should grow?
@@ -83,6 +92,7 @@ Skipping step 5 is the failure mode that makes the same lesson recur in unrelate
 ## Boil-the-lake gradient extraction
 
 When a prompt produces a lesson, don't just capture the literal lesson. Ask:
+
 - "What CLASS of gap does this belong to?"
 - "What sibling projects / surfaces / future prompts will hit the same class?"
 - "Is there a generalizable rule one level higher?"

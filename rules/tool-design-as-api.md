@@ -16,6 +16,7 @@ Every tool the AI builds or wields — a script, a generator, an automation entr
 This rule fires on every "write a script / build a generator / add a tool / expose an automation" prompt. It complements ``hono-api`` (HTTP edge) and extends the same contract discipline inward to every callable surface.
 
 ## The contract
+
 - **Zod input schema** — narrow, named fields; reject unknown keys (`.strict()`); no free-form `command` string.
 - **Zod output schema** — typed result envelope `{ ok, data?, error?, correlationId }`; never return raw stdout.
 - **Unit tests** — happy path + invalid input + failure path; mock external I/O per ``verification-loop`` § TDD.
@@ -25,6 +26,7 @@ This rule fires on every "write a script / build a generator / add a tool / expo
 - **Idempotency** — re-running with the same input is a no-op or returns the same result, where practical.
 
 ## Prefer task-specific tools
+
 - `createFeatureModule(input)` — scaffolds `libs/features/<slug>/` per ``feature-module-architecture``
 - `validateFeatureManifest(input)` — checks the 7 required fields, returns typed violations
 - `runAffectedTests(input)` — `{ scope, baseRef }` → `{ passed, failed[], coverage }`
@@ -34,12 +36,14 @@ This rule fires on every "write a script / build a generator / add a tool / expo
 - `runFeatureEval(input)` — `{ slug, cases? }` → Zod-validated eval results per ``evals``
 
 ## Safe-by-default discipline
+
 - Destructive ops require an explicit `confirm: true` field — never destructive on the default path.
 - Every mutating tool accepts `dryRun: boolean` and defaults to the safest behavior.
 - Scope every tool to the narrowest target (one feature, one file, one session) — no implicit "all".
 - Validate input at the boundary, validate output before returning — both with the same Zod-everywhere rigor.
 
 ### Do
+
 - Name tools after the TASK (`createFeatureModule`), not the mechanism (`runScript`)
 - Ship the Zod input + output schema in the same file as the tool
 - Return a typed envelope every time, success or failure
@@ -47,6 +51,7 @@ This rule fires on every "write a script / build a generator / add a tool / expo
 - Document the tool in the registry the same turn you author it
 
 ### Don't
+
 - Build unsafe mega-tools: `runAnything(command)`, `editWhatever(files)`, `deployNow()`, `sqlExec(query)`
 - Accept a free-form string where a typed enum/union would do
 - Return raw stdout, raw JSON, or untyped objects to the caller
@@ -54,6 +59,7 @@ This rule fires on every "write a script / build a generator / add a tool / expo
 - Ship a tool without tests "because it's just a script" — scripts are APIs
 
 ## MCP tools
+
 - An MCP tool is a public API surface — typed input schema, typed output, documented, safe-by-default.
 - Prefer the official vendor MCP per ``full-autonomy`` § MCP spec before building a custom server.
 - Custom MCP servers MUST validate every tool's params with Zod and return structured results, never prose blobs.

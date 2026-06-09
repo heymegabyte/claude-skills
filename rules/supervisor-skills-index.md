@@ -31,7 +31,9 @@ Brian's permanent supervisor knowledge system (2026-05-29). Entry point for ever
 18. ✅ **`package-preference-registry`** — every preferred package + install-now/defer/adapter-only/reject decision (the package-decision matrix).
 
 ## Discipline (applies to all)
+
 Listing ≠ installing. Per-package: already-have? · truly-needed? · license(OSS/free only) · Angular/SSR compat · bundle/perf · CF compat · lighter-option? → install/defer/adapter/reject + document. NEVER: paid/pro-only, proprietary kits, non-commercial licenses, duplicate libs, demos-as-features, shallow integrations.
 
 ## Expansion plan
+
 ◐ entries are real doctrine NOW (usable + crosslinked). Net-new ones (forms-editors, media, viz, motion, collab, notifications, ai-agent, workflow, crawling-testing, cloudflare-hostable) get expanded to standalone full docs in subsequent waves; validation/auth/observability/database substantially live in the ↪ rules already.

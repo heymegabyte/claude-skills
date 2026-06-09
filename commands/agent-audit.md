@@ -12,6 +12,7 @@ Audit the run's agent fan-out per [[agent-selection]].
 **Inputs** — `$ARGUMENTS` (optional run pointer); else introspect the last `Agent` spawns.
 
 Check each spawned agent:
+
 - Generic-worker overuse — did a vanilla agent do work a registered specialist should own?
 - Scope overlap — did two agents touch the same files/role without a clear boundary?
 - Vague output — did the brief lack a concrete `Outputs` contract (≤200-word summary, owned files)?

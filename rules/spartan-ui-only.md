@@ -16,6 +16,7 @@ the sole primary UI component system. No PrimeNG. No Angular Material. No Taiga.
 No NG-ZORRO. No Kendo. No Syncfusion. No second component library.
 
 This rule REVERSES the prior `code-style.md` mandate of "PrimeNG for admin density
+
 + Spartan UI for marketing surfaces." The split was operationally costly (two design
 systems, two upgrade tracks, two theme systems, double bundle weight, perpetual
 inconsistency between admin and marketing surfaces). Spartan-only collapses the
@@ -23,12 +24,12 @@ maintenance surface to one.
 
 ## The mandate
 
-- **Spartan UI** (the shadcn-for-Angular port) is THE Angular UI component library.
-- Pair it with **Angular CDK** for low-level primitives (overlays, drag-drop, virtual
++ **Spartan UI** (the shadcn-for-Angular port) is THE Angular UI component library.
++ Pair it with **Angular CDK** for low-level primitives (overlays, drag-drop, virtual
   scroll, a11y) and **Floating UI** for tooltip/popover positioning.
-- Use **Tippy.js** only where it improves tooltip/popover ergonomics over what Floating
++ Use **Tippy.js** only where it improves tooltip/popover ergonomics over what Floating
   UI alone provides.
-- Angular's built-in **i18n** is the localization strategy; do NOT install
++ Angular's built-in **i18n** is the localization strategy; do NOT install
   `@ngx-translate/core` or `transloco` unless an existing project already runs them
   AND migration is a separate dedicated wave.
 
@@ -38,12 +39,12 @@ Compose from Angular CDK + Floating UI + Tailwind v4 tokens BEFORE reaching for
 another library. If a substantial primitive is genuinely missing (e.g., a heavy
 spreadsheet grid), the allowed fallbacks are:
 
-- **AG Grid Community** for true spreadsheet-grade admin grids only (NOT default
++ **AG Grid Community** for true spreadsheet-grade admin grids only (NOT default
   for lists; use TanStack Table + Virtual for those)
-- **FullCalendar** for calendar/scheduling
-- **Embla Carousel** for carousels (rare in dashboards)
-- **PhotoSwipe** for lightboxes
-- **Apache ECharts** + **Unovis** + **@visx/visx** for charts
++ **FullCalendar** for calendar/scheduling
++ **Embla Carousel** for carousels (rare in dashboards)
++ **PhotoSwipe** for lightboxes
++ **Apache ECharts** + **Unovis** + **@visx/visx** for charts
 
 Each substantial addition gets a row in the project's `package-decision-matrix.md`
 with install/defer/adapter-only/reject classification.

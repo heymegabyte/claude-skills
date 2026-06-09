@@ -12,7 +12,9 @@ paths:
 Every multi-faceted user prompt MUST be treated as a single project to be completed in this turn — never split across follow-up prompts. The main thread acts as **Monitor**: decompose the brief, fan out parallel sub-agents for independent work, sequence dependent work, fold results back, verify, ship. Follow-up prompts on the same project signal a shortcoming in the prior turn; every such signal updates this rule set so the gap does not repeat.
 
 ## When to fire the Monitor pattern
+
 Fire if ANY of:
+
 - User prompt contains ≥3 distinct work units
 - Explicit list / numbered sections / "phases" / "passes" in the prompt
 - User previously asked the same project to "finish" / "implement everything" / "do all the phases"
@@ -22,7 +24,9 @@ Fire if ANY of:
 If yes: the **FIRST tool call** is `TaskCreate` for each work unit + parallel `Agent` spawns for the independent ones — NOT a sequential file-read marathon.
 
 ## Decomposition rule
+
 Within 30 seconds of receiving the prompt, identify and write down (via TaskCreate):
+
 1. **IndependentPasses** — work that can spawn in parallel agents without file conflicts
 2. **DependentPasses** — work that needs another pass's output (e.g., "rewrite refs to local paths" depends on "download images")
 3. **ForegroundPasses** — small file edits the main thread does while agents run
@@ -31,6 +35,7 @@ Within 30 seconds of receiving the prompt, identify and write down (via TaskCrea
 External blockers do NOT block the parallel work — surface at end-of-turn with concrete next-prompt language.
 
 ## Parallel-agent spawn discipline
+
 - Spawn multiple `Agent` calls in the **SAME message** — never sequentially
 - Each agent gets a 100-300 word self-contained brief (per ``full-autonomy``) including:
   - Exact scope
@@ -43,12 +48,15 @@ External blockers do NOT block the parallel work — surface at end-of-turn with
 - For Brian's two recurring heavy workloads (test-writing batches + feature/test-impl batches), the ≥5-min-wall-clock fan-out trigger, the fan-out WIDTH (sweet spot 3-4, hard ceiling 6, batch beyond 6), the Sonnet-specialist cost default, and the token guardrails are set by `parallel-subagent-economy` — this rule decides IF the Monitor ceremony fires; that rule decides WHEN to fan out + how WIDE + on what MODEL
 
 ## Sequencing rule
+
 - Dependent passes wait via a single `Agent` call that runs AFTER prerequisites complete, OR the main thread chains them itself
 - The Monitor explicitly orders: parallel batch 1 → main-thread foreground work → wait → parallel batch 2 (using batch-1 outputs) → build → deploy → verify → report
 - Never serialize what can parallelize; never parallelize what has a true data dependency
 
 ## Follow-up = shortcoming feedback loop
+
 When a user issues a 2nd / 3rd / Nth prompt on the same project, that is evidence the prior turn under-delivered. The Monitor MUST:
+
 1. Read the new prompt as a gap report
 2. Identify which kind of shortcoming it represents
 3. Before doing the requested work, append the gap pattern to this rule's "Known shortcomings" list below
@@ -57,6 +65,7 @@ When a user issues a 2nd / 3rd / Nth prompt on the same project, that is evidenc
 Updating the rules is part of the response, not deferred. If the gap is project-specific (not a generalizable rule), skip the rule update — but log it inside the project's CLAUDE.md.
 
 ## Known shortcomings (append, never delete)
+
 Each entry: `<symptom>` → `<root cause>` → `<rule that prevents it>`.
 
 1. **"Implement all the phases" framing yields one-section-per-turn delivery** → Monitor pattern was not fired, work was done foreground-only on the most visible item → THIS rule (monitor-orchestration).
@@ -70,7 +79,9 @@ Each entry: `<symptom>` → `<root cause>` → `<rule that prevents it>`.
 9. **Parallel spawns defaulted to generic `general-purpose` workers → weak specialization, duplicated effort, shallow reviews** → Decomposition fired the Monitor but assigned undifferentiated workers instead of purpose-built specialists; no diversity check existed in the final review → ``agent-selection`` (taxonomy + classify-before-spawn + assignment table + rejected-agent note + **Agent Diversity Review gate**). Every parallel run now emits the assignment table before spawning and runs the diversity gate before DONE; the `/agent-diversity-review` + `/final-review` commands own enforcement.
 
 ## Update protocol
+
 When this rule itself gets updated (because a new shortcoming surfaced), the Monitor MUST:
+
 - Append to the Known shortcomings list above with the new entry
 - Cross-link from the most-relevant adjacent rule
 - Include the rule update in the same turn's tool calls (never "I'll update the rules next turn")
@@ -79,6 +90,7 @@ When this rule itself gets updated (because a new shortcoming surfaced), the Mon
 Per the desktop-skill-sync hook in `~/.claude/CLAUDE.md`, the rule reaches the desktop app on the next prompt automatically.
 
 ## Implementation checklist (for the Monitor each turn)
+
 - [ ] Identify if Monitor pattern should fire (see "When to fire" above).
 - [ ] `TaskCreate` one task per independent work unit.
 - [ ] Multi-`Agent` spawn parallel work in a SINGLE tool-call message.

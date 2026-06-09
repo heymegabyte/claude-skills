@@ -26,6 +26,7 @@ When ANY signal fires, the main thread sets internal `OPUS_AVAILABLE=false` for 
 ## Fallback rules
 
 ### Agent frontmatter convention
+
 Every agent that declares `model: opus` (or `model: claude-opus-4-7` / `claude-opus-4-6`) MUST also declare:
 
 ```yaml
@@ -38,12 +39,15 @@ effort_fallback: high
 When `OPUS_AVAILABLE=false`, the main thread reads `model_fallback` and `effort_fallback` and uses those values in the `Agent` tool call's `model:` parameter (overriding the frontmatter `model:` field).
 
 ### Skill `effort:` frontmatter
+
 Same convention. Skills with `effort: xhigh` ship with `effort_fallback: high`. Monitor degrades on quota miss.
 
 ### Fast Mode (`/fast`)
+
 Fast Mode is Opus-only. When `OPUS_AVAILABLE=false`, Fast Mode automatically disables — main thread runs on Sonnet at standard speed. No user prompt needed.
 
 ### Hard-coded Opus uses (skill content saying "use Opus 4.7" in prose)
+
 Any skill body or rule body that explicitly recommends Opus 4.7 should pair every recommendation with "(Sonnet 4.6 fallback when Opus quota exhausted)". Anti-pattern: hard-coding `claude-opus-4-7` in source code without the fallback path.
 
 ## Quality expectations during fallback

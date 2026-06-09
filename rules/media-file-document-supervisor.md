@@ -15,10 +15,12 @@ paths:
 Uploads are validated, size-capped, type-restricted, compressed, and tenant-safe. OCR output is untrusted. The media arm of the supervisor system.
 
 ## When this fires
+
 - Any file/image upload surface
 - Any gallery / lightbox / PDF generation / OCR import
 
 ## Tooling
+
 - **Uppy** — upload orchestration (resumable, multi-source, progress)
 - **compressor.js** — client-side image compression before upload
 - **cropper.js** — image cropping
@@ -30,6 +32,7 @@ Uploads are validated, size-capped, type-restricted, compressed, and tenant-safe
 - **dayjs** — timestamps/formatting
 
 ## Rules
+
 - **Validate every upload** — MIME type + extension + magic-byte sniff, never trust the client filename
 - **Enforce size limits** + **allowed file types** at the boundary (reject early, friendly error)
 - **Compress** images where useful (compressor.js) + **crop** where useful (cropper.js)

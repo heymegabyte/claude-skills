@@ -17,11 +17,13 @@ Build starts BEFORE the brand brief. Identify top 5-10 sites the audience compar
 Precedes `website-build-doctrine.md` Phase 0. Phase 0 gathers facts about OUR subject; this rule gathers facts about EVERYONE ELSE. Both complete before code.
 
 ## When fires
+
 - Every one-line website prompt (`make a website for X`, `rebuild X.com`, `build a site for Y`) per `16-cinematic-website-prime-directive`
 - Every site rebuild classifying as enhancement-mode per `source-site-enhancement.md`
 - Every iteration of `website-build-doctrine.md` § Phase 6 "Continuous Self-Improvement Loop"
 
 ## Three non-skippable acts
+
 1. **Identify** — top 5-10 audience-comparable sites. Org-type aware: nonprofit competitors = peer nonprofits + adjacent service orgs in same metro, NOT for-profit SaaS. Local = top-3 Google Business + top-3 Yelp in same ZIP. SaaS = 3-5 most-traffic'd direct per SimilarWeb + top-3 Google for primary keyphrase.
 2. **Score** — 100-pt rubric (§ Rubric). Capture screenshots, route inventory, AI-vision scores, distinctive features, copy-paste-worthy patterns into `_competitors.json`.
 3. **Beat** — design + build + iterate until OUR site outscores EVERY on EVERY dim by ≥15%. Phase 6 loop terminates ONLY when satisfied.
@@ -29,6 +31,7 @@ Precedes `website-build-doctrine.md` Phase 0. Phase 0 gathers facts about OUR su
 ## Phase order (executes before `website-build-doctrine.md` Phase 0)
 
 ### 1. `competitor_identify`
+
 - Org-type infer per `02-goal-and-brief` first
 - Pull top 10 per per-org-type sources:
   - **Nonprofit** — Charity Navigator + GuideStar peers in same NTEE code, GreatNonprofits, Network for Good, Mighty Cause, peer Form 990 same-mission filters
@@ -41,6 +44,7 @@ Precedes `website-build-doctrine.md` Phase 0. Phase 0 gathers facts about OUR su
 - Cap at 10. Beyond, returns diminish; pick highest-leverage. Document cut.
 
 ### 2. `competitor_capture`
+
 - Per `_competitors.json` entry, fire parallel `Agent` per `monitor-orchestration.md` § Decomposition (10 competitors = 10 parallel, never serialize)
 - Per-agent task:
   - Full sitemap + robots crawl per `source-site-enhancement.md` § Phase 1 (BFS depth 3, every URL → `_competitors/{domain}/_url_inventory.json`)
@@ -52,11 +56,13 @@ Precedes `website-build-doctrine.md` Phase 0. Phase 0 gathers facts about OUR su
 - Persist under `_competitors/{domain}/` — gitignored except digest
 
 ### 3. `competitor_score`
+
 - Run `09-brand-and-content-system` AI-vision rubric + competitor-specific addendum on EVERY captured route, ALL viewports
 - Output: per-competitor `_competitors/{domain}/_score.json` w/ per-dim scores 0-100 + overall composite
 - Aggregate: `_competitor_aggregate.json` w/ per-dim MAX across all — the floor we must clear by ≥15%
 
 #### Rubric (100 pts, 10 dims × 10 each)
+
 1. **Visual polish** — typography hierarchy, color discipline, brand consistency, whitespace, motion quality
 2. **IA** — route count per org-type, navigation discoverability, breadcrumb sanity, internal linking density
 3. **Copy** — Flesch ≥60, banned-slop density per `copy-writing.md`, specific-not-generic claims, citation density per `citations.md`, voice consistency
@@ -69,11 +75,13 @@ Precedes `website-build-doctrine.md` Phase 0. Phase 0 gathers facts about OUR su
 10. **Distinctiveness** — does site blend in or stand out? AI vision compares against `_competitors/*/screenshots/` to score
 
 #### Per-route
+
 - Score EVERY captured route, not just homepage
 - Per-competitor aggregate = mean across routes
 - Across all competitors per-dim aggregate = MAX (we must beat the BEST on every dim)
 
 ### 4. `competitor_synthesize`
+
 - For each dim where ANY competitor scores >85, write one-line directive to `_competitor_directives.md`: "On dim X, floor is Y/100 (set by {competitor}). Our build must hit ≥{Y+15}/100"
 - For each AI-native feature on ANY competitor absent from 5+ others: "Match {feature} OR ship superior {alternative} (set by {competitor})"
 - For each distinctive copy / layout pattern worth borrowing: one-paragraph note in `_competitor_inspiration.md` w/ screenshot path — never copy verbatim per `copy-writing.md` § anti-slop
@@ -81,6 +89,7 @@ Precedes `website-build-doctrine.md` Phase 0. Phase 0 gathers facts about OUR su
 - Synthesis becomes mandatory input to `website-build-doctrine.md` Phase 0 (saturation), Phase 1 (clone), Phase 2 (enrichment), Phase 3 (swap-out replace any section not beating competitors), Phase 4 (AI-native spiral)
 
 ## Loop termination (the gate)
+
 - `website-build-doctrine.md` Phase 6 "Continuous Self-Improvement Loop" CANNOT exit until ALL TRUE:
   1. OUR per-dim score ≥ `_competitor_aggregate.json` MAX + 15 points on EVERY dim
   2. Every directive in `_competitor_directives.md` has implementation cited in PR/commit
@@ -92,6 +101,7 @@ Precedes `website-build-doctrine.md` Phase 0. Phase 0 gathers facts about OUR su
 - Skipping = "shipped a guess" = build fail
 
 ## Token discipline
+
 - Parallel `Agent` spawns per `monitor-orchestration.md` § Decomposition — 10 competitors = 10 sub-agents, 100-300 word brief each
 - Sub-agents return ≤200-word summary; raw screenshots + scrapes stay in `_competitors/{domain}/`
 - Re-scoring incremental — only re-render OUR changed routes via Browser Rendering, then AI-vision compare against cached competitor screenshots
@@ -99,6 +109,7 @@ Precedes `website-build-doctrine.md` Phase 0. Phase 0 gathers facts about OUR su
 - Use `15-site-generation/research-pipeline` Conf<T> pattern so every rubric score cites screenshot + AI-vision prompt
 
 ## Storage
+
 - `_competitors/{domain}/` per-competitor folder (gitignored: raw screenshots + scrapes large)
 - `_competitor_aggregate.json` — floor (committed)
 - `_competitor_directives.md` — design directives (committed)

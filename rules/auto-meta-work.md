@@ -10,6 +10,7 @@ paths:
 # Auto Meta-Work
 
 ## Default behavior on every code prompt
+
 - Improve error handling (`try/catch` → `onError` → Sentry breadcrumbs)
 - Add JSDoc (intent not types)
 - Wire Sentry + PostHog + GA4 events
@@ -22,6 +23,7 @@ paths:
 Default: don't bolt on all five. Cost + complexity + cookie banners matter.
 
 ### Tier 1 — Solo SaaS / nonprofit / local / portfolio
+
 - Pick TWO max:
   - **PostHog** — product analytics + error tracking + session replay + feature flags
   - **Workers Tracing** — free OTel I/O spans (KV/R2/D1/DO/fetch), zero-config
@@ -30,11 +32,13 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
 - Skip **AI Gateway** unless LLM calls exceed 10k/mo
 
 ### Tier 2 — Enterprise / regulated / multi-team SaaS
+
 - Full stack: **Sentry + PostHog + GA4 + Workers Tracing + AI Gateway**
 - Auditability + compliance justify cost + complexity
 - Every action: GA4 event + PostHog event + Sentry breadcrumb + Workers Trace span + AI Gateway log
 
 ### Tier 3 — AI-heavy product (>10k LLM calls/mo)
+
 - Add **AI Gateway** regardless of tier — caching + rate-limit + fallback pays for itself
 
 ### Vendor wiring
@@ -66,8 +70,12 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
    - Every LLM call routes through binding (`env.AI.run()` auto-routes)
    - Direct Anthropic: `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/anthropic/v1/messages`
    - For logging, caching, rate-limit, fallback
+   - **Per-request `cacheKey` + `cacheTtl`** on Worker binding for fine-grained LLM-call dedupe — pass stable hash of prompt+ctx; 30-70% hit rate on repeated surfaces (FAQ-gen, metadata-extract, classify). Source: Cloudflare. (2026). *AI Gateway Worker binding methods*. `developers.cloudflare.com/ai-gateway/integrations/worker-binding-methods/`
+   - **`env.AI.gateway().patchLog(id, {score, feedback, metadata})`** wires post-call eval scores back to the specific gateway log entry → closes the eval loop online (not just offline CI). Use with `evals.md` § three-tier grading.
+   - **Async batch via `env.AI.run(model, { queueRequest: true, messages: [...] })`** for Llama 3.3 70B + BGE embeddings — ~5-10× throughput on bulk content gen (pSEO render, page-prerender, doc-embedding). Source: Cloudflare. (2026). *Workers AI improvements*. `blog.cloudflare.com/workers-ai-improvements/`
 
 ## Security scan — OWASP Top 10:2025
+
 1. **Broken Access Control** (incl SSRF)
 2. **Security Misconfiguration** (moved up from #5)
 3. Supply Chain
@@ -76,6 +84,7 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
 6. (new) #10 Mishandling Exceptional Conditions
 
 ### Check for
+
 - Hardcoded secrets
 - Missing auth checks
 - SQL injection — use parameterized Drizzle queries
@@ -86,18 +95,21 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
 - Never `CLOUDFLARE_API_TOKEN` / `AWS_*` / `GCP_*` as long-lived secrets — use **OIDC** w/ `cloudflare/wrangler-action@v3` + GitHub OIDC trust policy
 
 ## Agents SDK stubs
+
 - New projects get agent definitions in `.claude/agents/` (architect, test-writer, deploy-verifier minimum)
 - Agent frontmatter (v2.1.33+): `description`, `prompt`, `tools`, `disallowedTools`, `model`, `permissionMode`, `mcpServers`, `hooks`, `skills`, `initialPrompt`, `memory` (`user|project|local`), `effort` (`low|medium|high|max|xhigh` — `xhigh` Opus-4.7-only, falls back to `high`), `background` (true=detached), `isolation: worktree` (separate git checkout per invocation, auto-cleaned unless dirty), `color`
 - Match agent routing table in model-routing
 - Skill frontmatter: `name`, `description`, `when_to_use`, `paths` (glob), `disable-model-invocation` (true→never auto-loads), `argument-hint`, `user-invocable` (default true)
 
 ## Memory primitives
+
 - **Memory Tool** — API-layer persistent store for long-running agents
 - **Subagent Memory** — scoped `user|project|local`
 - Skills write durable context to `MEMORY.md` or memory tool, not inline
 - **Server-side Context Compaction beta** (Opus 4.7/4.6/Sonnet 4.6) replaces manual `/compact` — trigger proactively at 70-90% context
 
 ## Built-in tools
+
 - `web_search_20260209`
 - `web_fetch_20260209` — dynamic filtering, Claude runs code in sandbox to post-process before context ingestion
 - `code_execution_20260120`
@@ -105,6 +117,7 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
 - Default new agents to bundle all three
 
 ## Structured Outputs + Citations
+
 - Structured Outputs beta header `structured-outputs-2025-11-13` + `output_config.format` for strict JSON schema
 - Incompatible with Citations (returns 400) — pick one per request
 - Citations is GA (not beta) across all active models except Haiku 3 — `citations: {enabled: true}` per document
@@ -112,6 +125,7 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
 - `cited_text` is free (doesn't count toward output tokens)
 
 ## Template Scan (megabytespace/saas-starter — EVERY PROMPT)
+
 - After implementing any code change, scan: "Would saas-starter have saved time here?"
 - If yes → push improvement to `megabytespace/saas-starter` same prompt
 - Template must always reflect current best practices: same stack, same `.claude/` config, same standards as any Emdash project

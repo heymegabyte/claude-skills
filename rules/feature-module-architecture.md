@@ -29,6 +29,7 @@ E2E specs live separately at `e2e/<slug>/` (or `apps/<app>/e2e/<slug>/` in monor
 ## 7 required manifest fields
 
 Every `manifest.ts` exports a `FeatureManifest` object with ALL of:
+
 - `slug` — snake_case ≤32 chars, matches D1 `feature_flags.key`
 - `name` — human display name
 - `description` — one-sentence explanation of what the feature does
@@ -42,6 +43,7 @@ Build gate: `npm run validate:features` rejects any module missing these fields.
 ## When to create a module (auto-fire)
 
 Create a new `libs/features/<slug>/` module when the work:
+
 - Adds a new user-visible capability (not a bug fix or internal refactor)
 - Adds new API routes that didn't exist before
 - Adds a new UI surface that a user can interact with
@@ -68,6 +70,7 @@ npm run validate:features        # local
 ```
 
 Runs in CI at `.github/workflows/feature-architecture.yml` on every push. Fails on:
+
 - Module folder exists but `manifest.ts` is missing or has <7 fields
 - API handler references a slug with no D1 seed row
 - Feature flag in D1 seeds has no `e2e/<slug>/` directory

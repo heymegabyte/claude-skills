@@ -53,6 +53,7 @@ export type CreateSiteInput = z.infer<typeof CreateSiteSchema>; // never hand-wr
 ```
 
 ### Do
+
 - `z.infer<typeof Schema>` for the type — one definition, zero drift.
 - Validate at the boundary, then pass the typed object inward.
 - Colocate the schema with the feature in `libs/features/<slug>/schemas.ts` per ``feature-module-architecture``.
@@ -60,6 +61,7 @@ export type CreateSiteInput = z.infer<typeof CreateSiteSchema>; // never hand-wr
 - Use `safeParse` at I/O edges; `parse` only where a throw is the intended control flow.
 
 ### Don't
+
 - Don't write a manual `interface` that mirrors a schema — it will drift the moment one side changes.
 - Don't trust unvalidated `JSON.parse(...)` output — parse it through a schema first.
 - Don't `as any` (or `as SomeType`) past a boundary to skip validation — that defeats the contract.

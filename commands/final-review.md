@@ -12,6 +12,7 @@ Orchestrate the final review fan-out per [[agent-selection]].
 **Inputs** — `$ARGUMENTS` (optional scope); else the full run output.
 
 Fan out in ONE multi-tool message per [[monitor-orchestration]]:
+
 - **final-integration-reviewer** — do the parts cohere, no broken seams, no orphaned work?
 - **agent-diversity-reviewer** — runs the Agent Diversity Review gate (see below).
 - **risk-and-approval-reviewer** — irreversible actions, payment/auth/security surfaces, approval gates honored?

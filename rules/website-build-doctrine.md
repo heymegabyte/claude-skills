@@ -17,7 +17,9 @@ paths:
 Fires before, during, after every site build/rebuild. Anchors the rule + skill mesh.
 
 ## Phase -1 — Competitor Research (gate -1)
+
 Full protocol: `competitor-research.md`.
+
 - Identify top 5-10 audience-comparable sites (org-type aware: peer nonprofits in same NTEE for nonprofits, Google Maps + Yelp top-10 for local, SimilarWeb/G2 top-rated for SaaS, Awwwards for portfolio).
 - Capture each: full route crawl, screenshots @ 1920×1080 + 390×844, copy via Browser Rendering REST, Wayback 1y + 3y ago.
 - Score on 100-pt rubric (10 dims × 10pts: visual polish · IA · copy · conversion · SEO+AI-search · perf · a11y · trust · AI-native · distinctiveness).
@@ -27,11 +29,13 @@ Full protocol: `competitor-research.md`.
 - Skipping = "shipped a guess" = build fail.
 
 ## Phase 0 — Context Saturation BEFORE Any Code
+
 - NO code, NO clone, NO scaffold until every public source loaded into context.
 - Build fails if Phase 0 skipped or partial.
 - Fan out via parallel `Agent` spawns per `monitor-orchestration.md` (research agents don't block each other).
 
 Sources to exhaust:
+
 - **Owned** — official site (deep crawl per `source-site-enhancement.md` § Phase 1), subdomains, social profiles (X, IG, FB, LinkedIn, TikTok, YouTube), app stores, podcast feeds, RSS.
 - **Search** — Google + Bing top-50 for `{name}`, `{name} + {city}`, `+ reviews`, `+ complaints`, `+ founder`, `+ history`, `+ lawsuit`, `+ press release`.
 - **Archives** — Wayback (3+ snapshots), archive.today, archive.ph, Google `cache:`.
@@ -51,11 +55,13 @@ After all sources exhausted, scan brief for gaps. Material missing (bilingual-st
 Skipping = thin content + AI slop + missed value = build fail per `thin-source-amplification.md`.
 
 ## Phase 1 — Template First, Template Always
+
 - First build clones `github.com/HeyMegabyte/template.projectsites.dev` (NOT `saas-starter` — that's SaaS apps).
 - Every subsequent build pushes reusable artifacts BACK SAME TURN.
 - Template = compounding asset. Each push makes next site 30%+ faster.
 
 Flow-back targets (any pattern useful in ≥2 future builds):
+
 - Components → `src/components/sections/`
 - Hooks → `src/hooks/`
 - Schemas (Zod) → `src/schemas/`
@@ -69,9 +75,11 @@ Flow-back targets (any pattern useful in ≥2 future builds):
 Side repos (template) → commit + push to main automatically per `brian-preferences.md` § Git policy. README documents EVERY contributed component with one-line example.
 
 ## Phase 2 — Maximalist Page Enrichment
+
 - Keep adding sections until next would dilute. Stop criterion is "next hurts," never "we have enough."
 
 Per-page catalog (mix-and-match by intent):
+
 - Hero with kinetic typography + View Transitions entrance
 - Quotable answer block (40-60 words, AI-search per `copy-writing.md` § GEO)
 - 5+ FAQ accordion w/ FAQPage JSON-LD (real Q&A only)
@@ -101,6 +109,7 @@ Per-page catalog (mix-and-match by intent):
 Each candidate: AI vision pre-score. Ship at ≥8/10, reject below.
 
 ## Phase 3 — Swap-Out Authority (delta > 20% → replace)
+
 Replace wholesale when ANY: AI vision <8/10 · feels generic · competitor benchmark exposes >20% gap · "we needed to put something here" copy.
 
 Replaced sections move to `template.projectsites.dev/sections/_archived/` with `# Why replaced` note for remix.
@@ -108,45 +117,54 @@ Replaced sections move to `template.projectsites.dev/sections/_archived/` with `
 After every replacement, run `supreme-polish.md` 100-ideas audit on page.
 
 ## Phase 4 — AI-Native Spiral
+
 "What's possible BECAUSE AI is programming?" Build it.
 
 ### Audio + voice
+
 - AI 3-min podcast per page (OpenAI TTS / ElevenLabs / NotebookLM). "Listen to this page" widget.
 - Voice tour — full-site narration with chapter markers
 - Voice search — Whisper STT → semantic site search
 - Phone voice agent — Twilio + ElevenLabs Conversational AI
 
 ### Video
+
 - Veo-stitched narrative — 7-8× 8-sec Veo clips on 60-sec arc, cross-dissolves + AI VO into one cinematic intro
 - Animated hero — Sora 8-sec loop per page, hero-region only, `<picture>` static fallback
 - AI testimonial reads — real testimonials read by AI voices per author (consent in `_confirmations.json`)
 
 ### Maps + spatial
+
 - Interactive map with GPT-4o POI stories per pin
 - WebXR AR preview — 360 photos → AR overlay
 - Time-travel slider — Wayback + Google Street View before/after
 
 ### Multimodal
+
 - Multimodal forms — photo of "the problem" + voice description → AI extracts intent + autofills
 - Chat-as-UI with CopilotKit tool-calls ("Schedule a tour for Tuesday at 3pm")
 - Smart semantic search via `@cf/baai/bge-large-en-v1.5` → Vectorize
 
 ### Personalization
+
 - Behavioral hero swap (referrer / time-of-day / locale)
 - Returning visitor — D1 cookie → "Welcome back — last time you looked at donation page"
 - Locale-aware copy per `i18n-by-demographics.md` auto-fire
 
 ### Generative
+
 - Live blog autoposts — weekly Workflow generates from research seeds
 - Auto-generated case studies from D1 events
 - Per-visitor PDF builder with name + city + interests
 
 ### Perf + UX
+
 - AI-narrated 404 — GPT-4o riffs → friendly redirect suggestions
 - Smart redirects — Levenshtein + AI fuzzy-match for unknown URLs
 - Predictive prefetch — tiny on-device model trained on session nav
 
 ### Witty + delightful
+
 - Audio Easter eggs — hidden Konami → 30-sec AI brand theme
 - Style remix mode — visitor asks "show me this site in style of Wes Anderson / Mondrian / Ghibli" → client-side CSS theme swap
 - Confetti on donation goal hit — real-time D1 watch
@@ -155,9 +173,11 @@ After every replacement, run `supreme-polish.md` 100-ideas audit on page.
 Pick filter: each candidate through `extra-mile.md` § Self-critique. Ship "would Brian wish I had just done this"; rest in Recs.
 
 ## Phase 5 — Agent Swarm Parallelism
+
 3-7 parallel `Agent` spawns per page in ONE multi-tool message per `monitor-orchestration.md`.
 
 Canonical per-page fan-out:
+
 - **Agent-A** content-writer → copy, FAQ, microcopy, alt
 - **Agent-B** visual-qa → screenshot + AI vision score
 - **Agent-C** seo-auditor → title/meta/JSON-LD/OG
@@ -171,13 +191,16 @@ Each: 100-300 word brief, ≤200 word summary back. Main thread does foreground 
 Token efficiency: subagents have own context; main receives summaries only. Beyond 300 words = cloning context.
 
 ## Phase 6 — Continuous "What Else" Loop
+
 After every:
+
 - Section added → "One more section worth value?" If yes, add. If no, move on.
 - Page complete → "What section type haven't we tried that fits?" Add.
 - Site complete → "What feature would make best-in-class?" Add. Repeat until `supreme-polish.md` 100-ideas audit returns zero.
 - Build complete → "What pattern can fold back into template?" Push to `template.projectsites.dev` THIS turn.
 
 Loop terminates ONLY when ALL:
+
 - (a) **Competitor-beat gate** — per-dim score ≥ `_competitor_aggregate.json` MAX + 15pts on EVERY of 10 dims. Re-score every iteration. Cannot exit while any competitor outscores us on any dim.
 - (b) **Directives shipped** — every `_competitor_directives.md` entry has implementation cited in PR; ≥3 `_competitor_gaps.md` entries shipped.
 - (c) **AI-vision head-to-head** — our build's screenshot outscores every competitor's same-route screenshot in pairwise comparison at 6 viewports.
@@ -190,6 +213,7 @@ Loop terminates ONLY when ALL:
 Per-iteration: write row to `_competitor_loop_log.ndjson` with per-dim scores for OUR build + competitor MAX per dim + gate verdict.
 
 ## Phase 7 — Token Discipline
+
 - Skill load order deterministic per `prompt-cache.md` — never reorder mid-session.
 - Subagent prompts 100-300 words MAX. Beyond = cloning context.
 - `web_search_20260209` + `web_fetch_20260209` + `code_execution_20260120` sparingly. `code_execution` FREE when paired with web_search or web_fetch.
@@ -200,6 +224,7 @@ Per-iteration: write row to `_competitor_loop_log.ndjson` with per-dim scores fo
 - Container build cost: ~$0.50-$2.00 per Claude Code prompt, ~$5-$15 per full build. Never speculative-build.
 
 ## Phase 8 — Christ-like Ethos
+
 - Build for served population, not engineering aesthetic.
 - Feature primarily serves engineer's curiosity → defer.
 - Feature primarily serves visitor (especially underserved) → prioritize.
@@ -208,7 +233,9 @@ Per-iteration: write row to `_competitor_loop_log.ndjson` with per-dim scores fo
 - Reference: `always.md` § Ethics + pre-ship harm scan.
 
 ## Operational invocation
+
 Website-build prompt → Monitor decomposes in ORDER, fans out parallel within each:
+
 1. Phase 0 research (3-5 parallel agents)
 2. Phase 1 template clone + augment (1 agent)
 3. Phase 2-3 page enrichment + swap-out (5-7 agents per page)

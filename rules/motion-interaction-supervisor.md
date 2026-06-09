@@ -14,9 +14,11 @@ paths:
 Motion serves clarity and perceived speed, never spectacle. `prefers-reduced-motion` is always honored. Right tool per job. The motion arm of the supervisor system.
 
 ## When this fires
+
 - Any UI animation, transition, carousel, drag-reorder, calendar, or tooltip
 
 ## Tooling + when to use
+
 - **Motion** — the default for most UI animation (enter/exit, layout, micro-interactions)
 - **Theatre.js** — ONLY timeline-grade, choreographed sequence animation
 - **Rive** — ONLY interactive vector animation (state-machine driven)
@@ -27,6 +29,7 @@ Motion serves clarity and perceived speed, never spectacle. `prefers-reduced-mot
 - **Tippy.js** — tooltips/popovers where it improves ergonomics beyond Floating UI primitives
 
 ## Rules
+
 - **Respect `prefers-reduced-motion`** on every animation — snap to final state, never hide content from reduced-motion users
 - **Fast + useful** — animation budget serves perceived performance; INP ≤ 200ms per `quality-metrics`
 - `transform`/`opacity` only on the hot path; `will-change` sparingly

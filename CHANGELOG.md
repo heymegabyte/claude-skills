@@ -1,5 +1,26 @@
 # Skills System Changelog
 
+## 2026-06-08 — Q2-2026 AI/MCP rules upgrade + lint baseline
+
+### AI/API/MCP rule updates (vendor-doc primary sources)
+- `rules/model-routing.md` — add Opus 4.8 flagship section; same $5/$25 per MTok pricing as 4.7 (Anthropic models overview). Keeps 4.7/4.6 as fallback chain.
+- `rules/prompt-cache.md` — add `anthropic-beta: token-efficient-tools-2025-02-19` header for Sonnet 4.6 tool-use loops; ~14% output-token cut.
+- `rules/auto-meta-work.md` — extend § AI Gateway with per-request `cacheKey` + `cacheTtl`, `patchLog()` for online eval scoring, and `queueRequest: true` async batch for Workers AI bulk inference.
+- `rules/ai-agent-security.md` — add Llama Guard 3-8B (`@cf/meta/llama-guard-3-8b`) as gateway-side prompt-injection classifier middleware on `/ai/*` routes.
+- `rules/contract-first-ai.md` — add AutoRAG / AI Search escape hatch for managed-RAG-over-R2 when bespoke Vectorize pipeline isn't justified.
+
+### Lint baseline restored
+- Add `.markdownlint.jsonc` (relaxed Brian-voice config: MD013/MD025/MD033/MD036/MD041 off; siblings_only headers).
+- Add `.markdownlintignore` to exclude state dirs (backups, sessions, projects, paste-cache).
+- markdownlint-cli2 `--fix` autofix pass over `rules/*.md` + `commands/*.md` (blanks-around-headings + blanks-around-lists). Residual MD040/MD050/MD060 style-only nits left for next pass.
+- `bin/check-required-keys.sh` — add `# shellcheck source=/dev/null` directives for dynamic `source` calls (SC1090).
+- brew installed: `shellcheck`, `shfmt`, `yamllint`, `actionlint` for subsequent passes.
+
+### Verified
+- All 5 edited rule files Read pre-Edit (no blind overwrites).
+- Markdownlint autofix preserved Brian-voice bullet patterns + frontmatter intact.
+- shellcheck residual: SC2034 unused-var warnings in `bin/provision-analytics.sh` + `scripts/discover-secrets.sh` left untouched (intentional declarations for sourced contexts).
+
 ## 2026-04-24 — v8.0.0 Site Generation Skill
 
 ### New Skill: 15-site-generation

@@ -15,6 +15,7 @@ paths:
 Companion to `secret-provisioning.md`. That rule pushes existing secrets; this rule acquires new ones via generation, API-mint, Computer Use, or manual flow. Every "set this secret" Rec = failure.
 
 ## Core mandate
+
 - Producible without human input → produce automatically.
 - Requires human → acquire via highest tier available (API > Computer Use > manual deeplink).
 - Manual recs reserved for Tier 4 only (paid plans, KYC, no public API).
@@ -22,6 +23,7 @@ Companion to `secret-provisioning.md`. That rule pushes existing secrets; this r
 ## Tiered acquisition
 
 ### Tier 1 — Generate locally (openssl, no network)
+
 HMAC, nonces, encryption keys. Script generates, age-encrypts via chezmoi, stores under `~/.local/share/chezmoi/home/.chezmoitemplates/secrets-{hostname}/<KEY>`. No human-in-loop.
 
 - Pattern: `openssl rand -base64 32` (HMAC/signing) | `openssl rand -hex 32` (URL-safe nonces)
@@ -29,15 +31,18 @@ HMAC, nonces, encryption keys. Script generates, age-encrypts via chezmoi, store
 - Rotation: secrets only for signing outbound tokens (rotation = old tokens invalidate, no data loss) auto-rotate freely. `--rotate-tier1` flag opt-in.
 
 ### Tier 1.5 — Data-at-rest secrets (NEVER auto-generate)
+
 - `MCP_ENCRYPTION_KEY` — encrypts MCP OAuth tokens in D1; rotation requires re-OAuth
 - `*_ENCRYPTION_KEY` / `*_AT_REST_KEY` — anything decrypting persisted data
 - `INTERNAL_BUILD_SECRET` / paired HMAC — mismatch breaks integration
 - Behavior: detect-only. Surface one-time mint when absent EVERYWHERE (chezmoi AND deploy target). Once minted, fold into `secret-provisioning.md` sync forever.
 
 ### Tier 2 — API-provision via parent credential
+
 Use high-trust parent to mint scoped, least-privilege secrets via vendor REST API. No browser, no human, fully automated.
 
 **Cloudflare scoped tokens** (mint via global API key):
+
 - Parent: `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL` (global, chezmoi)
 - Minted: `CF_API_TOKEN` w/ `User → Tokens : Edit`
 - Endpoint: `POST https://api.cloudflare.com/client/v4/user/tokens`
@@ -56,11 +61,13 @@ Use high-trust parent to mint scoped, least-privilege secrets via vendor REST AP
 - Naming: `{project}-{env}-scoped-{YYYYMMDD}`. Store as `CF_API_TOKEN_SCOPED`, swap into Worker secret after smoke-test.
 
 **Cloudflare Access service tokens**:
+
 - Endpoint: `POST /accounts/{accountId}/access/service_tokens`
 - Minted: `CF_ACCESS_CLIENT_ID` + `CF_ACCESS_CLIENT_SECRET` (bypasses bot protection for container builds)
 - Rotate 90d; tag w/ `duration: "8760h"` (1y max).
 
 **Stripe** (idempotent product/price/meter):
+
 - Parent: `STRIPE_SECRET_KEY` (chezmoi)
 - Idempotency: `lookup_key` — search via `GET /v1/prices?lookup_keys[]=...` before create
 - Auto-minted: `STRIPE_USAGE_PRICE_IDS` (JSON map meter-backed metered prices, post-2025-03-31 API requires `recurring[meter]`), `STRIPE_PRICE_CREDITS_*` (one-time credit packs), `STRIPE_WEBHOOK_SECRET` (`POST /v1/webhook_endpoints` returns `whsec_*`, push to deploy target)
@@ -68,27 +75,32 @@ Use high-trust parent to mint scoped, least-privilege secrets via vendor REST AP
 - NEVER auto-mint: `STRIPE_CONNECT_CLIENT_ID` (requires OAuth app reg → Tier 3)
 
 **Anthropic Admin API**:
+
 - Parent: org-admin key (`ANTHROPIC_ADMIN_KEY` if stored, else manual)
 - Endpoint: `POST https://api.anthropic.com/v1/organizations/api_keys`
 - Mints: project-scoped `ANTHROPIC_API_KEY` w/ workspace + role + budget
 - Use: per-project key isolation for cost-attribution + revocation
 
 **OpenAI Admin API**:
+
 - Parent: org-admin key
 - Endpoint: `POST https://api.openai.com/v1/organization/projects/{project_id}/api_keys`
 - Mints: project-scoped `OPENAI_API_KEY`
 
 **GitHub fine-grained PAT (via gh CLI)**:
+
 - Parent: `gh auth login` session
 - Installation tokens: `gh api -X POST /users/{user}/installations/{id}/access_tokens` (60min TTL, auto-rotate)
 - Classic PAT still requires browser → Tier 3
 
 **Resend / SendGrid sending domains**:
+
 - Parent: `RESEND_API_KEY` (chezmoi)
 - Endpoint: `POST https://api.resend.com/domains` returns DNS records → add via CF API (chain!)
 - Auto-create sending domain + auto-add DNS records via CF zone API in same script
 
 ### Tier 3 — Computer Use (OAuth-app registration)
+
 For providers without OAuth-app-management APIs. Launch `mcp__desktop-control__computer` to drive user's REAL Chrome (Chrome MCP / Playwright MCP have zero cookies, can't complete OAuth app reg).
 
 - Mailchimp: `https://us1.admin.mailchimp.com/account/oauth2/` → "Register App" → redirect URI `https://{project}/api/mcp/mailchimp/callback`
@@ -100,6 +112,7 @@ For providers without OAuth-app-management APIs. Launch `mcp__desktop-control__c
 - Plausible: `https://plausible.io/sites/new?domain={domain}`
 
 Computer Use primitives (per `computer-use-safety.md`):
+
 1. Screenshot before acting
 2. Chain via `computer_batch`
 3. Read tier for browsers
@@ -109,6 +122,7 @@ Computer Use primitives (per `computer-use-safety.md`):
 Opt-in: `--computer-use` flag on script. Not auto-fired.
 
 ### Tier 4 — Manual (paid plans, KYC, reseller approval)
+
 Surface w/ deeplinked URLs + reason. Never autopilot.
 
 - `TRUSTPILOT_API_KEY` — paid Trustpilot Business
@@ -121,28 +135,33 @@ Surface w/ deeplinked URLs + reason. Never autopilot.
 ## Security model
 
 ### Least-privilege scoped tokens > global keys
+
 - Default: Tier 2 always mints scoped. Global keys ONLY for bootstrapping.
 - CF: never put `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL` on Worker. Worker gets scoped `CF_API_TOKEN`. Global lives in chezmoi + GitHub Actions OIDC.
 - GitHub Actions: OIDC + `cloudflare/wrangler-action@v3` instead of long-lived tokens in repo secrets.
 
 ### Rotation cadence
+
 - Tier 1 generated: 90d (HMAC), 30d (session)
 - Tier 2 scoped tokens: 90d (CF, Stripe webhook), 60d (Access service tokens)
 - Tier 1.5 at-rest: never rotate without re-encryption job
 - Anthropic/OpenAI project keys: per project lifecycle (per-deploy if budget allows)
 
 ### Storage hierarchy
+
 1. **chezmoi** (age-encrypted at rest, `~/.local/share/chezmoi/home/.chezmoitemplates/secrets-{hostname}/`)
 2. **CF Worker secrets** (encrypted, exposed at `env.KEY`)
 3. **GitHub Actions secrets** (OIDC + CI-only credentials only)
 4. NEVER: env files in repo, `.env.local` checked in, secret-bearing screenshots/logs
 
 ### Secret-redacting logs
+
 - Provisioning script MUST redact before printing
 - Prefixed creds: `${value.slice(0, 7)}…${value.slice(-3)}` (`sk_live…XYZ`)
 - Unprefixed: print `(len=N)` only
 
 ### Audit trail
+
 - Tag every minted token in vendor metadata: `metadata.managed_by = "projectsites"` + `metadata.minted_at` + `metadata.minter_host`
 - Vendor dashboards (CF token list, Stripe products, Resend domains) = audit log
 - `provision-secrets.mjs --audit` lists every managed-by-projectsites token across vendors
@@ -150,30 +169,36 @@ Surface w/ deeplinked URLs + reason. Never autopilot.
 ## Integrations
 
 ### Trigger points
+
 - **Pre-deploy** (`predeploy` npm script) — Tier 1 + Tier 2 always run; Tier 3/4 surfaced
 - **CI workflow** — Tier 1 + Tier 2 run w/ explicit `--push`, then `wrangler deploy`
 - **`/provision`** slash command — interactive
 - **New project scaffold** — `npx create-emdash-app` runs full provisioning before first commit
 
 ### Chained provisioning
+
 - Stripe webhook → mints `STRIPE_WEBHOOK_SECRET` → push to Worker → deploy → fire Stripe event → verify callback
 - Resend sending domain → returns DNS records → CF API adds to zone → wait for verification → mark `verified`
 - CF scoped token mint → push to Worker → swap in `wrangler.toml [vars]` → smoke-test against `/v4/user/tokens/verify` → reject if scope-mismatched
 
 ### Idempotency contract
+
 - Every Tier 1 + Tier 2 safe to re-run forever
 - chezmoi: `tryGetSecret(key) ?? mint()`
 - Vendor: `GET ?lookup_keys=` (Stripe), `GET /tokens?name=` (CF), `GET /domains?domain=` (Resend) before POST
 - Failed runs leave no orphans (rollback created products if mid-flow)
 
 ## Reusable helper
+
 - `scripts/lib/secrets.mjs` exports: `tryGetSecret`, `storeSecret`, `generateBase64Secret`, `generateHexSecret`, `ensureGeneratedSecret`, `ensureCloudflareAuth`, `mintCloudflareScopedToken`, `ensureStripeMeter`, `ensureStripePrice`, `pushSecretToWorker`, `syncSecretsToWorker`, `COMMON_SECRETS[]`
 - `scripts/provision-secrets.mjs` orchestrates all four tiers
 - Reference impl: `apps/project-sites/scripts/{lib/secrets.mjs,provision-secrets.mjs}`
 - Copy verbatim into every new emdash project; wire into `predeploy`
 
 ## Anti-friction
+
 Every "set this secret manually" rec = code smell. Before surfacing:
+
 1. Tier 1? Generate.
 2. Tier 2? Use parent cred to mint.
 3. Tier 3? Spawn Computer Use if `--computer-use` flag, else surface deeplinked URL + form-prefilled redirect URI.

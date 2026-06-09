@@ -12,6 +12,7 @@ Run the autonomous engineering operating loop per [[autonomous-engineering]].
 **Inputs** — `$ARGUMENTS` = the task.
 
 Loop (in order; repair-loop on any red, max 3 cycles):
+
 1. **Inspect** — read the relevant code + tests + docs; understand current state.
 2. **Plan** — vertical slice plan; decompose + parallelize independent work per [[monitor-orchestration]].
 3. **Implement** — TDD-first (failing test before code per [[verification-loop]]); full files, no stubs.

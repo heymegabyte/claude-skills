@@ -1,0 +1,12 @@
+node_modules/
+**/node_modules/
+**/_archived/**
+**/backups/**
+**/_competitors/**
+file-history/
+projects/
+sessions/
+tasks/
+shell-snapshots/
+session-env/
+paste-cache/

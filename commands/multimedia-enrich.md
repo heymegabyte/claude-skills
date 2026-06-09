@@ -18,10 +18,12 @@ Run a repeatable progressive-multimedia enrichment pass per [[website-build-doct
 **Can update ~/.agentskills or ~/.claude?** NO — this enhances a project, not global config. Only `/self-improve` touches global.
 
 ## Guiding principle
+
 - Add media ONLY when it helps the user: **understand · trust · feel · compare · act · learn · engage · share · remember · convert**.
 - No gimmicks. No clutter. No CWV regressions. No autoplay-with-sound. If a section doesn't earn its bytes, don't ship it.
 
 ## Progressive loop (the heart)
+
 1. **Inspect** the site (live + source); list every page + its current media.
 2. **Find weakest pages** — thinnest, lowest-engagement, most generic surfaces first.
 3. **Find UN-implemented opportunities** — never repeat an add already in the roadmap.
@@ -33,12 +35,14 @@ Run a repeatable progressive-multimedia enrichment pass per [[website-build-doct
 Fan out specialist media agents per [[agent-selection]] (audio-systems / video / image / motion) — never one generic worker for all four.
 
 ## Decision framework by media type
+
 - **Audio** — podcast section · audio playlist (5 episodes/page, play/pause/next/prev, title/desc/duration/artwork) · Web Audio visualizer (tasteful) · "listen to this page" narration · sticky mini-player. ALWAYS user-initiated, lazy-loaded, no autoplay.
 - **Video** — hero/explainer/founder/demo/looped clips. Lazy-load, poster frames, captions + transcript placeholder, zero layout shift, no autoplay-with-sound, respect reduced-motion.
 - **Images** — galleries · before/after sliders · comparison · lightbox · responsive modern formats · descriptive alt · locally stored (never hotlink) · transparent logos stay transparent. Per [[image-quality]]; real photos on history per [[timeline-authenticity]].
 - **Interactive** — animated stats via `<app-rolling-counter>` · diagrams · timelines · maps · scroll reveals via `appReveal` · microinteractions. In-viewport only, reduced-motion, never distract from the CTA. Primitives per [[cinematic-ui-patterns]].
 
 ## Web Audio API / visualizer rules (SSR-safe)
+
 - Guard every browser-only API (`typeof window`, `isPlatformBrowser`).
 - Init `AudioContext` ONLY after a user gesture.
 - Disconnect/cleanup nodes + cancel RAF on destroy.
@@ -47,17 +51,22 @@ Fan out specialist media agents per [[agent-selection]] (audio-systems / video /
 - Options: waveform · frequency bars · radial pulse · subtle glow · minimal EQ — premium, never cheesy.
 
 ## Reusable systems to ensure exist (project framework + conventions)
+
 `MediaSection` · `PodcastPlaylist` · `AudioPlayer` · `AudioVisualizer` · `VideoFeature` · `ImageGallery` · `ImageLightbox` · `ResponsiveImage` · `AnimatedStats` · `Timeline` · `ShareCard` · `SeoMetadata` · `StructuredData` · `ReducedMotionProvider` · `MediaPerformanceGuard`.
+
 - Angular: standalone + signals/RxJS + SSR/hydration-safe + lazy-loaded.
 
 ## Placeholder honesty
+
 - When real media is unavailable, create clearly-marked **demo** metadata (title/desc/duration/transcript/artwork placeholder).
 - Never pass off demo episodes as real. Make the site structurally ready to drop in real media.
 
 ## Conversion
+
 - Every media section ends in a business CTA: **book · donate · start · quote · contact · listen-more · share · subscribe**. Media is never a dead end.
 
 ## Per-page audit template
+
 ```
 ## Page Multimedia Audit: <route>
 - **Current state** — what media exists now
@@ -68,6 +77,7 @@ Fan out specialist media agents per [[agent-selection]] (audio-systems / video /
 ```
 
 ## `docs/multimedia-roadmap.md` template
+
 ```
 # Multimedia Roadmap
 ## Added this run
@@ -82,6 +92,7 @@ Fan out specialist media agents per [[agent-selection]] (audio-systems / video /
 ```
 
 ## Final multimedia review table
+
 | Area | Result | Notes |
 |---|---|---|
 | Media improves context | | |

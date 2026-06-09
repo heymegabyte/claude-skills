@@ -15,9 +15,11 @@ paths:
 Vitest for units, Playwright for E2E + browser automation, Crawlee for OSS crawl/import pipelines. License-gated tools (Firecrawl, browser-use) only after review. The testing/automation-browser arm of the supervisor system.
 
 ## When this fires
+
 - Any test (unit/integration/E2E), browser automation, or crawl/import pipeline
 
 ## Tooling + when to use
+
 - **Vitest** — unit + integration tests (the default per `code-style`; replaces Karma in Angular via `@analogjs/vitest-angular`)
 - **Playwright** + **@playwright/test** — E2E + browser automation; homepage-first, real-user navigation per `e2e-tdd-organization`
 - **Crawlee** — OSS crawling/import pipelines (HTTP/Cheerio/Playwright/Puppeteer); backend-only per `workflow-automation-supervisor`
@@ -25,6 +27,7 @@ Vitest for units, Playwright for E2E + browser automation, Crawlee for OSS crawl
 - **browser-use** — ONLY after a license/deployment review (agentic browser)
 
 ## Rules
+
 - **TDD-first** — failing Playwright spec BEFORE implementation per `e2e-tdd-organization`; watch RED → GREEN
 - **Vitest** for every pure function / service method (mock D1/KV/R2/fetch — never real APIs in units)
 - **Playwright** E2E from the homepage outward, 6 breakpoints × 3 browsers, axe-clean, console-error-free per `verification-loop`

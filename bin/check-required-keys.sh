@@ -28,7 +28,9 @@ esac
 REQUIRED=("${BASELINE[@]}" "${OBSERVABILITY[@]}" "${EXTRA[@]}")
 
 # Load env files (silent failures OK)
+# shellcheck source=/dev/null
 [ -f "$MASTER_ENV" ] && { set -a; source "$MASTER_ENV" 2>/dev/null; set +a; }
+# shellcheck source=/dev/null
 [ -n "${CLAUDE_ENV_FILE:-}" ] && [ -f "$CLAUDE_ENV_FILE" ] && { set -a; source "$CLAUDE_ENV_FILE" 2>/dev/null; set +a; }
 [ -f "$PWD/.env.local" ] && { set -a; source "$PWD/.env.local" 2>/dev/null; set +a; }
 [ -f "$PWD/.dev.vars" ] && { set -a; source "$PWD/.dev.vars" 2>/dev/null; set +a; }

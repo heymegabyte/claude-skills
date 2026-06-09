@@ -10,6 +10,7 @@ paths:
 # Code Style
 
 ## TypeScript (Google TS Style)
+
 - **TS 5.9+** — decorator metadata stable, `strictInference: true`, `isolatedDeclarations: true` for parallel builds, `erasableSyntaxOnly` for Node 22 native TS
 - camelCase vars/fns, PascalCase types, CONSTANT_CASE consts
 - `interface` over `type`. Relative imports.
@@ -19,11 +20,13 @@ paths:
 - NEVER JavaScript.
 
 ### Runtime
+
 - **Node 22 LTS native TS strip-types** — no ts-node/tsx/nodemon; `node --watch` + `node --run` replace them
 - **Bun 1.2+** for build-tool workloads (~125k req/s, 8ms cold start)
 - `wrangler types` against compatibility_date + bindings for typed bindings (not just `@cloudflare/workers-types`)
 
 ### Lint
+
 - ESLint 9 flat config (`eslint.config.ts`) + typescript-eslint v8 + angular-eslint + eslint-plugin-perfectionist + eslint-plugin-security + `--fix` on save
 - **oxlint** for pre-commit speed pass (50-100× ESLint, no formatting)
 - **knip** for dead code/unused deps (CI weekly)
@@ -36,6 +39,7 @@ paths:
 - Track ESLint v10 migration before Aug 2026 (v9 EOL)
 
 ## Angular
+
 - Standalone only (Angular 21)
 - Signals stable (signal/computed/effect/linkedSignal/resource)
 - HttpResource for data fetching
@@ -47,6 +51,7 @@ paths:
 - Stack choice: Angular for large apps (dashboards/admin/PWA/multi-tenant/builders/AI consoles); React for small sites (landing/marketing/portfolio). See `stack-selector.md`.
 
 ## Hono
+
 - Inline handlers (type inference)
 - RPC: `hc<AppType>` for client; **WorkerEntrypoint** + service bindings for internal Worker-to-Worker (promise pipelining, 32 MiB payload, JSRPC compat `2024-04-03`)
 - `@hono/zod-validator` all bodies
@@ -59,6 +64,7 @@ paths:
 - Method chaining: `app.use().get().post()`
 
 ## Testing (Playwright v1.56+ agents, v1.59+ MCP interop, Vitest 3)
+
 - TDD: failing test FIRST → implement → pass
 - Homepage FIRST — every test starts at homepage, navigates like real user (click nav → page → interact)
 - Keyboard/mouse: `page.click()`, `page.keyboard.type()`, `page.keyboard.press('Tab')`, `page.mouse` — never bare API calls for UI features
@@ -70,6 +76,7 @@ paths:
 - Stagehand AI fallback when selectors break
 
 ### Playwright Test Agents (v1.56+)
+
 - Planner → Markdown plan
 - Generator → test code
 - Healer → auto-fix selectors
@@ -79,6 +86,7 @@ paths:
 - Vitest 3 (Rust sharding, browser mode default, 40% faster on 5k+ tests)
 
 ### E2E accumulation
+
 - Tests NEVER deleted, only appended
 - `journey.spec.ts` serial + stateful — each feature adds steps
 - Never `page.goto()` for internal nav — click through UI
@@ -88,6 +96,7 @@ paths:
 - See `07/e2e-accumulation`
 
 ## CSS
+
 - Cascade layers (`@layer reset, base, components, utilities`)
 - Native nesting (no preprocessor)
 - **Container queries** Baseline Widely Available (2025)
@@ -105,6 +114,7 @@ paths:
 ## Accessibility (WCAG 2.2 AA)
 
 ### 9 new 2.2 criteria (correct numbers + level — common to mislabel)
+
 - 2.4.11 Focus Not Obscured (Minimum) — **AA**
 - 2.4.12 Focus Not Obscured (Enhanced) — AAA
 - 2.4.13 Focus Appearance — AAA
@@ -118,6 +128,7 @@ paths:
 - **"axe 0 violations ≠ accessible."** axe-core auto-tests ONLY 2.5.8 of the 9; it catches ~57% of issues by volume and fully automates ~30% of WCAG SC. The 6 AA-level criteria above (2.4.11, 2.5.7, 2.5.8, 3.2.6→A, 3.3.7→A, 3.3.8) need MANUAL review — bake a manual-checklist gate into the a11y pass, never claim AA from a green axe run alone.
 
 ### ADA deadlines (DOJ Title II, extended Apr 2026 IFR)
+
 - ≥50K pop → Apr 26 2027
 - <50K / special districts → Apr 26 2028
 - Standard = WCAG 2.1 AA
@@ -126,12 +137,14 @@ paths:
 - WCAG 3.0 Working Draft published Mar 3 2026 (Bronze/Silver/Gold tiers, ~174 requirements; CR ~Q4 2027) — keep targeting 2.2 AA, 2.x not deprecated for years
 
 ## Bash
+
 - camelCase fns, UPPER_CASE vars
 - ShellCheck + shfmt. shdoc format. Cross-platform. Idempotent.
 - Output: `source ~/.claude/hooks/style.sh` then `emdash_*` functions — NEVER raw echo
 - Tools: gum (style/log/spin/confirm), glow (markdown render), freeze (code → PNG), vhs (record terminal), mods (AI in CLI)
 
 ## Python
+
 - Ruff (replaces black + isort + flake8)
 - mypy for types
 - `pyproject.toml` for all config
@@ -140,9 +153,11 @@ paths:
 - NEVER black + isort separately
 
 ## Linting (all projects)
+
 - Pre-commit hooks via **lefthook** (not husky)
 
 ### Per-language
+
 - TS → oxlint (fast) + ESLint + Prettier
 - Python → Ruff + mypy
 - Bash → ShellCheck + shfmt
@@ -151,6 +166,7 @@ paths:
 - GitHub Actions → actionlint
 
 ### Plus
+
 - trailing-whitespace
 - end-of-file-fixer
 - detect-secrets
@@ -161,10 +177,12 @@ paths:
 - knip + jscpd weekly via scheduled GitHub Action
 
 ## Issue Tracking
+
 - Track in-repo via `.claude/issues/` or GitHub Issues
 - Never external-only tools (Plane/Linear) without code-level tracking
 
 ## Packages
+
 - `@hono/zod-validator`, `@hono/zod-openapi`, `hc`
 - `drizzle-orm` (v1 RQBv2), `drizzle-kit`
 - `@clerk/backend`

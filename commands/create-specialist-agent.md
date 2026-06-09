@@ -12,6 +12,7 @@ Scaffold a new specialist agent per [[agent-selection]] (anti-inflation: only wh
 **Inputs** — `$ARGUMENTS` = proposed agent name + role description.
 
 Steps:
+
 - Confirm recurrence first — if it's one-off, STOP and surface as a Rec instead.
 - Write `~/.claude/agents/<name>.md` with frontmatter: `name`, `description`, `tools`, `model`, `effort` (+ `model_fallback`/`effort_fallback` if Opus-pinned per [[opus-quota-fallback]]).
 - Body = system prompt + labeled sections: Purpose · Triggers · Non-goals · Inputs · Outputs (≤200-word summary contract) · Verification.

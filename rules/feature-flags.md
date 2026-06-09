@@ -16,11 +16,13 @@ Every feature beyond a trivial one-file edit ships behind a flag. Default: `enab
 ## Architecture (canonical — every emdash project starting w/ njsk.org Wave 6)
 
 Three D1 tables:
+
 - **`feature_flags`** — `key`, `enabled` (0/1), `rollout_percent` (0-100), `stage`, `description` (full prose), `e2e_tests` (JSON paths), `smoke_steps` (markdown recipe), `owner_email`, `created_at`, `updated_at`.
 - **`feature_flag_overrides`** — pin per `user` / `email` / `role`. Always wins.
 - **`feature_flag_audit`** — every mutation logged: who, what, before/after JSON, when.
 
 Worker module (`worker/feature-flags.ts`):
+
 - `isFlagOn(env, key, user, anonId)` — server-side guard
 - `resolveAllFlags(env, user, anonId)` — full set for caller
 - `handlePublicFlags(req, env, user)` — GET `/api/feature-flags` (boolean per key only)
@@ -31,11 +33,13 @@ Worker module (`worker/feature-flags.ts`):
 KV cache: 60s TTL on full flag state under `ff:state`. Admin mutations invalidate immediately. Public endpoint adds 30s `cache-control: private, max-age=30`.
 
 React hook (`src/lib/use-feature-flag.ts`):
+
 - `useFeatureFlag('key')` — single boolean, re-renders when flags arrive
 - `useFeatureFlags()` — record of every flag for batch UI gating
 - `resetFeatureFlagsCache()` — call after admin mutates
 
 Admin UI (`src/pages/admin/feature-flags.tsx`):
+
 - Stage filter pills (all / experimental / beta / stable / deprecated / killswitch)
 - Search by key or description
 - Per-flag card: on/off toggle + rollout slider + stage-promote button + killswitch button
@@ -43,6 +47,7 @@ Admin UI (`src/pages/admin/feature-flags.tsx`):
 - Audit timestamp + owner attribution
 
 ## Mandate (every NEW feature, no exceptions)
+
 1. **Reserve flag key first** — add row to `feature_flags` migration w/ `enabled=0, rollout_percent=0, stage='experimental'`. Naming: lowercase + snake_case + ≤32 chars (`text_to_give`, `dafpay_chariot`, `wcag_22_manual_review`).
 2. **Gate server handlers**: wrap w/ `isFlagOn(env, 'key', user, anonId)`; return 404 (not 403 — don't leak existence) when off.
 3. **Gate UI components**: `if (!useFeatureFlag('key')) return null;` — never render gated UI for unflagged users.
@@ -65,6 +70,7 @@ Admin UI (`src/pages/admin/feature-flags.tsx`):
 Promotion = button in admin UI (`Promote → beta`); rule is policy, not mechanism.
 
 ## Anti-patterns
+
 - ❌ Hardcoding feature on at launch
 - ❌ Hiding feature behind ENV var (env vars don't audit, don't roll out per user, don't surface to admin. ENV is for SECRETS, flags for FEATURES)
 - ❌ Multiple flags for one feature (sub-toggles via overrides, not new keys)
@@ -75,6 +81,7 @@ Promotion = button in admin UI (`Promote → beta`); rule is policy, not mechani
 - ❌ Missing `smoke_steps`
 
 ## Schema example
+
 ```sql
 CREATE TABLE IF NOT EXISTS feature_flags (
   key             TEXT PRIMARY KEY,

@@ -17,6 +17,7 @@ paths:
 Never write hand-rolled HTML files for any user-facing surface.
 
 ## Mandate
+
 - Every user-facing surface (marketing, web apps, dashboards, admin, generated sites, landing, microsites, blogs) MUST use ONE of two stacks:
   - **React 19 + Vite + SSR/SSG + TanStack Router + Tailwind v4** (default)
   - **Angular 21+ + Nx 20 + Ionic 8 + Capacitor 6 + PrimeNG + SSR (`@angular/ssr` on Cloudflare Workers) + Tailwind v4 + Angular CDK** (when explicitly chosen; ProjectSites.dev pinned here). RxJS-first per `rxjs-first-angular.md`.
@@ -26,6 +27,7 @@ Never write hand-rolled HTML files for any user-facing surface.
 ## React 19 + Vite + SSR (default)
 
 ### Core
+
 - **Vite 6+** w/ React plugin
 - **React 19** (with Server Components when warranted)
 - **TanStack Router** for type-safe client routing
@@ -38,18 +40,21 @@ Never write hand-rolled HTML files for any user-facing surface.
 - **Zod** at every API + form boundary
 
 ### Build output
+
 - `dist/client/` — static HTML + JS + CSS + per-route prerendered HTML
 - `dist/server/` — SSR bundle if dynamic routes (skip for pure SSG)
 - Upload to R2 marketing/ via `wrangler r2 object put` for CF-hosted sites
 - OR deploy to Cloudflare Pages / Workers Sites directly
 
 ### Routing
+
 - TanStack Router w/ file-based routes under `src/routes/`
 - Layout components share header/footer (auth-aware) so marketing surface knows when signed in
 - View Transitions API for nav (`document.startViewTransition`)
 - Speculation Rules prerender on hover
 
 ### State + data
+
 - TanStack Query for server state
 - Zustand for client-only state (NEVER Redux for new code)
 - TanStack Form for forms w/ Zod schemas
@@ -57,6 +62,7 @@ Never write hand-rolled HTML files for any user-facing surface.
 ## Angular 21 + Ionic + Capacitor + Cordova (when chosen)
 
 ### Core
+
 - **Angular 21** standalone + signals + **zoneless** (`provideZonelessChangeDetection()`, default in 21, drop Zone.js)
 - **`httpResource()`** (Angular 21 stable) — declarative HTTP→signal for read-only endpoints; pair with RxJS for mutations + WS + SSE per `rxjs-first-angular.md`
 - **Incremental hydration** — `provideClientHydration(withIncrementalHydration())` — viewport/interaction only
@@ -73,11 +79,13 @@ Never write hand-rolled HTML files for any user-facing surface.
 - **Angular built-in i18n** (`@angular/localize`) — only strategy
 
 ### Build output
+
 - Web: `dist/{app}/browser/` + `dist/{app}/server/`
 - iOS: `npx cap sync ios` → Xcode project
 - Android: `npx cap sync android` → Android Studio project
 
 ### When to pick Angular over React
+
 - Brian's own SaaS work
 - Native iOS/Android required (Capacitor)
 - Signal-based reactivity load-bearing
@@ -131,6 +139,7 @@ Never write hand-rolled HTML files for any user-facing surface.
 ```
 
 ## NEVER
+
 - Hand-rolled `public/{page}.html` for user-facing content
 - Hand-rolled `public/css/site.css` + `public/js/site.js` + 20 HTML pages
 - jQuery, Vue, Svelte, SolidJS, Qwik for new projects (legacy maintenance OK)
@@ -139,6 +148,7 @@ Never write hand-rolled HTML files for any user-facing surface.
 - Check in `node_modules/`. Always `.gitignore`.
 
 ## ALWAYS
+
 - React+Vite default. Angular+Ionic+Capacitor+Cordova when chosen.
 - SSR or SSG for every marketing surface (build-time prerender min).
 - TypeScript strict. Zod at boundaries.
@@ -148,10 +158,12 @@ Never write hand-rolled HTML files for any user-facing surface.
 - Single shared layout component for auth-aware header + footer.
 
 ## Existing project audit
+
 - Hand-rolled `public/*.html` for user-facing → refactor backlog. Don't add MORE hand-rolled HTML. Refactor to canonical stack OR mark for sunset.
 - Generated business sites (`/sites/{slug}/`) shipped by ProjectSites already use Vite+React+Tailwind+shadcn — reference pattern.
 
 ## E-commerce surfaces
+
 - E-commerce (product catalog + cart + checkout + inventory) pairs React+Vite or Angular+Ionic frontend with **Medusa.js** headless commerce backend per `ecommerce-stack.md`
 - Never roll your own cart/checkout/inventory schema
 - Medusa Next.js starter NOT permitted

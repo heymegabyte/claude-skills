@@ -12,6 +12,7 @@ Audit global prompt config for contradictions, staleness, and duplication.
 **Inputs** — `$ARGUMENTS` (optional focus area); else sweep the whole rule mesh.
 
 Check for:
+
 - Contradictions — two rules giving conflicting guidance (resolve via [[brian-preferences]] conflict order).
 - Stale guidance — dated tech, retired models, deprecated patterns.
 - Duplication — same guidance in 2+ places (consolidate to the canonical owner, leave `[[backlinks]]`).

@@ -18,6 +18,7 @@ Every clickable element / form field / nav link / API endpoint / modal / keyboar
 Tests sharded across N parallel runners (CI, local CPU cores, distributed agents) with zero coordination. Today they run locally; flipping parallelism = one-flag change.
 
 ## Hard rules
+
 - Failing test FIRST. Watch fail. THEN implement. Watch pass. No exceptions.
 - No feature ships without ≥1 spec. No bug fix without ≥1 regression spec.
 - `fullyParallel: true` × N workers × 6 viewports × 3 browsers — every spec hermetic.
@@ -60,6 +61,7 @@ e2e/
 ```
 
 ## Naming
+
 - Spec file: `<concern>.spec.ts` — single concern per file (<200 lines)
 - `describe` block: one per spec, matches filename
 - `test` titles: imperative, `it should ___` not `tests ___`
@@ -67,6 +69,7 @@ e2e/
 - Page objects: `<Feature>Page` class in `_fixtures/`, never inline selectors in specs
 
 ## Hermetic spec contract (every spec satisfies all 6)
+
 1. Starts at homepage (`/`) — navigates via clicks/keyboard, never `page.goto` for internal nav after initial load.
 2. Seeds own data via `_fixtures/` before-each (never relies on prior spec's state).
 3. Cleans own data after-each (or transaction rollback via test DB).
@@ -106,18 +109,21 @@ export default defineConfig({
 - No config change between local + distributed; shard flag IS parallelization knob.
 
 ## Inventory enforcement
+
 - `e2e/FEATURES.md` — markdown table: feature name · owning dir · spec count · last-pass commit
 - `e2e/COVERAGE.yml` — CI parses; any feature w/ `specs: 0` fails build
 - Pre-commit lint: new `src/web/components/<NewThing>.tsx` without matching `e2e/<feature>/` warns; new `src/worker/routes/<route>.ts` without smoke entry warns
 - Bug-fix: failing-test-first reproducing bug → fix → test goes green; PR template requires linking regression spec
 
 ## Test-account discipline
+
 - `test@megabyte.space` = canonical customer.
 - `crew-test@megabyte.space` = canonical crew.
 - Passwords / OTPs sourced from env (`TEST_USER_PASSWORD`, `TEST_OTP_BYPASS`) — never hardcoded.
 - Real-user navigation only: `page.click()` + `page.keyboard.type()` + `page.keyboard.press('Tab')`. Bare API calls only for setup (seeding) + teardown.
 
 ## Playwright Test Agents (v1.59+ MCP interop)
+
 - `npx playwright init-agents --loop=claude` once per repo.
 - Planner emits Markdown plan to `e2e/_agents/planner.md`.
 - Generator scaffolds new specs from plan.
@@ -125,6 +131,7 @@ export default defineConfig({
 - `browser.bind()` for MCP interop; `page.screencast` for video receipts on flaky specs.
 
 ## Done definition (the gate)
+
 - Every new feature → spec written FIRST + RED + then GREEN
 - `npm run e2e:prod` exits 0
 - Screenshots uploaded to R2 (or local artifacts/ in dev)
@@ -133,6 +140,7 @@ export default defineConfig({
 - New routes registered in `__seen-routes__.json` AND covered by `e2e-visual-inspection.md` first-render gate
 
 ## Enforcement (deterministic, not aspirational)
+
 - **PostToolUse hook** at `~/.claude/hooks/enforce-tdd-e2e.py` fires after every `Write|Edit|MultiEdit` on `src/web/components/**`, `src/worker/routes/**`, `src/web/pages/**`, `apps/dashboard/src/app/features/**`. Scans `e2e/` for any spec mentioning edited file's basename or path. If none, emits system-reminder: "TDD-E2E gap on <file>; expected location <prefix>". Non-blocking (exit 2 = warning), but loud and persistent.
 - **SessionStart hook** at `~/.claude/hooks/session-start-reminders.py` emits one-line reminder of four SUPREME rules at top of every fresh session.
 - Wired in `~/.claude/settings.json` § `hooks.PostToolUse` + `hooks.SessionStart`.

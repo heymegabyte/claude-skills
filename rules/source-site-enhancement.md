@@ -17,11 +17,13 @@ paths:
 Fires on every `re(build|make|do)|rebuild|optimi[sz]ed?|enhanced?|upgraded?|modern(ize|ized)?|better version|clone|mirror|recreate` + domain prompt. Bare-domain prompts when domain resolves 200 = enhancement mode (never homepage-only).
 
 ## Output set
+
 - `union(SOURCE_URLS, STANDARD_PAGE_SET[org_type], DEMOGRAPHIC_LOCALES, AI_DISCOVERED_JEWELS)` minus `CRUFT_URLS`
 - Each cruft URL → 301 to canonical
 - Never just-source. Never just-standard. Always all three.
 
 ## Phase order (NON-NEGOTIABLE — every rebuild)
+
 1. **`crawler`** → `_url_inventory.json` (sitemap.xml → robots.txt → HTML BFS → Wayback fallback → CMS index endpoints)
 2. **`classify`** each URL into `keep|merge|301|drop`:
    - keep = unique content
@@ -43,6 +45,7 @@ Fires on every `re(build|make|do)|rebuild|optimi[sz]ed?|enhanced?|upgraded?|mode
    - `/blog/2019/10/13/npnd379mz6gljrtr2l90bd7vdnf4cm` → `/blog/{semantic-slug-from-title}`
 
 ## CRUFT_PATTERNS (301 to canonical — NEVER ship live)
+
 - `/home$`
 - `/index\.(html?|php)$`
 - `^/?wp-(content|admin|includes)`
@@ -58,6 +61,7 @@ Fires on every `re(build|make|do)|rebuild|optimi[sz]ed?|enhanced?|upgraded?|mode
 - Fail build if any survive into deploy.
 
 ## JEWEL_RESEARCH (each gap page real content, never stub)
+
 - Generate via Claude Opus 4.7 w/ org-type playbook
 - Sources by org type:
   - **nonprofit** — Form 990 / Charity Navigator / GuideStar
@@ -69,6 +73,7 @@ Fires on every `re(build|make|do)|rebuild|optimi[sz]ed?|enhanced?|upgraded?|mode
 - Every page ships: ≥5 JSON-LD blocks + 5+ FAQ accordions + ≥2 outbound canonical links + ≥3 internal sibling links
 
 ## IA_NORMALIZE_RULES
+
 - **Services nesting (conditional)**:
   - ≤8 services → keep flat `/{service}` URLs
   - 9+ services → nest under `/services/{service}` + create index `/services` listing all
@@ -80,11 +85,13 @@ Fires on every `re(build|make|do)|rebuild|optimi[sz]ed?|enhanced?|upgraded?|mode
 - **Services rename**: `/what-we-do|/how-we-do-it|/programs` → `/services` when appropriate
 
 ## SQUARESPACE_DEDUPE
+
 - Squarespace JSON API returns BOTH canonical + random-id versions — keep canonical, drop random-id, emit 301 for random-id URL
 - Example: `/blog/2019/10/13/npnd379mz6gljrtr2l90bd7vdnf4cm` 301 → `/blog/{actual-title-slug}`
 - Same applies to Wix `_compiler/page-data` dupes + Wordpress `?p=123` permalinks
 
 ## HARD_GATE_PAGE_COUNT
+
 - Deployed site MUST have `keep_count + standard_gap_count + jewel_count + locale_count*(keep+standard+jewel)` pages
 - `keep_count = SOURCE_URLS.filter(c=>c.classification==='keep').length`
 - Nonprofits min: `keep + 14 standard + 10 jewels`
@@ -92,7 +99,9 @@ Fires on every `re(build|make|do)|rebuild|optimi[sz]ed?|enhanced?|upgraded?|mode
 - Build fails when deployed-route-count < expected
 
 ## SUCCESS_DEFINITION
+
 One-line `re(build|optimize|enhance) X.com` produces deployed site where:
+
 - (a) Every source URL resolves to live content OR 301
 - (b) Every standard-page-set entry for inferred org type is live w/ real content
 - (c) Every demographic locale has full route mirror
@@ -102,9 +111,11 @@ One-line `re(build|optimize|enhance) X.com` produces deployed site where:
 Anything less = prompt failed, not rebuild.
 
 ## Parallel-agent playbook (MONITOR-FIRE first tool-call — sequential = build fail)
+
 Rebuild prompts trigger `monitor-orchestration.md` per `always.md` line 10. Monitor decomposes within 30sec into independent + dependent passes. Independent passes fan out as parallel `Agent` spawns in SINGLE multi-tool message — never serialize.
 
 ### Canonical fan-out for `rebuild X.com`
+
 1. **Agent-A `crawler`** — sitemap+robots+HTML BFS+Wayback → `_url_inventory.json` w/ `{url, classification, org_type_hints[], original_status}`
 2. **Agent-B `demographics`** — ACS B16001 on `_research.json.service_area` → `_locales.json` `{locales[], hreflang_pairs[]}`
 3. **Agent-C `org-type-inferrer`** — skill 02 inference from prompt+domain+`_research.json.category` → `_org_type.json`
@@ -116,6 +127,7 @@ Rebuild prompts trigger `monitor-orchestration.md` per `always.md` line 10. Moni
 9. **Agent-P `squarespace-dedup`** — CMS-specific dupe detection (Squarespace random-IDs, Wix `_compiler/page-data`, WP `?p=`) → augment `_redirects`
 
 ### Execution sequencing
+
 - Foreground (main thread during agent wall-time): write `PLAN.md` route tree + design tokens + media/file counts + validators list
 - Once Agent-A+B+C complete (prerequisites), fire Agent-D through Agent-P all parallel
 - Once jewel-authors+translators complete, fold outputs into `<boltArtifact>` envelope, build, deploy, verify per `verification-loop.md`
@@ -123,6 +135,7 @@ Rebuild prompts trigger `monitor-orchestration.md` per `always.md` line 10. Moni
 - Sub-agent prompts 100-300 words per `full-autonomy.md`
 
 ## Self-improvement closure (SAME TURN)
+
 - Re-issued identical/near-identical rebuild prompt = monitor-orchestration shortcoming-signal
 - BEFORE doing requested work: append gap to `monitor-orchestration.md` § Known shortcomings AND cross-link from relevant rule
 - Rule update part of turn, never deferred
