@@ -32,6 +32,9 @@ jobs:
         if: steps.check.outputs.fail_count != '0'
         id: body
         run: |
+          # shellcheck disable=SC2006,SC2016
+          # SC2006: literal backticks in markdown body are intentional code-formatting.
+          # SC2016: single-quoted markdown literals must NOT expand shell vars.
           {
             echo 'body<<EOF'
             echo '## 🚨 Doc-URL health check found broken links'

@@ -115,9 +115,17 @@ fi
 logHeader "9. actionlint"
 if command -v actionlint >/dev/null; then
   runGate "actionlint" "actionlint workflows" \
-    actionlint .github/workflows/publish.yml .github/workflows/supply-chain-pr-comment.yml .github/workflows/version-drift-check.yml
+    actionlint .github/workflows/publish.yml .github/workflows/supply-chain-pr-comment.yml .github/workflows/version-drift-check.yml .github/workflows/pricing-check.yml .github/workflows/doc-urls-check.yml
 else
   skipGate "actionlint" "not installed (brew install actionlint OR go install github.com/rhysd/actionlint/cmd/actionlint@latest)"
+fi
+
+# Soft INFO gate (pass-63) — pricing-staleness report. Always succeeds at the
+# lint-all level; output is informational. Stale references should be tracked
+# via .github/workflows/pricing-check.yml's weekly cron, not block commits.
+if [ "$JSON" = "0" ]; then
+  logHeader "ℹ pricing-staleness (info-only, doesn't gate)"
+  bash "$SKILLS_ROOT/bin/check-pricing.sh" 2>&1 | tail -8 >&2 || true
 fi
 
 EXIT=0

@@ -1,0 +1,96 @@
+name: Pricing Health Check
+
+# Weekly pricing-staleness check across rules/ + skill-dirs + cross-cutting docs.
+# Stale (>90 days since "verified YYYY-MM-DD" annotation) → opens or updates
+# a tracking issue labeled pricing-check. Unannotated → silent (warn-only).
+# Pass-63. Companion to bin/check-pricing.sh.
+
+on:
+  schedule:
+    - cron: "41 11 * * 1" # Mondays 11:41 UTC — staggered after doc-urls-check (10:23)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Run check-pricing.sh --json
+        id: check
+        run: |
+          bash bin/check-pricing.sh --json > /tmp/pricing.json || true
+          echo "stale_count=$(jq -r '.summary.stale' /tmp/pricing.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Build issue body from JSON
+        if: steps.check.outputs.stale_count != '0'
+        id: body
+        run: |
+          # shellcheck disable=SC2006,SC2016
+          # SC2006: literal backticks inside markdown body are intentional code-formatting, not command-substitution.
+          # SC2016: single-quoted markdown literals must NOT expand shell vars.
+          {
+            echo 'body<<EOF'
+            echo '## 🚨 Pricing-staleness check found references older than 90 days'
+            echo ''
+            STALE_COUNT=$(jq -r '.summary.stale' /tmp/pricing.json)
+            echo "Weekly run found ${STALE_COUNT} pricing reference(s) where the verified-YYYY-MM-DD annotation is more than 90 days old."
+            echo ''
+            echo '### Stale references'
+            echo ''
+            jq -r '.refs[] | select(.status=="stale") | "- <code>\(.age_days)d</code> <code>\(.location)</code> — \(.content)"' /tmp/pricing.json
+            echo ''
+            echo '### Stats'
+            echo ''
+            echo "- Current: $(jq -r '.summary.current' /tmp/pricing.json)"
+            echo "- Stale: $(jq -r '.summary.stale' /tmp/pricing.json)"
+            echo "- Unannotated: $(jq -r '.summary.unannotated' /tmp/pricing.json)"
+            echo "- Generated: $(jq -r '.meta.generated_at' /tmp/pricing.json)"
+            echo "- Git SHA: $(jq -r '.meta.git_sha' /tmp/pricing.json)"
+            echo ''
+            echo '### Action'
+            echo ''
+            echo 'For each stale reference, re-verify via vendor docs and either:'
+            echo '1. Update the price and bump the verified-YYYY-MM-DD annotation, OR'
+            echo '2. If price is unchanged, just bump the annotation date.'
+            echo ''
+            echo 'Re-run locally with: npm run check:pricing'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open or update tracking issue
+        if: steps.check.outputs.stale_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="🚨 Pricing: $(jq -r '.summary.stale' /tmp/pricing.json) stale reference(s)"
+          EXISTING=$(gh issue list --label pricing-check --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --title "$TITLE" --body "${{ steps.body.outputs.body }}"
+            gh issue comment "$EXISTING" --body "Re-detected $(date -u +%Y-%m-%d) — stale count: $(jq -r '.summary.stale' /tmp/pricing.json)"
+          else
+            gh issue create --title "$TITLE" --body "${{ steps.body.outputs.body }}" --label pricing-check
+          fi
+
+      - name: Auto-close tracking issue on clean run
+        if: steps.check.outputs.stale_count == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          EXISTING=$(gh issue list --label pricing-check --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "✓ Auto-closing: pricing-check is clean as of $(date -u +%Y-%m-%dT%H:%M:%SZ). All references re-verified within 90 days."
+            gh issue close "$EXISTING" --reason completed
+          fi
+
+      - name: Upload JSON artifact
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4.6.2
+        with:
+          name: pricing-check-json
+          path: /tmp/pricing.json
+          retention-days: 30

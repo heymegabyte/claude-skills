@@ -1,5 +1,56 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-63 — Weekly pricing cron + soft-info gate + SC2006 backfill
+
+### Closes pass-62 candidates 1 (weekly cron) + 2 (soft-info gate in lint-all)
+
+- **NEW `.github/workflows/pricing-check.yml`** — weekly cron Mondays 11:41 UTC (staggered after `doc-urls-check.yml`'s 10:23). Mirrors that workflow's open→update→auto-close issue pattern:
+  - `stale_count == 0`: silent pass (auto-closes any open `pricing-check` issue with confirmation comment)
+  - `stale_count > 0`: opens or updates a tracking issue labeled `pricing-check` with markdown body listing stale references + remediation hint (re-run `npm run check:pricing` locally + update annotation date)
+  - Always uploads JSON envelope as 30-day artifact
+- **`bin/lint-all.sh` soft-info section** — added AFTER the 9 main gates. Runs `bash bin/check-pricing.sh`, prints results, but DOES NOT contribute to the FAIL counter. Visibility at every pre-commit run without blocking.
+- **Backfilled `# shellcheck disable=SC2006,SC2016` directive on `doc-urls-check.yml`** — pre-existing markdown-backtick / single-quoted-literal issues that pass-55 noted as "info SC2016 only" but actually fail actionlint in stricter modes. Pass-63's expansion of `bin/lint-all.sh`'s actionlint coverage from 3 workflows to 5 (added pricing-check + doc-urls-check) surfaced this. Same pattern as the new pricing-check.yml uses.
+
+### Why "info-only" instead of a hard gate
+
+The pre-commit hook (`npm run lint`) must finish in under ~5 seconds for solo-builder ergonomics. `check-pricing.sh` runs in ~50ms (just grep + file scans, no network), so cost is fine. But the SEMANTICS of stale pricing don't fit pre-commit: a 91-day-old annotation isn't a bug — it's a quarterly-review nudge. Blocking commits would punish unrelated work. The weekly cron is the right cadence for stale; info-on-every-commit is the right cadence for awareness.
+
+### Hidden bug caught in-pass (5th of the pass-58→63 arc)
+
+Pass-55's CHANGELOG claimed `actionlint .github/workflows/doc-urls-check.yml` exits 0 with "info SC2016 only". That was true at pass-55 because the lint-all step only checked 3 workflows. Adding 2 more this pass made shellcheck stricter (or the local actionlint version differs slightly), exiting non-zero. Either way, the SC2016 + SC2006 issues were latent and now properly suppressed via the codified directive pattern.
+
+### Closure-loop confirmation
+
+The pass-58→63 arc has now:
+
+1. Caught **6 latent bugs** across 5 files (Opus pricing direction, $15/$75 Opus error, Haiku 3.5→4.5, Workers CPU-ms 625×, D1 included-tier, doc-urls-check SC2006 latent)
+2. Codified **3 disciplines** in `lint-doctrine.md` (cross-rule consistency drift, two-claims-contradict, one-search-many-fixes)
+3. Mechanized the discipline with `bin/check-pricing.sh`
+4. Automated via `pricing-check.yml` weekly cron
+5. Surfaced visibility via `bin/lint-all.sh` soft-info section
+
+Same arc shape as pass-49→52 (manual lint discipline → pre-commit hook). Discipline graduating from "we say to do this" to "the toolchain does it for you" to "the toolchain reports it to you every commit".
+
+### Verification
+
+```bash
+npm run lint                                     # ✓ 9/9 green + info-only pricing report
+actionlint .github/workflows/*.yml                # 0 errors (5 workflows now)
+sha-pin-check on pricing-check.yml                # clean (checkout + upload-artifact SHA-pinned)
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-64)
+
+- Session-recap SessionStart hook (still gated — needs Brian opt-in)
+- Python `emit-json` parity (still gated — needs 3-Python-caller threshold)
+- Sweep `agents/*.md` files for staleness (haven't touched in the pass-58→63 arc)
+
+---
+
 ## 2026-06-09 — pass-62 — `bin/check-pricing.sh` automation (mechanizes pass-58→61 manual audits)
 
 ### Closes pass-61 candidate 1 (`bin/check-pricing.sh` automation)
