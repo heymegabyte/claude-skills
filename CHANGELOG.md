@@ -1,5 +1,42 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-40 — `monitor-orchestration` § Healthy iteration patterns + markdownlint sweep
+
+### Closes pass-39 candidate 1 (Healthy-patterns audit) + actually runs markdownlint per user's tool list
+
+- **`rules/monitor-orchestration.md` § Healthy iteration patterns (NOT shortcomings)** — new section AFTER § Known shortcomings, BEFORE § Update protocol. Pulls the positive pattern OUT of buried shortcoming entry #10 into its own scannable section:
+  - Pattern 1: `/loop N{m,h}` cron + bounded iterative prompt = closure-loop discipline working, NOT serial-execution failure. Diagnostic: pass-N Recs → pass-(N+1) Next; CHANGELOG +1 § per pass; ~5-200 LOC diff per pass.
+  - Pattern 2: 2-3 future-pass Recs (not 10 deferred items) per `auto-integrate-recs`.
+  - Pattern 3: one-coherent-slice-per-turn against self-iterating `/loop` ≠ § Known shortcomings #1 (one-section-per-turn against multi-faceted brief).
+  - Trigger heuristic: identical prompt + Recs closed + linear CHANGELOG = healthy. Identical prompt + Recs piling = shortcoming territory.
+  - Logged the live pass-37 → pass-38 → pass-39 chain as a confirmed instance of the healthy pattern.
+- **Markdownlint sweep (`markdownlint-cli2@^0.18.1 --fix`)** — first time the user's required `markdownlint` tool actually ran on the touched files. Auto-fixed MD022 (blanks-around-headings) + MD031 (blanks-around-fences) + MD032 (blanks-around-lists) on `rules/monitor-orchestration.md` (+11 blank lines) and `rules/uniform-json-output.md` (+2 blank lines). Post-fix: `0 error(s)`.
+
+### Why surface healthy patterns
+
+Pass-39 Rec flagged "log closure-loop as drift risk." On audit, entry #10 already captured the case — but buried in a 10-entry shortcomings list where future-Monitor would scan past it. The §Healthy iteration patterns section makes the diagnostic explicit + scannable so Monitor doesn't reflexively flag healthy passes as drift on the 11th `/loop` fire.
+
+### What was NOT done
+
+- Pass-39 candidate 2 (session-recap as SessionStart hook) — still gated on Brian opt-in
+- Pass-39 candidate 3 (Python `emit-json` parity) — still gated on 3-Python-caller threshold (zero callers currently)
+- Repo-wide markdownlint sweep — touched files only this pass; full sweep would explode the diff and belongs in a dedicated pass
+
+### Verification
+
+```bash
+npx markdownlint-cli2@^0.18.1 rules/monitor-orchestration.md rules/uniform-json-output.md  # 0 error(s)
+```
+
+### Next candidates (pass-41)
+
+- Repo-wide markdownlint sweep (separate large-diff pass with `--fix` on every `.md`)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Wire markdownlint-cli2 into `templates/lint-stack/lefthook.yml` pre-commit (currently only listed in `lint-doctrine.md`, not actually wired)
+
+---
+
 ## 2026-06-09 — pass-39 — `emit_meta_block` adoption + cross-link uniform-JSON ↔ lint-doctrine
 
 ### Closes pass-38 Rec 1 (cross-link) + pass-38 candidate 2 (awk-side adoption)

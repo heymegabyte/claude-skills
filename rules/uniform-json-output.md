@@ -41,6 +41,7 @@ Every `--json`-emitting helper in `~/.agentskills/bin/` SHOULD produce the same 
 ## Canonical examples
 
 ### `bin/security-supply-chain.sh --json`
+
 ```json
 {
   "meta": {
@@ -57,6 +58,7 @@ Every `--json`-emitting helper in `~/.agentskills/bin/` SHOULD produce the same 
 ```
 
 ### `bin/session-recap.sh --json`
+
 ```json
 {
   "meta": {
