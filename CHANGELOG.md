@@ -1,5 +1,74 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-67 — `bin/check-agent-fallback.sh` (9th lib caller)
+
+### Closing pass-66 queue all gated; building new audit surface
+
+Pass-66's queue items (SessionStart hook + Python parity + soft-info → hard-gate promotion) all explicitly gated. Per the "claim-vs-reality automation pattern" Rec from pass-66, building another script following the now-proven shape.
+
+### NEW `bin/check-agent-fallback.sh` (9th caller of `bin/lib/emit-json.sh`)
+
+Mechanizes `rules/opus-quota-fallback.md` § Agent frontmatter convention: every agent declaring `model: opus` MUST also declare `model_fallback` + `effort` + `effort_fallback`. Without these, when Opus quota exhausts, the main thread has nothing to read for fallback routing → silent agent failure on quota miss.
+
+- Awk-parses each `agents/*.md` frontmatter (stops at closing `---`)
+- Filters to `model: opus` agents only (5 currently)
+- For each, checks presence of 3 required fields: `model_fallback` + `effort` + `effort_fallback`
+- Reports each agent's compliance status; aggregates compliant vs non-compliant
+- Exit 0 if all comply; exit 1 if any field missing
+- Human + `--json` modes per uniform-json-output doctrine
+
+### Pass-67 baseline (all 5 Opus agents comply per pass-64 audit)
+
+```text
+▸ Checking Opus agents for model_fallback + effort_fallback...
+  ✓ architect
+  ✓ completeness-checker
+  ✓ meta-orchestrator
+  ✓ security-reviewer
+  ✓ visual-qa
+━━━ SUMMARY: 5 compliant · 0 non-compliant
+✓ all Opus agents declare model_fallback + effort + effort_fallback
+```
+
+### Wired into lint-all + npm aliases
+
+- `bin/lint-all.sh` — added Opus-agent-fallback soft-info section as the 4th info section (after pricing + agent-routing + pack-frontmatter)
+- shellcheck + shfmt coverage extended to include `bin/check-agent-fallback.sh`
+- `package.json` — `npm run check:agent-fallback` + `:json`
+
+### Closure-loop arc pass-58→67 summary
+
+- **9 latent bugs caught** across 8 files (no new bugs this pass — discipline maturity check ran clean)
+- **3 disciplines codified** in `lint-doctrine.md`
+- **4 audit scripts mechanized** (pricing · agent-routing · pack-frontmatter · agent-fallback — all in lint-all soft-info)
+- **1 cron automated** (pricing-check weekly)
+- **`bin/lib/emit-json.sh` lib has 9 callers** — 3× the extraction threshold
+
+### Why this matters even when 0 bugs surface
+
+The "claim-vs-reality" automation pattern isn't just for catching past bugs — it's regression protection for the future. The next time someone adds an Opus-pinned agent without the fallback fields, the soft-info section surfaces it in the same pre-commit run. The same script that found 0 issues today catches the new one tomorrow.
+
+### Verification
+
+```bash
+npm run lint                                       # ✓ 9/9 green + 4 info sections all clean
+npm run check:agent-fallback                        # ✓ 5/5 compliant
+npm run check:agent-fallback:json | python3 -m json.tool   # valid envelope
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-68)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Audit ALL agent frontmatter for required fields (not just Opus) — extend `check-agent-fallback.sh` to verify Sonnet + Haiku agents have minimum required fields (`name`, `description`, `model`, `effort`)
+- Soft-info → hard-gate promotion (after quarter of stability)
+
+---
+
 ## 2026-06-09 — pass-66 — `_packs` frontmatter audit + 8 surgical fixes + 8th lib caller
 
 ### Closes pass-65 candidate 1 (`_packs/*.yml` member-list audit)

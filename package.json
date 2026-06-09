@@ -35,6 +35,8 @@
     "check:agent-routing:json": "bash bin/check-agent-routing.sh --json",
     "check:pack-frontmatter": "bash bin/check-pack-frontmatter.sh",
     "check:pack-frontmatter:json": "bash bin/check-pack-frontmatter.sh --json",
+    "check:agent-fallback": "bash bin/check-agent-fallback.sh",
+    "check:agent-fallback:json": "bash bin/check-agent-fallback.sh --json",
     "lint:fix": "npx --yes markdownlint-cli2@^0.18.1 --fix '**/*.md' && npx --yes prettier@3 --config .prettierrc.json --write '**/*.{json,jsonc,yml,yaml}' && shfmt -i 2 -ci -bn -w bin/*.sh bin/lib/*.sh scripts/*.sh",
     "validate": "bash scripts/validate-skills.sh && node scripts/validate-packs.mjs",
     "validate:packs": "node scripts/validate-packs.mjs",
