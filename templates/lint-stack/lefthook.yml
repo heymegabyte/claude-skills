@@ -74,6 +74,11 @@ pre-push:
         npx --no-install knip --no-progress 2>&1 | tee ".lint-history/knip-$(date +%Y%m%d-%H%M%S).log" || true
     trufflehog:
       run: trufflehog git file://. --only-verified --fail
+    sha-pin-check:
+      # Supply-chain hardening per rules/ai-agent-security.md § Supply chain.
+      # Blocks push if any GitHub Action tag-ref unpinned.
+      glob: ".github/workflows/*.{yml,yaml}"
+      run: node ~/.agentskills/scripts/sha-pin-actions.mjs --check {staged_files}
     lint-auto-improve:
       # Weekly AI-augmented loop — scans .lint-history/, surfaces recurring
       # violation classes for codification per rules/lint-doctrine.md § Self-improving.

@@ -1,5 +1,28 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-21 — lefthook pre-push sha-pin gate + /security-supply-chain unified audit
+
+### Closes pass-20 Recs
+
+- **`templates/lint-stack/lefthook.yml` pre-push** += `sha-pin-check` step:
+  - Glob: `.github/workflows/*.{yml,yaml}`
+  - Runs `node ~/.agentskills/scripts/sha-pin-actions.mjs --check {staged_files}`
+  - Blocks push if any GitHub Action tag-ref unpinned (before it hits CI).
+  - Mirrors the gitleaks/trufflehog pattern — catch the gap as early as possible.
+- **`commands/security-supply-chain.md`** (new `/security-supply-chain` slash) — unified audit surface:
+  - Check 1: SHA-pinning via `sha-pin-actions.mjs --check`
+  - Check 2: `package.json` `git+https://` deps grep (mainstream-only per lint-doctrine)
+  - Check 3: Gitleaks working-tree scan
+  - Check 4: Trufflehog `--only-verified` (kills false positives)
+  - Inline bash audit script for one-shot run.
+  - Documents remediation per failure mode (sha-pin / npm-swap / rotate secret).
+
+### Verified
+- actionlint → 0 issues across both workflows.
+- pack integrity → clean (15/88/14).
+- Commands count → 14 (was 13; `/security-supply-chain` added).
+- Auto-registered via sync-desktop-skills hook on next prompt.
+
 ## 2026-06-09 — pass-20 — sha-pin-actions: --check, --bump, + CI gate + installer wiring
 
 ### Closes pass-19 Recs
