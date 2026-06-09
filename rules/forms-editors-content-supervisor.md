@@ -1,7 +1,7 @@
 ---
 name: "forms-editors-content-supervisor"
 priority: 3
-pack: "backend"
+pack: "content"
 triggers:
   - "form"
   - "editor"

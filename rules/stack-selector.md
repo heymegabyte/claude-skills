@@ -1,7 +1,7 @@
 ---
 name: "stack-selector"
 priority: 2
-pack: "core"
+pack: "frontend"
 triggers:
   - "react or angular"
   - "what stack"

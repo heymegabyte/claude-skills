@@ -1,7 +1,7 @@
 ---
 name: "media-file-document-supervisor"
 priority: 3
-pack: "backend"
+pack: "media"
 triggers:
   - "upload"
   - "pdf"

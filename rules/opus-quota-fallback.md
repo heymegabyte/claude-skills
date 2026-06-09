@@ -1,7 +1,7 @@
 ---
 name: "opus-quota-fallback"
 priority: 2
-pack: "core"
+pack: "ai"
 triggers:
   - "quota"
   - "fallback"

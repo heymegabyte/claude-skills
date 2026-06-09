@@ -1,5 +1,86 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-66 — `_packs` frontmatter audit + 8 surgical fixes + 8th lib caller
+
+### Closes pass-65 candidate 1 (`_packs/*.yml` member-list audit)
+
+### Audit finding — 8 frontmatter-pack-claim drifts
+
+Audited every `rules/*.md` frontmatter `pack:` declaration vs actual `_packs/*.yml` membership. `scripts/validate-packs.mjs` already enforces existence + ≥1-pack-membership but NOT frontmatter-pack-claim consistency. 8 rules had a `pack:` declaration that didn't match their actual single-pack membership:
+
+| Rule | Old frontmatter | Actual pack | Fix |
+|---|---|---|---|
+| `ai-seniority` | `pack: "core"` | listed in `ai.yml` | `pack: "ai"` |
+| `computer-use-safety` | `pack: "core"` | listed in `infra.yml` | `pack: "infra"` |
+| `email-deliverability` | `pack: "misc"` (no pack file!) | listed in `infra.yml` | `pack: "infra"` |
+| `feature-module-architecture` | `pack: "core"` | listed in `backend.yml` | `pack: "backend"` |
+| `forms-editors-content-supervisor` | `pack: "backend"` | listed in `content.yml` | `pack: "content"` |
+| `media-file-document-supervisor` | `pack: "backend"` | listed in `media.yml` | `pack: "media"` |
+| `opus-quota-fallback` | `pack: "core"` | listed in `ai.yml` | `pack: "ai"` |
+| `stack-selector` | `pack: "core"` | listed in `frontend.yml` | `pack: "frontend"` |
+
+Pattern: most drifts assumed `core` as a catch-all when the actual single-pack membership lived elsewhere. One (`email-deliverability`) claimed a non-existent `misc` pack entirely.
+
+### NEW `bin/check-pack-frontmatter.sh` (8th caller of `bin/lib/emit-json.sh`)
+
+Mechanizes the audit. Pattern follows `check-agent-routing.sh` from pass-65:
+
+- Python-extracts each `rules/*.md` frontmatter `pack:` claim
+- Python-extracts each `_packs/*.yml` member list
+- Diffs per rule: `claimed_pack` vs `actual_packs[]`. Two drift kinds:
+  - **pack_file_missing** — frontmatter claims a pack that doesn't have a `.yml` file
+  - **rule_not_in_claimed_pack** — frontmatter claims pack X but `_packs/X.yml` doesn't list the rule
+- Exit 0 if all rules consistent, 1 on any drift
+- Human + `--json` modes per uniform-json-output doctrine
+
+### Pass-66 baseline (post-fix)
+
+```text
+▸ Checking rule frontmatter pack: claims vs _packs/*.yml membership...
+  Rules with pack: frontmatter: 83 · Total pack files: 15
+━━━ SUMMARY: 83 total rules · 0 drift
+✓ all rule frontmatter pack: claims match _packs/*.yml membership
+```
+
+### Wired into lint-all + npm aliases
+
+- `bin/lint-all.sh` — added pack-frontmatter soft-info section as the 3rd info section (after pricing + agent-routing). Same "info-only, doesn't gate" pattern.
+- shellcheck + shfmt step coverage extended to include `bin/check-pack-frontmatter.sh`
+- `package.json` — `npm run check:pack-frontmatter` + `:json`
+
+### Closure-loop arc pass-58→66 summary
+
+- **9 latent bugs caught** across 8 files (added: 8 pack-frontmatter drifts)
+- **3 disciplines codified** in `lint-doctrine.md`
+- **3 audit scripts mechanized** (check-pricing, check-agent-routing, check-pack-frontmatter — all in lint-all soft-info)
+- **1 cron automated** (pricing-check weekly)
+- **`bin/lib/emit-json.sh` lib has 8 callers** — 2.7× the extraction threshold from pass-38
+
+### Why `pack:` frontmatter matters
+
+The skill router loads packs based on prompt classification. When a rule's frontmatter says `pack: "core"` but it's actually in `ai.yml`, the router still works (the pack file is the source-of-truth for what loads) but the frontmatter MISLEADS humans reading the file. "What pack am I in?" was answered wrong on 8 rules. Now all 83 are self-documenting accurately.
+
+### Verification
+
+```bash
+npm run lint                                           # ✓ 9/9 green + 3 info sections all clean
+npm run check:pack-frontmatter                          # ✓ 83 rules · 0 drift
+npm run check:pack-frontmatter:json | python3 -m json.tool   # valid envelope
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Did NOT add to `validate-packs.mjs` as a hard gate. Why: validate-packs.mjs is `bin/lint-all.sh`'s gate #2 (must-pass). Adding frontmatter-pack-claim as a hard requirement would make any rule frontmatter typo block all commits. Soft-info is the right tier.
+
+### Next candidates (pass-67)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Promote `check-pack-frontmatter` from info to hard gate after a quarter of stability (no false positives observed)
+
+---
+
 ## 2026-06-09 — pass-65 — `bin/check-agent-routing.sh` mechanization (7th lib caller)
 
 ### Closes pass-64 candidate 1 (`bin/check-agent-routing.sh` mechanization)

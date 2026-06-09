@@ -1,7 +1,7 @@
 ---
 name: "email-deliverability"
 priority: 3
-pack: "misc"
+pack: "infra"
 triggers: []
 paths:
   - "*"

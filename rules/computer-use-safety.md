@@ -1,7 +1,7 @@
 ---
 name: "computer-use-safety"
 priority: 2
-pack: "core"
+pack: "infra"
 triggers:
   - "computer use"
   - "desktop control"

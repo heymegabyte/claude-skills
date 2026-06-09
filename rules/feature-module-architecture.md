@@ -1,7 +1,7 @@
 ---
 name: "feature-module-architecture"
 priority: 2
-pack: "core"
+pack: "backend"
 triggers:
   - "feature module"
 paths:

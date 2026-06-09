@@ -1,7 +1,7 @@
 ---
 name: "ai-seniority"
 priority: 2
-pack: "core"
+pack: "ai"
 triggers: []
 paths:
   - "*"
