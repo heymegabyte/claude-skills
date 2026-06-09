@@ -1,5 +1,32 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-6 — lint-stack verified + 3 config shells + pack validator
+
+### npm publish status verified (npm view)
+- ✅ On npm: `git-cz-emoji@1.1.24`, `conventional-changelog-emoji-config@1.4.8`, `prettier-config-sexy-mode@1.1.4`, `prettier-plugin-package-perfection@1.1.0`, `stylelint-config-so-pretty@0.0.1`, `@megabytelabs/eslint-config@1.0.91`
+- ❌ GitLab-only: `@megabytelabs/semantic-release-config`, `@HeyMegabyte/semantic-release-gh` — installer now uses `git+https://` URLs
+- 🔧 Corrected `@megabyte/eslint-config` → `@megabytelabs/eslint-config` (was wrong name)
+
+### `bin/install-lint-stack.sh` updated
+- Split `DEPS[]` (npm registry) + `GIT_DEPS[]` (git URLs) arrays
+- Two-stage install: `npm i -D --save-exact ${DEPS}` then `npm i -D ${GIT_DEPS}` (no exact for git URLs)
+- 3 new copied configs: `.prettierrc.cjs`, `.stylelintrc.cjs`, `eslint.config.mjs`
+
+### New template config shells (extends-only — defer to upstream)
+- `templates/lint-stack/.prettierrc.cjs` — extends `prettier-config-sexy-mode` + adds `prettier-plugin-package-perfection`
+- `templates/lint-stack/.stylelintrc.cjs` — extends `stylelint-config-so-pretty`
+- `templates/lint-stack/eslint.config.mjs` — flat config spreading `@megabytelabs/eslint-config`
+
+### `scripts/validate-packs.mjs` — pack integrity gate
+- Asserts every `_packs/*.yml` rule ref resolves, every rule in ≥1 pack, every `NN-*` skill dir exists.
+- Result on current state: **clean — 15 packs · 88 rules · 14 skill dirs**.
+- Wire into CI to prevent future orphans (next pass).
+
+### Verified
+- `shellcheck -x -S warning bin/install-lint-stack.sh` → 0 warnings.
+- `shfmt -i 2 -ci -bn -d bin/install-lint-stack.sh` → 0 diff.
+- `node scripts/validate-packs.mjs` → exit 0.
+
 ## 2026-06-08 — pass-5 — lint-stack integration (GitLab @megabytelabs configs)
 
 ### New doctrine + tooling

@@ -93,6 +93,9 @@ if [ "$HAS_NODE" = "1" ]; then
   copyIfMissingOrUpdate "$STACK_SRC/.czrc" ".czrc"
   copyIfMissingOrUpdate "$STACK_SRC/commitlint.config.cjs" "commitlint.config.cjs"
   copyIfMissingOrUpdate "$STACK_SRC/release.config.cjs" "release.config.cjs"
+  copyIfMissingOrUpdate "$STACK_SRC/.prettierrc.cjs" ".prettierrc.cjs"
+  copyIfMissingOrUpdate "$STACK_SRC/.stylelintrc.cjs" ".stylelintrc.cjs"
+  copyIfMissingOrUpdate "$STACK_SRC/eslint.config.mjs" "eslint.config.mjs"
 fi
 
 # --- 4. npm dev deps -------------------------------------------------------
@@ -100,6 +103,7 @@ if [ "$HAS_NODE" = "1" ]; then
   emdashSection "Installing Node dev deps"
   PM=npm
   command -v bun >/dev/null 2>&1 && PM=bun
+  # Published to npm registry
   declare -a DEPS=(
     lefthook
     oxlint
@@ -113,14 +117,24 @@ if [ "$HAS_NODE" = "1" ]; then
     "prettier-config-sexy-mode"
     "prettier-plugin-package-perfection"
     "stylelint-config-so-pretty"
-    "@megabytelabs/semantic-release-config"
-    "@HeyMegabyte/semantic-release-gh"
+    "@megabytelabs/eslint-config"
+  )
+  # GitLab-only packages — install via git+https
+  declare -a GIT_DEPS=(
+    "git+https://gitlab.com/HeyMegabyte/npm/configs/release.git"
+    "git+https://gitlab.com/HeyMegabyte/npm/plugin/semantic-release-gh.git"
   )
   case "$PM" in
-    bun) bun add -d "${DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "bun add deferred (verify network)" ;;
-    npm) npm i -D --save-exact "${DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "npm install deferred (verify network)" ;;
+    bun)
+      bun add -d "${DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "bun add (npm deps) deferred (verify network)"
+      bun add -d "${GIT_DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "bun add (git deps) deferred"
+      ;;
+    npm)
+      npm i -D --save-exact "${DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "npm install (npm deps) deferred (verify network)"
+      npm i -D "${GIT_DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "npm install (git deps) deferred"
+      ;;
   esac
-  emdashLog "✓" "$PM dev deps queued"
+  emdashLog "✓" "$PM dev deps queued ($((${#DEPS[@]} + ${#GIT_DEPS[@]})) packages: ${#DEPS[@]} npm + ${#GIT_DEPS[@]} git)"
 fi
 
 # --- 5. Wire scripts -------------------------------------------------------

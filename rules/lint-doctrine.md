@@ -25,7 +25,7 @@ Every config lives once in `~/.agentskills/templates/lint-stack/`. Projects pull
 
 ### TS / JS / JSON / MD / CSS / YAML
 - **oxlint** — first-pass speed (50-100× ESLint, no formatting)
-- **ESLint 9 flat config** — `@megabyte/eslint-config` from GitLab (TS, JS, JSON, YAML, TOML linting; EditorConfig-aware)
+- **ESLint 9 flat config** — `@megabytelabs/eslint-config` (npm; TS, JS, JSON, YAML, TOML linting; EditorConfig-aware)
 - **Prettier** — `prettier-config-sexy-mode` + `prettier-plugin-package-perfection` (auto-sorts package.json keys + scripts + deps)
 - **Stylelint** — `stylelint-config-so-pretty` (strict CSS/SCSS)
 - **markdownlint-cli2** — relaxed Brian-voice config (MD013/MD025/MD033/MD036/MD040/MD041/MD045/MD060 off; MD024 siblings_only)
@@ -57,8 +57,12 @@ Every config lives once in `~/.agentskills/templates/lint-stack/`. Projects pull
 - **commitlint** — enforces gitmoji-conventional shape; **rejects emoji-less commits at lefthook commit-msg stage**
 
 ### Release automation
-- **semantic-release** + GitLab `@megabytelabs/semantic-release-config` + `@HeyMegabyte/semantic-release-gh` (takes `repositoryUrl` parameter beyond stock `@semantic-release/github`)
+- **semantic-release** + `@megabytelabs/semantic-release-config` (GitLab-only — install via `git+https://gitlab.com/HeyMegabyte/npm/configs/release.git`) + `@HeyMegabyte/semantic-release-gh` (GitLab-only — install via `git+https://gitlab.com/HeyMegabyte/npm/plugin/semantic-release-gh.git`; takes `repositoryUrl` parameter beyond stock `@semantic-release/github`)
 - Releases auto-publish from green `main` per `main-only-branch` + `ai-seniority` auto-merge contract
+
+### npm-publish status (verified 2026-06-08)
+- **On npm**: `git-cz-emoji@1.1.24`, `conventional-changelog-emoji-config@1.4.8`, `prettier-config-sexy-mode@1.1.4`, `prettier-plugin-package-perfection@1.1.0`, `stylelint-config-so-pretty@0.0.1`, `@megabytelabs/eslint-config@1.0.91`
+- **GitLab-only** (installer uses `git+https://` URLs): `@megabytelabs/semantic-release-config`, `@HeyMegabyte/semantic-release-gh`
 
 ### Mandate
 - **Every commit ships with a gitmoji prefix.** Plain text commits are blocked at commit-msg stage.
@@ -94,6 +98,16 @@ This satisfies `prompt-as-training-signal` §6 ("Ensure ___ is in ~/.claude") �
 ## Codified incidents (append as patterns surface)
 
 - *(seed)* — `pretooluse-router.py` E501 at line 36 (multi-arg subprocess.run) → consider per-line `# noqa: E501` annotation or 120-col project budget (cosmetic; not yet codified).
+
+## Pack integrity validator
+
+`scripts/validate-packs.mjs` — gates `_packs/*.yml` against `rules/*.md` + `NN-*` skill dirs. Run before commit:
+
+```bash
+node ~/.agentskills/scripts/validate-packs.mjs
+```
+
+Asserts: every pack-referenced rule exists, every rule is in ≥1 pack, every NN-skill dir exists. Exit 1 on drift. Wire into CI to prevent future orphans.
 
 ## See
 
