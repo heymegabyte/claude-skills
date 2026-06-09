@@ -1,5 +1,30 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-30 — supply-chain-pr-comment.yml: replace curl|sh w/ SHA-pinned actions
+
+### Closes pass-29 Rec 1 — dogfood violation fix
+
+Pass-29 shipped `.github/workflows/supply-chain-pr-comment.yml` with:
+```yaml
+curl -sSfL https://raw.githubusercontent.com/.../install.sh | sh -s -- ...
+```
+which is EXACTLY the anti-pattern `rules/ai-agent-security.md` § Supply chain warns against ("mutable + unverified"). Caught in the same session by my own pass-29 Rec — fixed in pass-30 per `drift-detection.md` § Immediacy rule.
+
+### Replacement
+- **`gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0`** — official action repo, SHA-pinned.
+- **`trufflesecurity/trufflehog@d411fff7b8879a62509f3fa98c07f247ac089a51 # v3.95.5`** — repo itself ships `action.yml` at root; SHA-pinned.
+- Both wrapped with `continue-on-error: true` since `security-supply-chain.sh` re-runs them and tracks status — single source of truth for the per-check result.
+- Comment inline cites `ai-agent-security.md` so future agents know why.
+
+### Verified
+- `actionlint .github/workflows/*.yml` → 0 issues across all 4 workflows.
+- `sha-pin-actions.mjs --check` across all workflows → 0 unpinned refs.
+- `grep -rn 'curl.*|.*sh' .github/workflows/` → only matches the warning comment, no actual exec.
+- pack integrity → clean (15/89/14, 0 warnings, 4 ignored).
+
+### Meta lesson
+This pass is the literal demonstration of `drift-detection.md` § Immediacy rule: I identified a violation in pass-29 Recs, then fixed it in pass-30 same-day. The `Recs:` block is not a TODO list — it's a "did I miss something" gate, and missing items get fixed inline next pass.
+
 ## 2026-06-09 — pass-29 — AI-draft YAML frontmatter + PR-comment workflow
 
 ### Closes pass-28 Rec 2 + Next 3

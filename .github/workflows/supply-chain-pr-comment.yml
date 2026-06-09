@@ -18,10 +18,19 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install secret scanners
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh | sh -s -- -b /usr/local/bin
-          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+      # Per rules/ai-agent-security.md § Supply chain — pin upstream tools to commit SHAs,
+      # never curl | sh from upstream defaults (mutable + unverified).
+      - name: gitleaks scan (action-only, SHA-pinned)
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        continue-on-error: true  # security-supply-chain.sh handles per-check status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: trufflehog scan (action-only, SHA-pinned)
+        uses: trufflesecurity/trufflehog@d411fff7b8879a62509f3fa98c07f247ac089a51 # v3.95.5
+        continue-on-error: true
+        with:
+          extra_args: --only-verified
 
       - name: Run security-supply-chain audit (JSON)
         id: audit
