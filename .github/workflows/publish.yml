@@ -43,6 +43,14 @@ jobs:
         run: |
           npx --yes prettier@3 --check "**/*.{json,jsonc,yml,yaml}"
 
+      - name: Self-lint Shell (shellcheck + shfmt diff, pass-47)
+        run: |
+          # Note: ShellCheck is preinstalled on ubuntu-latest. Installing shfmt via go (Go is preinstalled).
+          go install mvdan.cc/sh/v3/cmd/shfmt@v3.10.0
+          export PATH="$HOME/go/bin:$PATH"
+          shellcheck -x -S warning bin/*.sh bin/lib/*.sh scripts/*.sh
+          shfmt -i 2 -ci -bn -d bin/*.sh bin/lib/*.sh scripts/*.sh
+
       - name: Check doc counts
         run: |
           EXPECTED=$(grep -o '[0-9]* reference docs' README.md | grep -o '[0-9]*')

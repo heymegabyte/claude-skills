@@ -1,5 +1,53 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-47 — shellcheck + shfmt CI gate (completes user's tool list)
+
+### Closes pass-46 candidate 1 (`shfmt -d` CI step)
+
+- **`.github/workflows/publish.yml` § Self-lint Shell** — NEW validate-job CI step right after Self-lint JSON/YAML. Runs:
+  - `shellcheck -x -S warning bin/*.sh bin/lib/*.sh scripts/*.sh` (8 files, ShellCheck preinstalled on ubuntu-latest)
+  - `shfmt -i 2 -ci -bn -d bin/*.sh bin/lib/*.sh scripts/*.sh` (diff mode — non-zero exit on formatting drift)
+  - shfmt installed via `go install mvdan.cc/sh/v3/cmd/shfmt@v3.10.0` (Go preinstalled on ubuntu-latest, version-pinned for reproducibility)
+- **Brian-voice shfmt shape codified in CI** — `-i 2 -ci -bn` matches the local lefthook config + `rules/lint-doctrine.md § Shell + ops` ("shfmt `-i 2 -ci -bn` — formatter (Brian's signature shape)"). Single source of truth: same flags, lefthook (pre-commit) + CI (validate gate).
+- **Bug caught in-pass**: first draft used `# shellcheck preinstalled on ubuntu-latest...` as a comment. actionlint's shellcheck integration parsed `# shellcheck preinstalled` as a malformed directive (SC1072 — expected `=` after directive key). Reworded to `# Note: ShellCheck is preinstalled...`. **Codifiable pattern**: comments inside YAML `run:` blocks starting with `# shellcheck` are reserved for directives; avoid that prefix in prose comments.
+
+### Tool-list coverage achieved (user's required list)
+
+| Tool | CI step | Where wired |
+|---|---|---|
+| ESLint | not in CI yet (no source TS/JS yet) | local lefthook only |
+| Prettier | Self-lint JSON/YAML (pass-46) | publish.yml validate + sync auto-normalize |
+| Oxlint | not in CI yet (no source TS/JS yet) | local lefthook only |
+| Knip | not in CI yet (no source TS/JS yet) | local lefthook only |
+| markdownlint | Self-lint Markdown (pass-43→45) | publish.yml validate + sync auto-normalize |
+| shellcheck | **Self-lint Shell (this pass)** | publish.yml validate |
+| shfmt | **Self-lint Shell (this pass)** | publish.yml validate |
+| actionlint | implicit via workflow lint locally | publish.yml not gated yet — see pass-48 |
+| yamllint | Self-lint YAML (pass-41) | publish.yml validate |
+
+### What was NOT done
+
+- actionlint as a CI step — currently relies on developer running it locally. Pass-48 candidate.
+- ESLint/Oxlint/Knip — no TS/JS source in agentskills repo yet (only `.mjs` scripts which use Node built-ins); deferred until source surface justifies it.
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated.
+
+### Verification
+
+```bash
+actionlint .github/workflows/publish.yml                                   # 0 errors
+shellcheck -x -S warning bin/*.sh bin/lib/*.sh scripts/*.sh                 # 0 errors (locally)
+shfmt -i 2 -ci -bn -d bin/*.sh bin/lib/*.sh scripts/*.sh                    # no diff (locally)
+```
+
+### Next candidates (pass-48)
+
+- actionlint CI step (gates workflow drift before merge)
+- JSON Schema validation for `_packs/*.yml`
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-46 — Prettier JSON/YAML CI gate + sync-job JSON/YAML auto-normalize
 
 ### Closes pass-45 candidates 1 (Prettier CI gate) + 2 (sync-job JSON normalize)
