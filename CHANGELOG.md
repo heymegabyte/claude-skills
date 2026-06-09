@@ -1,5 +1,26 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-16 — DRY shared UA constant + chromiumdash CI freshness probe
+
+### Closes pass-15 Recs
+
+- **Shared UA constant**: `15-site-generation/_real-ua.mjs` exports `REAL_UA_DESKTOP`, `REAL_UA_IOS`, `REAL_HEADERS` (companion headers per `fetch-defaults.md`). Single source of truth — future bumps are one-line.
+- **3 callers refactored** to import the shared constant:
+  - `validate-page-set-completeness.mjs` — replaces inline UA + drops duplicate declaration
+  - `blog-import.mjs` — keeps `process.env.REAL_UA ||` override semantics, imports default
+  - `squarespace-full-crawl.mjs` — inline header object → `headers: REAL_HEADERS`
+- **CI freshness probe**: `.github/workflows/chromium-freshness.yml` runs every Monday 09:17 UTC:
+  - Fetches Chrome stable via `chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Mac`
+  - Compares to pinned major version grep'd from `_real-ua.mjs`
+  - If drift ≥5 versions, opens a deduped GitHub issue labeled `chromium-drift` + `fetch-defaults` with explicit fix instructions
+- Manual trigger via `workflow_dispatch` too.
+
+### Verified
+- `node --check` on all 4 `.mjs` files → 0 errors.
+- `import('./_real-ua.mjs')` resolves; `REAL_UA_DESKTOP.includes('Chrome/149')` → true.
+- actionlint → 1 SC2129 info-level (idiomatic multi-redirect to `$GITHUB_OUTPUT`, non-blocking).
+- pack integrity → clean (15/88/14).
+
 ## 2026-06-08 — pass-15 — fetch-defaults UA bump Chrome 131 → 149 (live-probe)
 
 ### Version-freshness sweep
