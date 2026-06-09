@@ -105,7 +105,7 @@ runGate "prettier" "prettier --check JSON/YAML" \
 logHeader "7. shellcheck"
 if command -v shellcheck >/dev/null; then
   runGate "shellcheck" "shellcheck bin/ scripts/" \
-    shellcheck -x -S warning bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
+    shellcheck -x -S warning bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/check-deprecated-models.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
 else
   skipGate "shellcheck" "not installed (brew install shellcheck)"
 fi
@@ -113,7 +113,7 @@ fi
 logHeader "8. shfmt"
 if command -v shfmt >/dev/null; then
   runGate "shfmt" "shfmt -d -i 2 -ci -bn" \
-    shfmt -i 2 -ci -bn -d bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
+    shfmt -i 2 -ci -bn -d bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/check-deprecated-models.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
 else
   skipGate "shfmt" "not installed (brew install shfmt OR go install mvdan.cc/sh/v3/cmd/shfmt@latest)"
 fi
@@ -152,6 +152,7 @@ runInfoSection "pricing" "bin/check-pricing.sh"
 runInfoSection "agent-routing" "bin/check-agent-routing.sh"
 runInfoSection "pack-frontmatter" "bin/check-pack-frontmatter.sh"
 runInfoSection "agent-fallback" "bin/check-agent-fallback.sh"
+runInfoSection "deprecated-models" "bin/check-deprecated-models.sh"
 
 if [ "$JSON" = "0" ]; then
   INFO_BUF=$(mktemp)
@@ -172,9 +173,11 @@ if [ "$JSON" = "0" ]; then
     "bin/check-pack-frontmatter.sh" 5
   emitInfoSection "ℹ Opus agent fallback compliance (info-only, doesn't gate)" \
     "bin/check-agent-fallback.sh" 4
+  emitInfoSection "ℹ deprecated model identifiers (info-only, migration tracker)" \
+    "bin/check-deprecated-models.sh" 4
 
   if [ "$QUIET" = "1" ] && [ "$INFO_DRIFT" = "0" ]; then
-    printf '\n━━━ ℹ 4 audit sections clean (pricing · agent-routing · pack-frontmatter · agent-fallback) — use `npm run lint` for full output\n' >&2
+    printf '\n━━━ ℹ 5 audit sections clean (pricing · agent-routing · pack-frontmatter · agent-fallback · deprecated-models) — use `npm run lint` for full output\n' >&2
   else
     cat "$INFO_BUF" >&2
   fi

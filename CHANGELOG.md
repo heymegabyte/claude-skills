@@ -1,5 +1,99 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-72 — `bin/check-deprecated-models.sh` (10th lib caller) — surfaces 270 hits
+
+### Closes pass-71 candidate 1 (mechanize deprecated-models audit FIRST)
+
+Per pass-71's queue ordering: build the detector first, then drive systematic migration from its output. The detector is the regression budget — once at 0, any new commit adding a deprecated identifier trips the audit.
+
+### NEW `bin/check-deprecated-models.sh` (10th caller of `bin/lib/emit-json.sh`)
+
+- Inline denylist of retired AI model identifiers with deprecation dates + canonical replacements
+- Greps the docs surface (rules + skill-dirs + agents + cross-cutting docs); CHANGELOG excluded (it documents fixes)
+- Filters intentional historical references: lines containing `retired|deprecated|removed|sunset|legacy|formerly|previous` AND pure catalog-style lines (`- \`identifier\``)
+- Human mode: per-pattern hit count + sample location list. JSON mode: per-hit envelope with pattern + location + deprecation_date + replacement
+- Exit 0 if zero hits; exit 1 if any deprecated identifier found
+
+### Current denylist (8 entries)
+
+| Pattern | Retired | Replacement |
+|---|---|---|
+| `GPT-4o` | 2026-02-13 | current OpenAI multimodal flagship (Responses API) |
+| `DALL-E` / `DALL·E` | 2026-05-12 | GPT Image 1.5 |
+| `dall-e-2` | 2026-05-12 | gpt-image-2 |
+| `dall-e-3` | 2026-05-12 | gpt-image-1.5 |
+| `claude-3-opus` | 2025-01-15 | claude-opus-4-8 |
+| `claude-3-haiku` | 2025-01-15 | claude-haiku-4-5 |
+| `claude-haiku-3-5` | 2025-09-30 | claude-haiku-4-5 |
+
+### Baseline (post-pass-71's 2 surgical fixes)
+
+```text
+▸ Scanning docs surface for retired AI model identifiers...
+  ✗ GPT-4o    (retired 2026-02-13) — 175 hits → ...
+  ✗ DALL-E    (retired 2026-05-12) — 90 hits → ...
+  ✗ DALL·E    (retired 2026-05-12) — 5 hits → ...
+  ✓ dall-e-2  · ✓ dall-e-3 · ✓ claude-3-opus · ✓ claude-3-haiku · ✓ claude-haiku-3-5
+
+━━━ SUMMARY: 270 total hits across 8 denylist entries
+```
+
+Pass-71's initial estimate of 16-24 references was off by an order of magnitude. The corpus-wide grep this pass surfaced **270 hits** — concentrated in:
+
+- `15-site-generation/media-acquisition.md` (44 hits)
+- `07-quality-and-verification/visual-inspection-loop.md` (37 hits)
+- `12-media-orchestration/build-breaking-rules.md` (30 hits)
+- 12 other files with 1-16 hits each
+
+### Two bugs caught in-pass (detector self-test)
+
+1. **False-positive on `Retired models` section** — `rules/model-routing.md:52-55` lists retired Claude models as catalog entries (`- \`claude-3-opus\``). Initial filter (`retired|deprecat|...` in same line) missed these because "retired" is in the section header, not the bullet line. Fix: added a second filter `:[0-9]+:- \`[^ \`]+\`$` excluding pure catalog-style lines.
+2. **Filter pattern includes "removed"** — risked matching legitimate doc text about removed code/features. Scoped to `removed.*api` only.
+
+### Wired into lint-all + npm aliases
+
+- `bin/lint-all.sh` — added deprecated-models soft-info section as the 5th info section (after pricing + agent-routing + pack-frontmatter + agent-fallback)
+- Quiet-mode summary line updated: "5 audit sections clean" (was "4")
+- shellcheck + shfmt step coverage extended
+- `package.json` — `npm run check:deprecated-models` + `:json`
+
+### Behavior on current state
+
+The main `lint-all` 9 gates pass (commit proceeds). The deprecated-models info section reports **270 hits** but doesn't block — by design, since hard-gating at 270 would block every commit until pass-N migrates them all. Future passes drive the count down; the detector flags any regression that adds new occurrences.
+
+### Why "audit-first, migrate-iteratively"
+
+Same pattern as pass-44 markdown sweep: build the gate (detector), THEN drive the count to zero over multiple passes. Migrating 270 references in one pass is risky (high diff size, hard to audit visually). Migrating ~30 per pass over 9 passes is auditable. Pass-72 ships the detector; pass-73+ drives the count down per file.
+
+### Closure-loop arc pass-58→72 summary
+
+- **11 latent bugs caught** (added: 268 net deprecated-model references corpus-wide — 2 fixed in pass-71, 268 surfaced this pass)
+- **4 disciplines codified** + composed-envelope codified
+- **5 audit scripts mechanized** (pricing · agent-routing · pack-frontmatter · agent-fallback · deprecated-models)
+- `bin/lib/emit-json.sh` lib: **10 callers** = 3.3× extraction threshold
+
+### Verification
+
+```bash
+npm run lint                                                       # ✓ 9/9 green; info section shows 270 hits
+npm run check:deprecated-models                                     # 270 total · exit 1 (expected)
+npm run check:deprecated-models:json | python3 -m json.tool         # valid envelope
+shellcheck -x -S warning bin/check-deprecated-models.sh             # clean
+```
+
+### What was NOT done
+
+- 270 deprecated-identifier migrations — deferred to pass-73→ iteratively
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-73)
+
+- Drive deprecated-models count down: start with the densest file `15-site-generation/media-acquisition.md` (44 hits)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-71 — OpenAI deprecation audit: GPT-4o + DALL-E retired, doctrine fixes
 
 ### Closes pass-70 candidate 1 (brand/design skill-dir audit), surfaces wider-scope migration
