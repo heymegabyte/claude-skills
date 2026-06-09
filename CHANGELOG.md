@@ -1,5 +1,56 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-57 — Fix mcp.resend.com broken link (web-verified) + localhost filter
+
+### Closes pass-56 candidate 1 (`mcp.resend.com` fix needing web verification)
+
+### Web-verified fix to `05-architecture-and-stack/mcp-and-cloud-integrations.md:53`
+
+Source verification via `github.com/resend/resend-mcp` + `resend.com/changelog/mcp` + `code.claude.com/docs/en/mcp`:
+
+- The Resend MCP server is **self-hosted**, not remote. There is no `mcp.resend.com` public endpoint.
+- Canonical setup: `claude mcp add resend --transport http http://127.0.0.1:3000/mcp --header "Authorization: Bearer re_xxxxxxxxx"`
+- The server runs locally at port 3000 by default. Each client authenticates with its own Resend API key as a Bearer token — no API key needed at startup.
+- Tool surface is wider than the original doc claimed: **10 tool groups** (emails, contacts, broadcasts, domains, webhooks, segments, topics, contact properties, API keys, received emails) — covers the full Resend API.
+
+### Doc body now reads
+
+> **Resend MCP (Apr 7, 2026)** — official MCP server published at `github.com/resend/resend-mcp`. Self-hosted: run locally (`http://127.0.0.1:3000/mcp` is the streamable-HTTP endpoint), authenticate per-client with your Resend API key as a Bearer header. Wire into Claude Code with `claude mcp add resend --transport http http://127.0.0.1:3000/mcp --header "Authorization: Bearer re_xxxxxxxxx"`. Tool coverage spans 10 groups: emails, contacts, broadcasts, domains, webhooks, segments, topics, contact properties, API keys, received emails — full Resend API surface.
+
+### Localhost filter added to `bin/check-doc-urls.sh`
+
+The fixed doc now includes `http://127.0.0.1:3000/mcp` in the example command. The URL extractor caught the bare host portion as a "URL" and tried to HEAD it (failing with `000` because nothing is running on localhost during the audit). Added a localhost/RFC1918-private-IP filter:
+
+```bash
+| grep -vE '://(localhost|127\.0\.0\.1|0\.0\.0\.0|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)'
+```
+
+Catches: `localhost`, `127.0.0.1`, `0.0.0.0`, `10.0.0.0/8`, `192.168.0.0/16`, `172.16.0.0/12`. Same class as the RFC 2606 example.com filter — known-non-public hosts that won't resolve in a clean ubuntu runner.
+
+### Closure-loop confirmation
+
+The cron workflow built in pass-55 + widened scope in pass-56 surfaced the real broken link → web-verified fix in pass-57. End-to-end: external-content-drift detection automation worked as designed.
+
+### Verification
+
+```bash
+bash bin/check-doc-urls.sh                                  # ✓ 86 pass · 0 fail · 94 skip
+npm run lint                                                # ✓ 9/9 green
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Did NOT also bump the broader Resend MCP referenced in pack/agent docs — `grep mcp.resend.com` showed only the one mcp-and-cloud-integrations.md line
+
+### Next candidates (pass-58)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Consider adding a `.markdownlintignore` style file for `bin/check-doc-urls.sh` filter rules — currently the placeholder hostlist lives in the script; if it grows, externalize to a config
+
+---
+
 ## 2026-06-09 — pass-56 — Widen URL scope + auto-close workflow + 1st real broken-link find
 
 ### Closes pass-55 candidates 1 (auto-close on clean) + 2 (widen URL extraction)

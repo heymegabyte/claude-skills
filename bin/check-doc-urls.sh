@@ -53,6 +53,7 @@ mapfile -t URLS < <(
     | sed 's/[.,;)]*$//' \
     | awk -F/ '$3 ~ /\./ { print }' \
     | grep -vE '://([^/]*\.)?(example\.(com|org|net)|domain\.com|related-site\.(com|example))(/|$)' \
+    | grep -vE '://(localhost|127\.0\.0\.1|0\.0\.0\.0|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)' \
     | grep -vE '(YYYY|2YYY|<[a-z-]+>|\{[a-z-]+\})' \
     | sort -u
 )

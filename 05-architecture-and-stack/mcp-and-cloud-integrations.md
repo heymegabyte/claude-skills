@@ -50,7 +50,7 @@ claude mcp add google-workspace -- npx -y @taylorwilsdon/google_workspace_mcp
 - **Built-In (Claude AI OAuth)** — Cloudflare, Stripe, Gmail, Google Calendar, Google Drive, Slack, Canva, IFTTT
 - **Self-Hosted** — Coolify, Firecrawl, Postiz, WordPress, Home Assistant, DeepSeek, n8n, Notion, Supermemory, Plane, Omi
 - **Developer Tools** — Playwright, GitHub, Sequential Thinking, Computer Use, PostHog, Sentry
-- **Resend MCP (Apr 7, 2026)** — official MCP server with HTTP transport. `claude mcp add resend --transport http --url https://mcp.resend.com`. Tools: `send_email`, `list_emails`, `create_contact`, `list_contacts`, `list_domains`. Use for transactional email automation, contact management, domain verification — all from Claude Code.
+- **Resend MCP (Apr 7, 2026)** — official MCP server published at `github.com/resend/resend-mcp`. Self-hosted: run locally (`http://127.0.0.1:3000/mcp` is the streamable-HTTP endpoint), authenticate per-client with your Resend API key as a Bearer header. Wire into Claude Code with `claude mcp add resend --transport http http://127.0.0.1:3000/mcp --header "Authorization: Bearer re_xxxxxxxxx"`. Tool coverage spans 10 groups: emails, contacts, broadcasts, domains, webhooks, segments, topics, contact properties, API keys, received emails — full Resend API surface. Use for transactional email automation, contact management, domain verification — all from Claude Code.
 
 ### Agent Interop Protocols
 
