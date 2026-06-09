@@ -115,6 +115,7 @@ if [ "$HAS_NODE" = "1" ]; then
     eslint "@eslint/js" typescript-eslint
     eslint-plugin-perfectionist eslint-plugin-security
     eslint-plugin-unicorn eslint-plugin-promise eslint-plugin-n
+    eslint-plugin-sonarjs eslint-plugin-import
     eslint-config-prettier
     # Prettier 3 + curated plugins
     prettier prettier-plugin-packagejson prettier-plugin-organize-imports

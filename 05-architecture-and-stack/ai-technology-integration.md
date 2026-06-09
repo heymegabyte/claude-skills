@@ -35,6 +35,16 @@ Pipeline:
 - Max 3 iterations
 - ***$1 HARD CAP on GPT-4o per prompt***
 
+## Global AI Provider Policy
+
+Use this priority for advanced reasoning and AI-native product work:
+
+1. Anthropic first when available for complex architecture, coding, design, and high-stakes reasoning.
+2. ChatGPT for advanced AI research, decision making, architecture, and web-research-heavy analysis when Anthropic is unavailable or ChatGPT is better suited.
+3. Cloudflare Workers AI / Cloudflare Ollama Workers API for routine summarization, extraction, classification, embeddings, low-stakes transformations, and cost-efficient default work.
+
+Prefer the free Cloudflare option whenever it makes no material difference to result quality. Use the higher-reasoning providers only when the task materially benefits from them, such as complex architecture, website design direction, advanced research, or difficult implementation decisions. Route provider selection through an adapter, log provider and model metadata, and avoid storing raw prompts or raw model outputs unless a project explicitly requires it.
+
 ## Model Selection
 
 | Task | Model | Cost | Latency |

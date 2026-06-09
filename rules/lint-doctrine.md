@@ -33,7 +33,7 @@ The `@megabytelabs` / `@HeyMegabyte` GitLab packages (conventional-changelog-emo
 
 ### TS / JS / JSON / MD / CSS / YAML
 - **oxlint** — first-pass speed (50-100× ESLint, no formatting)
-- **ESLint 9 flat config** — `eslint@9` + `@eslint/js` + `typescript-eslint@8` + `eslint-plugin-perfectionist` + `eslint-plugin-security` + `eslint-plugin-unicorn` + `eslint-plugin-promise` + `eslint-plugin-n`. Canonical mainstream chain — replaces the GitLab `@megabytelabs/eslint-config` inspiration.
+- **ESLint 9 flat config** — `eslint@9` + `@eslint/js` + `typescript-eslint@8` + `eslint-plugin-perfectionist` + `eslint-plugin-security` + `eslint-plugin-unicorn` + `eslint-plugin-promise` + `eslint-plugin-n` + `eslint-plugin-sonarjs` (cognitive complexity, real bug catching) + `eslint-plugin-import` (import/export hygiene) + `eslint-config-prettier` (last; silences ESLint rules that conflict w/ Prettier). Canonical mainstream chain — inspired by GitLab `@megabytelabs/eslint-config` (40+ plugins covering Angular/Jest/RxJS/SonarJS).
 - **Prettier 3** — `prettier@3` + `prettier-plugin-packagejson` (1.4M+ weekly DLs, sorts package.json keys) + `prettier-plugin-organize-imports` (1.2M+ weekly, dedupes ES imports). Replaces GitLab `prettier-config-sexy-mode` + `prettier-plugin-package-perfection`.
 - **Stylelint 16** — `stylelint-config-standard` + `stylelint-config-recommended` + `stylelint-config-clean-order` (property ordering). Replaces GitLab `stylelint-config-so-pretty`.
 - **markdownlint-cli2** — relaxed Brian-voice config (MD013/MD025/MD033/MD036/MD040/MD041/MD045/MD060 off; MD024 siblings_only)
@@ -102,6 +102,18 @@ After every lint pass on any emdash project, if a recurring violation pattern su
 4. **Verify**: agent self-tests via `semgrep --test` or eslint rule's `RuleTester`.
 
 This satisfies `prompt-as-training-signal` §6 ("Ensure ___ is in ~/.claude") — every novel bug class is captured deterministically.
+
+### The auto-improve mechanism (concrete)
+
+`bin/lint-auto-improve.sh` operationalizes this loop:
+
+1. **Capture** — every pre-push lefthook stage now `tee`s lint output to `.lint-history/<tool>-<timestamp>.log`. 30-day retention.
+2. **Cluster** — script greps + counts rule-id occurrences across all logs. Patterns with ≥3 hits in window become candidates.
+3. **Propose** — writes `.lint-history/proposals/proposal-<ts>.md` with the top patterns + a Claude-ready prompt that drafts a semgrep YAML rule + cross-link narrative.
+4. **Codify** — human (or AI agent) drops the drafted YAML into `templates/lint-stack/semgrep-custom/<topic>.yml`, cross-links from owning domain rule, commits + pushes (auto-pushed per `main-only-branch`).
+5. **Distribute** — next `install-lint-stack.sh` run pulls the new rule into every project.
+
+The script runs as the final pre-push step (non-blocking — analysis only). After ~30 days of any project's normal lint traffic, the proposal queue surfaces the patterns worth codifying.
 
 ## Auto-rollout
 

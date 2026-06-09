@@ -1,5 +1,32 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-11 — AI auto-improve loop concrete + sonarjs/import + site showcase
+
+### ESLint chain expanded (per @megabytelabs inspiration)
+- DEPS += `eslint-plugin-sonarjs@4.0.3` (cognitive complexity, duplicate strings, dead stores — real bug catching, 1M+ weekly DLs).
+- DEPS += `eslint-plugin-import@2.32.0` (export hygiene, no-cycle, no-self-import).
+- `eslint.config.mjs` spreads both `sonarjs.configs.recommended` and `importPlugin.flatConfigs.recommended`.
+- Doctrine notes inspiration source: `@megabytelabs/eslint-config` (40+ plugins covering Angular/Jest/RxJS/SonarJS) — mainstream chain replicates the high-signal plugins.
+
+### AI auto-improve loop — concrete mechanism (per user directive)
+- New `bin/lint-auto-improve.sh` (shellcheck + shfmt clean) — operationalizes `rules/lint-doctrine.md` § Self-improving.
+- Workflow: scans `.lint-history/<tool>-<ts>.log` (last 30d) → clusters violations by rule-id → for clusters ≥3 hits, writes `.lint-history/proposals/proposal-<ts>.md` with Claude-ready prompt that drafts a semgrep YAML rule + cross-link narrative.
+- `templates/lint-stack/lefthook.yml` pre-push: every linter now `tee`s output to `.lint-history/`, then runs `lint-auto-improve.sh` (non-blocking analysis pass).
+- Closes the loop: lint output → recurring pattern → AI-drafted semgrep rule → human-approved merge → permanent codification across every project on next `install-lint-stack`.
+
+### claude.megabyte.space showcase updated
+- `public/index.html` terminal demo += 4th sequence highlighting `/install-lint-stack`:
+  - "oxlint + ESLint 9 + Prettier + Stylelint + ruff + shellcheck + shfmt + yamllint + actionlint + hadolint"
+  - "jscpd + knip + semgrep (8 custom rules) + gitleaks"
+  - "commitizen + cz-emoji (gitmoji-mandatory) + semantic-release"
+  - "32 packages, lefthook parallel autofix wired"
+  - "AI auto-improve loop: lint findings → semgrep rule drafts"
+
+### Verified
+- shellcheck `bin/install-lint-stack.sh bin/lint-auto-improve.sh` → 0 warnings.
+- shfmt → 0 diff.
+- `node scripts/validate-packs.mjs` → clean (15/88/14).
+
 ## 2026-06-08 — pass-10 — installer end-to-end PASS + eslint-config-prettier + precommit:audit
 
 ### Installer end-to-end verification

@@ -61,10 +61,21 @@ pre-push:
   parallel: true
   commands:
     semgrep:
-      run: semgrep --config=auto --config=./.semgrep --error --quiet
+      run: |
+        mkdir -p .lint-history
+        semgrep --config=auto --config=./.semgrep --error --quiet 2>&1 | tee ".lint-history/semgrep-$(date +%Y%m%d-%H%M%S).log"
     jscpd:
-      run: npx --no-install jscpd --threshold 1 --silent || (echo "jscpd: duplicate code > 1% threshold" && exit 1)
+      run: |
+        mkdir -p .lint-history
+        npx --no-install jscpd --threshold 1 --silent 2>&1 | tee ".lint-history/jscpd-$(date +%Y%m%d-%H%M%S).log" || (echo "jscpd: duplicate code > 1% threshold" && exit 1)
     knip:
-      run: npx --no-install knip --no-progress || true # warn-only
+      run: |
+        mkdir -p .lint-history
+        npx --no-install knip --no-progress 2>&1 | tee ".lint-history/knip-$(date +%Y%m%d-%H%M%S).log" || true
     trufflehog:
       run: trufflehog git file://. --only-verified --fail
+    lint-auto-improve:
+      # Weekly AI-augmented loop — scans .lint-history/, surfaces recurring
+      # violation classes for codification per rules/lint-doctrine.md § Self-improving.
+      # Runs but never blocks the push (analysis-only).
+      run: bash ~/.agentskills/bin/lint-auto-improve.sh || true

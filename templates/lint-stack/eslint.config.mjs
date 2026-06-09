@@ -10,6 +10,8 @@ import security from 'eslint-plugin-security';
 import unicorn from 'eslint-plugin-unicorn';
 import promise from 'eslint-plugin-promise';
 import nodePlugin from 'eslint-plugin-n';
+import sonarjs from 'eslint-plugin-sonarjs';
+import importPlugin from 'eslint-plugin-import';
 import prettierConfig from 'eslint-config-prettier';
 
 export default [
@@ -20,6 +22,8 @@ export default [
   unicorn.configs.recommended,
   promise.configs['flat/recommended'],
   nodePlugin.configs['flat/recommended-script'],
+  sonarjs.configs.recommended,         // cognitive complexity, duplicate strings, dead stores, real bugs
+  importPlugin.flatConfigs.recommended, // import/export hygiene, no-cycle, no-self-import
   {
     languageOptions: {
       parserOptions: {
