@@ -49,7 +49,7 @@ Every surface that consumes untrusted content through a model — AI chat panels
 ## Supply chain (AI-assisted commits leak at ~2× baseline)
 
 - **`npm ci` not `npm install`** in CI — install from the lockfile, never resolve fresh
-- **Pin GitHub Actions to a commit SHA, not a tag** — tags get re-pointed
+- **Pin GitHub Actions to a commit SHA, not a tag** — tags get re-pointed. Auto-resolver: `node ~/.agentskills/scripts/sha-pin-actions.mjs .github/workflows/*.yml` (rewrites every `uses: owner/repo@vX` → `uses: owner/repo@<sha> # vX`). Idempotent.
 - **Signed ≠ safe** — SLSA/Sigstore attestations verify the pipeline, NOT the code (TanStack CVE-2026-45321: 84 packages with valid Level-3 attestations from a hijacked CI). Add behavioral scanning (Socket.dev) on top
 - AI-coding-agent PRs are a documented injection vector (Axios RAT, March 2026) — review dependency-adding diffs from agents
 

@@ -1,5 +1,27 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-19 — sha-pin-actions auto-resolver + monitor-orchestration #10
+
+### `scripts/sha-pin-actions.mjs` — supply-chain helper
+- Reads workflow files, finds every `uses: owner/repo@vX` tag-ref.
+- Resolves SHA via `gh api repos/{repo}/git/refs/tags/{tag} --jq '.object.sha'`.
+- Rewrites in-place: `uses: owner/repo@<sha> # vX`.
+- Caches SHA lookups within a single run.
+- Skips already-pinned files. Idempotent.
+- `--dry-run` flag for preview.
+- **Self-tested both ways**: dry-run on pinned workflows → 2 already pinned, 0 changes. Fresh tag-refs (`@v6`) in seeded test workflow → 2 pinned with SHAs + tag comments.
+- `rules/ai-agent-security.md` § Supply chain now references the auto-resolver inline.
+
+### `monitor-orchestration.md` § Known shortcomings entry #10
+- Codifies the "long iterative `/loop` session" pattern as **NOT a shortcoming** when (a) bounded + iterative task, (b) each pass scopes one slice, (c) Recs auto-integrate via cron.
+- Clarifies that the rule's "follow-up = shortcoming" trigger applies only when the prior turn UNDER-delivered, not when it deliberately scoped a slice per `auto-integrate-recs` closure loop.
+- References this 18-pass session as the canonical example.
+
+### Verified
+- `node --check scripts/sha-pin-actions.mjs` → 0 errors.
+- Self-test: real workflows already pinned + seeded tag-refs caught + pinned.
+- pack integrity → clean (15/88/14).
+
 ## 2026-06-09 — pass-18 — Pin all GitHub Actions to commit SHAs (supply-chain hardening)
 
 ### Closes pass-17 Rec — `ai-agent-security.md` § Supply chain mandate live
