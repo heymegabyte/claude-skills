@@ -25,6 +25,7 @@ Rules in the same pack (`pack: "ai"` for all 3 above) get loaded together on AI-
 ### Codifiable pattern (for future passes)
 
 Cross-rule consistency drift is a class of bug that:
+
 - file-existence validators miss (`validate-skills.sh` / `validate-packs.mjs`)
 - markdownlint misses (it's prose, not format)
 - Only surfaces when a reader (human or LLM) holds multiple same-pack rules in mind and notices the discrepancy
