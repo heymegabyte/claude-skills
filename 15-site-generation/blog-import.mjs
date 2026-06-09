@@ -33,7 +33,7 @@ const DELETE_ORPHANS = !!args['delete-orphans'];
 const OPENAI_KEY = process.env.OPENAI_API_KEY;
 const REAL_UA =
   process.env.REAL_UA ||
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36';
 
 if (!SOURCE_URL) {
   console.error('Usage: node blog-import.mjs --source https://... --out src/data/blog-posts.ts --images-dir public/images/blog [--delete-orphans]');

@@ -1,5 +1,24 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-15 — fetch-defaults UA bump Chrome 131 → 149 (live-probe)
+
+### Version-freshness sweep
+- Probed Chrome stable via `https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Mac` → 149.0.7827.55 (18 versions behind my rule).
+- `rules/fetch-defaults.md` desktop UA: Chrome/131 → Chrome/149.
+- iOS UA: iOS 17_5 → iOS 18_2 (current Safari version line).
+- Added live-probe URL annotation so future agents know how to re-verify.
+- `perl -pi -e 's/Chrome\/131\.0\.0\.0/Chrome\/149.0.0.0/g'` cross-platform bulk-replace across 3 site-generation scripts: `blog-import.mjs`, `squarespace-full-crawl.mjs`, `validate-page-set-completeness.mjs`. All 4 grep hits now consistent.
+
+### Verified-current (no update needed)
+- `cloudflare/wrangler-action@v3` — still latest (action wraps wrangler 4.x).
+- `wrangler@4.98.0` current.
+- `Node 22 LTS` — still Active LTS through Oct 2025 + Maintenance through Apr 2027.
+- `@anthropic-ai/sdk` ref version-agnostic.
+
+### Verified
+- pack integrity → clean (15/88/14).
+- All `Chrome/` refs across rules + scripts now consistent at 149.
+
 ## 2026-06-08 — pass-14 — 3 codified semgrep rules VERIFIED to fire
 
 ### Self-test with semgrep CLI

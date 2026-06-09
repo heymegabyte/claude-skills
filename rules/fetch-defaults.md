@@ -21,8 +21,9 @@ paths:
 
 ## Canonical UA (rotate quarterly, mirror current Chrome stable)
 
-- Desktop: `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36`
-- iOS (for mobile-only sites): `Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1`
+- Desktop: `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36`
+- iOS (for mobile-only sites): `Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1`
+- Verified Chrome stable via `https://chromiumdash.appspot.com/fetch_releases?channel=Stable` (2026-06-08 → 149.0.7827.55)
 
 ## Companion headers (always pair with UA)
 
