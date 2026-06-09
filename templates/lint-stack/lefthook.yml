@@ -1,0 +1,73 @@
+# lefthook — parallel autofix + commit hygiene
+# Source of truth: ~/.agentskills/templates/lint-stack/lefthook.yml
+# Install: lefthook install
+
+pre-commit:
+  parallel: true
+  commands:
+    oxlint:
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs}"
+      run: npx --no-install oxlint --fix {staged_files}
+      stage_fixed: true
+    eslint:
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs}"
+      run: npx --no-install eslint --fix --max-warnings=0 {staged_files}
+      stage_fixed: true
+    prettier:
+      glob: "*.{js,jsx,ts,tsx,mjs,cjs,json,jsonc,md,yaml,yml,css,scss,html}"
+      run: npx --no-install prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true
+    stylelint:
+      glob: "*.{css,scss,sass,less}"
+      run: npx --no-install stylelint --fix {staged_files}
+      stage_fixed: true
+    markdownlint:
+      glob: "*.md"
+      run: npx --no-install markdownlint-cli2 --fix {staged_files}
+      stage_fixed: true
+    shellcheck:
+      glob: "*.{sh,bash}"
+      run: shellcheck -x -S warning {staged_files}
+    shfmt:
+      glob: "*.{sh,bash}"
+      run: shfmt -i 2 -ci -bn -w {staged_files}
+      stage_fixed: true
+    yamllint:
+      glob: "*.{yml,yaml}"
+      run: yamllint -d "{extends: relaxed, rules: {line-length: disable, document-start: disable, truthy: disable}}" {staged_files}
+    actionlint:
+      glob: ".github/workflows/*.{yml,yaml}"
+      run: actionlint {staged_files}
+    hadolint:
+      glob: "Dockerfile*"
+      run: hadolint {staged_files}
+    ruff:
+      glob: "*.py"
+      run: ruff check --fix --select E,F,W,UP {staged_files} && ruff format {staged_files}
+      stage_fixed: true
+    gitleaks:
+      run: gitleaks protect --staged --redact --verbose
+
+commit-msg:
+  commands:
+    commitlint:
+      run: npx --no-install commitlint --edit {1}
+    gitmoji-enforce:
+      run: |
+        msg=$(head -n1 "{1}")
+        if ! echo "$msg" | grep -qE '^[:][a-z_]+[:]|^[\x{1F300}-\x{1FAFF}]|^[\x{2600}-\x{26FF}]'; then
+          echo "ERROR: commit message must start with a gitmoji (e.g. ✨, :sparkles:). Use 'git cz' to compose." >&2
+          exit 1
+        fi
+
+pre-push:
+  parallel: true
+  commands:
+    semgrep:
+      run: semgrep --config=auto --config=./.semgrep --error --quiet
+    jscpd:
+      run: npx --no-install jscpd --threshold 1 --silent || (echo "jscpd: duplicate code > 1% threshold" && exit 1)
+    knip:
+      run: npx --no-install knip --no-progress || true # warn-only
+    trufflehog:
+      run: trufflehog git file://. --only-verified --fail

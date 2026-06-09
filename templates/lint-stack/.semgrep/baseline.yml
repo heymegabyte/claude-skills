@@ -1,0 +1,86 @@
+# semgrep baseline — wraps the upstream community ruleset + Brian's custom rules.
+# Run: semgrep --config=auto --config=./.semgrep
+# Self-improving: new findings → ~/.agentskills/templates/lint-stack/semgrep-custom/<topic>.yml
+rules:
+  - id: no-console-log-in-worker
+    pattern: console.log(...)
+    paths:
+      include:
+        - "src/worker/**"
+        - "workers/**"
+    message: |
+      console.log in Worker code — use ctx.passThroughOnException + structured
+      logging via pino or Workers Tracing OTLP per auto-meta-work.md.
+    severity: WARNING
+    languages: [typescript, javascript]
+
+  - id: no-bare-any
+    pattern: ": any"
+    message: |
+      Bare `any` violates code-style.md. Use `unknown` and narrow with Zod.
+    severity: WARNING
+    languages: [typescript]
+
+  - id: no-ts-ignore
+    pattern: "@ts-ignore"
+    message: |
+      @ts-ignore is banned per code-style.md. Fix the type instead.
+    severity: ERROR
+    languages: [typescript]
+
+  - id: hardcoded-cf-token
+    patterns:
+      - pattern-either:
+          - pattern: 'CLOUDFLARE_API_TOKEN = "..."'
+          - pattern: 'process.env.CLOUDFLARE_API_TOKEN = "..."'
+    message: |
+      Hardcoded CF token — use wrangler secret put OR get-secret CLI per
+      secret-provisioning.md. Tokens live in chezmoi, never in source.
+    severity: ERROR
+    languages: [typescript, javascript, generic]
+
+  - id: hardcoded-anthropic-key
+    pattern-regex: 'sk-ant-[A-Za-z0-9_-]{40,}'
+    message: |
+      Hardcoded Anthropic API key. Move to env + redact in logs per
+      ai-agent-security.md § Secret hygiene.
+    severity: ERROR
+
+  - id: no-sed-i-empty-arg-bsd
+    pattern-regex: 'sed -i [^'']'
+    paths:
+      include:
+        - "**/*.sh"
+        - "**/*.bash"
+    message: |
+      `sed -i <expr>` is BSD (macOS) — fails on Linux. Use `sed -i'' <expr>`
+      or perl -pi -e for cross-platform per code-style.md § Bash.
+    severity: WARNING
+    languages: [bash]
+
+  - id: no-firstvalue-from-rxjs
+    pattern-either:
+      - pattern: firstValueFrom(...)
+      - pattern: lastValueFrom(...)
+    paths:
+      include:
+        - "**/*.service.ts"
+    message: |
+      firstValueFrom/lastValueFrom in a service — keep the Observable per
+      rxjs-first-angular.md. Bridge to signal at template via toSignal().
+    severity: WARNING
+    languages: [typescript]
+
+  - id: missing-zod-on-api-body
+    patterns:
+      - pattern: app.$METHOD($PATH, (c) => { ... })
+      - pattern-not: app.$METHOD($PATH, zValidator(...), (c) => { ... })
+    paths:
+      include:
+        - "**/routes/**"
+        - "**/handlers/**"
+    message: |
+      Hono route without zValidator. Every API boundary needs Zod per
+      zod-everywhere.md + hono-api.md.
+    severity: WARNING
+    languages: [typescript]

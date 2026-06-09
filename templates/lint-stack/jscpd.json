@@ -1,0 +1,17 @@
+{
+  "threshold": 1,
+  "reporters": ["console", "html"],
+  "absolute": true,
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/.nuxt/**",
+    "**/coverage/**",
+    "**/.git/**",
+    "**/__snapshots__/**",
+    "**/_archived/**"
+  ],
+  "format": ["javascript", "typescript", "jsx", "tsx", "css", "scss", "html", "markdown", "python", "bash"]
+}

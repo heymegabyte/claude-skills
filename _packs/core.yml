@@ -30,3 +30,4 @@ members:
   - rules/solo-rituals-eliminated
   - rules/supervisor-skills-index
   - rules/todos-are-roadmap
+  - rules/lint-doctrine

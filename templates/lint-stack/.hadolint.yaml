@@ -1,0 +1,10 @@
+ignored:
+  - DL3008 # pin apt-get versions — relaxed for dev images
+  - DL3013 # pip pin versions — relaxed
+  - DL3018 # apk pin versions — relaxed
+trustedRegistries:
+  - docker.io
+  - ghcr.io
+  - registry.gitlab.com
+  - quay.io
+failure-threshold: warning

@@ -1,5 +1,45 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-5 — lint-stack integration (GitLab @megabytelabs configs)
+
+### New doctrine + tooling
+- `rules/lint-doctrine.md` — codified industry-leading lint+autofix+commit-hygiene stack. Source of truth at `templates/lint-stack/`. Self-improving via `prompt-as-training-signal` §6.
+- `commands/install-lint-stack.md` — slash command `/install-lint-stack` to bootstrap any project (auto-registered via sync-desktop-skills hook).
+- `bin/install-lint-stack.sh` — idempotent installer. Detects Node/Python/Docker/Actions/Shell stacks, backs up existing configs, copies templates, installs dev deps (npm or bun), wires lefthook + commitlint + commitizen + semantic-release.
+
+### Templates dropped at `templates/lint-stack/`
+- `lefthook.yml` — parallel autofix orchestration. pre-commit: oxlint/ESLint/Prettier/Stylelint/markdownlint/shellcheck/shfmt/yamllint/actionlint/hadolint/ruff/gitleaks. commit-msg: commitlint + gitmoji-enforce. pre-push: semgrep/jscpd/knip/trufflehog.
+- `.czrc` + `commitlint.config.cjs` — wires `git-cz-emoji` + `conventional-changelog-emoji-config` (GitLab @megabytelabs). **Emoji-prefixed commits are mandatory** — enforced at commit-msg stage.
+- `release.config.cjs` — semantic-release with `@megabytelabs/semantic-release-config` + `@HeyMegabyte/semantic-release-gh`. Auto-publish from `main`.
+- `.markdownlint.jsonc` — Brian-voice relaxed config.
+- `.editorconfig` — 2-space, 120-col, LF, tab for Makefiles.
+- `.yamllint.yml` — relaxed (line-length/document-start/truthy disabled).
+- `.hadolint.yaml` — Dockerfile lint w/ trusted registries + warning threshold.
+- `jscpd.json` — duplicate-code 1% threshold, multi-language.
+- `.semgrep/baseline.yml` — 8 custom Brian rules: no-console-log-in-worker, no-bare-any, no-ts-ignore, hardcoded-cf-token, hardcoded-anthropic-key, no-sed-i-empty-arg-bsd, no-firstvalue-from-rxjs (per rxjs-first-angular), missing-zod-on-api-body (per zod-everywhere).
+- `README.md` — drop-in installation + tool matrix.
+
+### GitLab @megabytelabs / @HeyMegabyte packages wired
+- `conventional-changelog-emoji-config` — changelog preset
+- `git-cz-emoji` — commitizen adapter
+- `prettier-config-sexy-mode` — Prettier base
+- `prettier-plugin-package-perfection` — sorts package.json keys/scripts/deps
+- `stylelint-config-so-pretty` — strict CSS
+- `@megabyte/eslint-config` — TS/JS/JSON/YAML/TOML lint shared config
+- `@megabytelabs/semantic-release-config` — release preset
+- `@HeyMegabyte/semantic-release-gh` — GitHub releaser w/ `repositoryUrl` param
+
+### Self-improving loop
+- Doctrine §"Codified incidents" lists novel bug-class semgrep rules as they're discovered. Per `prompt-as-training-signal` §6, every recurring pattern → new rule in `templates/lint-stack/semgrep-custom/<topic>.yml` + cross-link from owning rule + commit + push same-turn.
+
+### Pack integration
+- `_packs/core.yml` += `rules/lint-doctrine` (core, always-loaded).
+
+### Verified
+- `shellcheck -x -S warning bin/install-lint-stack.sh` → 0 warnings.
+- `shfmt -i 2 -ci -bn -d bin/install-lint-stack.sh` → 0 diff.
+- `/install-lint-stack` auto-registered via sync-desktop-skills hook on next prompt.
+
 ## 2026-06-08 — pass-4 — _packs cross-link integrity 100% + ruff F-rules clean
 
 ### _packs/ cross-link audit + repair
