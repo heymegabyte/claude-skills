@@ -79,7 +79,6 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
     body = text[end + 5:]
     # Minimal YAML — only what we use
     fm: dict = {}
-    current_key = None
     current_list = None
     for line in fm_block.split("\n"):
         if not line.strip() or line.lstrip().startswith("#"):
@@ -95,11 +94,9 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
         val = val.strip().strip('"\'')
         if not val:
             # Could be a list start
-            current_key = key
             current_list = []
             fm[key] = current_list
         else:
-            current_key = None
             current_list = None
             # Strip enclosing quotes from val
             fm[key] = val
@@ -173,7 +170,7 @@ def embed_text(text: str, api_key: str) -> list[float]:
 
 
 def cosine(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=False))
     na = sum(x * x for x in a) ** 0.5
     nb = sum(y * y for y in b) ** 0.5
     if na == 0 or nb == 0:

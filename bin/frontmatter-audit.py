@@ -175,7 +175,7 @@ def write_frontmatter(routing: dict, existing_lines: list[str]) -> list[str]:
                 skip_until_dedent = False
             else:
                 continue
-        if line.startswith("priority:") or line.startswith("pack:"):
+        if line.startswith(("priority:", "pack:")):
             continue
         if line.startswith("triggers:"):
             skip_until_dedent = True

@@ -1,5 +1,35 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-32 — ruff: all 7 remaining errors fixed
+
+### Closes pass-31 Next 1 — Python lint pyramid clean
+
+Per-error triage + fix:
+
+| Error | File:Line | Fix |
+|--|--|--|
+| PIE810 | `frontmatter-audit.py:178` | Combined 2x `startswith` into single tuple call |
+| F841 | `skill-router.py:82,98` | Removed 2x unused `current_key` assignment |
+| B905 | `skill-router.py:176` | Added explicit `strict=False` to `zip()` |
+| E701 ×4 | `sync_agents.py:12,29,32,46` | Split inline `if x: y` → multi-line |
+
+### Verified
+- `ruff check sync_agents.py bin/frontmatter-audit.py bin/skill-router.py` → **All checks passed!**
+- `python3 -m py_compile` on each → 0 errors.
+- pack integrity → clean (15/89/14, 0 warnings, 4 ignored).
+- All fixes were SAFE (no behavior change; just style/syntax compliance).
+
+### Lint pyramid status — fully clean
+- shellcheck/shfmt → 0 across all bin scripts
+- ruff → 0 across all .py files (was 11 after pass-31)
+- markdownlint → 0 across rules/ + commands/
+- yamllint → 0 across all .yml
+- actionlint → 0 across all 4 workflows
+- semgrep → 11 custom rules verified to fire
+- validate-packs → clean
+
+Pass-31 established the gate (lefthook + pyproject); pass-32 confirms the gate passes on existing code.
+
 ## 2026-06-09 — pass-31 — self-violation audit: lefthook + pyproject.toml + .nvmrc
 
 ### Closes pass-30 Next 1 — agentskills now dogfoods its own mandates

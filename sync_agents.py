@@ -9,7 +9,8 @@ def parse_fm(path):
     with open(path) as f:
         content = f.read()
     m = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
-    if not m: return {}, content
+    if not m:
+        return {}, content
     fields = {}
     for line in m.group(1).split('\n'):
         if ':' in line and not line.startswith(' '):
@@ -26,10 +27,12 @@ def update_fm(content, field, value):
 
 changes = []
 for fname in sorted(os.listdir(AGENTS_DIR)):
-    if not fname.endswith('.md'): continue
+    if not fname.endswith('.md'):
+        continue
     ap = os.path.join(AGENTS_DIR, fname)
     cp = os.path.join(CLAUDE_DIR, fname)
-    if not os.path.exists(cp): continue
+    if not os.path.exists(cp):
+        continue
     af, ac = parse_fm(ap)
     cf, _ = parse_fm(cp)
     modified = False
@@ -43,5 +46,6 @@ for fname in sorted(os.listdir(AGENTS_DIR)):
         with open(ap, 'w') as f:
             f.write(ac)
 
-for c in changes: print(c)
+for c in changes:
+    print(c)
 print(f'\nTotal: {len(changes)} field updates')
