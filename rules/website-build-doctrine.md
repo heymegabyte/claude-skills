@@ -218,7 +218,7 @@ Per-iteration: write row to `_competitor_loop_log.ndjson` with per-dim scores fo
 - Subagent prompts 100-300 words MAX. Beyond = cloning context.
 - `web_search_20260209` + `web_fetch_20260209` + `code_execution_20260120` sparingly. `code_execution` FREE when paired with web_search or web_fetch.
 - First-pass content → Workers AI Llama 3.3 70B FP8 (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`, free + 2-3× faster).
-- Opus 4.7 ONLY for: architecture, top-10 conversion-route polish per `i18n-by-demographics.md` § Translation, AI vision QA, completeness.
+- Opus 4.8 ONLY for: architecture, top-10 conversion-route polish per `i18n-by-demographics.md` § Translation, AI vision QA, completeness.
 - Sonnet 4.6 for build, Haiku 4.5 for changelog/format/simple review per `model-routing.md`.
 - Multi-faceted prompt fires Monitor per `monitor-orchestration.md`.
 - Container build cost: ~$0.50-$2.00 per Claude Code prompt, ~$5-$15 per full build. Never speculative-build.

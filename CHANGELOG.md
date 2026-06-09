@@ -1,5 +1,65 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-58 — Cross-rule Opus 4.8 sweep (14 mentions across 11 files)
+
+### Closes pass-51's codified cross-rule version-consistency discipline (retrospectively)
+
+Pass-51 fixed 3 of the Opus 4.7→4.8 references (prompt-cache + opus-quota-fallback) and CLAIMED "no other 4.7-only mentions need 4.8 update." That claim was wrong — pass-58's deeper grep surfaced **14 more** 4.7-as-current-flagship references across 11 files. Pass-51's audit was scoped too narrowly to `rules/*.md` 4.7-version mentions only; it missed the broader "Claude Opus 4.7" prose recommendations + the `xhigh` effort-parameter mention + skill-dir SKILL.md frontmatter.
+
+### What was updated (14 surgical edits, 11 files)
+
+- **`rules/model-routing.md`** — `xhigh` effort: "Opus 4.7" → "Opus 4.8 / 4.7" (line 81). Extended-output header now covers "Opus 4.8/4.7/4.6 + Sonnet 4.6" (line 92).
+- **`rules/opus-quota-fallback.md`** — End-of-turn report example: "Opus 4.7 (weekly all-models at 87%...)" → "Opus 4.8"
+- **`rules/i18n-by-demographics.md`** — 2 mentions of "Claude Opus 4.7 for top 10 highest-traffic" / "Top-10 conversion-critical routes get Claude Opus 4.7" → 4.8
+- **`rules/source-site-enhancement.md`** — 2 mentions of "Generate via Claude Opus 4.7" / "+ Claude Opus 4.7 polish on top-10 conversion routes" → 4.8
+- **`rules/website-build-doctrine.md`** — "Opus 4.7 ONLY for: architecture, top-10..." → "Opus 4.8 ONLY"
+- **`rules/proactive-improvements.md`** — "(Opus 4.7 or Sonnet 4.6)" → "(Opus 4.8 or Sonnet 4.6)"
+- **`rules/auto-meta-work.md`** — "Context Compaction beta (Opus 4.7/4.6/Sonnet 4.6)" → "(Opus 4.8/4.7/4.6/Sonnet 4.6)"
+- **`02-goal-and-brief/SKILL.md`** — "Opus 4.7 for top-10 conversion polish" → 4.8
+- **`15-site-generation/SKILL.md`** — frontmatter `model: "claude-opus-4-7"` → `"claude-opus-4-8"`; description sentence "Claude Opus 4.7 emits Bolt-style..." → 4.8; Phase 1 header → 4.8
+- **`15-site-generation/bolt-artifact-protocol.md`** — "Claude Opus 4.7 at $15/MTok input, $75/MTok output" → "Claude Opus 4.8 at $15/MTok input, $75/MTok output (same pricing as 4.7; zero-cost upgrade)"
+- **`16-cinematic-website-prime-directive/SKILL.md`** — Hard Gate #85 "AI vision QA ≥9/10 per route (visual-qa agent w/ Opus 4.7)" → 4.8
+
+### What was DELIBERATELY preserved (intentional 4.7 references)
+
+- `rules/model-routing.md:23` — `## Opus 4.7 (claude-opus-4-7) — fallback` (4.7 IS the fallback now; correct)
+- `rules/model-routing.md:21` — migration command `rg "claude-opus-4-7" ... → s/4-7/4-8/` (instructional)
+- `rules/opus-quota-fallback.md:30, 33, 51, 95` — model-declaration / hard-coded-anti-pattern examples explicitly mention claude-opus-4-7 alongside 4.8 (intentional pairing per the rule's content)
+
+### Pricing discrepancy flagged for pass-59
+
+- `rules/model-routing.md:18` claims Opus 4.8 is "same $5/$25 per MTok pricing" as 4.7
+- `15-site-generation/bolt-artifact-protocol.md:161` (pre-edit) said Opus 4.7 is $15/$75
+- Anthropic public pricing for Opus 4 series is `$15 input / $75 output` per MTok (consistent with the bolt-artifact-protocol value)
+- The `$5/$25` claim in model-routing.md is INCORRECT — Sonnet 4 pricing not Opus
+- Deliberately NOT auto-fixed this pass: needs web-verification before flipping authoritative pricing in the model-routing rule. Pass-59 candidate.
+
+### Meta-pattern: pass-51's audit scope was too narrow
+
+Pass-51's codified discipline (`lint-doctrine.md` § Codified incidents — "when a new model/version/API mention lands in one rule, grep the rest of the pack for older mentions in same turn") works IF the grep is thorough. Pass-51 only grep'd `rules/*.md` for `claude-opus-4-7\|Opus 4\.7` and concluded done. Pass-58 surfaced that the same drift class lived in `[0-9][0-9]-*/` skill-dir docs + in non-version-string prose. **Codified addition next pass**: cross-rule consistency audits MUST grep both `rules/*.md` AND `[0-9][0-9]-*/**/*.md` AND prose mentions (not just `model:` frontmatter).
+
+### Verification
+
+```bash
+npm run lint                                                                # ✓ 9/9 green
+grep -rn 'Opus 4\.7\b' rules/ [0-9][0-9]-*/ | grep -vE 'fallback|migration|4\.8.*4\.7|4\.7.*4\.8|below'   # only intentional 4.7 references remain
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Pricing discrepancy in `model-routing.md:18` ($5/$25 vs $15/$75) — needs web verification before flip
+- Did NOT extend the discipline-codification yet — adding the `[0-9][0-9]-*/**/*.md` glob to the codified pattern is a pass-59 task
+
+### Next candidates (pass-59)
+
+- Verify + fix Opus 4 pricing in `rules/model-routing.md:18`
+- Extend `lint-doctrine.md § Codified incidents` cross-rule discipline to explicitly include skill-dir globs
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-57 — Fix mcp.resend.com broken link (web-verified) + localhost filter
 
 ### Closes pass-56 candidate 1 (`mcp.resend.com` fix needing web verification)

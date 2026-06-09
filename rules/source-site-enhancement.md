@@ -62,7 +62,7 @@ Fires on every `re(build|make|do)|rebuild|optimi[sz]ed?|enhanced?|upgraded?|mode
 
 ## JEWEL_RESEARCH (each gap page real content, never stub)
 
-- Generate via Claude Opus 4.7 w/ org-type playbook
+- Generate via Claude Opus 4.8 w/ org-type playbook
 - Sources by org type:
   - **nonprofit** — Form 990 / Charity Navigator / GuideStar
   - **saas** — sec.gov 10-K + Crunchbase + G2
@@ -122,7 +122,7 @@ Rebuild prompts trigger `monitor-orchestration.md` per `always.md` line 10. Moni
 4. **Agent-D `media-walker`** — image+video+PDF+logo extraction → `_assets/` + `_videos.json` + `_image_briefs.json`
 5. **Agent-E `brand-extractor`** — GPT-4o vision on homepage → `_brand.json` palette+fonts+tone
 6. **Agent-F..K `jewel-content-authors`** (one per jewel batch) → 2-3 jewel page contents as typed-block JSON
-7. **Agent-L..N `i18n-translators`** (one per locale beyond English) → `/{locale}/*` translated via Workers AI Llama 3.3 70B first pass + Claude Opus 4.7 polish on top-10 conversion routes per `i18n-by-demographics.md`
+7. **Agent-L..N `i18n-translators`** (one per locale beyond English) → `/{locale}/*` translated via Workers AI Llama 3.3 70B first pass + Claude Opus 4.8 polish on top-10 conversion routes per `i18n-by-demographics.md`
 8. **Agent-O `IA-normalizer`** — consume `_url_inventory.json`+`_org_type.json` → `_redirects` 301 manifest + slug rename map + service-hierarchy nesting
 9. **Agent-P `squarespace-dedup`** — CMS-specific dupe detection (Squarespace random-IDs, Wix `_compiler/page-data`, WP `?p=`) → augment `_redirects`
 

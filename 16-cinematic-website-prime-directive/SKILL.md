@@ -130,7 +130,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 82. Tests start at homepage, navigate by clicking nav (never `page.goto` for internal)
 83. Vitest 3 unit tests for utilities + Zod schemas
 84. Lighthouse CI: Perf ≥90, A11y ≥95, BP ≥95, SEO ≥95
-85. AI vision QA ≥9/10 per route (visual-qa agent w/ Opus 4.7)
+85. AI vision QA ≥9/10 per route (visual-qa agent w/ Opus 4.8)
 86. Percy AI Visual Review for full-page regression
 87. Yoast GREEN on every content page
 88. Build validator: every internal asset resolves, every hyperlink valid, every quantitative claim cited

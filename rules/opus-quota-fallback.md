@@ -106,7 +106,7 @@ When `OPUS_AVAILABLE=false`, the end-of-turn report (per ``always``) must includ
 When `OPUS_AVAILABLE=true` but weekly is >80%, surface a warning:
 
 ```
-**Model:** Opus 4.7 (weekly all-models at 87% — fallback to Sonnet imminent)
+**Model:** Opus 4.8 (weekly all-models at 87% — fallback to Sonnet imminent)
 ```
 
 This preempts the next-day "why did my session degrade?" question.

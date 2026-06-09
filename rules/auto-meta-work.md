@@ -106,7 +106,7 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
 - **Memory Tool** — API-layer persistent store for long-running agents
 - **Subagent Memory** — scoped `user|project|local`
 - Skills write durable context to `MEMORY.md` or memory tool, not inline
-- **Server-side Context Compaction beta** (Opus 4.7/4.6/Sonnet 4.6) replaces manual `/compact` — trigger proactively at 70-90% context
+- **Server-side Context Compaction beta** (Opus 4.8/4.7/4.6/Sonnet 4.6) replaces manual `/compact` — trigger proactively at 70-90% context
 
 ## Built-in tools
 

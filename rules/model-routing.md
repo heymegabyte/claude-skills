@@ -78,7 +78,7 @@ paths:
 
 ## Effort parameter
 
-- **`xhigh`** — architecture / security / planning on Opus 4.7
+- **`xhigh`** — architecture / security / planning on Opus 4.8 / 4.7
 - **`max`** — same on 4.6
 - **`high`** — implementation / testing
 - **`medium`** — content writing
@@ -89,7 +89,7 @@ Match effort to task complexity.
 ## Batch API
 
 - 50% discount.
-- Extended-output via header `output-300k-2026-03-24` unlocks 300k output for Opus 4.7/4.6 + Sonnet 4.6.
+- Extended-output via header `output-300k-2026-03-24` unlocks 300k output for Opus 4.8/4.7/4.6 + Sonnet 4.6.
 - Pre-warm cache with `max_tokens:0` (not in batch / streaming / extended-thinking paths).
 
 ## Cloudflare Workers AI (`env.AI.run`)

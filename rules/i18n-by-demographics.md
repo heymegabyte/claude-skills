@@ -35,7 +35,7 @@ paths:
    - IBGE (BR), INE (ES), INSEE (FR), ABS (AU), Stats NZ
    - Cache 30 days in KV `demographics:{geohash}`
 3. **`locale_select`** — every language with ≥10% community share gets a locale; secondary rule: every language with ≥5% AND >25k speakers in the metro also gets a locale
-4. **`translate`** — every route content (titles, meta, body, FAQ, JSON-LD inLanguage) via Workers AI `@cf/meta/llama-3.3-70b-instruct` first pass, then human-tone polish via Claude Opus 4.7 for top 10 highest-traffic routes (home, about, donate, contact, services, faq)
+4. **`translate`** — every route content (titles, meta, body, FAQ, JSON-LD inLanguage) via Workers AI `@cf/meta/llama-3.3-70b-instruct` first pass, then human-tone polish via Claude Opus 4.8 for top 10 highest-traffic routes (home, about, donate, contact, services, faq)
 5. **`route_emit`** — `/{locale}/*` prefix (`/es/donate`, `/pt/about`) with `<link rel="alternate" hreflang="{locale}">` cross-references + `x-default` on English root
 6. **`hreflang_audit`** — every page has hreflang entries for every shipped locale + x-default; missing entry = build fail
 
@@ -78,7 +78,7 @@ Unlisted geographies: query ACS/equivalent and apply the ≥10% rule fresh.
 
 - Workers AI Llama 3.3 70B is FIRST PASS only
 - Every translated string runs through tone-check ("does this sound like a native speaker would write it on a nonprofit page?")
-- Top-10 conversion-critical routes get Claude Opus 4.7 second pass with explicit "no calque, no literal-translate-from-English, use locale-natural phrasing" prompt: `/`, `/about`, `/donate`, `/contact`, `/services`, `/faq`, `/team`, `/volunteer`, `/ways-to-give`, `/planned-giving`
+- Top-10 conversion-critical routes get Claude Opus 4.8 second pass with explicit "no calque, no literal-translate-from-English, use locale-natural phrasing" prompt: `/`, `/about`, `/donate`, `/contact`, `/services`, `/faq`, `/team`, `/volunteer`, `/ways-to-give`, `/planned-giving`
 - Reference: `donate now` → ES native is `Dona ya` NOT `Donar ahora` (calque); PT-BR native is `Doe agora` NOT `Doar agora`
 - Banned: "Lorem ipsum"-style placeholder translations, Google-Translate-direct output without tone pass
 

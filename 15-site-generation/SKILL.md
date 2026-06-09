@@ -1,11 +1,11 @@
 ---
 name: "site-generation"
-description: "End-to-end AI website generation pipeline. Claude Opus 4.7 emits Bolt-style <boltArtifact> envelopes (multi-file, plan-first) that customize Vite+React+Tailwind templates from pre-researched business data. Pre-research via APIs, media acquisition, brand extraction, visual inspection via GPT-4o, R2 upload (per-file content-type by extension), D1 status updates. Supports all business types: SaaS, portfolio, non-profit, restaurant, salon, medical, legal, retail, tech."
+description: "End-to-end AI website generation pipeline. Claude Opus 4.8 emits Bolt-style <boltArtifact> envelopes (multi-file, plan-first) that customize Vite+React+Tailwind templates from pre-researched business data. Pre-research via APIs, media acquisition, brand extraction, visual inspection via GPT-4o, R2 upload (per-file content-type by extension), D1 status updates. Supports all business types: SaaS, portfolio, non-profit, restaurant, salon, medical, legal, retail, tech."
 metadata:
   version: "2.0.0"
   updated: "2026-04-30"
   effort: "xhigh"
-  model: "claude-opus-4-7"
+  model: "claude-opus-4-8"
   context: "fork"
 license: "Rutgers"
 compatibility:
@@ -113,7 +113,7 @@ Phase 0: Pre-Research + Media Acquisition (ALL BUILD MODES)
   → Output: _research.json, _scraped_content.json, _assets/
   → HARD GATE: <10 images = build NOT complete
 
-Phase 1: Claude Opus 4.7 Bolt-Artifact Emission (Worker OR Container)
+Phase 1: Claude Opus 4.8 Bolt-Artifact Emission (Worker OR Container)
   → Reads all _ context files
   → Emits ONE <boltArtifact> envelope w/ ordered <boltAction>
   → First action ALWAYS PLAN.md

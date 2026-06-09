@@ -77,7 +77,7 @@ One sentence: what this project does + for whom + why now.
 ## AI-native development approach
 - AI-first features: {list}
 - Workers AI / Llama 3.3 for first-pass content
-- Opus 4.7 for top-10 conversion polish
+- Opus 4.8 for top-10 conversion polish
 - AI vision QA on every visual surface
 
 ## Constraints
