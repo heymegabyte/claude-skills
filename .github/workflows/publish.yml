@@ -27,6 +27,14 @@ jobs:
       - name: Validate GitHub Actions are SHA-pinned (supply chain)
         run: node scripts/sha-pin-actions.mjs --check .github/workflows/*.yml
 
+      - name: Self-lint YAML (catches lefthook.yml meta-bug regressions, pass-41)
+        run: |
+          python3 -m pip install --quiet --user yamllint
+          ~/.local/bin/yamllint -d "{extends: relaxed, rules: {line-length: disable, document-start: disable, truthy: disable}}" \
+            templates/lint-stack/lefthook.yml \
+            lefthook.yml \
+            .github/workflows/*.yml
+
       - name: Check doc counts
         run: |
           EXPECTED=$(grep -o '[0-9]* reference docs' README.md | grep -o '[0-9]*')

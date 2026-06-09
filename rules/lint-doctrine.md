@@ -24,6 +24,7 @@ Every config lives once in `~/.agentskills/templates/lint-stack/`. Projects pull
 ## Package philosophy — mainstream-only, GitLab @megabytelabs as inspiration
 
 The `@megabytelabs` / `@HeyMegabyte` GitLab packages (conventional-changelog-emoji-config, git-cz-emoji, prettier-config-sexy-mode, etc.) are studied as PATTERN inspiration. The actual installer ships only:
+
 - Latest stable mainstream npm packages (≥10k weekly DLs as a rough floor unless niche)
 - Well-maintained plugins with active issues + recent commits
 - No git+https deps — every package on the npm registry
@@ -32,6 +33,7 @@ The `@megabytelabs` / `@HeyMegabyte` GitLab packages (conventional-changelog-emo
 ## The stack (deterministic, parallel, autofix-first)
 
 ### TS / JS / JSON / MD / CSS / YAML
+
 - **oxlint** — first-pass speed (50-100× ESLint, no formatting)
 - **ESLint 9 flat config** — `eslint@9` + `@eslint/js` + `typescript-eslint@8` + `eslint-plugin-perfectionist` + `eslint-plugin-security` + `eslint-plugin-unicorn` + `eslint-plugin-promise` + `eslint-plugin-n` + `eslint-plugin-sonarjs` (cognitive complexity, real bug catching) + `eslint-plugin-import` (import/export hygiene) + `eslint-config-prettier` (last; silences ESLint rules that conflict w/ Prettier). Canonical mainstream chain — inspired by GitLab `@megabytelabs/eslint-config` (40+ plugins covering Angular/Jest/RxJS/SonarJS).
 - **Prettier 3** — `prettier@3` + `prettier-plugin-packagejson` (1.4M+ weekly DLs, sorts package.json keys) + `prettier-plugin-organize-imports` (1.2M+ weekly, dedupes ES imports). Replaces GitLab `prettier-config-sexy-mode` + `prettier-plugin-package-perfection`.
@@ -42,6 +44,7 @@ The `@megabytelabs` / `@HeyMegabyte` GitLab packages (conventional-changelog-emo
 - **dependency-cruiser** — architecture rules
 
 ### Shell + ops
+
 - **shellcheck** — bug catcher
 - **shfmt** `-i 2 -ci -bn` — formatter (Brian's signature shape)
 - **actionlint** — GH Actions
@@ -49,10 +52,12 @@ The `@megabytelabs` / `@HeyMegabyte` GitLab packages (conventional-changelog-emo
 - **hadolint** — Dockerfile
 
 ### Python
+
 - **ruff** — replaces flake8 + black + isort entirely (Brian's `code-style.md` already mandates ruff)
 - ~~flake8~~ — superseded by ruff; install only when ruff is blocked
 
 ### Code intelligence
+
 - **semgrep** — OWASP Top 10 + custom rules from `templates/lint-stack/semgrep-custom/*.yml`. Self-improving: every novel finding becomes a new rule same-turn per `prompt-as-training-signal`.
 - **TruffleHog `--only-verified`** — secret scan (already in `ai-agent-security.md`)
 - **Gitleaks** — pre-commit secret block (already in `ai-agent-security.md`)
@@ -60,16 +65,19 @@ The `@megabytelabs` / `@HeyMegabyte` GitLab packages (conventional-changelog-emo
 ## Commit hygiene (emoji-mandatory)
 
 ### Tooling
+
 - **commitizen** + **cz-emoji@^1.3.1** (pinned to stable; npm `latest` resolves to canary) — interactive emoji commit prompt
 - **conventional-changelog-gitmoji-config** (1.5.2, mainstream, 30k+ weekly) — commit-analyzer/changelog preset for gitmoji
 - **commitlint** + **@commitlint/config-conventional** — enforces conventional shape; **rejects emoji-less commits at lefthook commit-msg stage via standalone `gitmoji-enforce.sh` script (belt+suspenders)**
 
 ### Release automation
+
 - **semantic-release** + **semantic-release-gitmoji** (1.6.9, 50k+ weekly) for gitmoji-aware analyzer + release-notes
 - Stock chain: `@semantic-release/changelog` + `@semantic-release/npm` + `@semantic-release/github` + `@semantic-release/git`
 - Releases auto-publish from green `main` per `main-only-branch` + `ai-seniority` auto-merge contract
 
 ### Mainstream package versions (verified 2026-06-08 npm view)
+
 | Concern | Package | Version |
 |--|--|--|
 | ESLint | `eslint` | 9.x |
@@ -85,6 +93,7 @@ The `@megabytelabs` / `@HeyMegabyte` GitLab packages (conventional-changelog-emo
 | Release | `semantic-release-gitmoji` | 1.6.9 |
 
 ### Mandate
+
 - **Every commit ships with a gitmoji prefix.** Plain text commits are blocked at commit-msg stage.
 - `git cz` is the only path (alias `git c`); raw `git commit -m` is muscle-memory only on emergency fixes and STILL must pass commitlint.
 
@@ -118,6 +127,7 @@ The script runs as the final pre-push step (non-blocking — analysis only). Aft
 ## Auto-rollout
 
 `bin/install-lint-stack.sh <project>`:
+
 - Detects stack (presence of `package.json`, `*.py`, `Dockerfile`, `.github/workflows/`)
 - Copies relevant configs from `templates/lint-stack/` to project root
 - Installs npm deps via `npm i -D --save-exact ...` (or `bun add -d`)

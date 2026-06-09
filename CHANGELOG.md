@@ -1,5 +1,51 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-42 — CI yamllint self-lint gate + repo-wide rules/ markdownlint sweep
+
+### Closes pass-41 Rec 1 (CI self-lint) + pass-41 Rec 2 (markdownlint sweep)
+
+- **`.github/workflows/publish.yml` § Self-lint YAML** — new step in the `validate` job between SHA-pin check and doc-count check. Installs `yamllint` via `python3 -m pip install --user` (no network actions, no SHA-pin needed), runs the same relaxed config against `templates/lint-stack/lefthook.yml` + `lefthook.yml` + `.github/workflows/*.yml`. This is the CI gate that prevents pass-41's meta-bug from regressing — if anyone re-introduces an unquoted brace-mapping `run:` value, CI fails before merge.
+- **Repo-wide `rules/*.md` markdownlint sweep** — `markdownlint-cli2@^0.18.1 --fix` on all 90 rule files. Touched only 2 (`rules/lint-doctrine.md` +10 lines, `rules/suno-song-generation.md` +2 lines), all MD032 (blanks-around-lists). Final state: 0 errors across all 90 rule files.
+
+### Why the CI gate matters
+
+Pass-41 caught the lefthook quoting bug by manually running yamllint. Without CI enforcement, the next maintainer adding a `run:` value with embedded YAML-like syntax could re-introduce it silently — lefthook's runtime parser is lenient. The CI step makes the strict-parse pass mandatory on every PR. Cost: ~3s on `validate` job runtime, $0 (yamllint via pip + Python pre-installed).
+
+### Scope of the rules/ sweep
+
+- 90 rule files scanned
+- 2 files needed fixes (2.2%)
+- 12 total lines inserted (all blank lines around lists)
+- 0 functional content changes
+- Verified post-fix: `npx markdownlint-cli2 rules/*.md` → 0 errors
+
+### What was NOT done
+
+- Full repo-wide markdown sweep (CHANGELOG.md + skill-dir `**/*.md` + READMEs still untouched — would be another ~50-file diff)
+- Pass-39 candidates 2/3 (SessionStart hook + Python parity) — still gated on Brian opt-in / 3-Python-caller threshold
+
+### Verification
+
+```bash
+# Locally repro the CI gate
+python3 -m pip install --quiet --user yamllint
+~/.local/bin/yamllint -d "{extends: relaxed, rules: {line-length: disable, document-start: disable, truthy: disable}}" \
+  templates/lint-stack/lefthook.yml lefthook.yml .github/workflows/*.yml   # exit 0
+
+# Markdown sweep verification
+npx markdownlint-cli2@^0.18.1 rules/*.md                                     # 0 error(s)
+```
+
+### Next candidates (pass-43)
+
+- Skill-dir markdown sweep (`[0-9][0-9]-*/**/*.md`) — second-largest markdown surface after `rules/`
+- CHANGELOG.md markdown sweep (single file, ~1300 lines, will produce concentrated diff)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Wire markdownlint-cli2 into CI alongside the new yamllint step (currently only lefthook pre-commit)
+
+---
+
 ## 2026-06-09 — pass-41 — lefthook yamllint quoting fix + lint-stack wire-up verification
 
 ### Closes pass-40 Rec 1 (markdownlint wire-up audit) + actually runs yamllint/actionlint/shellcheck per user's tool list

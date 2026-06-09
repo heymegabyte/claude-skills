@@ -14,6 +14,7 @@ Run these concurrently where possible — kick off the cookie ask FIRST, then do
 3. **Generate, then auto-download the 2nd clip.** Each Suno generation yields 2 clips; **download the SECOND one** automatically once it finishes rendering (Suno's 2nd take is the user's preferred default). See § Auto-download.
 
 ### HARD RULE — lyrics must always reflect professionally on Brian + everyone he represents
+
 Every lyric must portray Brian Zalewski, Megabyte Labs, family, partners, and any named
 party with dignity and professionalism — nothing embarrassing, defamatory, crude, or
 reputationally risky. This stacks on the existing ethic (zero drugs, family-reverent,
@@ -62,6 +63,7 @@ With `__client`+`__session`, headless Chrome (Playwright, `channel:chrome`) **au
 ## Auto-download the 2nd clip
 
 After a generation finishes (poll until `clip.status === 'complete'`, ~30-90s):
+
 - `GET https://studio-api.prod.suno.com/api/feed/v2?page=0&page_size=20` (Bearer `__session`) → clips newest-first.
 - A single generation yields **2 clips sharing the same title**. Sort that title's clips by `created` ascending → **download index [1] (the SECOND take)** — that's the user's preferred default.
 - Download `clip.audio_url` (the rendered MP3) to disk, e.g. `~/Downloads/<title>.mp3` (or the repo's `public/audio/<id>.mp3` if shipping). The `audio_url` is public CDN — a plain `fetch` works, no auth needed.
