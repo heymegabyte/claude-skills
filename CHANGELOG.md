@@ -1,5 +1,79 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-73 — Migrate densest file (`media-acquisition.md`): 270 → 226 hits
+
+### Closes pass-72 candidate 1 (drive count down, start with densest file)
+
+### Bulk migration of `15-site-generation/media-acquisition.md`
+
+The pass-72 detector flagged 44 deprecated-model hits in this 818-line file. Pattern: file is structurally built around DALL-E as the primary image-gen engine. Migration via `sed -i` bulk-replace:
+
+```bash
+sed -i \
+  -e 's/DALL-E 3/GPT Image 1.5/g' \
+  -e 's/DALL·E 3/GPT Image 1.5/g' \
+  -e 's/DALL-E/GPT Image 1.5/g' \
+  -e 's/DALL·E/GPT Image 1.5/g' \
+  -e 's/dall-e-3/gpt-image-1.5/g' \
+  -e 's/dall-e-2/gpt-image-2/g' \
+  -e 's/GPT-4o/GPT Image 2 vision/g' \
+  15-site-generation/media-acquisition.md
+```
+
+### Migration rationale
+
+- **`DALL-E 3` / `DALL-E` → `GPT Image 1.5`** — current OpenAI image-gen flagship per `platform.openai.com/docs/deprecations` (DALL-E 2/3 removed 2026-05-12)
+- **`GPT-4o` → `GPT Image 2 vision`** — gpt-image-2 has vision capability per the OpenAI 2026 image guide; serves the same role GPT-4o had in vision-relevance scoring
+- **Lowercase `dall-e-3` / `dall-e-2`** → kebab-case `gpt-image-1.5` / `gpt-image-2` (API model IDs)
+
+### Migration note added to the doc
+
+A blockquote preface explains the substitution + flags pricing as legacy:
+
+> Model migration note (pass-73, 2026-06-09): References to `DALL-E 3` / `DALL-E` migrated to GPT Image 1.5 ... Pipeline structure (10x-collect → AI-curate → vision-score → regen-on-fail) unchanged. Cost ranges in this doc were computed against legacy DALL-E pricing; re-verify against current GPT Image 1.5 / GPT Image 2 rates.
+
+### Detector count drop
+
+| Pattern | Pre-pass-73 | Post-pass-73 | Δ |
+|---|---|---|---|
+| `GPT-4o` | 175 | 165 | -10 |
+| `DALL-E` | 90 | 56 | -34 |
+| `DALL·E` | 5 | 5 | 0 |
+| TOTAL | 270 | **226** | **-44** |
+
+Largest single-pass migration drop in the audit arc. The unicode `DALL·E` variant (5 hits) wasn't in this file — that lives in `rules/timeline-authenticity.md`, `rules/always.md`, `rules/copy-writing.md`, `rules/image-quality.md` — content/style rules where the unicode char appears in human-readable prose lists.
+
+### Bug caught in-pass (Read tracker)
+
+`sed -i` modified the file outside the Read-tracking layer. First `Edit` call to add the migration preface failed (file-not-read error). Resolved by `Read` → `Edit`. Codifiable: when using `sed -i` BEFORE an `Edit`, always `Read` the file once first to refresh the tracker.
+
+### Closure-loop arc pass-58→73 summary
+
+- **11 latent bugs caught + 44 references migrated** in pass-73
+- **5 audit scripts** mechanized
+- `bin/lib/emit-json.sh` lib: 10 callers
+- Audit-first-migrate-iteratively pattern proven: detector shipped pass-72 with 270 hits; pass-73 drove to 226; pass-74→ continues
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 9/9 green
+bash bin/check-deprecated-models.sh 2>&1 | grep SUMMARY  # 226 total hits (was 270)
+```
+
+### What was NOT done
+
+- 226 remaining deprecated-identifier migrations — pass-74→ iteratively
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-74)
+
+- Migrate next densest file: `07-quality-and-verification/visual-inspection-loop.md` (37 hits, mostly GPT-4o)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-72 — `bin/check-deprecated-models.sh` (10th lib caller) — surfaces 270 hits
 
 ### Closes pass-71 candidate 1 (mechanize deprecated-models audit FIRST)

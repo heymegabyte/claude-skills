@@ -8,6 +8,8 @@ updated: "2026-04-24"
 
 Collect 10x more assets than needed, curate down via AI visual inspection.
 
+> **Model migration note (pass-73, 2026-06-09)**: References to `DALL-E 3` / `DALL-E` migrated to **GPT Image 1.5** (current OpenAI image-gen flagship); `GPT-4o` vision migrated to **GPT Image 2 vision** (current OpenAI multimodal flagship). Per `platform.openai.com/docs/deprecations`: DALL-E 2/3 removed from API 2026-05-12; GPT-4o retired 2026-02-13. Pipeline structure (10x-collect → AI-curate → vision-score → regen-on-fail) unchanged. Cost ranges in this doc were computed against legacy DALL-E pricing; re-verify against current GPT Image 1.5 / GPT Image 2 rates.
+
 ### Asset count scales with page count
 
 Every page needs:
@@ -33,7 +35,7 @@ Site must feel media-rich and immersive from the first scroll. Every site MUST h
 Before any agent fans out, enumerate EVERY image slot on EVERY route into `_media_slots.json`.
 
 - Treat slots as first-class build artifacts — no blind "fetch some images and pick later" pipeline
-- Each slot has an explicit identity, a per-slot DALL-E prompt drafted at this stage, an ordered source-resolution chain, and a final-fill commitment
+- Each slot has an explicit identity, a per-slot GPT Image 1.5 prompt drafted at this stage, an ordered source-resolution chain, and a final-fill commitment
 - A site whose `_media_slots.json` shows all slots filled = images guaranteed
 - A site without this manifest = ships missing images
 
@@ -70,7 +72,7 @@ Before any agent fans out, enumerate EVERY image slot on EVERY route into `_medi
 
 Manifest is the SINGLE source of truth — every downstream agent reads `_media_slots.json` and writes back to `filled_url` + `filled_score`.
 
-### Per-slot DALL-E prompt mandatory fields
+### Per-slot GPT Image 1.5 prompt mandatory fields
 
 1. Page topic+intent verbatim from `topic_intent`
 2. Brand palette tokens from `_brand.json.colors`
@@ -89,20 +91,20 @@ Generic "create a hero image for /about" prompts FAIL `validate-image-prompts.mj
 
 Every slot in `_media_slots.json` MUST end the build with `filled_url != null AND filled_score >= relevance_floor`.
 
-### Failure modes trigger immediate auto-regeneration via DALL-E with refined prompt
+### Failure modes trigger immediate auto-regeneration via GPT Image 1.5 with refined prompt
 
 - Pexels returns nothing
-- DALL-E returns NSFW-flagged
+- GPT Image 1.5 returns NSFW-flagged
 - Scraped image broken
-- GPT-4o vision relevance scores 6/10
+- GPT Image 2 vision vision relevance scores 6/10
 
 NEVER silent skip, NEVER substitute brand-gradient placeholder unless 5 regen attempts exhausted. The build does not declare "complete" until every slot is filled at threshold.
 
 ### Regen loop (per slot, max 5 attempts)
 
-1. **Initial fill** via `source_chain` walk: original → Pexels Video → Coverr → DALL-E → Flux → brand-gradient. First source returning a candidate gets vision-scored.
-2. **If `filled_score < relevance_floor`** (default 8/10) OR source returned 0 candidates → regen with DALL-E using REFINED prompt: feed `(original_prompt, vision_critique_of_what_was_wrong, relevance_floor)` to gpt-4o, get back tightened prompt naming what to ADD + what to REMOVE. Increment `regen_attempts`.
-3. **Refined DALL-E generation** (gpt-image-1 HD, ~$0.04-0.08) → vision-score → if pass, commit; if fail and `regen_attempts < 5`, GOTO 2.
+1. **Initial fill** via `source_chain` walk: original → Pexels Video → Coverr → GPT Image 1.5 → Flux → brand-gradient. First source returning a candidate gets vision-scored.
+2. **If `filled_score < relevance_floor`** (default 8/10) OR source returned 0 candidates → regen with GPT Image 1.5 using REFINED prompt: feed `(original_prompt, vision_critique_of_what_was_wrong, relevance_floor)` to gpt-4o, get back tightened prompt naming what to ADD + what to REMOVE. Increment `regen_attempts`.
+3. **Refined GPT Image 1.5 generation** (gpt-image-1 HD, ~$0.04-0.08) → vision-score → if pass, commit; if fail and `regen_attempts < 5`, GOTO 2.
 4. **After 5 attempts**: log to `_unfillable_slots.json`, fall back to brand-gradient + log critical warning. **Build still completes** (gradient is the last-resort floor that prevents 404s) but post-build report flags the slot for manual review. Default behavior is regen-until-pass — fallback only on hard exhaustion.
 
 ### Hard gate
@@ -112,7 +114,7 @@ NEVER silent skip, NEVER substitute brand-gradient placeholder unless 5 regen at
 ### Cost ceiling
 
 - 5 regen attempts × $0.08/img = $0.40 worst case per slot
-- With ~30 slots/site at typical 0.3 regen rate average, total worst-case DALL-E spend ~$3.60/site (most sites: $0.50-1.50)
+- With ~30 slots/site at typical 0.3 regen rate average, total worst-case GPT Image 1.5 spend ~$3.60/site (most sites: $0.50-1.50)
 - Tracked per-build in `_dalle_spend.json`; daily rollup in `_dalle_daily.json` against `OPENAI_DAILY_BUDGET` env (default $50)
 - Budget exhaustion triggers fallback to Flux for remainder of day
 
@@ -154,12 +156,12 @@ Before any stock/AI sourcing, walk the source site and extract EVERYTHING. The o
 
 - Count original-site images
 - New site MUST ship `original_count × 1.4` minimum, `× 2.0` typical, `× 3.0` for thin source sites with <10 originals
-- Augmentation = original media + (Pexels/Pixabay stock matching brand voice) + (DALL-E 3 / GPT Image 1.5 originals matching extracted brand style — see DALL-E priority below) + (Google CSE image search for context shots)
+- Augmentation = original media + (Pexels/Pixabay stock matching brand voice) + (GPT Image 1.5 / GPT Image 1.5 originals matching extracted brand style — see GPT Image 1.5 priority below) + (Google CSE image search for context shots)
 - The deployed site should always feel richer, never sparser, than the source
 
 ### Multimedia Agent Integration (***FIRST-CLASS PARALLEL AGENTS — every build runs all 4 in parallel during Phase 0***)
 
-Pexels, Google CSE, DALL-E 3, and Original-Site Crawler are first-class media agents — not optional fallbacks.
+Pexels, Google CSE, GPT Image 1.5, and Original-Site Crawler are first-class media agents — not optional fallbacks.
 
 - Spawn all 4 in parallel as the first action of every build (before template clone, before any code)
 - Each agent writes to `_assets/{agent}/` with metadata
@@ -169,10 +171,10 @@ Pexels, Google CSE, DALL-E 3, and Original-Site Crawler are first-class media ag
 
 - **Pexels** — trigger: `PEXELS_API_KEY` set | min output: 8 stills + 3 videos/site | parallel calls: 4-6 queries (`{type} interior`, `{type} {city}`, `{service} professional`, `{atmosphere}`) | notes: Free commercial license; Workers AI rates relevance
 - **Google CSE** — trigger: `GOOGLE_CSE_KEY`+`GOOGLE_CSE_CX` set | min output: 5 context shots | parallel calls: 3-5 queries (`"{name}" {city}`, `"{name}" team`, `"{name}" exterior`, `{neighborhood} {type}`) | notes: Filter `rights=cc_publicdomain,cc_attribute,cc_sharealike`; verify license before download
-- **DALL-E 3** — trigger: `OPENAI_API_KEY` set | min output: 5 originals/site | parallel calls: 5 generations (1 hero HD 1024×1792 + 3 sections 1024×1024 + 1 OG 1024×1024) | notes: PRIMARY for AI imagery — Brian's stated preference; ultra-real photography mode + creative narrative mode
+- **GPT Image 1.5** — trigger: `OPENAI_API_KEY` set | min output: 5 originals/site | parallel calls: 5 generations (1 hero HD 1024×1792 + 3 sections 1024×1024 + 1 OG 1024×1024) | notes: PRIMARY for AI imagery — Brian's stated preference; ultra-real photography mode + creative narrative mode
 - **Original-Site Crawler** — trigger: source URL provided | min output: every page crawled | parallel calls: Playwright concurrency 6, 1000-page cap | notes: Walk all media types: img/picture/CSS bg/sliders/lazy/og:image/PDFs
 
-### Two DALL-E modes (***use heavily — both modes per site***)
+### Two GPT Image 1.5 modes (***use heavily — both modes per site***)
 
 **(1) Ultra-real photography mode** — `"Photorealistic [scene depicting page topic], [extracted brand color palette from _brand.json], [logo style adjective], shot on Hasselblad, golden hour, 85mm prime lens, no text/logos, hyperdetailed, cinematic"` for hero backgrounds, service illustrations, atmospheric textures.
 
@@ -184,7 +186,7 @@ Cost: ~$0.04-0.08/image, total $0.30-0.50/site.
 
 - Generate 1-2 short narrative video loops per site (5-10s, muted, autoplay) for hero backgrounds
 - Cost ~$0.20-0.40 each
-- Pair with same brand palette + narrative thread as DALL-E originals
+- Pair with same brand palette + narrative thread as GPT Image 1.5 originals
 - Falls back to Pexels Video API loops when Sora unavailable
 
 ### Image count scales with sitemap (***NEVER cap at 4-page-site numbers***)
@@ -198,7 +200,7 @@ Source sitemap.xml is ground truth; cap at 1000 pages.
 
 The pipeline that promised "4-8 page rebuild with 30+ images" but delivered ~15% of that is a build failure — every page must hit its image floor before "done".
 
-### Tier S Agents — beyond Pexels/CSE/DALL-E
+### Tier S Agents — beyond Pexels/CSE/GPT Image 1.5
 
 ***ALL first-class, all parallel in Phase 0 when keys present***
 
@@ -209,7 +211,7 @@ Stock alone is generic. AI alone is uncanny. The full media stack chains 17+ par
 | 1 | **Wikimedia Commons** | always (no key) | Named buildings/landmarks/businesses/public figures, historical context, brand-noted imagery | CC0/CC-BY/CC-BY-SA | free | scan every business name/location/founder for matches |
 | 2 | **Wikipedia + Wikidata** | always (no key) | Entity-based imagery for businesses/people with Wikipedia entries — pulls infobox image + structured properties (founding date, HQ photo, founder portraits) | CC | free | when entity exists |
 | 3 | **Flickr Creative Commons** | `FLICKR_API_KEY` set | Niche photography Pexels misses (hyperlocal, professional/hobbyist, event coverage) — filter `license=4,5,6,7,9,10` for commercial-OK | CC-BY/CC-BY-SA/CC0 | free | 5-10 niche-relevant shots per build |
-| 4 | **FLUX.1 (via fal.ai)** | `FAL_API_KEY` OR `REPLICATE_API_TOKEN` set | Secondary AI imagery — beats DALL-E for photoreal humans, complex multi-subject scenes, narrative variation. FLUX.1 [pro] for hero, [schnell] for fast iteration | commercial OK | ~$0.025-0.05/img | 2-3 narrative variants per major section |
+| 4 | **FLUX.1 (via fal.ai)** | `FAL_API_KEY` OR `REPLICATE_API_TOKEN` set | Secondary AI imagery — beats GPT Image 1.5 for photoreal humans, complex multi-subject scenes, narrative variation. FLUX.1 [pro] for hero, [schnell] for fast iteration | commercial OK | ~$0.025-0.05/img | 2-3 narrative variants per major section |
 | 5 | **Recraft v3** | `RECRAFT_API_KEY` set | Vector + raster AI with brand-style adherence — generates on-brand SVG icon sets, illustrations, infographics. Output = editable SVG, infinite scale | commercial OK | ~$0.04/img | full icon set when no Lucide match exists |
 | 6 | **Mapbox Static Images** | `MAPBOX_TOKEN` set (already in env) | Custom-styled map snapshots (PNG, brand-color-matched, no JS) — replaces Google Maps iframe for performance + brand cohesion | commercial OK | free up to 50K/mo | 1 map per address-bearing page |
 | 7 | **Cloudinary** | `CLOUDINARY_*` set (already in env) | Image transform layer — auto-format (WebP/AVIF), auto-quality, AI-crop (`g_auto`), generative-fill, background-removal, upscale, color-cast correction. Apply to EVERY non-AI image post-fetch | — | free 25GB/mo | every image piped through |
@@ -238,12 +240,12 @@ Stock alone is generic. AI alone is uncanny. The full media stack chains 17+ par
 - Each agent reads `_research.json` + `_form_data.json`, writes to `_assets/{agent}/`, exits
 - Main thread waits, merges results into unified `_assets.json` + `_image_profiles.json`, runs Cloudinary transform pipeline, AI-rates via Workers AI Llama Vision, curates final set via score threshold
 - Total wall-clock: ~30-60s for all 17 agents (network-bound, not CPU)
-- Cost: $0.50-2.00/site total media spend (DALL-E + FLUX.1 + Sora dominate)
-- The 4-agent baseline (Pexels/CSE/DALL-E/Crawler) is the floor; the 17-agent stack is the ceiling — every site runs as many agents as the env keys allow
+- Cost: $0.50-2.00/site total media spend (GPT Image 1.5 + FLUX.1 + Sora dominate)
+- The 4-agent baseline (Pexels/CSE/GPT Image 1.5/Crawler) is the floor; the 17-agent stack is the ceiling — every site runs as many agents as the env keys allow
 
-### DALL-E first for originals (***Brian's stated preference — use it a lot***)
+### GPT Image 1.5 first for originals (***Brian's stated preference — use it a lot***)
 
-When generating original imagery, use DALL-E 3 (via OpenAI Images API) as the primary engine — superior text rendering, brand-style adherence, and photorealistic results vs alternatives.
+When generating original imagery, use GPT Image 1.5 (via OpenAI Images API) as the primary engine — superior text rendering, brand-style adherence, and photorealistic results vs alternatives.
 
 - Generate 3-5 hero variants per major section
 - Prompt template: `"Photorealistic [scene], [extracted brand color palette], [logo style adjective from logo extraction], shot on Hasselblad, golden hour, 85mm, no text, no logos, hyperdetailed, cinematic"`
@@ -292,7 +294,7 @@ The lonemountainglobal.com `Vian_CV_Long_4-2-2024.pdf` is the canonical case —
 
 ### Budget split
 
-- GPT-4o vision QA capped at $1 (see completeness-verification)
+- GPT Image 2 vision vision QA capped at $1 (see completeness-verification)
 - Media generation/acquisition is a SEPARATE budget — spend what's needed to make the site gorgeous
 - Ideogram (~$0.05/logo), GPT Image 1.5 (~$0.04/image), Stability (~$0.03/image), stock APIs (free tiers)
 - Typical media budget: $0.50-2.00/site
@@ -408,9 +410,9 @@ The rebuilt blog MUST NOT ship posts with missing or broken hero images. Every p
 
 1. **Source `featured_image`/`og:image` URL** if HEAD-200 + bytes >5KB (filters out tracking pixels) + dimensions ≥800×600
 2. **First inline `<img>` from post body** if HEAD-200 + dimensions ≥800×600 — the article's lead image is usually a fine hero
-3. **Pexels search** by post title + tags + categories: top 3 results scored by GPT-4o vision against `(post_title, post_excerpt, brand_palette)`, pick highest scoring ≥7/10
-4. **DALL-E generation** with per-post prompt encoding all 6 mandatory fields (page topic+intent verbatim from `post_title + post_excerpt`, brand palette, composition matching post genre, subject specificity, photographic technical specs, negative prompt). Cost ~$0.04-0.08/post. ~$2-4 per 50-post blog migration.
-5. **Brand-gradient SVG** as the hard-floor fallback — placeholder SVG with post title rendered + brand palette gradient. Used only when DALL-E spend ceiling tripped.
+3. **Pexels search** by post title + tags + categories: top 3 results scored by GPT Image 2 vision vision against `(post_title, post_excerpt, brand_palette)`, pick highest scoring ≥7/10
+4. **GPT Image 1.5 generation** with per-post prompt encoding all 6 mandatory fields (page topic+intent verbatim from `post_title + post_excerpt`, brand palette, composition matching post genre, subject specificity, photographic technical specs, negative prompt). Cost ~$0.04-0.08/post. ~$2-4 per 50-post blog migration.
+5. **Brand-gradient SVG** as the hard-floor fallback — placeholder SVG with post title rendered + brand palette gradient. Used only when GPT Image 1.5 spend ceiling tripped.
 
 ### Per-post prompt template
 
@@ -421,7 +423,7 @@ Photorealistic editorial-style image illustrating "<post_title>". Subject: <subj
 ### Vision validation
 
 - Each fallback hero gets vision-scored before commit
-- <7/10 triggers regen via DALL-E with refined prompt (max 3 attempts per post — capped lower than slot regen ceiling because blog herofills are bulk)
+- <7/10 triggers regen via GPT Image 1.5 with refined prompt (max 3 attempts per post — capped lower than slot regen ceiling because blog herofills are bulk)
 - Final fallback: brand-gradient SVG
 - Never ship a post with NO image
 
@@ -442,16 +444,16 @@ FAIL on any post missing a hero.
 
 ## API Priority Chain
 
-***DALL-E ELEVATED — Brian's stated preference for slot-fill***
+***GPT Image 1.5 ELEVATED — Brian's stated preference for slot-fill***
 
-Real photos of the actual entity always win when they exist (Places/uploads/scrape — slots 1-3). Beyond that, DALL-E becomes the PRIMARY originator for every slot the source chain didn't naturally fill — it crafts the per-slot ultra-realistic perfect photo for each spot. Stock APIs are supplements + speed-passes, not the workhorse.
+Real photos of the actual entity always win when they exist (Places/uploads/scrape — slots 1-3). Beyond that, GPT Image 1.5 becomes the PRIMARY originator for every slot the source chain didn't naturally fill — it crafts the per-slot ultra-realistic perfect photo for each spot. Stock APIs are supplements + speed-passes, not the workhorse.
 
 | Priority | API | Key | Use | Rate | Confidence |
 |----------|-----|-----|-----|------|------------|
 | 1 | Google Places Photos | GOOGLE_PLACES_API_KEY | Actual business photos (real entity wins) | 1000/day | 85-95 |
 | 2 | User uploads | (form) | Submitted via /create | — | 95 |
 | 3 | Website scrape | (fetch) | Images from existing site (preserve brand equity) | — | 80-90 |
-| 4 | **DALL-E 3 HD / gpt-image-1** | OPENAI_API_KEY | **PRIMARY slot-fill engine — per-slot ultra-real perfect photo** | — | 85 |
+| 4 | **GPT Image 1.5 HD / gpt-image-1** | OPENAI_API_KEY | **PRIMARY slot-fill engine — per-slot ultra-real perfect photo** | — | 85 |
 | 5 | Pexels | PEXELS_API_KEY | Stock photos + videos (speed-pass) | 200/hr | 60 |
 | 6 | Pexels Video | PEXELS_API_KEY | Hero video loops (preferred over static stock) | 200/hr | 70 |
 | 7 | Google CSE | GOOGLE_CSE_KEY+CX | Web image search (filtered + relevance-scored) | 100/day | 40-70 |
@@ -466,11 +468,11 @@ Real photos of the actual entity always win when they exist (Places/uploads/scra
 | 17 | Sora | OPENAI_API_KEY | 5–10s video loops | — | 70 |
 | 18 | Cloudinary | CLOUDINARY_* | Transform layer (WebP/AVIF, AI-crop) | 25GB free | — |
 
-### DALL-E-first slot-fill rule (***UNIVERSAL — for slots 4+ in the chain***)
+### GPT Image 1.5-first slot-fill rule (***UNIVERSAL — for slots 4+ in the chain***)
 
-- Once real-entity sources (Places/uploads/scrape) are exhausted, DALL-E is invoked BEFORE generic stock — the per-slot prompt produces a tighter topic match than any stock library can return
-- Stock APIs run in parallel as speed-pass fallback (instant return for quick fill if DALL-E call hangs >15s) but DALL-E output is preferred at curation
-- Brian's preference: "DALL-E can literally create the ultra-realistic perfect photo for any given photo spot, so rely on that fact" — encoded as default behavior, not opt-in
+- Once real-entity sources (Places/uploads/scrape) are exhausted, GPT Image 1.5 is invoked BEFORE generic stock — the per-slot prompt produces a tighter topic match than any stock library can return
+- Stock APIs run in parallel as speed-pass fallback (instant return for quick fill if GPT Image 1.5 call hangs >15s) but GPT Image 1.5 output is preferred at curation
+- Brian's preference: "GPT Image 1.5 can literally create the ultra-realistic perfect photo for any given photo spot, so rely on that fact" — encoded as default behavior, not opt-in
 
 ### 2026 image-stack pricing reference (***drives engine selection in research_images prompt***)
 
@@ -482,7 +484,7 @@ Real photos of the actual entity always win when they exist (Places/uploads/scra
 | Ideogram Turbo | $0.025 | OG cards w/ tagline + logo | commercial-OK |
 | Stability AI SD3 | $0.03 | Textures, patterns, abstract bg | commercial-OK |
 | GPT Image 1.5 | $0.034 | Stylized illustrations, section dividers | commercial-OK |
-| DALL-E 3 HD | $0.04–0.08 | Fallback for Flux when key absent | commercial-OK |
+| GPT Image 1.5 HD | $0.04–0.08 | Fallback for Flux when key absent | commercial-OK |
 | Flux 1.1 Pro Ultra | $0.06 | Photoreal hero (humans, complex scenes, 4MP+) | commercial-OK |
 | Recraft V3 | $0.08 | Editable SVG icon sets, brand-style adherence | commercial-OK |
 | Ideogram 3.0 | $0.09 | Logo + favicon set + text-heavy graphics | commercial-OK |
@@ -499,9 +501,9 @@ Real photos of the actual entity always win when they exist (Places/uploads/scra
 - **SVG icons** → Recraft V3
 - **OG card** → Ideogram Turbo
 - **Video** → Pexels first, Sora when premium
-- **Fallback** → DALL-E 3 HD when Flux key absent
+- **Fallback** → GPT Image 1.5 HD when Flux key absent
 
-Brian's stated preference (DALL-E heavy use) preserved as fallback chain entry.
+Brian's stated preference (GPT Image 1.5 heavy use) preserved as fallback chain entry.
 
 ### pHash dedup (***replaces md5 — visually identical but byte-different images dedupe correctly***)
 
@@ -596,7 +598,7 @@ Per business: construct 3-5 search queries combining: business type + city, busi
 
 ### Original-asset retention (***DEFAULT BEHAVIOR — never replace a quality logo***)
 
-- When source site has a professional logo+favicon (logo quality score ≥7/10 via GPT-4o detail:low, OR site is a known good-design brand), KEEP both verbatim
+- When source site has a professional logo+favicon (logo quality score ≥7/10 via GPT Image 2 vision detail:low, OR site is a known good-design brand), KEEP both verbatim
 - Replacement requires explicit user instruction OR logo quality score <7/10
 - **Brand equity > AI-generated novelty**
 
@@ -604,7 +606,7 @@ The lonemountainglobal.com lesson: original logo was perfectly designed; the reb
 
 ### Logo font + visual element extraction (***GOLD MINE — drives ENTIRE site design***)
 
-When logo found, single GPT-4o vision call extracts:
+When logo found, single GPT Image 2 vision vision call extracts:
 
 ```ts
 {
@@ -631,9 +633,9 @@ When logo contains a strong graphic element (mountain, wave, leaf, geometric mar
 
 **Process**:
 
-1. GPT-4o identifies bounding box of icon-only region
+1. GPT Image 2 vision identifies bounding box of icon-only region
 2. ImageMagick crops + alpha-trims (`magick logo.png -alpha extract -trim +repage`)
-3. Upscale 2-4x via Real-ESRGAN or DALL-E variation
+3. Upscale 2-4x via Real-ESRGAN or GPT Image 1.5 variation
 4. Save `assets/brand-splash.png` (full-bleed hero bg) + `assets/brand-mark.png` (favicon-sized)
 
 Pair with logo's matched font → hero feels designed by the same hand that made the logo. The lonemountainglobal.com `mountain-background-splash.png` extracted from the logo is the canonical example.
@@ -642,7 +644,7 @@ Pair with logo's matched font → hero feels designed by the same hand that made
 
 - Ideogram v3 preferred for text-heavy logos
 - Generate exactly 3 variants: A=lockup, B=icon, C=wordmark
-- Single GPT-4o detail:low call rates all 3 (1-10), picks winner
+- Single GPT Image 2 vision detail:low call rates all 3 (1-10), picks winner
 - Winner <7: regenerate losing slot only (max 2 rounds)
 - Cost: ~$0.05 total
 - Style: clean, modern, text-based with geometric accent
@@ -652,7 +654,7 @@ Pair with logo's matched font → hero feels designed by the same hand that made
 
 ***real-favicongenerator MANDATORY — every site, every build***
 
-***Hard gate***: every site MUST run the full favicon generation pipeline. Use the chosen icon-only logo region (no text wordmark — extract icon via GPT-4o bounding box if logo is a lockup) as input.
+***Hard gate***: every site MUST run the full favicon generation pipeline. Use the chosen icon-only logo region (no text wordmark — extract icon via GPT Image 2 vision bounding box if logo is a lockup) as input.
 
 ### Two execution paths
 
@@ -715,7 +717,7 @@ Generate originals when stock/discovered images are insufficient or generic. Ori
 ### Generation strategy
 
 - Generate 3-5 hero candidates, 1 per service, 2-3 atmospheric textures, 1 OG image
-- Pick best via GPT-4o detail:low (single batch call, all candidates in one request)
+- Pick best via GPT Image 2 vision detail:low (single batch call, all candidates in one request)
 - Total generation: ~$0.30-0.50
 - Combined with logo A/B/C: ~$0.35-0.55 generation spend
 
@@ -753,7 +755,7 @@ Every page should have at least one video or animated element.
 - Batch 5 images/call, 3 batches parallel
 - Sufficient for 90% of placement decisions
 
-### Tier 2 — GPT-4o detail:low (~$0.02)
+### Tier 2 — GPT Image 2 vision detail:low (~$0.02)
 
 - Top 5 hero candidates only (sorted by Tier 1 combined score)
 - Single batch call
@@ -804,7 +806,7 @@ If insufficient images:
 - ≥1 logo file in `public/` (`logo.{png,svg,webp}` AND `logo-header.png`) else FAIL
 - Every original-site slider image group preserved with order + group manifest else FAIL
 - Every original-site PDF/DOC linked in body content downloaded to `public/docs/` and surfaced on the equivalent new page else FAIL
-- ≥3 DALL-E-generated originals when OPENAI_API_KEY present else WARN (FAIL if 0 originals)
+- ≥3 GPT Image 1.5-generated originals when OPENAI_API_KEY present else WARN (FAIL if 0 originals)
 - ≥3 video assets (Pexels stock, YouTube embed, or original-site video) else WARN
 
 ## Performance Budget
