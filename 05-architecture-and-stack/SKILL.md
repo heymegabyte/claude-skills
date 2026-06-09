@@ -123,8 +123,8 @@ database_name = "myapp"
 ## Cost discipline
 
 - Workers free tier: 100k requests/day. Sufficient for most solo projects.
-- Workers Paid: $5/mo + $0.30/M requests + $12.50/M CPU-ms
-- D1: 5GB free, $0.75/GB-month, $0.001/M reads, $1/M writes
+- Workers Paid: $5/mo (10M requests + 30M CPU-ms included) + $0.30/M extra requests + $0.02/M extra CPU-ms (verified 2026-06-09 per `developers.cloudflare.com/workers/platform/pricing`)
+- D1 on Workers Paid: 5GB storage + 25B rows-read + 50M rows-written included/month, then $0.75/GB-month + $0.001/M extra rows-read + $1/M extra rows-written. No egress / bandwidth charges. Read replication is included (verified 2026-06-09 per `developers.cloudflare.com/d1/platform/pricing`)
 - R2: 10GB free, $0.015/GB-month, $0/egress (huge win vs S3)
 - Workers AI: Llama 3.3 70B FP8 FREE
 - AI Gateway: free

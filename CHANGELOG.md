@@ -1,5 +1,79 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-61 — Cloudflare Workers/D1 pricing correction (web-verified) + codify "one-search-many-fixes"
+
+### Closes pass-60 candidates 1 (codify multi-fix-from-one-search) + 2 (Workers + D1 pricing audit)
+
+### Web-verified Cloudflare Workers + D1 pricing (Jun 2026)
+
+Via `developers.cloudflare.com/workers/platform/pricing` + `developers.cloudflare.com/d1/platform/pricing`:
+
+**Workers Paid:**
+
+- **$5/mo base** — includes **10M requests + 30M CPU-ms** per month
+- **$0.30 / M extra requests** (above the 10M included)
+- **$0.02 / M extra CPU-ms** (above the 30M included) — pass-60's doc claimed **$12.50 / M CPU-ms**, which is **625× off**. The $12.50 figure was likely an old "duration-based" billing pre-CPU-ms migration.
+
+**D1 (on Workers Paid):**
+
+- **5 GB storage + 25B rows-read + 50M rows-written** per month included
+- **$0.75 / GB-month** for extra storage
+- **$0.001 / M extra rows-read** (above the 25B included)
+- **$1.00 / M extra rows-written** (above the 50M included)
+- **No egress / bandwidth charges**
+- Read replication included — replicas don't multiply the rate, just the rows-read counter
+
+### Fix to `05-architecture-and-stack/SKILL.md:126-127`
+
+Old (stale + missing included-tier breakdown):
+
+```text
+- Workers Paid: $5/mo + $0.30/M requests + $12.50/M CPU-ms
+- D1: 5GB free, $0.75/GB-month, $0.001/M reads, $1/M writes
+```
+
+New (accurate, included-tier broken out, sources cited):
+
+```text
+- Workers Paid: $5/mo (10M requests + 30M CPU-ms included) + $0.30/M extra requests + $0.02/M extra CPU-ms (verified 2026-06-09 per developers.cloudflare.com/workers/platform/pricing)
+- D1 on Workers Paid: 5GB storage + 25B rows-read + 50M rows-written included/month, then $0.75/GB-month + $0.001/M extra rows-read + $1/M extra rows-written. No egress / bandwidth charges. Read replication is included (verified 2026-06-09 per developers.cloudflare.com/d1/platform/pricing)
+```
+
+### Codified `rules/lint-doctrine.md` § Codified incidents — new row
+
+> **One WebSearch result covers MULTIPLE related stale facts in the corpus** → After web-verifying ONE fact, IMMEDIATELY grep for related-class mentions and apply the verification to all of them in the same pass — don't ship one fix and let the rest age. The cost of the search has already been paid.
+>
+> Source: pass-59 web-verified Opus 4.8 pricing. The same Anthropic pricing page covered Haiku 4.5 + Sonnet 4.6. Pass-60 caught a stale Haiku 3.5 rate from the SAME verification — but only because the audit happened to fire. Codifying makes it deterministic.
+
+### Why this matters for cost discipline
+
+Solo-builder cost math depends on accurate rates. A doc that says "$12.50/M CPU-ms" makes a Worker doing 100M CPU-ms/month look like $1250 — when reality is $2. That's the kind of mismatch that either kills a viable side-project at the planning phase OR blows up the budget at the billing phase. The corrected numbers reset the mental model.
+
+### Closure-loop confirmation
+
+Pass-58→59→60→61 chain has now caught 5 latent staleness bugs (Opus pricing direction, $15/$75 vs $5/$25 Opus, Haiku 3.5 → 4.5, Workers CPU-ms 625× off, D1 included-tier missing) across 4 different files. The codified "one-search-many-fixes" rule reduces the cost of doing this systematically — pass-61 already used it (one Cloudflare-pricing WebSearch fixed both Workers AND D1 lines simultaneously).
+
+### Verification
+
+```bash
+npm run lint                                                              # ✓ 9/9 green
+grep -nE '\$12\.50.*CPU-ms|5GB free' 05-architecture-and-stack/SKILL.md   # 0 hits — stale Workers/D1 lines fixed
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- KV / R2 / Workers AI pricing — line 128-129 of `05-architecture-and-stack/SKILL.md`. R2 is "$0.015/GB-month + $0 egress" which matches Cloudflare's current public pricing. KV reference not shown but worth a separate pass.
+
+### Next candidates (pass-62)
+
+- KV pricing audit (separate verification cycle if it's referenced)
+- `bin/check-pricing.sh` automation (mechanizes the manual pass-58→61 audits)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-60 — Haiku 4.5 pricing fix in eval-driven-development (3 references)
 
 ### Closes pass-59 candidate 1 (audit remaining skill-dirs for inherited stale pricing)
