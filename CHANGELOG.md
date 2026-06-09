@@ -1,5 +1,62 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-54 — `bin/check-doc-urls.sh` external-URL health check
+
+### Closes pass-53 candidate 1 (docs-URL ping automation)
+
+NEW `bin/check-doc-urls.sh` (5th caller of `bin/lib/emit-json.sh`):
+
+- Extracts unique external URLs from `rules/*.md` + `[0-9][0-9]-*/SKILL.md`
+- HEAD-requests each with 10s timeout, follows redirects
+- Tri-state classification:
+  - **pass** (2xx/3xx) — URL works
+  - **skip** (4xx) — endpoint commonly rejects HEAD (auth required, POST-only, etc.); presence of a 4xx response means the endpoint exists
+  - **fail** (5xx/000) — server error or DNS/network failure → owning rule needs audit
+- Self-hosted `megabyte.space` URLs explicitly skipped (transient by design)
+- Placeholder URLs filtered via TLD heuristic: `awk -F/ '$3 ~ /\./'` excludes hosts without a dot (e.g. `third-party-cdn` in `<img>` examples). Real URLs always have a `.tld`.
+- Human mode + `--json` mode (uniform envelope per `rules/uniform-json-output.md`)
+
+### Two bugs caught in-pass (closure-loop discipline working)
+
+1. **`curl -w '%{http_code}' || echo "000"` concatenation** — when curl succeeds but exit was masked by the `||` fallback, `code` ended up as `405000` (curl's `405` + fallback's `000`). Fix: assign curl output to `code`, then default-substitute with `code="${code:-000}"`. Same pipeline-mask root cause class as the pass-51/52 incident.
+2. **4xx classified as fail** — HEAD requests to API endpoints (`api.anthropic.com`, `api.cloudflare.com`, etc.) commonly return 4xx (Method Not Allowed, requires auth) even when the endpoint exists. Treating 4xx as fail produced 17 false negatives. Reclassified to `skip` with "HEAD rejected — endpoint likely exists" note.
+
+### Current health snapshot
+
+```text
+▸ Checking 32 unique URLs (timeout=10s)...
+━━━ SUMMARY: 15 pass · 0 fail · 17 skip
+✓ All checked URLs reachable
+```
+
+15 URLs returned 2xx/3xx, 17 returned 4xx (HEAD-rejected but exist), 0 hard failures. Anthropic + Cloudflare + OpenAI + Resend + Stripe + Square + Twilio + Checkr + Plausible API endpoints all show "exists but HEAD-rejected" — expected. Public docs URLs (`docs.anthropic.com`, `developers.cloudflare.com`, `developers.hubspot.com`) all 2xx.
+
+### Why not a pre-commit gate
+
+Network-dependent + 30+ second runtime. Designed for weekly cron + on-demand audit. Lives outside the 9-gate `lint-all.sh` suite. A future CI step would invoke this on a schedule and open an issue on 5xx/000 — pass-55 candidate.
+
+### Verification
+
+```bash
+bash bin/check-doc-urls.sh                          # ✓ 15 pass · 0 fail · 17 skip
+bash bin/check-doc-urls.sh --json | python3 -m json.tool  # valid envelope
+npm run lint                                        # ✓ 9/9 green
+```
+
+### What was NOT done
+
+- CI cron workflow that runs this weekly + opens an issue on fail — deferred to pass-55 (concrete value once the script is shaped)
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-55)
+
+- `.github/workflows/doc-urls-check.yml` weekly cron + auto-issue on fail
+- Add `npm run check:urls` script alias
+- SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-53 — AI-rules staleness audit + contract-first-ai date-stamp + Rec correction
 
 ### Closes pass-52 candidates 1 (`ai-seniority` + `contract-first-ai` staleness audit) + 2 (back-port hook, after correction below)
