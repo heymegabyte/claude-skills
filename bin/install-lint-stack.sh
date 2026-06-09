@@ -192,6 +192,8 @@ const want = {
   'sha-pin:check': 'node ~/.agentskills/scripts/sha-pin-actions.mjs --check .github/workflows/*.yml',
   'sha-pin:bump': 'node ~/.agentskills/scripts/sha-pin-actions.mjs --bump .github/workflows/*.yml',
   'security:audit': 'bash ~/.agentskills/bin/security-supply-chain.sh',
+  'recap': 'bash ~/.agentskills/bin/session-recap.sh',
+  'recap:today': 'bash ~/.agentskills/bin/session-recap.sh today',
 };
 let touched = 0;
 for (const [k, v] of Object.entries(want)) {

@@ -1,5 +1,42 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-35 — session-recap meta block + npm run recap installer
+
+### Closes pass-34 Rec 1 + Next 5
+
+- **`bin/session-recap.sh --json` now includes `meta` block** (uniform with `security-supply-chain.sh`):
+  ```json
+  {
+    "meta": {
+      "repo": "/path/to/repo",
+      "generated_at": "2026-06-09T09:03:38Z",
+      "git_sha": "5d3753c",
+      "filter": "1"
+    },
+    "entries": [...]
+  }
+  ```
+  - All `--json` outputs across helpers now share the same `meta` envelope shape.
+  - `filter` field captures the input arg (e.g. `today`, `10`, `2026-06`).
+- **`bin/install-lint-stack.sh`** package.json scripts += `recap` + `recap:today`:
+  - `npm run recap` → all recent CHANGELOG entries (last 10 default).
+  - `npm run recap:today` → today's entries only.
+  - Every project that `/install-lint-stack` runs gets the helper wired automatically.
+
+### Verified
+- JSON parses cleanly via `python3 -m json.tool`.
+- Human mode still produces the `━━━` heading format.
+- shellcheck → 0 on both bin scripts.
+- shfmt → 0 diff.
+- pack integrity → clean.
+
+### Uniform JSON envelope across helpers
+All `--json` emitters now produce `{meta: {repo, generated_at, git_sha, ...}, ...}`:
+- `bin/security-supply-chain.sh --json` — `{meta, checks, summary}`
+- `bin/session-recap.sh --json` — `{meta, entries, total}`
+
+This consistency lets PostHog/Sentry dashboards consume both via shared parser per pass-26 Rec.
+
 ## 2026-06-09 — pass-34 — session-recap --json + /session-recap slash command
 
 ### Closes both pass-33 Recs

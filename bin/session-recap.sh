@@ -35,12 +35,17 @@ TODAY_MATCH=$(date -u +%Y-%m-%d)
 
 # --- Parse entries via awk ---------------------------------------------------
 # Each entry starts with `## YYYY-MM-DD — <pass-id> — <summary>`.
-awk -v filter="$FILTER" -v today_match="$TODAY_MATCH" -v json="$JSON" '
+META_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+META_REPO=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
+META_GIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+
+awk -v filter="$FILTER" -v today_match="$TODAY_MATCH" -v json="$JSON" \
+  -v meta_ts="$META_TS" -v meta_repo="$META_REPO" -v meta_git_sha="$META_GIT_SHA" '
   BEGIN {
     entry_count = 0
     printing = 0
     lines_printed = 0
-    if (json) printf "{\"entries\":["
+    if (json) printf "{\"meta\":{\"repo\":\"%s\",\"generated_at\":\"%s\",\"git_sha\":\"%s\",\"filter\":\"%s\"},\"entries\":[", meta_repo, meta_ts, meta_git_sha, filter
   }
   /^## [0-9]{4}-[0-9]{2}-[0-9]{2} —/ {
     heading = $0
