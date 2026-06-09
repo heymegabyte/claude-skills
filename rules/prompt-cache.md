@@ -27,7 +27,7 @@ paths:
 ## Cache mechanics
 
 - Minimum cacheable prefix is model-dependent:
-  - **Opus 4.7/4.6/4.5 + Haiku 4.5** require 4,096 tokens
+  - **Opus 4.8/4.7/4.6/4.5 + Haiku 4.5** require 4,096 tokens
   - **Sonnet 4.6/4.5 + Opus 4.1 + older** require 1,024 tokens
 - Max **4 explicit `cache_control` breakpoints** per request
 - TTL: 5min default (free refresh on hit), 1hr extended via `{"ttl": "1h"}`
@@ -66,10 +66,11 @@ paths:
 - 20-block window
 - Placing `cache_control` on per-request varying content (timestamps, request IDs) guarantees miss
 
-## Opus 4.7 tokenizer change
+## Opus 4.7/4.8 tokenizer change
 
-- **~35% more tokens for the same input vs Opus 4.6**
+- **~35% more tokens for the same input vs Opus 4.6** — the tokenizer was upgraded in 4.7 and carried forward unchanged in **4.8** (`claude-opus-4-8`, the current flagship per `model-routing.md`)
 - Per-token price unchanged but effective request cost rises — factor into cost-estimator and pre-warm decisions
+- Cache mechanics, prefix minimums, and 4-breakpoint ceiling are all identical across 4.7 ↔ 4.8 — no migration work beyond updating model IDs
 
 ## Subagent caching
 

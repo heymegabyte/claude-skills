@@ -1,5 +1,59 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-51 — AI rules: Opus 4.8 awareness in prompt-cache + opus-quota-fallback
+
+### Scope shift
+
+Pass-43→50 was an 8-pass lint-infrastructure arc. With the lint stack complete + both queue items gated, shifting to the AI-rules surface the skill router surfaces every prompt (`rules/ai-seniority`, `rules/prompt-cache`, `rules/contract-first-ai`, `rules/model-routing`, `rules/opus-quota-fallback`). Per user's "improve AI/API/MCP/web rules" mandate.
+
+### Real gap surfaced + fixed
+
+**`model-routing.md` already knows Opus 4.8 is flagship** (added in an earlier pass) but **`prompt-cache.md` + `opus-quota-fallback.md` still referenced only 4.7/4.6**. This is a cross-rule consistency drift that the existing cross-link validators can't catch (they enforce file-existence, not version-content sync).
+
+### Edits
+
+- **`rules/prompt-cache.md` § Cache mechanics** — added `Opus 4.8` to the 4096-token-prefix model list (alongside 4.7/4.6/4.5 + Haiku 4.5)
+- **`rules/prompt-cache.md` § Opus 4.7/4.8 tokenizer change** (renamed from "Opus 4.7 tokenizer change") — clarified that the ~35% token expansion was introduced in 4.7 and carries forward unchanged in 4.8. Cache mechanics, prefix minimums, and 4-breakpoint ceiling are all identical 4.7 ↔ 4.8 — no migration work beyond model ID updates.
+- **`rules/opus-quota-fallback.md` § Agent frontmatter convention** — `claude-opus-4-8` added to the model-declaration list (alongside 4.7 / 4.6)
+- **`rules/opus-quota-fallback.md` § Hard-coded Opus uses** — section header + body extended to flag both 4.8 + 4.7 as requiring fallback pairing; both `claude-opus-4-8` and `claude-opus-4-7` count as anti-patterns when hard-coded without `model_fallback`
+- **`rules/opus-quota-fallback.md` § User override** — added `/model claude-opus-4-8` alongside the existing 4.7 example
+
+### Why cross-rule consistency drift matters
+
+Rules in the same pack (`pack: "ai"` for all 3 above) get loaded together on AI-related prompts. If 1/3 references the current flagship but 2/3 don't, the AI's mental model of "current Opus" is incoherent — it might pick `claude-opus-4-7` when user wanted the flagship, or pair 4.8 recommendations with 4.7-only fallback advice. Same-pack rules need version-content sync.
+
+### Codifiable pattern (for future passes)
+
+Cross-rule consistency drift is a class of bug that:
+- file-existence validators miss (`validate-skills.sh` / `validate-packs.mjs`)
+- markdownlint misses (it's prose, not format)
+- Only surfaces when a reader (human or LLM) holds multiple same-pack rules in mind and notices the discrepancy
+
+Detection: when a new model/version/API mention lands in one rule, grep the rest of the pack for older mentions and update in same turn. Codifying this in `lint-doctrine.md` next pass would make it explicit.
+
+### Verification
+
+```bash
+npm run lint                                              # ✓ 9 pass · 0 fail · 0 skip
+grep -c "claude-opus-4-8\|Opus 4\.8" rules/prompt-cache.md rules/model-routing.md rules/opus-quota-fallback.md
+# prompt-cache: 2 · model-routing: 1+ · opus-quota-fallback: 4
+```
+
+### What was NOT done
+
+- `ai-seniority.md` + `contract-first-ai.md` — did NOT audit them for 4.8 sync this pass; they don't mention specific Opus versions in the same way. Scope kept tight to the 2 rules with the actual drift.
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated.
+
+### Next candidates (pass-52)
+
+- Codify the cross-rule version-consistency pattern in `rules/lint-doctrine.md`
+- Audit `ai-seniority.md` + `contract-first-ai.md` for staleness
+- Audit `model-routing.md` for any 4.7-only mentions that should include 4.8 (some retirement-table entries may need an update)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-50 — `npm run lint` aliases + codify ship-gate-then-run-all + MD038 fix
 
 ### Closes pass-49 candidates 1 (codify ship-gate-then-run-all) + 2 (`npm run lint` alias)

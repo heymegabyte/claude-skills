@@ -27,7 +27,7 @@ When ANY signal fires, the main thread sets internal `OPUS_AVAILABLE=false` for 
 
 ### Agent frontmatter convention
 
-Every agent that declares `model: opus` (or `model: claude-opus-4-7` / `claude-opus-4-6`) MUST also declare:
+Every agent that declares `model: opus` (or `model: claude-opus-4-8` / `claude-opus-4-7` / `claude-opus-4-6`) MUST also declare:
 
 ```yaml
 model: claude-opus-4-7
@@ -46,9 +46,9 @@ Same convention. Skills with `effort: xhigh` ship with `effort_fallback: high`. 
 
 Fast Mode is Opus-only. When `OPUS_AVAILABLE=false`, Fast Mode automatically disables — main thread runs on Sonnet at standard speed. No user prompt needed.
 
-### Hard-coded Opus uses (skill content saying "use Opus 4.7" in prose)
+### Hard-coded Opus uses (skill content saying "use Opus 4.8 / 4.7" in prose)
 
-Any skill body or rule body that explicitly recommends Opus 4.7 should pair every recommendation with "(Sonnet 4.6 fallback when Opus quota exhausted)". Anti-pattern: hard-coding `claude-opus-4-7` in source code without the fallback path.
+Any skill body or rule body that explicitly recommends Opus 4.8 or 4.7 should pair every recommendation with "(Sonnet 4.6 fallback when Opus quota exhausted)". Anti-pattern: hard-coding `claude-opus-4-8` or `claude-opus-4-7` in source code without the fallback path.
 
 ## Quality expectations during fallback
 
@@ -92,7 +92,7 @@ The Monitor can call `opus-quota-check.sh || sub_agent_model=claude-sonnet-4-6` 
 ## Auto-restore
 
 - **Weekly reset**: every Monday 9am America/New_York, the all-models bucket resets. The fallback flag file (`~/.claude/.opus-disabled`) should be deleted at that time. If the user wants permanent Sonnet-only mode, they can `touch` it again.
-- **Explicit user override**: `/model claude-opus-4-7` (or any opus alias) re-enables Opus for the session, regardless of the flag file. Treat user `/model` selection as authoritative.
+- **Explicit user override**: `/model claude-opus-4-8` / `/model claude-opus-4-7` (or any opus alias) re-enables Opus for the session, regardless of the flag file. Treat user `/model` selection as authoritative.
 - **Transient 429 backoff**: 429-triggered fallbacks expire after 5 minutes. After 5 minutes, the main thread can try Opus again — if it 429s again, re-set the flag for another 5 minutes. Avoids permanent fallback from a single rate-limit blip.
 
 ## End-of-turn report
