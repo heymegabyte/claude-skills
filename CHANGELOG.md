@@ -1,5 +1,44 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-50 — `npm run lint` aliases + codify ship-gate-then-run-all + MD038 fix
+
+### Closes pass-49 candidates 1 (codify ship-gate-then-run-all) + 2 (`npm run lint` alias)
+
+- **`package.json` § scripts** — NEW section (was absent). 7 aliases:
+  - `npm run lint` → `bash bin/lint-all.sh` (the 9-gate pre-flight)
+  - `npm run lint:json` → `bash bin/lint-all.sh --json` (CI-pipeable envelope)
+  - `npm run lint:fix` → `markdownlint-cli2 --fix` + `prettier --write` + `shfmt -w` (chained autofix across all 3 formatters)
+  - `npm run validate` → `validate-skills.sh && validate-packs.mjs` (the 2 structural gates)
+  - `npm run validate:packs` → `validate-packs.mjs` alone
+  - `npm run sha-pin` → `sha-pin-actions.mjs` (resolves tag refs to SHAs)
+  - `npm run sha-pin:check` → `sha-pin-actions.mjs --check` (CI gate)
+- **`rules/lint-doctrine.md` § Codified incidents** — new row codifying the pass-49 finding: per-gate verification misses cross-gate interactions; after adding any CI gate, run `bash bin/lint-all.sh` BEFORE commit. Source: pass-49 self-test surfaced 3 latent bugs that pass-43→48's per-gate verifications missed.
+- **Pass-49 CHANGELOG MD038 fix** — the bug-3 description had `` ` ... ` `` with backslash-escaped backticks creating a code span with leading/trailing spaces (MD038 violation). Rewrote sentence to split the two backticked tokens into separate phrases — no nested span needed. **Meta-irony**: pass-49 said it caught a CHANGELOG MD032 from pass-45; pass-50 caught MD038 in pass-49's CHANGELOG. The closure-loop discipline (every pass `npm run lint`s against current state, catching prior pass's prose-lint slips) is now load-bearing.
+
+### Closure-loop pattern as codified discipline
+
+The pass-N → pass-(N+1) chain has produced a reliable lint-correction cadence: each pass adds one gate AND closes the prior pass's lint slip surfaced by the previous gate-add. Pass-43→50 closed 8 gates this way. The codified rule in `lint-doctrine.md` § Codified incidents makes the discipline explicit so future maintainers don't ship per-gate-verified-only changes.
+
+### Verification
+
+```bash
+npm run lint                                              # ✓ 9 pass · 0 fail · 0 skip
+npm run lint:json | python3 -m json.tool                  # valid uniform envelope
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-51)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Consider adding `pre-push` lefthook step that runs `npm run lint` to catch CI gate failures BEFORE push — caveat per pass-49: solo-developer already has CI catching it, but the pre-push runs against `--cached` files, faster feedback
+- Audit other `rules/*.md` files for prose-lint patterns the closure-loop hasn't caught yet (one-shot `markdownlint-cli2 "rules/*.md"` already runs in every pass; gap would be specifically prose patterns markdownlint doesn't detect — e.g. broken intra-doc links)
+
+---
+
 ## 2026-06-09 — pass-49 — `bin/lint-all.sh` one-command CI pre-flight (+ 3 real bugs surfaced + fixed)
 
 ### Scope decision
@@ -24,7 +63,7 @@ Human mode: tree-printer output to stderr ending in `✓ lint-all CLEAN — read
 
 ### Three real bugs surfaced by running the tool against itself
 
-1. **`scripts/validate-skills.sh` false-positive on doc-example links** — inline-code stripping concatenated adjacent backtick-spans, so `\`string[]\` ... \`[label](href)\`` collapsed to `string[]...[label](href)` and the latter parsed as a broken `href` link. Fix: skip refs with neither `/` nor `.` (real file paths have one or the other; pure-token placeholder refs in docs like `(href)`, `(X)` are docs artifacts).
+1. **`scripts/validate-skills.sh` false-positive on doc-example links** — inline-code stripping concatenated adjacent backtick-spans. Two backticked spans separated by prose (e.g. `string[]` then later `[label](href)`) collapsed to `string[]...[label](href)` after strip; the latter parsed as a broken `href` link. Fix: skip refs with neither `/` nor `.` (real file paths have one or the other; pure-token placeholder refs in docs like `(href)` or `(X)` are docs artifacts).
 2. **CHANGELOG.md MD032 violations in pass-45 entry** — the "Drift-loop fix explained" numbered list lacked blank line between intro sentence and `1. push → ...`. Fix: added blanks. Bug introduced when pass-45 was written; surfaced by pass-49 running `markdownlint-cli2 "**/*.md"` against the full surface (vs. pass-45 only running it on pre-existing files).
 3. **Prettier cosmiconfig walk-up to unknown parent referencing `prettier-plugin-packagejson`** — local-only issue (CI's clean ubuntu runner has no parent traversal) but caused `prettier --check` to fail locally even when files were clean. Fix: pass `--config .prettierrc.json` EXPLICITLY in both `bin/lint-all.sh` AND `.github/workflows/publish.yml` Self-lint JSON/YAML + Normalize-generated steps so behavior is consistent local + CI. Also: ran `prettier --write` on the 4 dirty JSON/YAML files surfaced once config worked correctly.
 

@@ -147,6 +147,7 @@ The script runs as the final pre-push step (non-blocking — analysis only). Aft
 | `pretooluse-router.py` E501 multi-arg subprocess.run | *(not codified — cosmetic only)* | pass-4 ruff sweep |
 | 3+ helpers re-emit identical JSON `meta` boilerplate (inline `date -u +...` / `git rev-parse` / escape) | extract `bin/lib/emit-json.sh`; new helpers source it · per `rules/uniform-json-output.md` | pass-38 refactor — 2 callers = defer, 3 = lib |
 | `# shellcheck <word>` prose comment inside YAML `run:` block → actionlint SC1072 false-positive | reword to `# Note: ShellCheck ...` or `# Tip: ShellCheck ...`; `# shellcheck` prefix reserved for `disable=` / `source=` directives ONLY | pass-47 self-test of new Self-lint Shell CI step |
+| Per-pass gate verification misses cross-gate interactions (pass-N adds gate X, runs only X, ships; pass-(N+1) finds X interacts with gates Y/Z and breaks) | After adding any CI gate, run `bash bin/lint-all.sh` (or equivalent whole-surface sweep) BEFORE commit — never trust per-gate verification alone | pass-49 self-test surfaced 3 latent bugs (validate-skills link false-positive, CHANGELOG MD032, Prettier cosmiconfig walk-up) that pass-43→48's per-gate verifications missed |
 
 ## Pack integrity validator
 

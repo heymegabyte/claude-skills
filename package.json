@@ -23,6 +23,15 @@
     "./conventions": "./CONVENTIONS.md",
     "./profiles": "./SKILL_PROFILES.md"
   },
+  "scripts": {
+    "lint": "bash bin/lint-all.sh",
+    "lint:json": "bash bin/lint-all.sh --json",
+    "lint:fix": "npx --yes markdownlint-cli2@^0.18.1 --fix '**/*.md' && npx --yes prettier@3 --config .prettierrc.json --write '**/*.{json,jsonc,yml,yaml}' && shfmt -i 2 -ci -bn -w bin/*.sh bin/lib/*.sh scripts/*.sh",
+    "validate": "bash scripts/validate-skills.sh && node scripts/validate-packs.mjs",
+    "validate:packs": "node scripts/validate-packs.mjs",
+    "sha-pin": "node scripts/sha-pin-actions.mjs .github/workflows/*.yml",
+    "sha-pin:check": "node scripts/sha-pin-actions.mjs --check .github/workflows/*.yml"
+  },
   "keywords": [
     "claude-code",
     "claude-skills",
