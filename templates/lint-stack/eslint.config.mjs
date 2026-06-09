@@ -10,6 +10,7 @@ import security from 'eslint-plugin-security';
 import unicorn from 'eslint-plugin-unicorn';
 import promise from 'eslint-plugin-promise';
 import nodePlugin from 'eslint-plugin-n';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   js.configs.recommended,
@@ -38,4 +39,6 @@ export default [
   {
     ignores: ['dist/**', 'build/**', 'node_modules/**', '.next/**', 'coverage/**'],
   },
+  // MUST be last — disables ESLint formatting rules that conflict with Prettier
+  prettierConfig,
 ];

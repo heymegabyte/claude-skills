@@ -1,5 +1,31 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-10 — installer end-to-end PASS + eslint-config-prettier + precommit:audit
+
+### Installer end-to-end verification
+- Self-test on `/tmp/lint-stack-test-pass10-XXXXX` w/ real `npm i -D`:
+  - ✓ 31 packages installed cleanly (no `--save-exact` for plugin compat)
+  - ✓ 13 templates copied
+  - ✓ 8 scripts wired (lint/lint:fix/format/commit/release/lint:semgrep/lint:knip/lint:jscpd)
+  - ✓ Lefthook attempted (deferred only because sandbox lacked `.git` init)
+  - ✓ `node_modules` + `package-lock.json` materialized
+- First REAL working installation in the cycle.
+
+### eslint-config-prettier@10.1.8 added
+- DEPS list += `eslint-config-prettier` (mainstream, 1M+ weekly DLs).
+- `eslint.config.mjs` imports + spreads it as LAST entry → silences any ESLint rules that conflict with Prettier formatting.
+- No more double-up between ESLint + Prettier on style rules.
+
+### `precommit:audit` script wired
+- Installer's `package.json` scripts now add `"precommit:audit"`: `lefthook run pre-commit --all-files && lefthook run pre-push --all-files`.
+- Lets devs locally run the same gates CI runs (semgrep + jscpd + knip + trufflehog all in one command).
+- Per pass-7 Rec.
+
+### Verified
+- shellcheck `bin/install-lint-stack.sh` → 0.
+- pack integrity → clean (15/88/14).
+- Real `npm i` on sandbox → exit 0 (31 packages, no errors).
+
 ## 2026-06-08 — pass-9 — mainstream-only lint stack (drop @megabytelabs deps)
 
 ### Per Brian: use GitLab configs as INSPIRATION, ship mainstream npm-only

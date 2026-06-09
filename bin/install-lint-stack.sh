@@ -110,10 +110,12 @@ if [ "$HAS_NODE" = "1" ]; then
   declare -a DEPS=(
     # Lint orchestration
     lefthook oxlint
-    # ESLint 9 + canonical plugin chain
+    # ESLint 9 + canonical plugin chain (+ eslint-config-prettier last to silence
+    # any formatting rules that conflict with Prettier)
     eslint "@eslint/js" typescript-eslint
     eslint-plugin-perfectionist eslint-plugin-security
     eslint-plugin-unicorn eslint-plugin-promise eslint-plugin-n
+    eslint-config-prettier
     # Prettier 3 + curated plugins
     prettier prettier-plugin-packagejson prettier-plugin-organize-imports
     # Stylelint 16 + standards
@@ -158,6 +160,7 @@ const want = {
   'lint:semgrep': 'semgrep --config=auto --config=./.semgrep',
   'lint:knip': 'knip',
   'lint:jscpd': 'jscpd',
+  'precommit:audit': 'lefthook run pre-commit --all-files && lefthook run pre-push --all-files',
 };
 let touched = 0;
 for (const [k, v] of Object.entries(want)) {
