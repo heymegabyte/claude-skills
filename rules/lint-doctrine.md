@@ -135,6 +135,7 @@ The script runs as the final pre-push step (non-blocking — analysis only). Aft
 | `printf '- ...'` leading `-` parsed as flag | `semgrep-custom/bash-printf-leading-dash.yml` | pass-12 self-test on `lint-auto-improve.sh` |
 | `@megabytelabs/*` deps in package.json | `semgrep-custom/no-gitlab-megabytelabs-deps.yml` | pass-9 mainstream-only mandate |
 | `pretooluse-router.py` E501 multi-arg subprocess.run | *(not codified — cosmetic only)* | pass-4 ruff sweep |
+| 3+ helpers re-emit identical JSON `meta` boilerplate (inline `date -u +...` / `git rev-parse` / escape) | extract `bin/lib/emit-json.sh`; new helpers source it · per `rules/uniform-json-output.md` | pass-38 refactor — 2 callers = defer, 3 = lib |
 
 ## Pack integrity validator
 

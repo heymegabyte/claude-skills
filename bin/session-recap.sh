@@ -42,14 +42,17 @@ SKILLS_ROOT_FOR_LIB="${SKILLS_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
 META_TS=$(emit_iso_ts)
 META_REPO=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
 META_GIT_SHA=$(emit_git_sha)
+# Single source of truth for meta block — built once via emit_meta_block, passed
+# into awk verbatim. Removes JSON-shape divergence risk between shell and awk.
+META_BLOCK=$(emit_meta_block "$META_REPO" "$META_TS" "$META_GIT_SHA" "$FILTER")
 
 awk -v filter="$FILTER" -v today_match="$TODAY_MATCH" -v json="$JSON" \
-  -v meta_ts="$META_TS" -v meta_repo="$META_REPO" -v meta_git_sha="$META_GIT_SHA" '
+  -v meta_block="$META_BLOCK" '
   BEGIN {
     entry_count = 0
     printing = 0
     lines_printed = 0
-    if (json) printf "{\"meta\":{\"repo\":\"%s\",\"generated_at\":\"%s\",\"git_sha\":\"%s\",\"filter\":\"%s\"},\"entries\":[", meta_repo, meta_ts, meta_git_sha, filter
+    if (json) printf "{%s,\"entries\":[", meta_block
   }
   /^## [0-9]{4}-[0-9]{2}-[0-9]{2} —/ {
     heading = $0

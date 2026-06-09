@@ -1,5 +1,33 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-39 — `emit_meta_block` adoption + cross-link uniform-JSON ↔ lint-doctrine
+
+### Closes pass-38 Rec 1 (cross-link) + pass-38 candidate 2 (awk-side adoption)
+
+- **`bin/session-recap.sh` awk BEGIN** — replaces inline `{"meta":{...}}` `printf` with `emit_meta_block`-built `META_BLOCK` var passed into awk. Single source of truth: meta-block computation now lives entirely in the shared lib; awk receives the pre-formatted string verbatim. Envelope shape verified parse-clean post-refactor.
+- **`rules/uniform-json-output.md` § Shared library** — new section documenting `bin/lib/emit-json.sh` as the canonical helper. Drops new-helper boilerplate from ~12 lines to 3. Lists all 6 exposed functions (`json_escape`, `emit_iso_ts`, `emit_git_sha`, `emit_meta_block`, `emit_kv_string`, `emit_kv_int`). Cross-references `lint-doctrine.md § Codified incidents` so future readers see the 3-caller divergence threshold that triggered the lib.
+- **`rules/lint-doctrine.md` § Codified incidents** — new row: `3+ helpers re-emit identical JSON meta boilerplate → extract bin/lib/emit-json.sh`. Sets the 3-caller threshold as a codified pattern alongside the existing `set -u` / `printf -` / `@megabytelabs deps` rows.
+
+### Why now
+
+Pass-38 shipped the lib + refactored 3 callers but left session-recap's awk BEGIN with the OLD inline `printf "{\"meta\":...}` — meta-shape lived in TWO places (shell lib + awk literal). Pass-39 consolidates by computing the meta block in shell via `emit_meta_block`, then passing it to awk as a single `meta_block` var. Now `bin/lib/emit-json.sh` is the only file that knows the meta shape; if the doctrine changes (e.g., add `meta.version`), one edit propagates everywhere.
+
+### Verification
+
+```bash
+shellcheck -x -S warning bin/session-recap.sh                        # clean
+CHANGELOG=/tmp/cl.md bash bin/session-recap.sh --json | python3 -m json.tool >/dev/null  # OK
+CHANGELOG=/tmp/cl.md bash bin/session-recap.sh 1                      # human-mode unchanged
+```
+
+### Next candidates (pass-40)
+
+- Session-recap as SessionStart hook (still gated on Brian opt-in)
+- Audit `monitor-orchestration.md` for whether the pass-N closure-loop pattern deserves a §Known-shortcomings entry (deferred from pass-38)
+- `bin/lib/emit-json.sh` Python parity helper (for any Python-side `--json` emitters) — only if a Python helper surfaces; defer until the 3-caller threshold trips again on the Python side
+
+---
+
 ## 2026-06-09 — pass-38 — `bin/lib/emit-json.sh` shared lib + 3-helper refactor
 
 ### Closes pass-37 Rec 1 + Rec 2 (jq examples)

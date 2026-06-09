@@ -87,9 +87,28 @@ Every `--json`-emitting helper in `~/.agentskills/bin/` SHOULD produce the same 
 - ❌ Inconsistent meta keys across helpers (e.g., `created_at` vs `generated_at`). Pick one — `generated_at` per this rule.
 - ❌ Missing `--json` flag on a helper that prints structured output anyway.
 
+## Shared library (consume in new helpers)
+
+`bin/lib/emit-json.sh` (since pass-38) is the sourceable lib every uniform-JSON helper imports. A new helper drops from ~12 lines of boilerplate to 3:
+
+```bash
+SKILLS_ROOT="${SKILLS_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
+# shellcheck source=lib/emit-json.sh
+. "$SKILLS_ROOT/bin/lib/emit-json.sh"
+META_BLOCK=$(emit_meta_block "$PWD" "$(emit_iso_ts)" "$(emit_git_sha)" "default")
+printf '{%s,"entries":[…]}\n' "$META_BLOCK"
+```
+
+Exposed helpers: `json_escape` · `emit_iso_ts` · `emit_git_sha [project-dir]` · `emit_meta_block <repo> <ts> <sha> [filter]` · `emit_kv_string <key> <value>` · `emit_kv_int <key> <value>`.
+
+The lib was extracted once 3 helpers (security-supply-chain, session-recap, lint-auto-improve) had diverged on the same emission boilerplate. Per `rules/lint-doctrine.md` § Codified incidents: 3-caller threshold = extract; 2 = defer. Future uniform-JSON helpers source the lib by default — no inline `date -u +...` / `git rev-parse` / escape logic.
+
 ## See
 
+- `bin/lib/emit-json.sh` — shared lib (pass-38)
 - `bin/security-supply-chain.sh` — first uniform-JSON helper
 - `bin/session-recap.sh` — second uniform-JSON helper
+- `bin/lint-auto-improve.sh` — third uniform-JSON helper (triggered lib extraction)
+- `rules/lint-doctrine.md` § Codified incidents — 3-caller divergence threshold that justified the lib
 - `rules/contract-first-ai.md` — same boundary-discipline applied to AI outputs
 - `rules/tool-design-as-api.md` — same API discipline for tool surfaces
