@@ -1,0 +1,83 @@
+name: Supply Chain Audit (PR comment)
+
+on:
+  pull_request:
+    branches: [master, main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+
+      - name: Install secret scanners
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh | sh -s -- -b /usr/local/bin
+          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Run security-supply-chain audit (JSON)
+        id: audit
+        run: |
+          AUDIT_JSON=$(bash bin/security-supply-chain.sh "$PWD" --json 2>/dev/null || echo '{"summary":{"exit":1}}')
+          {
+            echo "audit_json<<AUDITEOF"
+            echo "$AUDIT_JSON"
+            echo "AUDITEOF"
+          } >>"$GITHUB_OUTPUT"
+
+      - name: Post results as PR comment
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          AUDIT_JSON: ${{ steps.audit.outputs.audit_json }}
+        with:
+          script: |
+            const audit = JSON.parse(process.env.AUDIT_JSON);
+            const sum = audit.summary || {pass:0,fail:0,skip:0,exit:1};
+            const status = sum.exit === 0 ? '✓ CLEAN' : '✗ FAILED';
+            const rows = (audit.checks || []).map(c => {
+              const icon = c.status === 'pass' ? '✓' : c.status === 'fail' ? '✗' : '·';
+              return `| ${icon} | \`${c.name}\` | ${c.status} | ${c.details} |`;
+            }).join('\n');
+            const meta = audit.meta || {};
+            const body = [
+              `## Supply Chain Audit — ${status}`,
+              ``,
+              `**pass:** ${sum.pass} · **fail:** ${sum.fail} · **skip:** ${sum.skip}`,
+              ``,
+              `<details><summary>Per-check results</summary>`,
+              ``,
+              `| | Check | Status | Details |`,
+              `|--|--|--|--|`,
+              rows,
+              ``,
+              `Run at \`${meta.timestamp || 'unknown'}\` on \`${meta.git_sha || 'unknown'}\``,
+              `</details>`,
+              ``,
+              `_Per [\`rules/ai-agent-security.md\` § Supply chain](https://github.com/heymegabyte/claude-skills/blob/master/rules/ai-agent-security.md). Re-run via \`bash bin/security-supply-chain.sh --json\`._`,
+            ].join('\n');
+            const {data: comments} = await github.rest.issues.listComments({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const prior = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Supply Chain Audit —'));
+            if (prior) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                comment_id: prior.id, body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: context.issue.number, body,
+              });
+            }
+            if (sum.exit !== 0) core.setFailed(`Audit failed: ${sum.fail} check(s)`);

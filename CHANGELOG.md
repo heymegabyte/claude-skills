@@ -1,5 +1,36 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-29 — AI-draft YAML frontmatter + PR-comment workflow
+
+### Closes pass-28 Rec 2 + Next 3
+
+- **`bin/lint-auto-improve.sh` AI-drafted YAML now has provenance frontmatter**:
+  ```yaml
+  # Auto-drafted by bin/lint-auto-improve.sh --auto-draft
+  # model: claude-opus-4-7
+  # timestamp: 20260609T071850Z
+  # cluster_pattern: @typescript-eslint/no-explicit-any
+  # project: /Users/Apple/emdash-projects/...
+  # review-before-merge: true
+  ```
+  - Future passes can track model-choice trends, identify recurring patterns by project, audit AI-generated rules in production.
+  - Acts as a review checklist marker (`review-before-merge: true`).
+
+- **`.github/workflows/supply-chain-pr-comment.yml`** (new) — PR comments with audit results:
+  - Runs on PR open/update against `master`/`main`.
+  - Installs gitleaks + trufflehog from official install scripts.
+  - Runs `bash bin/security-supply-chain.sh --json`.
+  - Posts a `<details>` block with per-check table + meta (timestamp + git SHA).
+  - **Dedup**: updates existing bot comment instead of stacking new ones (uses `listComments` + find by Bot type + heading).
+  - Sets workflow failure on `summary.exit !== 0`.
+  - All actions SHA-pinned per `ai-agent-security.md` § Supply chain — verified via `sha-pin-actions.mjs --check`.
+
+### Verified
+- shellcheck → 0 on `bin/lint-auto-improve.sh`.
+- actionlint → 0 across all 4 workflows now.
+- `sha-pin-actions.mjs --check` on new workflow → clean (refs SHA-pinned at creation).
+- pack integrity → clean (15/89/14, 0 warnings, 4 ignored).
+
 ## 2026-06-09 — pass-28 — Opus-quota fallback + semgrep --validate in auto-draft
 
 ### Closes both pass-27 Recs

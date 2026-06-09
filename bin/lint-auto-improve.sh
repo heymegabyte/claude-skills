@@ -134,7 +134,17 @@ if [ "$AUTO_DRAFT" = "1" ]; then
     if [ "$RESPONSE" = "ERROR" ] || ! echo "$RESPONSE" | grep -q '"content"'; then
       emdashLog "!" "Claude API call failed — leaving proposal for manual completion"
     else
-      echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['content'][0]['text'])" >"$DRAFT_FILE" 2>/dev/null
+      # Write frontmatter header documenting model/timestamp/pattern for trend tracking
+      {
+        printf '# Auto-drafted by bin/lint-auto-improve.sh --auto-draft\n'
+        printf '# model: %s\n' "$MODEL"
+        printf '# timestamp: %s\n' "$TS"
+        printf '# cluster_pattern: %s\n' "$TOP_RULE"
+        printf '# project: %s\n' "$PROJECT"
+        printf '# review-before-merge: true\n'
+        printf '\n'
+        echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['content'][0]['text'])"
+      } >"$DRAFT_FILE" 2>/dev/null
       if [ -s "$DRAFT_FILE" ]; then
         emdashLog "✓" "Draft written ($MODEL): $DRAFT_FILE"
         # Validate the drafted YAML via semgrep --validate
