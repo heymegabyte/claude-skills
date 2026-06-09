@@ -1,12 +1,33 @@
 /**
- * Prettier config — extends GitLab @megabytelabs prettier-config-sexy-mode
- * + prettier-plugin-package-perfection for package.json key/script ordering.
+ * Prettier 3 config — Brian-voice defaults (inspired by prettier-config-sexy-mode
+ * on GitLab; rewritten to latest mainstream).
  * Per rules/lint-doctrine.md.
  */
 module.exports = {
-  ...require('prettier-config-sexy-mode'),
+  printWidth: 120,
+  tabWidth: 2,
+  useTabs: false,
+  semi: true,
+  singleQuote: true,
+  quoteProps: 'as-needed',
+  trailingComma: 'all',
+  bracketSpacing: true,
+  bracketSameLine: false,
+  arrowParens: 'always',
+  endOfLine: 'lf',
+  embeddedLanguageFormatting: 'auto',
   plugins: [
-    ...((require('prettier-config-sexy-mode').plugins) || []),
-    'prettier-plugin-package-perfection',
+    'prettier-plugin-packagejson',       // 1.4M+ weekly DLs — sorts package.json keys
+    'prettier-plugin-organize-imports',  // 1.2M+ weekly DLs — sorts + dedupes ES imports
+  ],
+  overrides: [
+    {
+      files: ['*.md', '*.mdx'],
+      options: { proseWrap: 'preserve' },
+    },
+    {
+      files: ['*.yml', '*.yaml'],
+      options: { singleQuote: false },
+    },
   ],
 };

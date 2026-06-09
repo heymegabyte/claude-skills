@@ -1,5 +1,39 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-9 — mainstream-only lint stack (drop @megabytelabs deps)
+
+### Per Brian: use GitLab configs as INSPIRATION, ship mainstream npm-only
+- `rules/lint-doctrine.md` += new §"Package philosophy — mainstream-only".
+- All GitLab `@megabytelabs/*` + `@HeyMegabyte/*` deps DROPPED from installer.
+- All replaced with latest stable, well-maintained, high-download npm packages.
+
+### Package swaps (verified 2026-06-08 npm view)
+- ESLint chain: `@megabytelabs/eslint-config` → `eslint@9` + `@eslint/js` + `typescript-eslint@8.61.0` + `eslint-plugin-perfectionist@5.9.0` + `-security` + `-unicorn@65.0.1` + `-promise` + `-n`
+- Prettier: `prettier-config-sexy-mode` + `prettier-plugin-package-perfection` → inline `.prettierrc.cjs` (Brian-voice defaults) + `prettier-plugin-packagejson@3.0.2` (1.4M+ weekly) + `prettier-plugin-organize-imports@4.3.0` (1.2M+ weekly)
+- Stylelint: `stylelint-config-so-pretty` → `stylelint-config-standard` + `stylelint-config-recommended` + `stylelint-config-clean-order@10.0.0`
+- Commitizen: `git-cz-emoji` → `cz-emoji@^1.3.1` (pinned to stable — npm latest=canary)
+- Changelog: `conventional-changelog-emoji-config` → `conventional-changelog-gitmoji-config@1.5.2`
+- Semantic-release: `@megabytelabs/semantic-release-config` + `@HeyMegabyte/semantic-release-gh` (both git+https GitLab) → stock `@semantic-release/*` chain + `semantic-release-gitmoji@1.6.9` (50k+ weekly, gitmoji-aware analyzer/notes)
+
+### Installer simplification
+- `bin/install-lint-stack.sh`: dropped `GIT_DEPS[]` array (all packages now npm-registry). Single `npm i -D` / `bun add -d` call. Cleaner failure modes.
+
+### .gitmessage commit template
+- New `templates/lint-stack/.gitmessage` — commit-message scaffold with gitmoji cheatsheet (top 14 + gitmoji.dev link).
+- Installer wires `git config commit.template .gitmessage` per project. Brian's `git commit` (no `cz`) gets the cheatsheet inline.
+
+### gitmoji-enforce.sh hardening
+- Added Python3 fallback for systems without perl (defensive — perl is universal on macOS/Linux but defensive doesn't hurt).
+- 5/5 self-tests still pass.
+
+### Frontmatter repair
+- `rules/ai-agent-security.md` — corrected stale `pack: "misc"` → `pack: "ai"` (actual placement per pass-4). Added 3 triggers (prompt injection · mcp security · llm security).
+
+### Verified
+- shellcheck `-x -S warning bin/install-lint-stack.sh` → 0 warnings (after `GIT_DEPS` cleanup).
+- `node scripts/validate-packs.mjs` → clean (15 packs · 88 rules · 14 skill dirs).
+- gitmoji-enforce: ✨ unicode PASS · plain text REJECT PASS.
+
 ## 2026-06-08 — pass-8 — cloudflare-rule cross-link + gitmoji-enforce extracted
 
 ### Cloudflare-rule tension resolved

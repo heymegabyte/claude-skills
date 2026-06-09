@@ -96,6 +96,9 @@ if [ "$HAS_NODE" = "1" ]; then
   copyIfMissingOrUpdate "$STACK_SRC/.prettierrc.cjs" ".prettierrc.cjs"
   copyIfMissingOrUpdate "$STACK_SRC/.stylelintrc.cjs" ".stylelintrc.cjs"
   copyIfMissingOrUpdate "$STACK_SRC/eslint.config.mjs" "eslint.config.mjs"
+  copyIfMissingOrUpdate "$STACK_SRC/.gitmessage" ".gitmessage"
+  # Wire git commit template (project-local)
+  git config commit.template .gitmessage 2>/dev/null || true
 fi
 
 # --- 4. npm dev deps -------------------------------------------------------
@@ -103,38 +106,39 @@ if [ "$HAS_NODE" = "1" ]; then
   emdashSection "Installing Node dev deps"
   PM=npm
   command -v bun >/dev/null 2>&1 && PM=bun
-  # Published to npm registry
+  # Mainstream best-in-class — latest stable, high-download, well-maintained
   declare -a DEPS=(
-    lefthook
-    oxlint
-    eslint prettier stylelint
-    markdownlint-cli2
-    knip jscpd
-    commitizen "@commitlint/cli" "@commitlint/config-conventional"
-    semantic-release
-    "git-cz-emoji"
-    "conventional-changelog-emoji-config"
-    "prettier-config-sexy-mode"
-    "prettier-plugin-package-perfection"
-    "stylelint-config-so-pretty"
-    "@megabytelabs/eslint-config"
+    # Lint orchestration
+    lefthook oxlint
+    # ESLint 9 + canonical plugin chain
+    eslint "@eslint/js" typescript-eslint
+    eslint-plugin-perfectionist eslint-plugin-security
+    eslint-plugin-unicorn eslint-plugin-promise eslint-plugin-n
+    # Prettier 3 + curated plugins
+    prettier prettier-plugin-packagejson prettier-plugin-organize-imports
+    # Stylelint 16 + standards
+    stylelint stylelint-config-standard stylelint-config-recommended
+    stylelint-config-clean-order
+    # Markdown / dead code / duplicates
+    markdownlint-cli2 knip jscpd
+    # Commitizen + commitlint + gitmoji (pin cz-emoji to stable; npm latest is canary)
+    commitizen "cz-emoji@^1.3.1" "@commitlint/cli" "@commitlint/config-conventional"
+    conventional-changelog-gitmoji-config
+    # Semantic release + gitmoji-aware analyzer/notes
+    semantic-release semantic-release-gitmoji
+    "@semantic-release/changelog" "@semantic-release/git"
+    "@semantic-release/github" "@semantic-release/npm"
   )
-  # GitLab-only packages — install via git+https
-  declare -a GIT_DEPS=(
-    "git+https://gitlab.com/HeyMegabyte/npm/configs/release.git"
-    "git+https://gitlab.com/HeyMegabyte/npm/plugin/semantic-release-gh.git"
-  )
+  # GIT_DEPS retired in pass-9 — all packages now on npm registry (mainstream-only mandate)
   case "$PM" in
     bun)
-      bun add -d "${DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "bun add (npm deps) deferred (verify network)"
-      bun add -d "${GIT_DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "bun add (git deps) deferred"
+      bun add -d "${DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "bun add deferred (verify network)"
       ;;
     npm)
-      npm i -D --save-exact "${DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "npm install (npm deps) deferred (verify network)"
-      npm i -D "${GIT_DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "npm install (git deps) deferred"
+      npm i -D "${DEPS[@]}" >/dev/null 2>&1 || emdashLog "!" "npm install deferred (verify network)"
       ;;
   esac
-  emdashLog "✓" "$PM dev deps queued ($((${#DEPS[@]} + ${#GIT_DEPS[@]})) packages: ${#DEPS[@]} npm + ${#GIT_DEPS[@]} git)"
+  emdashLog "✓" "$PM dev deps queued (${#DEPS[@]} packages, all mainstream npm)"
 fi
 
 # --- 5. Wire scripts -------------------------------------------------------

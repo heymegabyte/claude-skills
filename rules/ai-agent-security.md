@@ -1,8 +1,11 @@
 ---
 name: "ai-agent-security"
 priority: 3
-pack: "misc"
-triggers: []
+pack: "ai"
+triggers:
+  - "prompt injection"
+  - "mcp security"
+  - "llm security"
 paths:
   - "*"
 ---

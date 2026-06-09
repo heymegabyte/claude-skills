@@ -21,13 +21,21 @@ Every emdash project ships with an **industry-leading lint+autofix stack** wired
 
 Every config lives once in `~/.agentskills/templates/lint-stack/`. Projects pull via `bin/install-lint-stack.sh <project-dir>`. Updates flow back same-turn per `prompt-as-training-signal`.
 
+## Package philosophy — mainstream-only, GitLab @megabytelabs as inspiration
+
+The `@megabytelabs` / `@HeyMegabyte` GitLab packages (conventional-changelog-emoji-config, git-cz-emoji, prettier-config-sexy-mode, etc.) are studied as PATTERN inspiration. The actual installer ships only:
+- Latest stable mainstream npm packages (≥10k weekly DLs as a rough floor unless niche)
+- Well-maintained plugins with active issues + recent commits
+- No git+https deps — every package on the npm registry
+- No private GitLab packages in any project's `node_modules`
+
 ## The stack (deterministic, parallel, autofix-first)
 
 ### TS / JS / JSON / MD / CSS / YAML
 - **oxlint** — first-pass speed (50-100× ESLint, no formatting)
-- **ESLint 9 flat config** — `@megabytelabs/eslint-config` (npm; TS, JS, JSON, YAML, TOML linting; EditorConfig-aware)
-- **Prettier** — `prettier-config-sexy-mode` + `prettier-plugin-package-perfection` (auto-sorts package.json keys + scripts + deps)
-- **Stylelint** — `stylelint-config-so-pretty` (strict CSS/SCSS)
+- **ESLint 9 flat config** — `eslint@9` + `@eslint/js` + `typescript-eslint@8` + `eslint-plugin-perfectionist` + `eslint-plugin-security` + `eslint-plugin-unicorn` + `eslint-plugin-promise` + `eslint-plugin-n`. Canonical mainstream chain — replaces the GitLab `@megabytelabs/eslint-config` inspiration.
+- **Prettier 3** — `prettier@3` + `prettier-plugin-packagejson` (1.4M+ weekly DLs, sorts package.json keys) + `prettier-plugin-organize-imports` (1.2M+ weekly, dedupes ES imports). Replaces GitLab `prettier-config-sexy-mode` + `prettier-plugin-package-perfection`.
+- **Stylelint 16** — `stylelint-config-standard` + `stylelint-config-recommended` + `stylelint-config-clean-order` (property ordering). Replaces GitLab `stylelint-config-so-pretty`.
 - **markdownlint-cli2** — relaxed Brian-voice config (MD013/MD025/MD033/MD036/MD040/MD041/MD045/MD060 off; MD024 siblings_only)
 - **knip** — dead code / unused export / unused dep detection (weekly CI sweep)
 - **jscpd** — duplicate-code detection (≤1% threshold)
@@ -52,17 +60,29 @@ Every config lives once in `~/.agentskills/templates/lint-stack/`. Projects pull
 ## Commit hygiene (emoji-mandatory)
 
 ### Tooling
-- **commitizen** + **git-cz-emoji** (GitLab `@megabytelabs/git-cz-emoji`) — interactive emoji commit prompt
-- **conventional-changelog-emoji-config** (GitLab `@megabytelabs/conventional-changelog-emoji-config`) — semantic-release/commitlint preset
-- **commitlint** — enforces gitmoji-conventional shape; **rejects emoji-less commits at lefthook commit-msg stage**
+- **commitizen** + **cz-emoji@^1.3.1** (pinned to stable; npm `latest` resolves to canary) — interactive emoji commit prompt
+- **conventional-changelog-gitmoji-config** (1.5.2, mainstream, 30k+ weekly) — commit-analyzer/changelog preset for gitmoji
+- **commitlint** + **@commitlint/config-conventional** — enforces conventional shape; **rejects emoji-less commits at lefthook commit-msg stage via standalone `gitmoji-enforce.sh` script (belt+suspenders)**
 
 ### Release automation
-- **semantic-release** + `@megabytelabs/semantic-release-config` (GitLab-only — install via `git+https://gitlab.com/HeyMegabyte/npm/configs/release.git`) + `@HeyMegabyte/semantic-release-gh` (GitLab-only — install via `git+https://gitlab.com/HeyMegabyte/npm/plugin/semantic-release-gh.git`; takes `repositoryUrl` parameter beyond stock `@semantic-release/github`)
+- **semantic-release** + **semantic-release-gitmoji** (1.6.9, 50k+ weekly) for gitmoji-aware analyzer + release-notes
+- Stock chain: `@semantic-release/changelog` + `@semantic-release/npm` + `@semantic-release/github` + `@semantic-release/git`
 - Releases auto-publish from green `main` per `main-only-branch` + `ai-seniority` auto-merge contract
 
-### npm-publish status (verified 2026-06-08)
-- **On npm**: `git-cz-emoji@1.1.24`, `conventional-changelog-emoji-config@1.4.8`, `prettier-config-sexy-mode@1.1.4`, `prettier-plugin-package-perfection@1.1.0`, `stylelint-config-so-pretty@0.0.1`, `@megabytelabs/eslint-config@1.0.91`
-- **GitLab-only** (installer uses `git+https://` URLs): `@megabytelabs/semantic-release-config`, `@HeyMegabyte/semantic-release-gh`
+### Mainstream package versions (verified 2026-06-08 npm view)
+| Concern | Package | Version |
+|--|--|--|
+| ESLint | `eslint` | 9.x |
+| ESLint TS | `typescript-eslint` | 8.61.0 |
+| ESLint plugins | `eslint-plugin-perfectionist` | 5.9.0 |
+| ESLint plugins | `eslint-plugin-unicorn` | 65.0.1 |
+| Prettier | `prettier` | 3.x |
+| Prettier plugin | `prettier-plugin-packagejson` | 3.0.2 |
+| Prettier plugin | `prettier-plugin-organize-imports` | 4.3.0 |
+| Stylelint | `stylelint-config-clean-order` | 10.0.0 |
+| Commitizen | `cz-emoji` | 1.3.1 (stable; pin away from canary) |
+| Changelog | `conventional-changelog-gitmoji-config` | 1.5.2 |
+| Release | `semantic-release-gitmoji` | 1.6.9 |
 
 ### Mandate
 - **Every commit ships with a gitmoji prefix.** Plain text commits are blocked at commit-msg stage.

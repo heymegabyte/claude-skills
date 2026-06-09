@@ -1,0 +1,22 @@
+# <emoji> <type>(<scope>): <subject>
+#
+# Body (wrap at 72): explain WHY, not what (the diff shows what).
+#
+# Refs: #123, fixes #456
+#
+# ── Gitmoji cheatsheet ─────────────────────────────────
+# ✨ :sparkles:           new feature
+# 🐛 :bug:                bug fix
+# 📝 :memo:               docs
+# ♻️  :recycle:            refactor
+# 🔧 :wrench:             config
+# 🚀 :rocket:             deploy / release
+# ⚡ :zap:                perf
+# ✅ :white_check_mark:   tests
+# 🔥 :fire:               remove code
+# 🔖 :bookmark:           release/tag
+# 🚧 :construction:       WIP
+# 💥 :boom:               breaking change
+# 🔒 :lock:               security
+# 🩹 :adhesive_bandage:   minor non-critical fix
+# ── Full list: https://gitmoji.dev ─────────────────────

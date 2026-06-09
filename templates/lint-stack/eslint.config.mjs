@@ -1,18 +1,41 @@
 /**
- * ESLint flat config — extends @megabytelabs/eslint-config.
+ * ESLint 9 flat config — mainstream canonical chain (inspired by GitLab
+ * @megabyte/eslint-config; rewritten to latest stable plugins).
  * Per rules/lint-doctrine.md.
- *
- * @megabytelabs/eslint-config covers TS, JS, JSON, YAML, TOML.
- * Add project-specific overrides below.
  */
-import megabyteConfig from '@megabytelabs/eslint-config';
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import perfectionist from 'eslint-plugin-perfectionist';
+import security from 'eslint-plugin-security';
+import unicorn from 'eslint-plugin-unicorn';
+import promise from 'eslint-plugin-promise';
+import nodePlugin from 'eslint-plugin-n';
 
 export default [
-  ...megabyteConfig,
-  // Project-specific overrides go here
+  js.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  perfectionist.configs['recommended-natural'],
+  security.configs.recommended,
+  unicorn.configs.recommended,
+  promise.configs['flat/recommended'],
+  nodePlugin.configs['flat/recommended-script'],
   {
-    rules: {
-      // Override defaults if needed
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
+    rules: {
+      // Brian-voice overrides — uncomment / adjust per project
+      'unicorn/prevent-abbreviations': 'off',
+      'unicorn/filename-case': ['error', { case: 'kebabCase' }],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/consistent-type-imports': 'error',
+      'n/no-missing-import': 'off', // TypeScript handles it
+    },
+  },
+  {
+    ignores: ['dist/**', 'build/**', 'node_modules/**', '.next/**', 'coverage/**'],
   },
 ];
