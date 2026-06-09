@@ -1,5 +1,59 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-49 — `bin/lint-all.sh` one-command CI pre-flight (+ 3 real bugs surfaced + fixed)
+
+### Scope decision
+
+Pass-48's queued candidates (Go-install composite action, JSON Schema for `_packs/*.yml`, `dependency-cruiser` CI) all carry defer-rationale per pass-38's 3-caller threshold (Go install = 2 callers, dep-cruiser = 2 `.mjs` files) or need design conversation (JSON Schema). Pivoted to building `bin/lint-all.sh` — a local dev-experience tool that mirrors the full CI lint suite as a single command. The CI gates exist; running them locally was previously 9 separate invocations.
+
+### NEW `bin/lint-all.sh` — 9-gate local CI mirror
+
+Runs the same 9 gates the `validate` job runs in CI:
+
+1. `validate-skills` (broken-relative-link scan)
+2. `validate-packs` (cross-link integrity)
+3. `sha-pin-check` (workflow SHA-pin doctrine)
+4. `yamllint` (relaxed config)
+5. `markdownlint-cli2` (`**/*.md`)
+6. `prettier --check` (JSON/YAML, explicit `--config .prettierrc.json`)
+7. `shellcheck -x -S warning` (`bin/*.sh` + `bin/lib/*.sh` + `scripts/*.sh`)
+8. `shfmt -d -i 2 -ci -bn` (diff mode)
+9. `actionlint` (workflows)
+
+Human mode: tree-printer output to stderr ending in `✓ lint-all CLEAN — ready to push` or `✗ lint-all FAILED — fix above gates before push`. `--json` mode: uniform envelope per `rules/uniform-json-output.md` via `bin/lib/emit-json.sh` (4th caller of the shared lib). Missing tools (shellcheck/shfmt/actionlint/yamllint not installed locally) are recorded as `skip` with install instructions — never block.
+
+### Three real bugs surfaced by running the tool against itself
+
+1. **`scripts/validate-skills.sh` false-positive on doc-example links** — inline-code stripping concatenated adjacent backtick-spans, so `\`string[]\` ... \`[label](href)\`` collapsed to `string[]...[label](href)` and the latter parsed as a broken `href` link. Fix: skip refs with neither `/` nor `.` (real file paths have one or the other; pure-token placeholder refs in docs like `(href)`, `(X)` are docs artifacts).
+2. **CHANGELOG.md MD032 violations in pass-45 entry** — the "Drift-loop fix explained" numbered list lacked blank line between intro sentence and `1. push → ...`. Fix: added blanks. Bug introduced when pass-45 was written; surfaced by pass-49 running `markdownlint-cli2 "**/*.md"` against the full surface (vs. pass-45 only running it on pre-existing files).
+3. **Prettier cosmiconfig walk-up to unknown parent referencing `prettier-plugin-packagejson`** — local-only issue (CI's clean ubuntu runner has no parent traversal) but caused `prettier --check` to fail locally even when files were clean. Fix: pass `--config .prettierrc.json` EXPLICITLY in both `bin/lint-all.sh` AND `.github/workflows/publish.yml` Self-lint JSON/YAML + Normalize-generated steps so behavior is consistent local + CI. Also: ran `prettier --write` on the 4 dirty JSON/YAML files surfaced once config worked correctly.
+
+### Why running the linter against itself matters
+
+The pass-43→48 CI gates were verified individually but never run together against the WHOLE current state. `lint-all.sh` ran all 9 gates against the post-pass-48 repo and found 3 latent bugs the per-pass verifications missed. This pattern — "ship the gate, then run all gates against current state" — is the closure-loop discipline applied to lint infrastructure itself.
+
+### Verification
+
+```bash
+bash bin/lint-all.sh                              # ✓ 9 pass · 0 fail · 0 skip
+bash bin/lint-all.sh --json | python3 -m json.tool  # OK, valid uniform envelope
+```
+
+### What was NOT done
+
+- Wiring `bin/lint-all.sh` into `lefthook.yml pre-push` — solo developer already runs `git push` and CI gates trip there; adding it pre-push doubles execution. Defer until a 2nd dev joins.
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-50)
+
+- Add `bin/lint-all.sh` as a `package.json` script (`npm run lint`) for muscle-memory discoverability
+- Codify the "ship gate → run all gates" closure-loop pattern in `rules/lint-doctrine.md`
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- `bin/lint-all.sh` is now the 4th `bin/lib/emit-json.sh` caller — per pass-38's lib-extraction rule, the lib is justified more than ever
+
+---
+
 ## 2026-06-09 — pass-48 — actionlint CI gate + codify `# shellcheck` comment collision
 
 ### Closes pass-47 candidates 1 (actionlint CI gate) + 2 (codify the comment-collision pattern)
@@ -149,10 +203,12 @@ npx prettier@3 --check "**/*.{json,jsonc,yml,yaml}"                       # all 
 ### Drift-loop fix explained
 
 Without the new `Normalize generated markdown` step, the publish.yml flow was:
+
 1. push → `validate` job runs `markdownlint **/*.md` (gates fail because mirrors are dirty from previous gen)
 2. → never reaches `sync-cross-platform` job (needs `validate`)
 
 With the new step:
+
 1. push → `validate` passes (current files clean)
 2. → `sync-cross-platform` regenerates mirrors → `markdownlint --fix` cleans them in-place → commits clean files
 3. → next push: `validate` sees clean files → passes

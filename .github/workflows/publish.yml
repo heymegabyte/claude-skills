@@ -41,7 +41,9 @@ jobs:
 
       - name: Self-lint JSON/YAML (Prettier check, pass-46)
         run: |
-          npx --yes prettier@3 --check "**/*.{json,jsonc,yml,yaml}"
+          # --config explicit prevents cosmiconfig walk-up to a parent referencing
+          # plugins not installed in this repo (pass-49 fix).
+          npx --yes prettier@3 --config .prettierrc.json --check "**/*.{json,jsonc,yml,yaml}"
 
       - name: Self-lint Shell (shellcheck + shfmt diff, pass-47)
         run: |
@@ -420,7 +422,7 @@ jobs:
       - name: Normalize generated markdown + JSON/YAML (pass-45/46 — prevents drift on next CI run)
         run: |
           npx --yes markdownlint-cli2@^0.18.1 --fix "**/*.md" || true
-          npx --yes prettier@3 --write "**/*.{json,jsonc,yml,yaml}" || true
+          npx --yes prettier@3 --config .prettierrc.json --write "**/*.{json,jsonc,yml,yaml}" || true
 
       - name: Commit cross-platform files
         run: |

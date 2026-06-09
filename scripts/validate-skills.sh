@@ -44,6 +44,10 @@ for path in sorted(root.rglob("*.md")):
         ref = match.group(1)
         if ref.startswith(("http://", "https://", "/", "mailto:")):
             continue
+        # Skip doc-example placeholder refs (no path separator + no extension = not a real file ref).
+        # Catches `[label](href)`, `[Y](X)`, etc. that bleed out of stripped inline-code spans.
+        if "/" not in ref and "." not in ref:
+            continue
         target = (path.parent / ref).resolve()
         try:
             target.relative_to(root)

@@ -40,14 +40,14 @@ rules:
     languages: [typescript, javascript, generic]
 
   - id: hardcoded-anthropic-key
-    pattern-regex: 'sk-ant-[A-Za-z0-9_-]{40,}'
+    pattern-regex: "sk-ant-[A-Za-z0-9_-]{40,}"
     message: |
       Hardcoded Anthropic API key. Move to env + redact in logs per
       ai-agent-security.md § Secret hygiene.
     severity: ERROR
 
   - id: no-sed-i-empty-arg-bsd
-    pattern-regex: 'sed -i [^'']'
+    pattern-regex: "sed -i [^']"
     paths:
       include:
         - "**/*.sh"

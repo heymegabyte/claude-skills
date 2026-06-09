@@ -45,7 +45,7 @@ pricing:
     # - name: "Pro"
     #   price: "$50/month"
     #   features: ["unlimited projects", "priority support", "custom domain"]
-  donation_presets: []  # For nonprofits: [10, 25, 50, 100, 250, 500]
+  donation_presets: [] # For nonprofits: [10, 25, 50, 100, 250, 500]
 
 # What this product explicitly does NOT do
 # Prevents scope creep. Be specific.
@@ -75,4 +75,4 @@ tone: ""
 
 # Generated timestamp
 created_at: ""
-inference_confidence: ""  # high | medium | low — how confident we are in the inference
+inference_confidence: "" # high | medium | low — how confident we are in the inference

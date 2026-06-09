@@ -119,7 +119,12 @@
       "id": "polish-001",
       "name": "Visual Polish & Motion",
       "description": "Animations, transitions, loading states, error pages, Easter egg",
-      "skill_refs": ["11-motion", "06/custom-error-pages", "06/easter-eggs", "07/performance-optimization"],
+      "skill_refs": [
+        "11-motion",
+        "06/custom-error-pages",
+        "06/easter-eggs",
+        "07/performance-optimization"
+      ],
       "estimated_minutes": 15,
       "priority": "medium",
       "status": "pending",

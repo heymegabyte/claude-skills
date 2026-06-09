@@ -13,5 +13,16 @@
     "**/__snapshots__/**",
     "**/_archived/**"
   ],
-  "format": ["javascript", "typescript", "jsx", "tsx", "css", "scss", "html", "markdown", "python", "bash"]
+  "format": [
+    "javascript",
+    "typescript",
+    "jsx",
+    "tsx",
+    "css",
+    "scss",
+    "html",
+    "markdown",
+    "python",
+    "bash"
+  ]
 }
