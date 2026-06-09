@@ -1,0 +1,36 @@
+# lefthook.yml for the agentskills repo itself.
+# Dogfoods rules/code-style.md § Lint mandate (lefthook over husky).
+# Lighter than templates/lint-stack/lefthook.yml since this repo has no JS deps.
+
+pre-commit:
+  parallel: true
+  commands:
+    markdownlint:
+      glob: "*.md"
+      run: npx --yes markdownlint-cli2 --fix {staged_files}
+      stage_fixed: true
+    shellcheck:
+      glob: "*.sh"
+      run: shellcheck -x -S warning {staged_files}
+    shfmt:
+      glob: "*.sh"
+      run: shfmt -i 2 -ci -bn -w {staged_files}
+      stage_fixed: true
+    ruff:
+      glob: "*.py"
+      run: |
+        if command -v ruff >/dev/null 2>&1; then
+          ruff check --fix {staged_files} && ruff format {staged_files}
+        else
+          python3 -m py_compile {staged_files}
+        fi
+      stage_fixed: true
+    actionlint:
+      glob: ".github/workflows/*.{yml,yaml}"
+      run: actionlint {staged_files}
+    sha-pin-check:
+      glob: ".github/workflows/*.{yml,yaml}"
+      run: node scripts/sha-pin-actions.mjs --check {staged_files}
+    validate-packs:
+      glob: "{_packs/*.yml,rules/*.md,[0-9][0-9]-*/SKILL.md}"
+      run: node scripts/validate-packs.mjs

@@ -1,4 +1,5 @@
-import re, os
+import os
+import re
 
 AGENTS_DIR = '/Users/apple/.agentskills/agents'
 CLAUDE_DIR = '/Users/apple/.claude/agents'

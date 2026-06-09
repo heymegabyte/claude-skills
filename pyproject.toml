@@ -1,0 +1,27 @@
+# pyproject.toml — ruff config per rules/code-style.md § Python.
+# Dogfoods the rule: "Ruff (replaces black + isort + flake8)".
+# Covers sync_agents.py + bin/frontmatter-audit.py + bin/skill-router.py.
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "W",   # pycodestyle warnings
+    "UP",  # pyupgrade
+    "I",   # isort
+    "B",   # bugbear
+    "C4",  # comprehensions
+    "PIE", # misc lints
+    "RUF", # ruff-specific
+]
+ignore = [
+    "E501",  # line-too-long: cosmetic; line-length=120 already permissive
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

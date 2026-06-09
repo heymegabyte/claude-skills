@@ -4,7 +4,6 @@
 Bulk-add routing frontmatter (priority, triggers, pack, paths) to every skill + rule.
 Deterministic mapping based on filename — review-by-eye if needed.
 """
-import re
 from pathlib import Path
 
 PLUGIN_DIR = Path.home() / ".claude/plugins/heymegabyte-claude-skills"

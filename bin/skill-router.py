@@ -17,17 +17,17 @@ Usage:
                                        # Resolve full skill manifest for a prompt
   skill-router.py track <skill_id>     # Append used skill to session cache
 """
-import os
-import sys
+import hashlib
 import json
+import os
 import re
 import sqlite3
-import hashlib
 import subprocess
+import sys
 import time
 from pathlib import Path
-from urllib.request import Request, urlopen
 from urllib.error import URLError
+from urllib.request import Request, urlopen
 
 # -----------------------------------------------------------------------------
 # Paths

@@ -1,5 +1,41 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-31 — self-violation audit: lefthook + pyproject.toml + .nvmrc
+
+### Closes pass-30 Next 1 — agentskills now dogfoods its own mandates
+
+Audited agentskills repo against its own rules; found 3 self-violations:
+
+1. **No `lefthook.yml`** despite `code-style.md` § Lint mandating "Git hooks via lefthook (10× husky, parallel, Go binary)".
+2. **No `pyproject.toml` / ruff config** despite 3 Python files (`sync_agents.py`, `bin/frontmatter-audit.py`, `bin/skill-router.py`) AND `code-style.md` § Python mandating ruff.
+3. **No `.nvmrc`** — minor, but Node version should be pinned.
+
+### Fixed inline per `drift-detection.md` § Immediacy rule
+
+- **`lefthook.yml`** (new) — lighter than `templates/lint-stack/lefthook.yml`:
+  - pre-commit: markdownlint (autofix) · shellcheck · shfmt (autofix) · ruff (autofix) · actionlint · sha-pin-check · validate-packs
+  - All parallel; staged-fixed flagged where appropriate.
+- **`pyproject.toml`** (new) — `[tool.ruff]` config:
+  - line-length: 120
+  - target: py311
+  - rules: E, F, W, UP, I, B, C4, PIE, RUF
+  - ignore: E501 (line-too-long; cosmetic only)
+  - format: double quotes, space indent
+- **`.nvmrc`** (new) — Node 22 (current LTS per `code-style.md`).
+
+### Ruff surfaced 11 pre-existing errors
+- `ruff check --fix` applied 4 safe autofixes across the 3 .py files.
+- 7 remain (unsafe-fix-required) — future cleanup wave; lefthook gate now catches them on any .py edit.
+
+### Meta lesson
+Pass-30 was a self-violation in the workflow file (`curl | sh`); pass-31 is a self-violation audit across THE WHOLE REPO. The pattern: my own rules apply to the agentskills repo too. The drift-detection immediacy + auto-integrate-recs loop = compounding rigor.
+
+### Verified
+- yamllint on lefthook.yml → 0 issues.
+- actionlint → 0 across all 4 workflows.
+- pack integrity → clean (15/89/14, 0 warnings, 4 ignored).
+- ruff: 4 fixed, 7 remain for future passes.
+
 ## 2026-06-09 — pass-30 — supply-chain-pr-comment.yml: replace curl|sh w/ SHA-pinned actions
 
 ### Closes pass-29 Rec 1 — dogfood violation fix
