@@ -32,6 +32,7 @@ paths:
 # 09 — Brand and Content System
 
 ## Brian's Brand Voice
+
 - Slogans: "Open-Source Wizardry. 100% Wizardry. 0% Robes." / "Often imitated, never duplicated."
 - Newsletter: "Lab Insights Journal"
 - Handle: @HeyMegabyte
@@ -53,11 +54,12 @@ Psychology: reciprocity (teach), social proof near CTAs, authority (depth/number
 2. **Color extraction (NON-NEGOTIABLE)** — Screenshot with Playwright, GPT-4o extracts hex (logo priority), cross-ref logo, build palette, validate WCAG AA. NEVER invent, NEVER use Emdash defaults for clients, NEVER infer from category.
 
 2b. **Second-pass verification (BUILD-BREAKING — pre-deploy)** — GPT-4o vision color extraction NOT trusted blind. After GPT-4o returns `{primary, secondary, accent}`:
-   - (a) Load logo PNG via sharp, sample dominant chroma via k-means k=5 ignoring transparent + near-white/near-black (top-3 cluster centroids in HSL)
-   - (b) For EACH returned color, compute min HSL hue-distance to top-3 logo chromas — if `min_hue_distance > 30°` AND saturation>0.2, FAIL w/ diagnostic
-   - (c) Re-run GPT-4o w/ corrective prompt naming top-3 logo chromas + demanding `primary` derived from one
-   - Validator: `validate-color-from-logo.mjs` in `build_validators.ts` between brand-research and template-pick
-   - NEVER ship primary color failing hue-distance check
+
+- (a) Load logo PNG via sharp, sample dominant chroma via k-means k=5 ignoring transparent + near-white/near-black (top-3 cluster centroids in HSL)
+- (b) For EACH returned color, compute min HSL hue-distance to top-3 logo chromas — if `min_hue_distance > 30°` AND saturation>0.2, FAIL w/ diagnostic
+- (c) Re-run GPT-4o w/ corrective prompt naming top-3 logo chromas + demanding `primary` derived from one
+- Validator: `validate-color-from-logo.mjs` in `build_validators.ts` between brand-research and template-pick
+- NEVER ship primary color failing hue-distance check
 
 3. **Logo-luminance + source-theme drives theme (NON-NEGOTIABLE)** — Two-signal:
    - Signal A: logo dominant-color luminance (WCAG formula)
@@ -68,42 +70,50 @@ Psychology: reciprocity (teach), social proof near CTAs, authority (depth/number
    - "Dark-first" applies to accent-rich Emdash/SaaS brands, NOT to (a) logo-driven non-profit/serif clients, (b) high-quality light-themed source brands
 
 3b. **Logo-vs-container contrast (BUILD-BREAKING — every render)** — Every logo render (header, footer, hero, modal, splash, mobile menu, sidebar) MUST contrast container bg by ≥4.5:1 on logo's dominant chroma (not transparent pixels)
-   - Forbidden: white-text-logo on white/cream | dark-text-logo on dark/navy | low-saturation-logo on same-hue bg
-   - Resolution: header AND footer themes chosen AFTER logo luminance scan. Dual-theme site needing SAME logo → ship TWO files (`brand-mark-light.svg` for dark bg, `brand-mark-dark.svg` for light bg) + CSS `<picture><source media>` swaps
-   - Automate via skill 12 logo-variant-generator (Real-ESRGAN inversion or `magick -channel RGB -negate` for monochrome; color logos with text → DALL-E w/ "same logo on transparent bg w/ text inverted to <opposite-luminance>")
-   - Validator: `validate-logo-contrast.mjs` — GPT-4o samples logo bbox + container computed bg at 6bp + pixel sampling, fails if <4.5:1
+
+- Forbidden: white-text-logo on white/cream | dark-text-logo on dark/navy | low-saturation-logo on same-hue bg
+- Resolution: header AND footer themes chosen AFTER logo luminance scan. Dual-theme site needing SAME logo → ship TWO files (`brand-mark-light.svg` for dark bg, `brand-mark-dark.svg` for light bg) + CSS `<picture><source media>` swaps
+- Automate via skill 12 logo-variant-generator (Real-ESRGAN inversion or `magick -channel RGB -negate` for monochrome; color logos with text → DALL-E w/ "same logo on transparent bg w/ text inverted to <opposite-luminance>")
+- Validator: `validate-logo-contrast.mjs` — GPT-4o samples logo bbox + container computed bg at 6bp + pixel sampling, fails if <4.5:1
 
 3a. **Brand-element extraction (logo is gold mine — extract DNA)** — When source logo found, GPT-4o vision returns `{font_family_guess, suggested_heading_font, suggested_body_font, font_weight, letterspacing, has_icon_mark, icon_mark_description, icon_mark_dominant_color, decorative_motif_description, motif_extractable (bool)}`
-   - (i) Matched Google Font → `--font-heading` site-wide
-   - (ii) `motif_extractable=true` (mountain silhouette, wave, leaf, geometric mark embedded) → crop icon-only region (`magick logo.png -alpha extract -trim +repage`), upscale 2-4× via Real-ESRGAN / DALL-E variation, save as `assets/brand-splash.png` (full-bleed hero bg) + `assets/brand-mark.png` (favicon source)
+
+- (i) Matched Google Font → `--font-heading` site-wide
+- (ii) `motif_extractable=true` (mountain silhouette, wave, leaf, geometric mark embedded) → crop icon-only region (`magick logo.png -alpha extract -trim +repage`), upscale 2-4× via Real-ESRGAN / DALL-E variation, save as `assets/brand-splash.png` (full-bleed hero bg) + `assets/brand-mark.png` (favicon source)
 
 3c. **Logo singularity (BUILD-BREAKING — exactly ONE logo file per container)** — Every logo container renders EXACTLY ONE logo asset
-   - Never composite two logo sources side-by-side
-   - Never stack icon-mark + wordmark as separate `<img>` tags
-   - Never render `apple-touch-icon.png` next to `logo.svg` in same container
-   - Composition at asset-prep time via `magick logo-mark.png logo-wordmark.png +append`, NOT at render time
-   - Validator: `validate-logo-singularity.mjs` parses `dist/` HTML; for every element matching `[data-logo], header [class*=logo], footer [class*=logo]`, counts descendant `<img>` + inline `<svg>`. Count>1 in same container = FAIL
+
+- Never composite two logo sources side-by-side
+- Never stack icon-mark + wordmark as separate `<img>` tags
+- Never render `apple-touch-icon.png` next to `logo.svg` in same container
+- Composition at asset-prep time via `magick logo-mark.png logo-wordmark.png +append`, NOT at render time
+- Validator: `validate-logo-singularity.mjs` parses `dist/` HTML; for every element matching `[data-logo], header [class*=logo], footer [class*=logo]`, counts descendant `<img>` + inline `<svg>`. Count>1 in same container = FAIL
 
 4. **Logo (NON-NEGOTIABLE)** — Every project needs premium logo. See Skill 12 for full process.
 
 5. **Audit** — logo found + rated ≥7/10 + works 16-512px, colors EXTRACTED, palette WCAG AA, typography + tone + messages identified.
 
 ## Brand Extraction from Physical Assets (LOCAL BUSINESS — NO WEBSITE)
+
 Most local businesses have no website. Brand lives in physical world — signage, storefront, business cards, uniforms, vehicle wraps.
 
 ### Signage / Storefront (Google Street View + Places Photos)
+
 1. Street View Static API: `https://maps.googleapis.com/maps/api/streetview?size=1200x800&location={lat},{lng}&source=outdoor`
 2. Places photos: filter `types: ["exterior", "storefront"]`
 3. GPT-4o vision on storefront: extract sign text (font), sign colors (hex), logo, building, awning/accent
 4. Prompt: "Extract brand identity from this business storefront photo. Return JSON: `{sign_text, sign_font_style (serif/sans/script/decorative/hand-lettered), primary_color (hex), secondary_color (hex), accent_color (hex), logo_description, overall_aesthetic, confidence (0-1)}`"
 
 ### Business Cards / Collateral (user uploads via form)
+
 GPT-4o vision extracts: logo (crop region), colors (exact hex), font, tagline, NAP for verification.
 
 ### Vehicle Wraps / Uniforms (Google Places photos)
+
 Often most brand-consistent. Extract colors + logo from team/vehicle photos.
 
 ### Color extraction priority for local
+
 1. Signage
 2. Logo
 3. Storefront awning/trim
@@ -115,7 +125,9 @@ Often most brand-consistent. Extract colors + logo from team/vehicle photos.
 Each color tagged with `color_source` for provenance.
 
 ### Font matching from signage
+
 GPT-4o identifies style → map to closest Google Font:
+
 - Script → Dancing Script
 - Serif → Playfair Display
 - Modern sans → Inter
@@ -125,6 +137,7 @@ GPT-4o identifies style → map to closest Google Font:
 Never use exact proprietary fonts — find spirit, not letter.
 
 ## Brand Inference (New Products)
+
 - Dev tool — technical / dark / monospace
 - SaaS — professional / clean / cards
 - Agency — confident / bold
@@ -137,9 +150,11 @@ Emdash defaults (NOT for clients): `#00E5FF`, `#50AAE3`, `#060610`. Sora / Space
 ## Anti-AI-Slop Detection (MANDATORY SCAN)
 
 ### Banned copy words
+
 `delve | leverage | unleash | revolutionize | best-in-class | cutting-edge | discover | innovative | seamless | robust | synergy | elevate | empower | transformative`
 
 ### Banned patterns
+
 - "Welcome to"
 - "Discover [product]"
 - Vague aspirational headlines ("Build the future of work")
@@ -147,6 +162,7 @@ Emdash defaults (NOT for clients): `#00E5FF`, `#50AAE3`, `#060610`. Sora / Space
 - Generic superlatives
 
 ### Banned design tells
+
 - Inter as sole font
 - Purple-blue gradients
 - Uniform 16px border-radius everywhere
@@ -157,9 +173,11 @@ Emdash defaults (NOT for clients): `#00E5FF`, `#50AAE3`, `#060610`. Sora / Space
 - Plastic AI stock photos
 
 ### Fix
+
 Ask "Would the founder actually say this?" No → rewrite. Color signals function, not decoration. Motion must serve one of three purposes.
 
 ## Copy System
+
 - Headlines — benefit-first, specific, numbers, max 8 words
 - Subheadings — expand promise, 15-25 words
 - Body — one idea/paragraph, 2-4 sentences, active, concrete, benefit-oriented
@@ -167,6 +185,7 @@ Ask "Would the founder actually say this?" No → rewrite. Color signals functio
 - Never: "Click here" | "Submit" | "Learn more"
 
 ## Brand Voice Enforcement
+
 - Personality mapping — Expert → precise industry terms | Direct → short declarative | Pragmatic → outcomes/implementation
 - Vocabulary lists — always-use / never-use / prefer-over
 - Max sentence: 25 words
@@ -174,6 +193,7 @@ Ask "Would the founder actually say this?" No → rewrite. Color signals functio
 - Monthly drift audit
 
 ## Microcopy System
+
 - Error messages — [What happened] + [What to do]. Empathetic, solution-oriented. "Payment failed. Try a different card or contact support." Never "Error 500" or jargon or user blame. Flesch 70+.
 - CTAs — action verb first, max 3 words preferred. "Start building" | "Ship today" | "Get access"
 - Empty states — acknowledge absence + suggest action. "No projects yet. Create your first one." Never just "No results"
@@ -183,6 +203,7 @@ Ask "Would the founder actually say this?" No → rewrite. Color signals functio
 ## Machine-Readable Brand Documentation
 
 ### DESIGN.md (6 sections)
+
 1. Visual Theme
 2. Color Palette (hex + role)
 3. Typography (family + scale + weight)
@@ -191,6 +212,7 @@ Ask "Would the founder actually say this?" No → rewrite. Color signals functio
 6. Elevation + Shadows
 
 ### Tokens
+
 - W3C DTCG JSON format
 - Single source of truth for design system
 - Generated from `tokens.json` → CSS vars + Tailwind config
@@ -198,6 +220,7 @@ Ask "Would the founder actually say this?" No → rewrite. Color signals functio
 ## SEO + Structured Data
 
 ### Per-page MUST have
+
 - Title 50-60 chars keyphrase-first
 - Meta desc 120-156 chars
 - Canonical
@@ -206,6 +229,7 @@ Ask "Would the founder actually say this?" No → rewrite. Color signals functio
 - JSON-LD: WebPage floor; Org/BreadcrumbList/FAQPage/Person/Product/Service only when real entities
 
 ### pSEO 5 page types
+
 - Integration (`/integrations/{tool}`)
 - Comparison (`/compare/{a}-vs-{b}`)
 - Use-case (`/for/{audience}`)
@@ -215,6 +239,7 @@ Ask "Would the founder actually say this?" No → rewrite. Color signals functio
 Each unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal links + 1+ outbound citation. Vary sentence structure, swap synonyms, reorder. Never templatize verbatim.
 
 ### GEO / AI search
+
 - Quotable answer blocks 40-60 words (LLMs cite)
 - FAQPage schema highest AI-citation rate
 - JSON-LD facts must also appear as visible HTML text
@@ -222,6 +247,7 @@ Each unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal li
 - EEAT: author bio + Person schema + `sameAs` + dated revision + ownership
 
 ## Trust surfaces
+
 - Real testimonials w/ verifiable attribution
 - License/accreditation badges
 - Security.txt + privacy + terms
@@ -229,6 +255,7 @@ Each unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal li
 - About + Team pages with real bios
 
 ## Legal pages (required)
+
 - /privacy
 - /terms
 - /accessibility

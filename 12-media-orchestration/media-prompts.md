@@ -22,6 +22,7 @@ Aspect ratio: [dimensions]
 ```
 
 ### Image Prompt Rules
+
 - Be specific about style, not generic (`"dark tech illustration with cyan accent glow"` not `"cool image"`)
 - Include brand colors explicitly
 - Specify what to AVOID (text in images, watermarks, specific unwanted elements)
@@ -40,6 +41,7 @@ Ultra-wide composition. Ultra realistic. No text.
 ## Logo Prompt Templates (Ideogram v3)
 
 ### Horizontal Lockup
+
 ```
 a premium, clean, modern logo for "{BusinessName}", a {industry} business.
 Minimal design with the text "{BusinessName}" in a bold sans-serif font.
@@ -48,6 +50,7 @@ scalable, no gradients, vector-style. PNG with transparency.
 ```
 
 ### Icon/Monogram
+
 ```
 a minimal icon logo using the letter "{FirstLetter}" for "{BusinessName}",
 a {industry} business. Clean geometric shape, {brand_color} color,
@@ -55,6 +58,7 @@ transparent background, works at very small sizes. Modern, professional.
 ```
 
 ### Wordmark
+
 ```
 a premium wordmark logo that spells "{BusinessName}" in elegant, custom
 typography. {brand_color} on transparent background. Think Apple, Stripe,

@@ -38,6 +38,7 @@ Also fires on bare-domain prompts where `_research.json` Google Places type retu
 Google Places API is **non-negotiable** in this mode. Without `GOOGLE_PLACES_API_KEY` + `GOOGLE_MAPS_API_KEY` (api-key-gate enforces), refuse to proceed — these are source of truth for NAP, hours, ratings, photos.
 
 `_research.json` MUST contain:
+
 - `business.name`
 - `business.formatted_address`
 - `business.formatted_phone_number`
@@ -75,6 +76,7 @@ Twelve routes minimum, per page-count gate (skill 07):
 - `/blog` — ONLY when `_research.json.has_existing_blog === true`
 
 **Service detail pages** are the core pSEO play. Each one:
+
 - H1 = `{Service} in {City}, {State}`
 - 800+ words
 - 1 hero photo (skill 12 image-relevance ≥8/10 to that specific service)
@@ -92,6 +94,7 @@ Name + Address + Phone must match Google Business Profile EXACTLY across every p
 - One typo on `/contact` vs `/about` torpedoes local SEO ranking signals — Google penalizes inconsistent NAP across business listings
 
 ### Hyperlinks
+
 - Every street address → `<a href="https://www.google.com/maps/search/?api=1&query={url-encoded-address}">{address}</a>` (skill 07 build-breaking-rules "Every address Google-Maps-link")
 - Every phone → `<a href="tel:+1{e164-digits}">{display-format}</a>` with PostHog `phone_click` event + GA4 `generate_lead` event firing onclick
 - Every email → `<a href="mailto:{email}">` with `contact_email_click` event
@@ -99,6 +102,7 @@ Name + Address + Phone must match Google Business Profile EXACTLY across every p
 ## Conversion Surfaces
 
 ### Above-fold primary CTA on `/`
+
 ONE action, owner-chosen:
 
 - **Restaurants** → "Order Online" (Toast/Square deep link) OR "Reserve a Table" (OpenTable/Resy/Tock deep link)
@@ -110,12 +114,15 @@ ONE action, owner-chosen:
 NEVER multiple equal-weight CTAs above fold — one primary + one secondary ("Call Now" `tel:` link as secondary is universal).
 
 ### Sticky mobile bottom bar (skill 10 experience)
+
 "Call" + "Directions" + primary CTA on every page below 768px viewport.
 
 ### Skill 13 conversions tracking
+
 `phone_click` | `direction_click` | `form_submit` | `booking_click` | `order_click` — all four into PostHog + GA4 with `value` populated where Stripe price is known.
 
 ### Map widget
+
 Full-width Google Maps Embed on `/contact` and footer (skill 12 build-breaking-rules "Every site with physical address full-width Google Maps Embed widget").
 
 - Iframe with `loading="lazy"` + `referrerpolicy="no-referrer-when-downgrade"`
@@ -139,18 +146,22 @@ Owners convert customers via trust, not aesthetics. Required surfaces in priorit
 Sharp + irreverent voice from rules/copy-writing.md applies but DIALED DOWN for local-business — owners have repeat customers and word-of-mouth reputation; edgy copy can feel off-brand.
 
 ### Examples that work
+
 - "We've cut hair in this town for 22 years."
 - "12-minute oil changes. We know you're busy."
 - "Same dentist for 15 years, same hygienist for 8. We don't have turnover problems."
 
 ### Examples that DON'T work for local
+
 - "We disrupt traditional plumbing."
 - "Revolutionary new haircut experience."
 
 Banned by copy-writing.md anyway, but worth flagging — local owners have specifically rejected this voice in user-test.
 
 ### Microcopy on forms
+
 Helpful + specific:
+
 - "We'll text you the appointment confirmation within 5 minutes" beats "Submit"
 - "We answer 7am-7pm. After hours, leave voicemail and we'll call back by 8:30am tomorrow" beats "Contact us anytime"
 
@@ -161,6 +172,7 @@ When mode is `local-business` AND business takes deposits, prepayments, or upsel
 **Why**: 2.9%+30¢ vs platform 5-15% take-rate, payout in 2 business days, no per-month subscription.
 
 **Pattern**:
+
 1. Owner books slot via Cal.com (free tier, 1 calendar)
 2. Cal.com webhook → Worker creates Stripe Checkout session for deposit
 3. Email magic link to customer
@@ -192,10 +204,13 @@ Phone+address+hours visible without JS (server-rendered in HTML shell — works 
 ## Local SEO Stack
 
 ### Per-route metadata (rules/per-route-metadata.md)
+
 With location modifiers: every service-detail title includes `{Service} in {City}, {State}` — geo-relevant H1s drive 30%+ ranking gain over generic.
 
 ### Schema.org
+
 `LocalBusiness` (or specific subtype: `Restaurant`, `Dentist`, `LegalService`, `HairSalon`, `MedicalClinic`, `AutoRepair`, `HomeAndConstructionBusiness`) with:
+
 - `@id`
 - `address` (PostalAddress)
 - `geo` (GeoCoordinates)
@@ -208,6 +223,7 @@ With location modifiers: every service-detail title includes `{Service} in {City
 JSON-LD validator (skill 15 `validate-jsonld-schema.mjs`) requires this on every page.
 
 ### Other files
+
 - `humans.txt` includes owner name + nearest cross-streets (humanizing signal for E-E-A-T)
 - `robots.txt` allows everything (no surface to hide)
 - `sitemap.xml` `<priority>` weighted: home 1.0, services index 0.9, individual services 0.8, contact/about 0.7, blog 0.5

@@ -8,7 +8,9 @@ description: "Every non-profit/donation-CTA site uses Stripe Connect Standard as
 # Stripe-First Donations
 
 ## Why Stripe Connect Standard (***NON-NEGOTIABLE PRIMARY RAIL***)
+
 GiveDirectly | GiveWell | charity:water | Watsi | Mercy Corps | Wikimedia all run Stripe Connect Standard. Reasons:
+
 1. Lowest published rate 2.2% + 30¢ for verified non-profits via Stripe's non-profit pricing program (`https://stripe.com/nonprofits`)
 2. Inline embedded checkout (no redirect)
 3. ACH + SEPA + iDEAL + Apple Pay + Google Pay native
@@ -21,6 +23,7 @@ GiveDirectly | GiveWell | charity:water | Watsi | Mercy Corps | Wikimedia all ru
 - Stripe Connect Standard onboards the org's own bank account so funds settle T+2 to the org, NOT to a platform account
 
 ## The Component Contract (drop into `src/components/donation/StripeDonationForm.tsx`)
+
 ```tsx
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
@@ -49,6 +52,7 @@ export function StripeDonationForm(props: StripeDonationFormProps) {
 ```
 
 ## Preset Amounts (GiveDirectly Pattern)
+
 - Universal preset ladder — `[10, 25, 50, 100, 250, 500]`
 - 6-tile grid (3×2) is the highest-converting layout (Donorbox 2024 benchmark — 6 presets vs 4 presets = +18% completion)
 - $50 is highlighted as default
@@ -57,6 +61,7 @@ export function StripeDonationForm(props: StripeDonationFormProps) {
 - **Never** use round even ladders like `[5, 10, 20, 50, 100, 200]` — the GiveDirectly spread tests significantly better
 
 ## Frequency Toggle (Monthly = Default)
+
 - Two-tab segmented control above the amount grid — `[Monthly] [One-time]`
 - Monthly is selected by default and visually emphasized (brand-color background, white text)
 - Below the toggle — small italic copy `"Monthly donations help us plan and budget — change or cancel anytime"`
@@ -64,6 +69,7 @@ export function StripeDonationForm(props: StripeDonationFormProps) {
 - **Build-breaking** — any donation widget where one-time is the default OR monthly is hidden behind a click = fail
 
 ## Cover-The-Fees Checkbox
+
 - **Label** — `"Cover the 2.9% + $0.30 fee so 100% of my gift reaches the mission"`
 - Checkbox checked by default
 - **Math** — `displayedTotal = amount + (amount * 0.029 + 0.30)` rounded to nearest cent
@@ -74,6 +80,7 @@ export function StripeDonationForm(props: StripeDonationFormProps) {
 - Fee-cover math MUST live server-side — client value is display-only
 
 ## Backend Endpoint (`POST /api/donate/intent`)
+
 ```ts
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
@@ -121,10 +128,12 @@ app.post('/api/donate/intent', zValidator('json', donateBody), async (c) => {
   return c.json({ clientSecret: paymentIntent.client_secret, type: 'one-time' });
 });
 ```
+
 - Note `stripeAccount: ORG_CONNECT_ID` on every call — funds route to the org's connected account, NOT the platform
 - Webhook handler at `/webhooks/stripe` MUST verify `event.account === ORG_CONNECT_ID` for donation events
 
 ## Connect Onboarding Flow (one-time per org)
+
 1. Org owner signs into admin dashboard → "Set up donations" → POST `/api/connect/onboard`
 2. Server creates Account Link via `stripe.accountLinks.create({ account, refresh_url, return_url, type: 'account_onboarding' })`
 3. Owner completes Stripe-hosted onboarding (bank account, EIN/501c3 verification, identity)
@@ -132,18 +141,21 @@ app.post('/api/donate/intent', zValidator('json', donateBody), async (c) => {
 5. Donation widget hides until `stripe_connect_status='live'`. Until then, show `"Donations open soon — sign up for alerts"` + email capture.
 
 ## Receipt Email (Resend)
+
 - Triggered by webhook `payment_intent.succeeded` (one-time) or `invoice.payment_succeeded` (recurring)
 - Template includes — org name + 501(c)(3) EIN + donation amount + date + payment method last4 + tax-deductible language + monthly cancel link (recurring only)
 - Send via Resend with `from: "donations@{org-domain}"` (verified)
 - Subject — `"Your $50 donation to {OrgName} — receipt"`
 
 ## Secondary Rails (NEVER PRIMARY)
+
 - PayPal Smart Buttons | Donorbox | Network for Good | Givebutter | GoFundMe Charity may appear as a "More ways to give" expand below the Stripe form for donors who insist
 - Acceptable secondary widget shape — `<details><summary>More ways to give</summary>...</details>` collapsed by default
 - **Never** an iframe widget that competes with the Stripe form for above-the-fold attention
 - **Build-breaking** — any site with a Donorbox/PayPal/Givebutter widget rendered ABOVE the Stripe form OR with no Stripe form at all = fail
 
 ## Validator (`scripts/validators/validate-donation-stripe-first.mjs`)
+
 ```js
 // Pseudo: load every page HTML, find donation sections (heuristic: contains 'donate'|'give'|'support our mission'),
 // assert: Stripe Elements present (script src=js.stripe.com OR @stripe/stripe-js bundle string),
@@ -155,13 +167,16 @@ fail when: monthly toggle missing on donation form (assert ['monthly','one-time'
 fail when: presets missing — assert at least 5 of [10, 25, 50, 100, 250, 500] visible as button labels with $ prefix.
 fail when: cover-fees checkbox missing — assert any input[type=checkbox] sibling text contains 'cover'+'fee'.
 ```
+
 Runs in `report` mode initially → flips to `strict` after njsk.org + lonemountainglobal.com benchmarks pass clean.
 
 ## Reference Incidents (canonical fixes)
+
 - **njsk.org (2026-05-02)** — Original site uses PayPal Smart Buttons exclusively → rebuild MUST replace with Stripe Connect form using GiveDirectly presets. Connect onboarding deferred to admin dashboard; widget shows "Donations launching soon" until org completes onboarding.
 - **lonemountainglobal.com (2026-05-02)** — Source uses Donorbox iframe widget. Rebuild replaces with native Stripe form. Donorbox kept ONLY in the `<details>` "More ways to give" expand for donor familiarity.
 
 ## Cross-Refs
+
 - Validator registered in `~/.agentskills/15-site-generation/quality-gates.md` row 67 (`validate-donation-stripe-first.mjs`)
 - Component lives in `~/.agentskills/15-site-generation/template-system.md` `<StripeDonationForm>` entry
 - Fee-cover banned-words exemption — "100% of my gift reaches the mission" stays — it's a quantitative, sourced claim (the math actually delivers 100% to the org when fees covered)

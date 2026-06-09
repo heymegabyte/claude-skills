@@ -8,6 +8,7 @@ description: "Workbox cache strategies: CacheFirst static (30-day), NetworkFirst
 # Service Worker and Offline
 
 ## Workbox Configuration (workbox-config.js)
+
 ```javascript
 // workbox-config.js — Vite/webpack plugin feeds this
 module.exports = {
@@ -56,6 +57,7 @@ module.exports = {
 ```
 
 ## Service Worker Entry (sw.ts)
+
 ```typescript
 // src/sw.ts — compiled by Workbox webpack/vite plugin
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
@@ -165,6 +167,7 @@ self.addEventListener('activate', (event) => {
 ```
 
 ## Offline Fallback Page (offline.html)
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -194,6 +197,7 @@ self.addEventListener('activate', (event) => {
 ```
 
 ## Angular Integration (ngsw-config.json)
+
 ```json
 {
   "$schema": "./node_modules/@angular/service-worker/config/schema.json",
@@ -235,6 +239,7 @@ self.addEventListener('activate', (event) => {
 ```
 
 ## Push Notifications (Novu Integration)
+
 ```typescript
 // src/sw-push.ts — append to sw.ts or separate push handler
 self.addEventListener('push', (event) => {
@@ -269,6 +274,7 @@ await novu.trigger('push-notification', {
 ```
 
 ## SW Registration (main.ts)
+
 ```typescript
 // Register service worker in Angular main.ts
 if ('serviceWorker' in navigator && environment.production) {
@@ -288,6 +294,7 @@ if ('serviceWorker' in navigator && environment.production) {
 ```
 
 ## CF Workers + Client SW Coordination
+
 - **Edge Worker handles** — routing, auth, cache headers, HTML streaming, API
 - **Client SW handles** — offline fallback, asset caching, background sync, push
 - **No overlap** — edge sets `Cache-Control`, client SW respects it
@@ -295,6 +302,7 @@ if ('serviceWorker' in navigator && environment.production) {
 - Edge handles `/api/` auth + rate limiting, client SW caches safe GET responses
 
 ## Vite Plugin Setup
+
 ```typescript
 // vite.config.ts
 import { VitePWA } from 'vite-plugin-pwa';

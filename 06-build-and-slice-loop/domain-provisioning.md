@@ -8,9 +8,11 @@ description: "Auto-provision new domains with CF Worker, DNS, SSL, and a gorgeou
 # Domain Provisioning
 
 ## Placeholder Requirements
+
 The placeholder is NOT a placeholder — it's the first impression. It must be:
 
 ### Visual
+
 - Full-screen dark theme (#060610 background)
 - Animated gradient mesh with floating cyan/blue orbs (CSS only, no libraries)
 - Domain name in Space Grotesk 700 as hero headline
@@ -19,6 +21,7 @@ The placeholder is NOT a placeholder — it's the first impression. It must be:
 - Responsive at 375px and 1280px
 
 ### Functional
+
 - Newsletter signup form (connected to Listmonk via `13-observability-and-growth`)
 - Turnstile captcha on the form (`05/shared-api-pool`)
 - Contact — `brian@megabyte.space` (mailto link)
@@ -27,6 +30,7 @@ The placeholder is NOT a placeholder — it's the first impression. It must be:
 - Language selector (EN + ES minimum, `01-operating-system`)
 
 ### SEO & Meta
+
 - Full OG tags (title, description, image)
 - Twitter Card (`summary_large_image`)
 - Favicon set (generated via Ideogram, skill 12)
@@ -35,6 +39,7 @@ The placeholder is NOT a placeholder — it's the first impression. It must be:
 - `site.webmanifest` (`06/web-manifest-system`)
 
 ### Performance
+
 - Zero external JS dependencies
 - Inline CSS (no external stylesheet requests)
 - Total page weight < 100KB (excluding favicon)
@@ -43,6 +48,7 @@ The placeholder is NOT a placeholder — it's the first impression. It must be:
 ## Setup Steps
 
 ### 1. Initialize Project
+
 ```bash
 mkdir -p src public
 npm init -y
@@ -50,6 +56,7 @@ npm install hono wrangler --save-dev
 ```
 
 ### 2. Create wrangler.toml
+
 ```toml
 name = "domain-name"
 main = "src/index.ts"
@@ -64,6 +71,7 @@ routes = [
 ```
 
 ### 3. Create Worker (src/index.ts)
+
 ```typescript
 import { Hono } from 'hono';
 const app = new Hono();
@@ -82,11 +90,13 @@ export default app;
 ```
 
 ### 4. Generate Brand Assets
+
 - Logo via Ideogram (3 variations, pick best)
 - Favicon set via Pillow processing
 - OG image (1200x630, domain name + brand colors)
 
 ### 5. Deploy
+
 ```bash
 npx wrangler deploy
 # Purge cache
@@ -96,6 +106,7 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/purge_ca
 ```
 
 ### 6. Configure DNS (if new subdomain)
+
 ```bash
 curl -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/dns_records" \
   -H "Authorization: Bearer $CF_API_TOKEN" \
@@ -104,6 +115,7 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/dns_records
 ```
 
 ### 7. Verify
+
 - Visit the live URL
 - Test newsletter signup form
 - Take screenshots at 1280px and 375px
@@ -111,6 +123,7 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/dns_records
 - Run axe-core accessibility audit
 
 ## Animated Background CSS (No Libraries)
+
 ```css
 .orbs {
   position: fixed; inset: 0; z-index: 0; overflow: hidden;
@@ -153,7 +166,9 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/dns_records
 ```
 
 ## GitHub Auto-Config (First Deploy)
+
 After first deploy, automatically:
+
 1. Set repo description — `gh repo edit --description "Meta description text"`
 2. Set homepage URL — `gh repo edit --homepage "https://domain.com"`
 3. Add topics — `gh repo edit --add-topic "cloudflare,hono,emdash"`

@@ -11,12 +11,14 @@ Bridge between visual assets and text-only AI builders. Profile every candidate 
 ## Architecture (***COST-TIERED***)
 
 ### Tier 1 — Workers AI Llama Vision (FREE, 90% of images)
+
 - Model: `@cf/meta/llama-3.2-11b-vision-instruct`
 - Batch 5 images/call, 3 batches parallel = 15 images/round
 - Handles: description, keywords, quality_score, suggested_placement, alt_text, dominant_colors
 - Sufficient for gallery/about/services/background images
 
 ### Tier 2 — GPT-4o detail:low ($0.01/call, 10% of images)
+
 - Hero candidates only (top 5 by Tier 1 score) + logo variants + brand color extraction
 - Single batch call with all hero candidates
 - Worth the spend — hero is 80% of first impression

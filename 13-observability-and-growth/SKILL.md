@@ -37,12 +37,15 @@ paths:
 # 13 — Observability and Growth
 
 ## Instrumentation tiers
+
 Per `_kernel/standards.md#integrations`:
+
 - **Tier 1 (solo)** — PostHog + Workers Tracing OTLP (2 vendors max, cookie-free, free tier covers <10k MAU)
 - **Tier 2 (enterprise)** — + Sentry @sentry/cloudflare v9 + GA4/GTM + Axiom
 - **Tier 3 (LLM-heavy >10k calls/mo)** — + AI Gateway
 
 ## PostHog (Tier 1 cornerstone)
+
 - Snippet on every HTML page w/ `persistence:'memory'` (cookie-free)
 - `capture_pageview` + `capture_pageleave` + `autocapture:true`
 - Unified platform: product analytics + feature flags + session replay + error tracking
@@ -50,6 +53,7 @@ Per `_kernel/standards.md#integrations`:
 - Per-feature event naming: `<feature>:<action>` (`signup:complete`, `editor:save`, `share:copy`)
 
 ## Sentry (Tier 2)
+
 - `@sentry/cloudflare` v9 + `withSentry` wrapper
 - Project created via `mcp__sentry__create_project` (org:`megabyte-labs`)
 - `SENTRY_DSN` via `wrangler secret put`
@@ -59,22 +63,26 @@ Per `_kernel/standards.md#integrations`:
 - Focus on exceptions; Workers Tracing handles I/O spans
 
 ## Workers Tracing (Tier 1 + Tier 2)
+
 - `[observability] enabled = true` in `wrangler.jsonc` — zero-config OTel I/O tracing
 - Free until Mar 1 2026 then billed
 - Export to Axiom (cheapest at edge), Honeycomb (BubbleUp), Grafana, Datadog via `@opentelemetry/exporter-trace-otlp-http`
 
 ## GA4 + GTM (Tier 2 only)
+
 - GTM container snippet (head script + noscript iframe after body)
 - CSP: `googletagmanager.com` + `google-analytics.com` + `analytics.google.com` + `region1.google-analytics.com`
 - Server-side tagging when privacy-critical (EU traffic)
 - Custom dimensions over custom events (cheaper, more queryable)
 
 ## AI Gateway (Tier 3)
+
 - `env.AI.run()` auto-routes through Gateway
 - Direct Anthropic: `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/anthropic/v1/messages`
 - Caching + rate-limit + fallback + per-call logging
 
 ## Stripe (SaaS billing only — per `rules/payments-routing.md`)
+
 - Webhook-first w/ idempotent processing (D1 dedupe table `payment_events(event_id, source, processed_at)` UNIQUE)
 - `Stripe-Signature` HMAC + 5-min replay window
 - Mint products + prices via MCP (idempotent via `lookup_key`)
@@ -82,6 +90,7 @@ Per `_kernel/standards.md#integrations`:
 - `STRIPE_WEBHOOK_SECRET` via `POST /v1/webhook_endpoints`
 
 ## Square (accept-money default — per `rules/payments-routing.md`)
+
 - Square Web Payments SDK card form + Apple Pay + Google Pay + Cash App Pay
 - Square Subscriptions for recurring giving
 - `Square-Signature` HMAC-SHA256 w/ 6-hr replay window
@@ -89,12 +98,14 @@ Per `_kernel/standards.md#integrations`:
 - Nonprofit verified-501c3 discount (2.6%+10¢ vs 3.5%+15¢)
 
 ## Listmonk (newsletter — self-hosted on Coolify)
+
 - Resend SMTP relay (`LISTMONK_FROM_EMAIL`)
 - `listmonkSendTx(env, { templateAlias, ... })` via KV-cached alias→id map
 - Templates in `emails/*.html` synced via `scripts/listmonk-sync.mjs`
 - Auth: `Authorization: token <user>:<key>` (Listmonk 3.x API-user pattern)
 
 ## PLG 7-Layer Framework
+
 1. **Discovery** — SEO + AI search + word-of-mouth + paid
 2. **Sign-up** — passwordless preferred (Clerk M2M JWT)
 3. **Activation** — first-value-in-X-min metric (aha moment per `rules/feature-flags.md` instrumentation)
@@ -106,6 +117,7 @@ Per `_kernel/standards.md#integrations`:
 Instrument each layer with PostHog events. Funnel visible in PostHog dashboard.
 
 ## Programmatic SEO (5 page types)
+
 - **Integration** (`/integrations/{tool}`)
 - **Comparison** (`/compare/{a}-vs-{b}`)
 - **Use-case** (`/for/{audience}`)
@@ -115,6 +127,7 @@ Instrument each layer with PostHog events. Funnel visible in PostHog dashboard.
 Each unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal links + 1+ outbound citation. Cap 200 pages per axis to avoid thin-content. Per `rules/copy-writing.md` § pSEO + `rules/thin-source-amplification.md`.
 
 ## GEO / AI search
+
 - Quotable answer blocks 40-60 words (LLM citation magnet)
 - FAQPage schema highest AI-citation rate (ChatGPT / Perplexity / Google AI Overviews)
 - JSON-LD facts MUST also appear as visible HTML body text
@@ -123,7 +136,9 @@ Each unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal li
 - `llms.txt` at site root (DX-only, <0.3% adoption — not build gate)
 
 ## Local-business conversions
+
 Track per `local-conversions.md` submodule:
+
 - `phone_click` — `tel:` link
 - `direction_click` — Google Maps directions
 - `form_submit` — contact / quote
@@ -134,6 +149,7 @@ Track per `local-conversions.md` submodule:
 Each fires PostHog + Sentry breadcrumb + (Tier 2) GA4 conversion event.
 
 ## CRO patterns
+
 - Sticky CTA bar on mobile (phone + book)
 - Scroll-progress bar (subtle)
 - Exit-intent modal (only on cart/pricing pages, not blogs)
@@ -143,7 +159,9 @@ Each fires PostHog + Sentry breadcrumb + (Tier 2) GA4 conversion event.
 - Single primary CTA per surface; secondaries de-emphasized
 
 ## Incident auto-remediation
+
 Sentry → Inngest pipeline:
+
 1. Sentry webhook on `event.alert.triggered`
 2. Inngest function dispatches `incident-responder` agent
 3. Agent reads event → traces to source file → proposes fix → opens PR via gh MCP

@@ -9,12 +9,15 @@ updated: "2026-04-24"
 Collect 10x more assets than needed, curate down via AI visual inspection.
 
 ### Asset count scales with page count
+
 Every page needs:
+
 - **6+ images on home**
 - **4+ images on every sub-page**
 - Plus 1 logo + 5–10 AI originals + 3–5 videos
 
 ### Scale
+
 - 4-page rebuild ⇒ 30–50 images
 - 50-page rebuild ⇒ 200+ images
 - 500-page rebuild ⇒ 2000+ images
@@ -60,6 +63,7 @@ Before any agent fans out, enumerate EVERY image slot on EVERY route into `_medi
 ```
 
 ### Manifest generation (***runs ONCE per build, before any agent fans out***)
+
 1. Parse sitemap → for each route, classify section archetype (hero/services/team/blog-card/gallery/cta/about/testimonial/footer)
 2. Instantiate slot records from `_slot_templates.json`
 3. Populate `topic_keywords` + `topic_intent` + `dalle_prompt` from page-context LLM call (single batched call across all slots — `gpt-4o` ~$0.05 per site)
@@ -67,6 +71,7 @@ Before any agent fans out, enumerate EVERY image slot on EVERY route into `_medi
 Manifest is the SINGLE source of truth — every downstream agent reads `_media_slots.json` and writes back to `filled_url` + `filled_score`.
 
 ### Per-slot DALL-E prompt mandatory fields
+
 1. Page topic+intent verbatim from `topic_intent`
 2. Brand palette tokens from `_brand.json.colors`
 3. Composition + aspect ratio matching `aspect`
@@ -81,9 +86,11 @@ Generic "create a hero image for /about" prompts FAIL `validate-image-prompts.mj
 ***ZERO MISSING IMAGES — NEVER SHIP BLANK SLOTS — UNIVERSAL — BUILD-BREAKING***
 
 ### Requirements
+
 Every slot in `_media_slots.json` MUST end the build with `filled_url != null AND filled_score >= relevance_floor`.
 
 ### Failure modes trigger immediate auto-regeneration via DALL-E with refined prompt
+
 - Pexels returns nothing
 - DALL-E returns NSFW-flagged
 - Scraped image broken
@@ -92,15 +99,18 @@ Every slot in `_media_slots.json` MUST end the build with `filled_url != null AN
 NEVER silent skip, NEVER substitute brand-gradient placeholder unless 5 regen attempts exhausted. The build does not declare "complete" until every slot is filled at threshold.
 
 ### Regen loop (per slot, max 5 attempts)
+
 1. **Initial fill** via `source_chain` walk: original → Pexels Video → Coverr → DALL-E → Flux → brand-gradient. First source returning a candidate gets vision-scored.
 2. **If `filled_score < relevance_floor`** (default 8/10) OR source returned 0 candidates → regen with DALL-E using REFINED prompt: feed `(original_prompt, vision_critique_of_what_was_wrong, relevance_floor)` to gpt-4o, get back tightened prompt naming what to ADD + what to REMOVE. Increment `regen_attempts`.
 3. **Refined DALL-E generation** (gpt-image-1 HD, ~$0.04-0.08) → vision-score → if pass, commit; if fail and `regen_attempts < 5`, GOTO 2.
 4. **After 5 attempts**: log to `_unfillable_slots.json`, fall back to brand-gradient + log critical warning. **Build still completes** (gradient is the last-resort floor that prevents 404s) but post-build report flags the slot for manual review. Default behavior is regen-until-pass — fallback only on hard exhaustion.
 
 ### Hard gate
+
 `_unfillable_slots.json` must be empty for a clean build. ANY entry = build status `published_with_warnings`, dashboard surfaces the slot for manual replacement, alert email to operator. The gate prevents the lone-mountain-global-3 + njsk-light class of failure where slots silently shipped empty or with off-topic generic stock.
 
 ### Cost ceiling
+
 - 5 regen attempts × $0.08/img = $0.40 worst case per slot
 - With ~30 slots/site at typical 0.3 regen rate average, total worst-case DALL-E spend ~$3.60/site (most sites: $0.50-1.50)
 - Tracked per-build in `_dalle_spend.json`; daily rollup in `_dalle_daily.json` against `OPENAI_DAILY_BUDGET` env (default $50)
@@ -113,6 +123,7 @@ NEVER silent skip, NEVER substitute brand-gradient placeholder unless 5 regen at
 Before any stock/AI sourcing, walk the source site and extract EVERYTHING. The original site's media is canonical brand voice — discarding it is malpractice.
 
 ### Walk-list (apply to every page in sitemap, in order)
+
 1. **`<header>` + `<nav>` logos** via the Logo Discovery chain below
 2. **ALL `<img src>`, `<img srcset>`, `<picture><source srcset>`, `<image href>` (SVG)** on the page body — download every variant in srcset, keep the largest
 3. **CSS background-images** — parse computed styles via Playwright (`window.getComputedStyle(el).backgroundImage`) for every visible element — backgrounds carry hero photography, brand splashes, section dividers
@@ -134,11 +145,13 @@ Before any stock/AI sourcing, walk the source site and extract EVERYTHING. The o
 9. **WordPress block images** (`wp-image-*` classes carry attachment IDs — `wp-json/wp/v2/media/{id}` returns full-size original)
 
 ### Group preservation (***NEVER FLATTEN — slider images stay sliders***)
+
 - When extracting from a slider/carousel/gallery, store images with their group identity intact: `public/images/sliders/{slider-id}/{order-index}-{filename}`
 - Emit a manifest entry `{group: "homepage-hero-slider", order: [...], aspect: "16:9", autoplay: true, interval: 5000}`
 - The new site rebuilds the same slider with the same images in the same order — never dump grouped sliders into a flat gallery grid
 
 ### 1.4x–2.0x augmentation rule (***NEVER FEWER IMAGES THAN ORIGINAL***)
+
 - Count original-site images
 - New site MUST ship `original_count × 1.4` minimum, `× 2.0` typical, `× 3.0` for thin source sites with <10 originals
 - Augmentation = original media + (Pexels/Pixabay stock matching brand voice) + (DALL-E 3 / GPT Image 1.5 originals matching extracted brand style — see DALL-E priority below) + (Google CSE image search for context shots)
@@ -153,6 +166,7 @@ Pexels, Google CSE, DALL-E 3, and Original-Site Crawler are first-class media ag
 - Main thread merges + dedupes via md5 + AI-rates via Workers AI Llama Vision (free) + curates final set
 
 **Agent table**:
+
 - **Pexels** — trigger: `PEXELS_API_KEY` set | min output: 8 stills + 3 videos/site | parallel calls: 4-6 queries (`{type} interior`, `{type} {city}`, `{service} professional`, `{atmosphere}`) | notes: Free commercial license; Workers AI rates relevance
 - **Google CSE** — trigger: `GOOGLE_CSE_KEY`+`GOOGLE_CSE_CX` set | min output: 5 context shots | parallel calls: 3-5 queries (`"{name}" {city}`, `"{name}" team`, `"{name}" exterior`, `{neighborhood} {type}`) | notes: Filter `rights=cc_publicdomain,cc_attribute,cc_sharealike`; verify license before download
 - **DALL-E 3** — trigger: `OPENAI_API_KEY` set | min output: 5 originals/site | parallel calls: 5 generations (1 hero HD 1024×1792 + 3 sections 1024×1024 + 1 OG 1024×1024) | notes: PRIMARY for AI imagery — Brian's stated preference; ultra-real photography mode + creative narrative mode
@@ -167,12 +181,14 @@ Pexels, Google CSE, DALL-E 3, and Original-Site Crawler are first-class media ag
 Cost: ~$0.04-0.08/image, total $0.30-0.50/site.
 
 ### Sora video agent (***when OPENAI_API_KEY present***)
+
 - Generate 1-2 short narrative video loops per site (5-10s, muted, autoplay) for hero backgrounds
 - Cost ~$0.20-0.40 each
 - Pair with same brand palette + narrative thread as DALL-E originals
 - Falls back to Pexels Video API loops when Sora unavailable
 
 ### Image count scales with sitemap (***NEVER cap at 4-page-site numbers***)
+
 - Required count = `max(30, original_image_count × 1.4, page_count × 6_home_or_4_sub)`
 - 4-page rebuild ⇒ ≥30 images
 - 50-page ⇒ ≥200
@@ -209,6 +225,7 @@ Stock alone is generic. AI alone is uncanny. The full media stack chains 17+ par
 | 17 | **Public-domain archives (situational)** | always (no key) | NASA Image API (space/earth), Smithsonian Open Access (artifacts/history), Met Museum (art), Rijksmuseum (art), NOAA (weather/satellite), USGS (geo), Library of Congress (PD historical), NYPL Digital Collections, Europeana (cultural heritage) — match to site narrative when topic aligns | PD | free | when topical match exists |
 
 ### Source-attribution discipline (***license-by-license, render in image alt+JSON-LD***)
+
 - Every non-PD image carries `{source, license, attribution_required, attribution_text, attribution_url}` in `_image_profiles.json`
 - **CC-BY/CC-BY-SA** → render attribution in figcaption + JSON-LD `creditText`
 - **CC0/PD** → no attribution required but record source for audit
@@ -216,6 +233,7 @@ Stock alone is generic. AI alone is uncanny. The full media stack chains 17+ par
 - **Build gate**: any CC-BY image without `attribution_text` in HTML = FAIL
 
 ### Phase 0 parallel execution architecture (***17-agent fan-out, single-thread merge***)
+
 - Container entrypoint forks 17 agent processes via `Promise.all([...])` (or `xargs -P 17` in bash)
 - Each agent reads `_research.json` + `_form_data.json`, writes to `_assets/{agent}/`, exits
 - Main thread waits, merges results into unified `_assets.json` + `_image_profiles.json`, runs Cloudinary transform pipeline, AI-rates via Workers AI Llama Vision, curates final set via score threshold
@@ -273,6 +291,7 @@ When `_pdf_facts.json` contains a CV with ≥3 timeline-eligible entries (positi
 The lonemountainglobal.com `Vian_CV_Long_4-2-2024.pdf` is the canonical case — Dr. Taryn Vian's 30+ years of WHO/USAID/BU positions, anti-corruption publications, and global health grants become a living timeline, not a buried PDF link.
 
 ### Budget split
+
 - GPT-4o vision QA capped at $1 (see completeness-verification)
 - Media generation/acquisition is a SEPARATE budget — spend what's needed to make the site gorgeous
 - Ideogram (~$0.05/logo), GPT Image 1.5 (~$0.04/image), Stability (~$0.03/image), stock APIs (free tiers)
@@ -284,16 +303,20 @@ The lonemountainglobal.com `Vian_CV_Long_4-2-2024.pdf` is the canonical case —
 ***NO CDN HOTLINKS — UNIVERSAL — BUILD-BREAKING — 2026-05-02 lonemountainglobal.com cycle***
 
 ### Requirements
+
 Every image, video, font, PDF, and JSON file the source site references via third-party CDN MUST be:
+
 1. Downloaded at build time
 2. Content-hashed
 3. Written to `public/assets/migrated/<sha256-prefix>.<ext>`
 4. Rewritten throughout the source code so the production bundle has zero outbound CDN dependencies
 
 ### Self-hosting policy
+
 The deployed site MUST self-host every asset on `<slug>.projectsites.dev` (R2-backed) — no `cdn.shopify.com`, no `*.squarespace-cdn.com`, no `*.wp.com`, no `*.wixstatic.com`, no `*.imgix.net`, no `images.ctfassets.net`, no `*.contentful.com`, no `*.cloudinary.com`, no random WordPress upload paths.
 
 ### Vite plugin (`template/scripts/rewrite-cdn-assets.mjs`)
+
 Runs as `enforce: 'post'` Vite transform on every `.tsx|.jsx|.ts|.js|.html|.css|.json` file.
 
 ```js
@@ -341,15 +364,18 @@ export function r2AssetRewriter() {
 ```
 
 ### Asset-extension detection
+
 - Parse URL pathname, fall back to MIME from HEAD response
 - Always store the original-quality variant (drop `?w=400&h=400` query strings; fetch the bare URL when CDN serves higher-res)
 - When source CDN gates by signed URL with expiring token, fetch ONCE at build time — the local mirror has no expiration
 
 ### Hash strategy
+
 - sha256 of the *original URL* (not the bytes) — guarantees byte-identical rewrites across multiple builds + lets the same image referenced from multiple places dedupe to one local file
 - Bytes-hash would force re-download of every reference; URL-hash is a build-cache key
 
 ### Excluded hosts (KEEP as-is)
+
 - `googletagmanager.com`, `google-analytics.com`, `googleapis.com/maps`
 - `posthog.com`, `sentry.io`
 - `js.stripe.com`
@@ -359,9 +385,11 @@ export function r2AssetRewriter() {
 These are first-party SaaS platforms with stable CDN URLs that we WANT loaded from origin (better caching, security policies, version stability). Self-hosting Google Analytics or Stripe.js breaks them.
 
 ### Validator (`validate-no-cdn-hotlinks.mjs`)
+
 Post-build, grep dist/ for any URL matching `CDN_HOSTS` regex outside the excluded list — any match = fail with diagnostic showing source HTML location + suggested local replacement path. CSS `url(...)` and `<img src>` and JS string literals all checked.
 
 ### Build cache
+
 - `.cdn-rewrite-cache.json` keyed by sha256-prefix → original URL + last-fetched-at + bytes-md5
 - Skip re-download when file exists locally + cache entry <30d old + HEAD request to original returns same `etag` or `content-length`
 - Cuts incremental build CDN bandwidth ~95%
@@ -371,11 +399,13 @@ Post-build, grep dist/ for any URL matching `CDN_HOSTS` regex outside the exclud
 ***NEVER SKIP — UNIVERSAL — every imported blog post MUST have a featured image***
 
 ### Problem
+
 When migrating a source blog (Squarespace, WordPress, Wix, Ghost, Medium, Substack), some posts have empty or 404'd featured-image fields — old posts where the source author skipped the image, posts where the CMS lost the asset, posts whose featured image was a 1px tracking pixel.
 
 The rebuilt blog MUST NOT ship posts with missing or broken hero images. Every post gets a featured image at build time, sourced via this fallback chain:
 
 ### Fallback chain
+
 1. **Source `featured_image`/`og:image` URL** if HEAD-200 + bytes >5KB (filters out tracking pixels) + dimensions ≥800×600
 2. **First inline `<img>` from post body** if HEAD-200 + dimensions ≥800×600 — the article's lead image is usually a fine hero
 3. **Pexels search** by post title + tags + categories: top 3 results scored by GPT-4o vision against `(post_title, post_excerpt, brand_palette)`, pick highest scoring ≥7/10
@@ -383,22 +413,27 @@ The rebuilt blog MUST NOT ship posts with missing or broken hero images. Every p
 5. **Brand-gradient SVG** as the hard-floor fallback — placeholder SVG with post title rendered + brand palette gradient. Used only when DALL-E spend ceiling tripped.
 
 ### Per-post prompt template
+
 ```
 Photorealistic editorial-style image illustrating "<post_title>". Subject: <subject from post_excerpt + first paragraph>. Brand palette: <brand-primary hex> + <brand-accent hex>. Composition: 16:9 wide, hero-card aspect. Mood: <mood inferred from post_tags or default "warm documentary">. Lighting: natural soft, golden hour. Lens: 85mm prime, shallow DoF. Negative prompt: no text, no watermarks, no logos, no extra fingers, no AI artifacts, no stock-photo cliches, no busy backgrounds, no clip-art aesthetic.
 ```
 
 ### Vision validation
+
 - Each fallback hero gets vision-scored before commit
 - <7/10 triggers regen via DALL-E with refined prompt (max 3 attempts per post — capped lower than slot regen ceiling because blog herofills are bulk)
 - Final fallback: brand-gradient SVG
 - Never ship a post with NO image
 
 ### Storage
+
 - Generated heroes go to `public/assets/blog/<post-slug>-hero.<ext>` (slug-named for human-readable diffs across rebuilds, NOT hash-named like CDN-rewritten assets)
 - JSON-LD `BlogPosting.image` references this path
 
 ### Validator (`validate-blog-featured-images.mjs`)
+
 For every entry in `_corpus.json.posts[]`:
+
 - Assert `featured_image_url` is non-null
 - AND HEAD-200 in dist
 - AND dimensions ≥800×600
@@ -432,6 +467,7 @@ Real photos of the actual entity always win when they exist (Places/uploads/scra
 | 18 | Cloudinary | CLOUDINARY_* | Transform layer (WebP/AVIF, AI-crop) | 25GB free | — |
 
 ### DALL-E-first slot-fill rule (***UNIVERSAL — for slots 4+ in the chain***)
+
 - Once real-entity sources (Places/uploads/scrape) are exhausted, DALL-E is invoked BEFORE generic stock — the per-slot prompt produces a tighter topic match than any stock library can return
 - Stock APIs run in parallel as speed-pass fallback (instant return for quick fill if DALL-E call hangs >15s) but DALL-E output is preferred at curation
 - Brian's preference: "DALL-E can literally create the ultra-realistic perfect photo for any given photo spot, so rely on that fact" — encoded as default behavior, not opt-in
@@ -456,6 +492,7 @@ Real photos of the actual entity always win when they exist (Places/uploads/scra
 **Total typical media spend**: $0.50–2.00/site.
 
 ### Engine selection logic
+
 - **Photoreal hero** → Flux 1.1 Pro Ultra
 - **Stylized** → GPT Image 1.5
 - **Logo** → Ideogram 3.0
@@ -467,6 +504,7 @@ Real photos of the actual entity always win when they exist (Places/uploads/scra
 Brian's stated preference (DALL-E heavy use) preserved as fallback chain entry.
 
 ### pHash dedup (***replaces md5 — visually identical but byte-different images dedupe correctly***)
+
 - sharp 8×8 DCT → 64-bit hash → hamming distance ≤6 = duplicate
 - Implementation in `~/.agentskills/15-site-generation/blog-import.mjs::phash()`
 - md5 only as fallback when sharp unavailable
@@ -478,11 +516,13 @@ Brian's stated preference (DALL-E heavy use) preserved as fallback chain entry.
 Google Street View Static API (`GOOGLE_MAPS_API_KEY`): captures storefront/signage automatically.
 
 ### Three shots per business
+
 1. `source=outdoor&heading=auto` — front-facing storefront, best for signage/brand extraction
 2. `source=outdoor&heading={heading+45}` — angled view showing context/neighboring businesses
 3. `source=outdoor&heading={heading-45}` — opposite angle
 
 ### URL
+
 `https://maps.googleapis.com/maps/api/streetview?size=1200x800&location={lat},{lng}&source=outdoor&key={GOOGLE_MAPS_API_KEY}`
 
 - Check `status` endpoint first — returns `ZERO_RESULTS` if no imagery available
@@ -490,6 +530,7 @@ Google Street View Static API (`GOOGLE_MAPS_API_KEY`): captures storefront/signa
 - Cache aggressively in R2 — Street View rarely changes
 
 ### Use for
+
 - Brand extraction (signage colors/fonts)
 - Storefront hero image (if no better photo)
 - Neighborhood context
@@ -498,7 +539,9 @@ Google Street View Static API (`GOOGLE_MAPS_API_KEY`): captures storefront/signa
 ## Interior + Staff Photo Acquisition
 
 ### Google Places photo types
+
 The Places API returns photos tagged by Google's classifier. Filter for:
+
 - `types: ["interior"]` for ambiance shots
 - `types: ["food"]` for restaurants
 - Owner-uploaded photos (often show staff/team)
@@ -506,12 +549,14 @@ The Places API returns photos tagged by Google's classifier. Filter for:
 Download all — more is always better for local business media richness.
 
 ### Yelp Fusion photos
+
 - Business endpoint returns user-uploaded photos
 - Often candid interior/food/service shots that feel authentic
 - Higher emotional impact than staged photos
 - Rate: 5000 API calls/day
 
 ### Staff/team photos
+
 - Search Google CSE: `"{business_name} team"` OR `"{business_name} staff"` with `searchType=image`
 - Also check business Facebook page (if verified in social check) — cover photos and "About" section often have team photos
 - NEVER generate fake headshots — use real photos or skip the team section entirely
@@ -521,6 +566,7 @@ Download all — more is always better for local business media richness.
 Per business: construct 3-5 search queries combining: business type + city, business name + storefront, business type + interior, specific services + professional.
 
 **Example for "Vito's Mens Salon, Lake Hiawatha NJ"**:
+
 ```js
 ["mens salon interior modern", "barber shop Lake Hiawatha NJ", "men haircut professional", "salon storefront exterior"]
 ```
@@ -530,6 +576,7 @@ Per business: construct 3-5 search queries combining: business type + city, busi
 ***NON-NEGOTIABLE — KEEP ORIGINAL IN ALMOST ALL CASES***
 
 ### Priority chain
+
 1. **User upload**
 2. **Scrape from existing site**:
    - `<img>` in `<header>/<nav>` (alt/class/src contains `logo`|`brand`|`site-logo`|`custom-logo-link` — WordPress)
@@ -548,6 +595,7 @@ Per business: construct 3-5 search queries combining: business type + city, busi
 7. **AI-generate** as LAST resort
 
 ### Original-asset retention (***DEFAULT BEHAVIOR — never replace a quality logo***)
+
 - When source site has a professional logo+favicon (logo quality score ≥7/10 via GPT-4o detail:low, OR site is a known good-design brand), KEEP both verbatim
 - Replacement requires explicit user instruction OR logo quality score <7/10
 - **Brand equity > AI-generated novelty**
@@ -557,6 +605,7 @@ The lonemountainglobal.com lesson: original logo was perfectly designed; the reb
 ### Logo font + visual element extraction (***GOLD MINE — drives ENTIRE site design***)
 
 When logo found, single GPT-4o vision call extracts:
+
 ```ts
 {
   font_family_guess: "(closest Google Font)",
@@ -581,6 +630,7 @@ When logo found, single GPT-4o vision call extracts:
 When logo contains a strong graphic element (mountain, wave, leaf, geometric mark), extract that element ALONE (no wordmark) at high resolution as a hero background splash.
 
 **Process**:
+
 1. GPT-4o identifies bounding box of icon-only region
 2. ImageMagick crops + alpha-trims (`magick logo.png -alpha extract -trim +repage`)
 3. Upscale 2-4x via Real-ESRGAN or DALL-E variation
@@ -589,6 +639,7 @@ When logo contains a strong graphic element (mountain, wave, leaf, geometric mar
 Pair with logo's matched font → hero feels designed by the same hand that made the logo. The lonemountainglobal.com `mountain-background-splash.png` extracted from the logo is the canonical example.
 
 ### AI logo generation (***LAST RESORT — only when scrape fails OR original quality <7/10***)
+
 - Ideogram v3 preferred for text-heavy logos
 - Generate exactly 3 variants: A=lockup, B=icon, C=wordmark
 - Single GPT-4o detail:low call rates all 3 (1-10), picks winner
@@ -606,6 +657,7 @@ Pair with logo's matched font → hero feels designed by the same hand that made
 ### Two execution paths
 
 **(1) realfavicongenerator.net API (preferred — 30+ asset variants)**
+
 - POST to `https://realfavicongenerator.net/api/favicon` with:
   - `api_key` (`REAL_FAVICON_GENERATOR_API_KEY`)
   - Base64-encoded master image (≥260×260 PNG, transparent background)
@@ -615,18 +667,22 @@ Pair with logo's matched font → hero feels designed by the same hand that made
 - Inject the snippet into `index.html` `<head>` verbatim
 
 **(2) Local fallback (no API key OR offline)**
+
 - ImageMagick chain — `magick icon-master.png -fuzz 15% -trim +repage -resize 512x512 -background none -gravity center -extent 512x512 favicon-512.png` then derive each size
 - Build `.ico` via `magick favicon-16.png favicon-32.png favicon-48.png favicon.ico`
 - Hand-craft `site.webmanifest` (192+512 refs, theme_color from brand, background_color from theme), `browserconfig.xml` (MS tile), Safari `safari-pinned-tab.svg` (single-color silhouette via `magick ... -threshold 50% -colorspace gray svg:`)
 - 14 total files minimum
 
 **In-container alt (no ImageMagick)**:
+
 - `buildPngIco()` — manual ICO construction: 6-byte header + 16-byte directory entry + raw PNG bytes
 - Width/height 0 (=256+), 32-bit, offset 22
 - Store full PNG as favicon.ico (browsers handle it)
 
 ### Hard gate
+
 `public/` MUST contain ALL of:
+
 - `favicon.ico`
 - `favicon-16x16.png`
 - `favicon-32x32.png`
@@ -657,12 +713,14 @@ Generate originals when stock/discovered images are insufficient or generic. Ori
 | Icon set | Ideogram v3 | Custom service icons matching brand style (if generic Lucide insufficient) | ~$0.05 |
 
 ### Generation strategy
+
 - Generate 3-5 hero candidates, 1 per service, 2-3 atmospheric textures, 1 OG image
 - Pick best via GPT-4o detail:low (single batch call, all candidates in one request)
 - Total generation: ~$0.30-0.50
 - Combined with logo A/B/C: ~$0.35-0.55 generation spend
 
 ### Prompt patterns for GPT Image 1.5
+
 - **Hero**: "Cinematic wide shot, `{business_type}` environment, `{brand_primary}` and `{brand_secondary}` color palette, dramatic lighting, professional photography style, no text, no people, 16:9"
 - **Service**: "Clean modern illustration of `{service_name}`, `{brand_colors}`, minimal style, white/dark background, professional"
 - **Texture**: "Abstract geometric pattern, `{brand_primary}` gradients, subtle depth, seamless tileable, dark background"
@@ -677,6 +735,7 @@ Generate originals when stock/discovered images are insufficient or generic. Ori
 - Embed via YouTube iframe or Pexels player
 
 ### Video placement strategy
+
 - **Hero background** — muted autoplay 4-8s loop from Pexels
 - **Services section** — YouTube embed if business has channel
 - **About section** — B-roll montage
@@ -689,16 +748,19 @@ Every page should have at least one video or animated element.
 ***COST-TIERED***
 
 ### Tier 1 — Workers AI Llama Vision (FREE)
+
 - Profile ALL images: description, keywords (3-5), quality_score (1-10), relevance_score (1-10), suggested_placement, alt_text, dominant_colors (3-5 hex)
 - Batch 5 images/call, 3 batches parallel
 - Sufficient for 90% of placement decisions
 
 ### Tier 2 — GPT-4o detail:low (~$0.02)
+
 - Top 5 hero candidates only (sorted by Tier 1 combined score)
 - Single batch call
 - Picks final hero, validates brand color extraction, confirms quality for above-the-fold placement
 
 ### Reject
+
 - quality <5
 - relevance <4
 - watermarks
@@ -727,6 +789,7 @@ Store profiles as `_image_profiles.json`. Claude Code reads this to know which i
 ## Placeholder Strategy
 
 If insufficient images:
+
 - CSS gradients as backgrounds (never stock photos as placeholders)
 - Gradient patterns: `linear-gradient(135deg, {brand_primary}22, {brand_secondary}11)`
 - SVG abstract patterns generated from brand colors

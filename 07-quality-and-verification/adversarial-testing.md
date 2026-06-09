@@ -7,6 +7,7 @@ updated: "2026-04-23"
 # Adversarial Testing
 
 ## Edge Case Generator
+
 ```typescript
 test.describe('Adversarial Tests', () => {
   test('Rapid navigation — click every link within 2 seconds', async ({ page }) => {
@@ -68,6 +69,7 @@ test.describe('Adversarial Tests', () => {
 ```
 
 ## Chaos Testing Checklist
+
 - What happens with JavaScript disabled? (content still readable?)
 - What happens at 2G speed? (anything useful within 10 seconds?)
 - What happens with 200% font scaling? (nothing overflows?)
@@ -80,6 +82,7 @@ test.describe('Adversarial Tests', () => {
 ## Chaos Engineering Patterns
 
 ### Random Latency Injection (Workers/D1)
+
 ```typescript
 // Simulate random 200-2000ms latency on any fetch — tests timeout handling
 test('tolerates random latency spikes', async ({ page, context }) => {
@@ -96,6 +99,7 @@ test('tolerates random latency spikes', async ({ page, context }) => {
 ```
 
 ### D1 Connection Drop Simulation
+
 ```typescript
 // Simulate D1 returning 500 — verify graceful error state (not crash)
 test('D1 connection failure shows error boundary', async ({ page, context }) => {
@@ -126,6 +130,7 @@ test('partial D1 batch failure handled gracefully', async ({ page, context }) =>
 ```
 
 ### Stripe/Payment Chaos
+
 ```typescript
 // Simulate Stripe.js failing to load
 test('payment page usable when Stripe.js blocked', async ({ page, context }) => {

@@ -10,13 +10,16 @@ updated: "2026-04-23"
 ## Before First Line of Code
 
 ### Step 1: Identify Competitors
+
 1. WebSearch for `"[product category] + [target audience]"` — example: "soup kitchen management software" or "donation platform nonprofit"
 2. WebSearch for `"best [product type] 2026"`
 3. WebSearch for `"alternatives to [known competitor]"`
 4. Identify 3-5 direct competitors
 
 ### Step 2: Scrape Each Competitor
+
 For each competitor, fetch:
+
 1. **Homepage** — extract hero copy, value proposition, design style
 2. **Pricing page** — extract tiers, amounts, features per tier
 3. **Features page** — extract feature list, categorization
@@ -26,12 +29,14 @@ For each competitor, fetch:
 Use WebFetch for public pages. Use FireCrawl (`firecrawl.megabyte.space`) for deeper crawling.
 
 ### Step 3: Visual Analysis
+
 1. Take Playwright screenshots of each competitor at 1280px and 375px
 2. Analyze color palette, typography, layout patterns, image style
 3. Note what looks premium vs. generic
 4. Identify design patterns we should adopt or improve upon
 
 ### Step 4: Synthesize into Comparison Table
+
 ```markdown
 ## Competitive Landscape — [Product Category]
 | Dimension | Competitor A | Competitor B | Competitor C | **Us (Target)** |
@@ -49,6 +54,7 @@ Use WebFetch for public pages. Use FireCrawl (`firecrawl.megabyte.space`) for de
 ```
 
 ### Step 5: Extract Winning Patterns
+
 1. Which features do ALL competitors have? (table stakes — we must have them)
 2. Which features does only the leader have? (differentiation opportunity)
 3. What do ALL competitors do poorly? (our biggest opportunity)
@@ -58,6 +64,7 @@ Use WebFetch for public pages. Use FireCrawl (`firecrawl.megabyte.space`) for de
 ## Content Scraping (for Rebuilds)
 
 ### Brand Extraction
+
 1. Screenshot the site at multiple viewpoints
 2. Extract via AI vision:
    - Primary colors (hex values)
@@ -73,6 +80,7 @@ Use WebFetch for public pages. Use FireCrawl (`firecrawl.megabyte.space`) for de
    - Contact information
 
 ### Content Extraction
+
 1. Scrape ALL text content (never truncate or summarize)
 2. Preserve heading hierarchy
 3. Extract all image URLs and alt text
@@ -81,6 +89,7 @@ Use WebFetch for public pages. Use FireCrawl (`firecrawl.megabyte.space`) for de
 6. Preserve any numbers, statistics, or data points
 
 ### Deep Crawling via FireCrawl
+
 ```bash
 # Self-hosted at firecrawl.megabyte.space
 curl -X POST "https://firecrawl.megabyte.space/v1/crawl" \
@@ -100,6 +109,7 @@ curl -X POST "https://firecrawl.megabyte.space/v1/crawl" \
 ## Research-Backed Differentiation (Source: First Round Review, Y Combinator)
 
 ### How to Beat Competitors
+
 1. **10x better on one dimension** — don't try to be better at everything
 2. **Speed** — if you're fastest, users forgive everything else
 3. **Design quality** — most B2B/nonprofit tools look terrible; premium design is a moat
@@ -109,6 +119,7 @@ curl -X POST "https://firecrawl.megabyte.space/v1/crawl" \
 7. **Media quality** — real images, real video, real animation (not stock)
 
 ### What to Always Beat Competitors On (Emdash Defaults)
+
 - Visual quality (anti-slop design system, `10-experience-and-design-system`)
 - Page speed (Cloudflare edge, <1.5s LCP)
 - Accessibility (WCAG AA verified, `07/accessibility-gate`)
@@ -118,7 +129,9 @@ curl -X POST "https://firecrawl.megabyte.space/v1/crawl" \
 - Easter eggs (delightful hidden features, `06/easter-eggs`)
 
 ## Output: Build Plan Integration
+
 After analysis, feed findings into:
+
 - **02-goal-and-brief** — refine product thesis based on competitive gaps
 - **03-planning-and-research** — prioritize features that differentiate
 - **09-brand-and-content-system** — adopt winning design patterns, improve on weaknesses
@@ -139,10 +152,12 @@ After analysis, feed findings into:
 | **Dyad** | BYO API keys | Unlimited free usage, local dev, open-source | Newer product, requires API key setup | Free |
 
 ### Market Split
+
 - **Cloud platforms** (Bolt.new, v0, Lovable) — restrictive free tiers, faster iteration, managed hosting
 - **Local/self-hosted** (bolt.diy, Dyad) — unlimited free use, privacy, but setup burden
 
 ### How to Beat AI Builders (Emdash Differentiation for projectsites.dev)
+
 1. **Design quality** — AI builders produce generic output; our anti-slop design system is a moat
 2. **Completeness** — builders ship 60% products; we ship with SEO, a11y, analytics, legal, email
 3. **Domain expertise** — builders are general-purpose; we know the exact stack and optimize for it

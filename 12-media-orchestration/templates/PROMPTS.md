@@ -3,6 +3,7 @@
 ## 1. Hero Image Generation
 
 ### Dark Tech Hero
+
 ```
 Subject: Abstract geometric composition representing [product concept]
 Style: Dark digital illustration with subtle 3D depth
@@ -17,6 +18,7 @@ Aspect ratio: 1792x1024
 ```
 
 ### Product-Forward Hero
+
 ```
 Subject: [Product interface or concept] floating in dark space
 Style: 3D render with glass morphism elements
@@ -31,6 +33,7 @@ Aspect ratio: 1792x1024
 ```
 
 ### Community/People Hero
+
 ```
 Subject: Diverse team of professionals [specific context from product]
 Style: Warm editorial photography feel, digitally enhanced
@@ -49,6 +52,7 @@ Aspect ratio: 1792x1024
 ## 2. Feature Illustration Generation
 
 ### Icon-Style Feature
+
 ```
 Subject: Minimalist icon representing [feature concept]
 Style: Flat design with subtle gradient and depth
@@ -63,6 +67,7 @@ Aspect ratio: 1:1 (1024x1024)
 ```
 
 ### Detailed Feature Illustration
+
 ```
 Subject: [Feature concept] shown as an isometric scene
 Style: Isometric digital illustration, clean lines
@@ -81,6 +86,7 @@ Aspect ratio: 4:3 (1024x768)
 ## 3. Brand-Faithful Website Rebuild Imagery
 
 ### Preserve Existing Brand
+
 ```
 Subject: [Describe the original image's content faithfully]
 Style: [Match original style — photograph, illustration, render]
@@ -95,6 +101,7 @@ Aspect ratio: [Match original dimensions]
 ```
 
 ### Modernize While Preserving
+
 ```
 Subject: [Same subject as original, described specifically]
 Style: Modern digital [illustration/photograph/render] inspired by [describe original style]
@@ -113,6 +120,7 @@ Aspect ratio: [Optimized for modern web — 16:9 or 3:2]
 ## 4. Social Preview Image (OG)
 
 ### Standard OG Image
+
 ```
 Subject: Brand-forward preview card for [product name]
 Style: Clean graphic design, bold typography feel
@@ -127,6 +135,7 @@ Dimensions: 1200x630 pixels exactly
 ```
 
 ### Blog Post OG Image
+
 ```
 Subject: Visual representation of [article topic]
 Style: Editorial illustration or thematic graphic
@@ -145,6 +154,7 @@ Dimensions: 1200x630 pixels exactly
 ## 5. Short Hero Video Generation (Sora)
 
 ### Abstract Tech Background Loop
+
 ```
 [Opening, 0-2s]: Slowly rotating geometric crystalline structure glowing with cyan (#00E5FF) light against deep dark (#060610) background
 [Main action, 2-6s]: Structure gently morphs and pulses, particles drift outward in slow motion, light refracts through facets
@@ -158,6 +168,7 @@ Mood: Premium, futuristic, hypnotic
 ```
 
 ### Product Demo Intro
+
 ```
 [Opening, 0-3s]: Dark screen, product interface fades into view from center
 [Main action, 3-8s]: Interface elements animate in sequence — navigation appears, content loads, key feature activates
@@ -171,6 +182,7 @@ Mood: Polished, professional, demonstrative
 ```
 
 ### Ambient Nature Loop (for non-tech products)
+
 ```
 [Opening, 0-2s]: Slow aerial view of [environment relevant to product]
 [Main action, 2-6s]: Gentle camera drift, natural movement (wind, water, light)
@@ -188,6 +200,7 @@ Mood: Calm, aspirational, premium
 ## 6. Logo/Icon Generation (Ideogram)
 
 ### Tech Product Logo
+
 ```
 A modern, minimal logo for "[Product Name]", a [product type] tool.
 Style: DESIGN
@@ -200,6 +213,7 @@ Not generic — avoid common symbols (gears, clouds, lightning bolts).
 ```
 
 ### App Icon (Square)
+
 ```
 A square app icon for "[Product Name]".
 Style: DESIGN
@@ -212,6 +226,7 @@ Clean, bold, minimal.
 ```
 
 ### Horizontal Lockup
+
 ```
 A horizontal logo lockup for "[Product Name]".
 Style: DESIGN
@@ -227,6 +242,7 @@ Professional and modern.
 ## 7. Image Critique and Remix
 
 ### Critique Template
+
 ```
 Evaluate this image against these criteria (1-10 each):
 
@@ -245,6 +261,7 @@ Remix recommendation: [specific changes to prompt]
 ```
 
 ### Remix Prompt Adjustment
+
 ```
 Original prompt: [paste]
 Issues identified: [from critique]
@@ -260,6 +277,7 @@ Attempt: [N of 3 max]
 ## 8. Video Critique and Remix
 
 ### Video Critique Template
+
 ```
 Evaluate this video against these criteria (1-10 each):
 
@@ -278,6 +296,7 @@ Remix recommendation: [specific changes to prompt or parameters]
 ```
 
 ### Video Remix Adjustment
+
 ```
 Original prompt: [paste]
 Issues identified: [from critique]

@@ -10,6 +10,7 @@ updated: "2026-04-23"
 This model predicts Brian's preferences, decisions, and reactions. Use it to anticipate what he wants before he asks.
 
 ## 1. Cognitive Processing Style
+
 **Associative thinker, visual-spatial, big-picture-first.**
 
 - Starts with the vision, iterates into details — "Build X" → "now fix Y" → "make it shorter"
@@ -20,7 +21,9 @@ This model predicts Brian's preferences, decisions, and reactions. Use it to ant
 **How to apply** — lead with a working result. Explain only when asked "why."
 
 ## 2. Technology Evaluation Framework
+
 **4-gate filter, applied in order:**
+
 1. **Cloudflare compatible?** — if it can't run on Workers/D1/R2 or tunnel through CF → friction
 2. **TypeScript/Bash friendly?** — "Best for TS/bash developers" is the second filter
 3. **Open-source?** — closed-source infra tooling is instantly disqualified
@@ -32,23 +35,28 @@ This model predicts Brian's preferences, decisions, and reactions. Use it to ant
 ## 3. Expertise Map
 
 ### Deep expertise (handles himself — never asks AI)
+
 - TypeScript, Angular, Ionic, Capacitor, Git, HTML/CSS, project structure, CI/CD pipeline design, build systems, error handling, API design
 
 ### Expert but delegates to AI for speed
+
 - Copy/content writing (40% of all conversations), Bash scripting, DevOps architecture, resume optimization, cover letters, macOS admin, Git edge cases
 
 ### Learning via AI (burst then independent)
+
 - Cloudflare Zero Trust (2 weeks → mastered)
 - PowerShell (1 week → done)
 - OPNsense (2 months → proficient)
 - Home Assistant Jinja2 (ongoing)
 
 ### Genuine gaps
+
 - Database schema design (uses simple schemas, never asks design questions)
 - Security threat modeling (implementation-focused not design-focused)
 - Automated testing (delegates to VM-level testing, not unit tests)
 
 ## 4. Debugging DNA
+
 1. **Always pastes full error output** — never describes symptoms abstractly
 2. **40% tries first, 60% asks immediately** — depends on familiarity
 3. **Escalation** — try fix → paste NEW error → after 3 fails, reframe question → after 5 fails, upload entire config
@@ -56,12 +64,14 @@ This model predicts Brian's preferences, decisions, and reactions. Use it to ant
 5. **"Why did this fail"** — wants root cause explanation, not just a fix
 
 ### Iteration depth
+
 - Simple fix (typo) — 1-2 msgs
 - Config puzzle (Docker/Traefik) — 4-8 msgs
 - Build failure — 3-5 msgs
 - Wrong approach — pivots after 2 failed attempts
 
 ## 5. Architecture Intuitions
+
 - **Edge-first absolute conviction** — computation at the edge (CF Workers), not origin servers
 - **Monolith of microservices** — 70+ Docker services managed as single unit via Coolify
 - **Idempotency over error handling** — scripts check "if installed, skip" rather than try/catch
@@ -71,6 +81,7 @@ This model predicts Brian's preferences, decisions, and reactions. Use it to ant
 - **Documentation is marketing** — every doc request framed as persuasion, not reference
 
 ## 6. Learning Strategy
+
 **Build first, learn as needed.** Never asks conceptual questions before using a tool.
 
 - First question is always a configuration question, not "what is X?"
@@ -82,6 +93,7 @@ This model predicts Brian's preferences, decisions, and reactions. Use it to ant
 **How to apply** — when Brian asks about a new tool, he's already trying it. Give implementation answers, not overviews.
 
 ## 7. Delegation Hierarchy (what AI handles)
+
 1. **Content generation (40%)** — copy, blog posts, descriptions. Trust: HIGH.
 2. **Code generation (20%)** — scripts, configs, boilerplate. Trust: MEDIUM (iterates).
 3. **Professional communication (15%)** — cover letters, emails. Trust: HIGH.
@@ -90,18 +102,21 @@ This model predicts Brian's preferences, decisions, and reactions. Use it to ant
 6. **Design/visual (7%)** — images, logos, social graphics. Trust: MEDIUM.
 
 ## 8. Persuasion Style (how Brian convinces others)
+
 - **To AI** — commanding, imperative, no pleasantries, assumes unlimited capacity
 - **To humans** — authority via specificity ("200,000 lines of code"), social proof via ecosystem ("sponsored by GitLab"), scarcity/uniqueness ("1 OAK"), reciprocity framing
 - **Numbers > adjectives** — always quantifies: "80% improvement", "50% bounce rate reduction"
 - **Casual authority** — mixes grandiosity with humility, then immediately asks to "make it chiller"
 
 ## 9. Emotional Triggers
+
 - **Excitement** — open-source discovery, design quality ("stunning"), helping others, AI capabilities
 - **Frustration** — AI hedging, excessive length, spelling errors in images, options instead of answers, AI content refusals
 - **Analytical mode** — code, infrastructure, networking, deployment
 - **Mixed mode** — design, branding, cover letters, dating profiles
 
 ## 10. Platform Trajectory (2023 → 2026)
+
 - **FROM** — self-hosted infrastructure (Proxmox peak Q3-Q4 2025)
 - **TOWARD** — edge computing (Cloudflare accelerating Q1 2026)
 - **CONSTANT** — Docker/Coolify as the bridge between self-hosted and edge
@@ -109,6 +124,7 @@ This model predicts Brian's preferences, decisions, and reactions. Use it to ant
 **Prediction** — Brian will increasingly move workloads from Coolify Docker → Cloudflare Workers Containers. Self-hosted services will remain for data-sensitive ops (Authentik, PBS backups).
 
 ## 11. Tacit Rules (followed without stating)
+
 1. Cross-platform compatibility is non-negotiable (macOS + Linux always)
 2. One-liner entry points for every project
 3. Package manager abstraction (apt, dnf, pacman, brew)

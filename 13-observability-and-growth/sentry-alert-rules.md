@@ -131,6 +131,7 @@ P95 response time exceeds 500ms for 10 consecutive minutes.
 All rules created via Sentry API. Base URL: `https://sentry.megabyte.space` (self-hosted).
 
 ### Create Issue Alert
+
 ```bash
 curl -X POST "https://sentry.megabyte.space/api/0/projects/{org}/{project}/rules/" \
   -H "Authorization: Bearer $SENTRY_AUTH_TOKEN" \
@@ -139,6 +140,7 @@ curl -X POST "https://sentry.megabyte.space/api/0/projects/{org}/{project}/rules
 ```
 
 ### Create Metric Alert (P95 Latency)
+
 ```bash
 curl -X POST "https://sentry.megabyte.space/api/0/projects/{org}/{project}/alert-rules/" \
   -H "Authorization: Bearer $SENTRY_AUTH_TOKEN" \
@@ -219,6 +221,7 @@ async function silenceDuringDeploy(project: string, durationMinutes: number = 10
 ```
 
 ### Deploy flow integration
+
 1. `silenceDuringDeploy(project, 10)` — mute alerts
 2. `wrangler deploy` — deploy Worker
 3. Purge CDN cache — clear stale responses
@@ -265,12 +268,14 @@ app.use('*', sentryMiddleware());
 ```
 
 ### DO Alarm Tracing (v10.49)
+
 ```typescript
 // Durable Object alarms auto-traced by Sentry v10.49+
 // No extra config — alarm() calls get spans + error capture
 ```
 
 ### WorkerEntrypoint Support (v10.48)
+
 ```typescript
 // Service bindings auto-instrumented via WorkerEntrypoint class
 // import { WorkerEntrypoint } from 'cloudflare:workers';

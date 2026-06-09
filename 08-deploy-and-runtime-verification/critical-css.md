@@ -8,6 +8,7 @@ description: "Inline above-fold CSS via critters at build time. Angular CLI buil
 # Critical CSS Extraction
 
 ## Angular CLI (Built-in critters)
+
 ```jsonc
 // angular.json — critters is bundled since Angular v13
 {
@@ -33,9 +34,11 @@ description: "Inline above-fold CSS via critters at build time. Angular CLI buil
 Angular SSR (`@angular/ssr`) automatically runs critters during server-side rendering. For prerendered routes (`ng build --prerender`), critical CSS is inlined at build time into each static HTML file. No runtime cost.
 
 ## Standalone critters (Non-Angular)
+
 ```bash
 pnpm add -D critters
 ```
+
 ```typescript
 // scripts/inline-critical-css.ts — run as build post-process
 import Critters from 'critters';
@@ -70,6 +73,7 @@ await processHtmlFiles('dist/browser');
 ```
 
 ## How critters Works
+
 1. Parses HTML, finds all `<link rel="stylesheet">` references
 2. Loads referenced CSS files from disk
 3. Renders page layout using a minimal DOM parser (no headless browser)
@@ -78,6 +82,7 @@ await processHtmlFiles('dist/browser');
 6. Converts remaining `<link>` to `<link rel="preload" as="style" onload="this.rel='stylesheet'">` with `<noscript>` fallback
 
 ## Hono SSR Manual Critical CSS
+
 ```typescript
 // For Hono-served HTML pages (non-Angular)
 // Pre-extract critical CSS per route at build time, store as strings
@@ -103,6 +108,7 @@ app.get('/', (c) => {
 ```
 
 ## Build Integration (package.json)
+
 ```jsonc
 {
   "scripts": {
@@ -114,6 +120,7 @@ app.get('/', (c) => {
 ```
 
 ## Optimal Load Sequence
+
 1. Inline critical CSS in `<style>` (0ms — already in HTML)
 2. Preload above-fold fonts (parallel with HTML parse)
 3. Deferred full stylesheet via `<link rel="preload" as="style">` (non-blocking)
@@ -122,6 +129,7 @@ app.get('/', (c) => {
 6. **Result:** first meaningful paint with styled content + system font → swap to custom font
 
 ## Verification
+
 ```bash
 # Measure before/after with Lighthouse
 npx lighthouse https://example.com --only-categories=performance --output=json | jq '.audits["render-blocking-resources"]'
@@ -132,6 +140,7 @@ curl -s https://example.com | grep -c 'media="print" onload' # Deferred styleshe
 ```
 
 ### Targets
+
 - LCP — ≤2.5s
 - CLS — ≤0.1 (critical CSS prevents layout shift from late-loading styles)
 - FCP — ≤1.8s

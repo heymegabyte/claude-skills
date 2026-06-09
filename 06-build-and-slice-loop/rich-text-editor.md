@@ -8,6 +8,7 @@ description: "Editor.js (@editorjs/editorjs) integration with Angular 21. Block-
 # Rich Text Editor
 
 ## Angular Editor.js Wrapper
+
 ```typescript
 // editor.component.ts
 import { Component, AfterViewInit, OnDestroy, Input, Output, EventEmitter, ElementRef, ViewChild } from '@angular/core';
@@ -88,6 +89,7 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
 ```
 
 ## Block JSON Format (Editor.js OutputData)
+
 ```json
 {
   "time": 1714000000000,
@@ -105,6 +107,7 @@ export class EditorComponent implements AfterViewInit, OnDestroy {
 ```
 
 ## D1 Schema for Content Storage
+
 ```sql
 CREATE TABLE content_blocks (
   id TEXT PRIMARY KEY,
@@ -119,6 +122,7 @@ CREATE INDEX idx_content_entity ON content_blocks(entity_type, entity_id);
 ```
 
 ## Hono API for Save/Load
+
 ```typescript
 // src/routes/content.ts
 const content = new Hono<{ Bindings: Env }>();
@@ -150,6 +154,7 @@ export { content };
 ```
 
 ## Server-Side Block Renderer (HTML for SEO)
+
 ```typescript
 function renderBlocks(data: OutputData): string {
   return data.blocks.map((block) => {
@@ -176,6 +181,7 @@ function renderBlocks(data: OutputData): string {
 ```
 
 ## Custom Block Creation
+
 ```typescript
 class AlertBlock {
   static get toolbox() {

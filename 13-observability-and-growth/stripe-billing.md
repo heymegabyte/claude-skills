@@ -17,19 +17,25 @@ updated: "2026-05-10"
 - **Enterprise** — custom — SSO, SLA, dedicated support, volume pricing
 
 **Seat-Based Billing** — `quantity` on subscription items:
+
 ```typescript
 stripe.subscriptions.update(subId, { items: [{ id: itemId, quantity: seatCount }] })
 ```
+
 Auto-adjust on member add/remove via Clerk org webhook. Prorate mid-cycle. Display: `"$12/seat/mo × 8 seats = $96/mo"`.
 
 **Stripe Tax** — automatic tax calculation:
+
 ```typescript
 stripe.subscriptions.create({ automatic_tax: { enabled: true } })
 ```
+
 Requires `tax_behavior: 'exclusive'|'inclusive'` on each Price. Registration:
+
 ```typescript
 stripe.tax.registrations.create({ country, state, type })
 ```
+
 Display tax line on invoices. No tax on $0 free tiers.
 
 - Annual billing default (20% discount) — $480/year vs $600
@@ -39,6 +45,7 @@ Display tax line on invoices. No tax on $0 free tiers.
 ### Nonprofit / Donation
 
 Preset tiers:
+
 - **$10** — "Feeds a family for a day"
 - **$25** — "Covers supplies for a week"
 - **$50** — "Powers the hotline for a month"
@@ -48,6 +55,7 @@ Preset tiers:
 - **Custom** — "Choose your amount"
 
 Rules:
+
 - Monthly recurring as default, one-time as option
 - Impact labels on every amount (specific, concrete, not vague)
 - Progress bar showing goal achievement
@@ -55,6 +63,7 @@ Rules:
 ## Auto-Setup Workflow
 
 ### 1. Create Stripe Product + Prices
+
 ```typescript
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
@@ -82,6 +91,7 @@ const annualPrice = await stripe.prices.create({
 ```
 
 ### 2. Create Checkout Endpoint
+
 ```typescript
 app.post('/api/checkout', async (c) => {
   const { priceId, successUrl, cancelUrl } = await c.req.json();
@@ -102,6 +112,7 @@ app.post('/api/checkout', async (c) => {
 ```
 
 ### 3. Brand the Checkout
+
 ```typescript
 // Set Stripe account branding to match site
 await stripe.accounts.update('acct_...', {
@@ -117,6 +128,7 @@ await stripe.accounts.update('acct_...', {
 ```
 
 ### 4. Webhook Handler
+
 ```typescript
 app.post('/api/webhooks/stripe', async (c) => {
   const sig = c.req.header('stripe-signature')!;
@@ -141,11 +153,14 @@ app.post('/api/webhooks/stripe', async (c) => {
 ## Donation Page Design (givedirectly.org style)
 
 ### Layout
+
 Full-screen split:
+
 - **Left (60%)** — cause imagery, impact story, real numbers
 - **Right (40%)** — amount selector, checkout form, progress bar
 
 ### Donation Goal + Progress Bar
+
 ```typescript
 // Real-time via Durable Objects + Stripe webhooks
 app.get('/api/donation-progress', async (c) => {
@@ -156,6 +171,7 @@ app.get('/api/donation-progress', async (c) => {
 ```
 
 ### Post-Donation Flow
+
 1. Success page with confetti animation (06/easter-eggs energy)
 2. Auto-email via Resend: thank you + tax receipt + ask to share
 3. Auto-email all participants when goal is met
@@ -164,6 +180,7 @@ app.get('/api/donation-progress', async (c) => {
 ## Conversion Optimization (Research-Backed)
 
 ### Pricing Page Best Practices (Source: ProfitWell, Stripe)
+
 - 3 tiers maximum (paradox of choice — 3 converts better than 5)
 - Highlight the middle tier as "Most Popular" (anchoring effect)
 - Show annual savings prominently (`"Save $120/year"`)
@@ -172,6 +189,7 @@ app.get('/api/donation-progress', async (c) => {
 - Show trust signals near CTA: `"Trusted by X users"`, security badge
 
 ### Checkout Optimization (Source: Baymard Institute)
+
 - Stripe Link reduces checkout time by 7x (one-click for returning users)
 - Show security badges and `"Powered by Stripe"` near payment form
 - Progress indicator for multi-step checkout
@@ -181,21 +199,27 @@ app.get('/api/donation-progress', async (c) => {
 ## Psychology of Pricing (04/wisdom-and-human-psychology — Wisdom Applied)
 
 ### Anchoring (Kahneman)
+
 Show annual price first. $480/year makes $50/month feel reasonable. The first number anchors expectations.
 
 ### Loss Aversion (Kahneman & Tversky)
+
 `"Don't lose your progress"` converts better than `"Keep your progress."` Frame around what they'd lose by not acting.
 
 ### Reciprocity (Cialdini)
+
 Generous free tier creates obligation. Users who get real value for free feel an internal drive to give back — through payment or word-of-mouth.
 
 ### Social Proof (Cialdini)
+
 Near every pricing CTA: `"Join 1,200 supporters"` or `"Trusted by X organizations."` People follow the crowd, especially for financial decisions.
 
 ### Peak-End Rule (Kahneman)
+
 The post-purchase experience matters as much as the purchase. Confetti animation on success, a warm thank-you email, and an impact update later create a memory of joy — not just a transaction.
 
 ### The Ethical Line
+
 - REAL scarcity only (actual limited spots, actual deadline)
 - No confirmshaming (`"No, I don't want to help"` is a dark pattern)
 - Easy cancellation — as easy as signup
@@ -261,18 +285,21 @@ Multidimensional metering for AI/usage-based billing at scale. Custom contractin
 ### Two Core SaaS Models (Know Which You're Building)
 
 **Low-Touch SaaS** (Basecamp, Atlassian model):
+
 - Self-serve signup, no sales team needed
 - Optimize for: onboarding speed, activation rate, self-service support
 - Key metric: Monthly churn <5%, ideally <3%
 - Growth: content marketing, SEO, product-led growth (PLG)
 
 **High-Touch SaaS** (Enterprise model):
+
 - Human-intensive sales process: SDRs find prospects, AEs close deals, AMs retain
 - Optimize for: demo experience, integration support, customer success
 - Key metric: Net Revenue Retention >120%
 - Growth: outbound sales, conferences, partnerships
 
 ### Critical SaaS Metrics (Monitor From Day 1)
+
 - **MRR** (Monthly Recurring Revenue) — target: growing month-over-month — primary health indicator
 - **Churn Rate** — target: <5% monthly for SMB, <1% for enterprise — revenue leak
 - **LTV:CAC Ratio** — target: >3:1 — spending efficiency
@@ -280,6 +307,7 @@ Multidimensional metering for AI/usage-based billing at scale. Custom contractin
 - **Activation Rate** — target: 20-40% of signups — product-market fit signal
 
 ### Pricing Strategy (YC + Stripe Consensus)
+
 1. **Generous free tier creates reciprocity** — users who get real value for free convert at higher rates
 2. **Annual billing default** with 20% discount — reduces churn, improves cash flow
 3. **Price anchoring** — show enterprise/annual first, making pro feel reasonable
@@ -287,6 +315,7 @@ Multidimensional metering for AI/usage-based billing at scale. Custom contractin
 5. **AI-native is the baseline** — every SaaS product in 2026 should use AI to deliver more value than static software could
 
 ### YC's 2026 Advice for SaaS Founders
+
 - "Code is cheap; insight is rare" — spend more time on user research than coding
 - Build for human-AI collaboration, not full automation
 - AI-native companies can now launch faster and operate leaner than ever before

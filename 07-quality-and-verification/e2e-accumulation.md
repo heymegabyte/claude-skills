@@ -8,6 +8,7 @@ description: "Append-only parallel journey chunks. Each feature = new spec file 
 # E2E Accumulation
 
 ## Rules
+
 - Tests append-only, never deleted
 - Removed features → skip + comment
 - Each feature area = own spec file (`e2e/journeys/{feature}.spec.ts`)
@@ -18,6 +19,7 @@ description: "Append-only parallel journey chunks. Each feature = new spec file 
 - New feature = new file, existing files untouched
 
 ## Structure
+
 ```
 e2e/journeys/
   discovery.spec.ts  — homepage, nav, footer, SEO, a11y
@@ -30,6 +32,7 @@ e2e/helpers/
 ```
 
 ## Config
+
 - `fullyParallel: true`
 - `workers: 4`
 - `timeout: 30000`
@@ -37,7 +40,9 @@ e2e/helpers/
 - `projects: [chromium, mobile]`
 
 ## Coverage Matrix (in SPEC.md)
+
 Every feature row must have:
+
 - Journey chunk
 - Edge case spec
 - Error states
@@ -46,4 +51,5 @@ Every feature row must have:
 No feature ships without all four. `completeness-checker` agent verifies.
 
 ## Math
+
 10 features × 30s ÷ 4 workers = ~75s total. Scales linearly with features, not time.

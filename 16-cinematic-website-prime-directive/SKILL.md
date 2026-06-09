@@ -21,6 +21,7 @@ paths:
 One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com") → satisfy all 100 build-breaking rules across 10 categories before DONE. Anything less is in-progress.
 
 ## 1. Cinematic Visual Doctrine (1-10)
+
 1. Dark-first (`#060610` base) w/ at least one bold accent (`#00E5FF` / `#7C3AED` / `#50AAE3`) — never neutral grey
 2. Fluid `clamp()` type — body 16-19px, display 64-128px, single ratio (1.25-1.333)
 3. Sora + Space Grotesk + JetBrains Mono (variable woff2 subsets preloaded)
@@ -33,6 +34,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 10. Every section pair has visual rhythm: dense → breath → dense
 
 ## 2. Pre-Hydrated SPA + Routing (11-20)
+
 11. React 19 + Vite + Tailwind v4 + TanStack Router (default)
 12. Astro 5 + React islands for marketing-static-heavy
 13. Next.js 15 App Router only when SSR/ISR adds real value
@@ -45,6 +47,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 20. Static HTML shell prerendered w/ H1 + meta tags — never script-injected
 
 ## 3. PWA Kit (21-30)
+
 21. `site.webmanifest` w/ `name`, `short_name`, `description`, `theme_color`, `background_color`, `display:"standalone"`
 22. `screenshots[]` ≥3 entries w/ `form_factor:"wide"` + `form_factor:"narrow"`
 23. `shortcuts[]` for top 3 actions, `share_target`, `file_handlers`, `protocol_handlers`
@@ -57,6 +60,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 30. Kill-switch SW (unregister + clear caches) as fallback
 
 ## 4. Structured Data + Rich Snippets (31-40)
+
 31. 5+ JSON-LD blocks per route minimum
 32. Always: `WebSite` + `Organization` + `WebPage` + `BreadcrumbList` + `FAQPage`
 33. Page-type add-ons: `LocalBusiness`, `Product`, `BlogPosting`, `HowTo`, `Person`
@@ -69,6 +73,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 40. `inLanguage` on every block; `isAccessibleForFree:true` on public content
 
 ## 5. SEO + AI Search / GEO (41-50)
+
 41. Title 50-60 chars HARD, meta desc 120-156 chars HARD, keyphrase 0.5-3%
 42. OG card 1200×630 ≤100KB BRANDED (not scraped photo)
 43. Twitter Card meta on every route
@@ -81,6 +86,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 50. Per-route canonical URL (custom hostname when `primary_hostname` set)
 
 ## 6. Third-Party Integrations (51-60)
+
 51. GA4 + GTM snippet (head + noscript fallback)
 52. PostHog snippet w/ `persistence:'memory'` (cookie-free), autocapture on
 53. Sentry `@sentry/cloudflare` v9 + `withSentry` + OIDC DSN
@@ -93,6 +99,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 60. Live chat (Crisp / Plain) only when support is stated goal. **Cmd+K opens AI chat or command palette AND focuses text input same frame** — `autofocus` + `requestAnimationFrame(() => inputRef.current?.focus({preventScroll:true}))` after open-state flip, re-press = re-focus + `select()`, Esc returns focus to trigger. Playwright build gate: `await page.keyboard.press('Meta+K'); await expect(input).toBeFocused();`
 
 ## 7. Performance + Core Web Vitals (61-70)
+
 61. LCP ≤2.0s (target ≤1.5s)
 62. CLS ≤0.05 — every image, iframe, ad slot has explicit dimensions
 63. INP ≤100ms (target — 200ms is fail)
@@ -105,6 +112,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 70. Long Animation Frames API instrumented for INP debugging
 
 ## 8. Accessibility WCAG 2.2 AA (71-80)
+
 71. axe-core 0 violations at all 6 bp (375, 390, 768, 1024, 1280, 1920)
 72. Contrast ≥4.5:1 body, ≥3:1 large text + UI components
 73. Target size ≥24px (2.5.8 — axe auto-tests)
@@ -117,6 +125,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 80. Lighthouse a11y ≥95
 
 ## 9. Testing + Verification (81-90)
+
 81. Playwright E2E 6bp covering homepage → key flow → conversion
 82. Tests start at homepage, navigate by clicking nav (never `page.goto` for internal)
 83. Vitest 3 unit tests for utilities + Zod schemas
@@ -129,6 +138,7 @@ One-line prompt ("Make a website for X" / "Build a site for Y" / "Rebuild Z.com"
 90. `wrangler tail` clean during smoke tests (no Worker errors)
 
 ## 10. Deploy + Observability + Done (91-100)
+
 91. Atomic deploy via Workers Builds (preferred) or `wrangler deploy` + version metadata
 92. Gradual deployment (1% → 10% → 100%) w/ auto-rollback on error spike
 93. CDN purge paired w/ every deploy
@@ -149,6 +159,7 @@ Anything less than all 100 is in-progress.
 102. **Crawl FIRST** — `sitemap.xml → robots.txt → HTML BFS → Wayback fallback → CMS index endpoints (Squarespace /config/pages, WP wp-sitemap-posts-*.xml, Wix _api/v1/sitemap.xml)` → `_url_inventory.json`. Every URL classified `keep | merge | 301 | drop`.
 
 103. **Org-type page-set floor** per `15-site-generation/page-set-expansion.md`:
+
 - nonprofit: 14 standard (home, about, mission, programs, services, team, volunteer, donate, contact, blog, faq, news, financials, annual-report) + 10 jewels
 - local-business: ~12 standard + service × city pSEO
 - saas: home, product, pricing, features, customers, blog, docs, changelog, security, status, integrations, roadmap, api-docs
@@ -157,6 +168,7 @@ Anything less than all 100 is in-progress.
 104. **Demographic-i18n auto-trigger** via ACS B16001 lookup on service area — every language ≥10% community share gets `/{locale}/*` full route mirror with hreflang cross-refs. Newark NJ ⇒ en+es+pt automatic.
 
 105. **Jewel discovery** (org-type-specific high-value pages absent from source):
+
 - nonprofit: `/parish-toolkit|/planned-giving|/financials|/annual-report|/donate/refurbish|/ways-to-give|/transcript|/alumni|/press|/testimonials|/partners`
 - saas: `/changelog|/security|/status|/integrations|/customers|/roadmap|/api-docs`
 - local: `/specials|/gallery|/team|/reviews|/insurance|/financing`

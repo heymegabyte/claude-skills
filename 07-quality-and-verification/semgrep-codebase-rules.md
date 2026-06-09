@@ -12,6 +12,7 @@ ESLint rules require JS authoring. Semgrep rules are YAML — AI writes in secon
 **Setup:** `brew install semgrep` → `mkdir -p .semgrep/rules/`.
 
 ## Core Rule Set (every Emdash project)
+
 ```yaml
 rules:
   # Architecture (A01/A07 Broken Access Control)
@@ -78,6 +79,7 @@ rules:
 ```
 
 ## OWASP 2025 Coverage
+
 - **A01** → `cors-wildcard` + `missing-auth`
 - **A03 Supply Chain** → `npm audit` in CI
 - **A04** → `hardcoded-secret`
@@ -87,6 +89,7 @@ rules:
 - **A10 Exceptional Conditions** → try/catch enforcement (add rule when pattern found 3x)
 
 ## AI Rule Evolution
+
 Same pattern fixed 3+ times → create rule. Architecture decision → enforce immediately.
 
 ```bash
@@ -106,6 +109,7 @@ semgrep --config .semgrep/rules/new-rule.yaml src/  # test, refine if noisy
 ## Integration
 
 ### Pre-commit
+
 ```yaml
 - repo: https://github.com/semgrep/semgrep
   rev: v1.95.0
@@ -113,11 +117,13 @@ semgrep --config .semgrep/rules/new-rule.yaml src/  # test, refine if noisy
 ```
 
 ### CI
+
 ```bash
 semgrep --config .semgrep/rules/ --error src/
 ```
 
 ### PostToolUse (`format-on-save.sh`)
+
 ```bash
 semgrep --config .semgrep/rules/ --quiet "$FILE" 2>/dev/null
 ```

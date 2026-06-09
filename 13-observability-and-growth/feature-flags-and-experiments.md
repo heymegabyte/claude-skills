@@ -151,17 +151,20 @@ posthog.capture('upgrade_click', { plan: 'pro', source: 'pricing-page' });
 PostHog Dashboard: **Feature Flags → New Flag**
 
 ### Release conditions
+
 1. **Start** — 5% of users → monitor errors/feedback
 2. **Day 2** — 25% → check metrics
 3. **Day 5** — 50% → validate at scale
 4. **Day 7** — 100% → full release
 
 ### Targeting
+
 - **By property** — `plan = 'pro'` (beta users first)
 - **By cohort** — `"internal-team"` → 100%, everyone else → rollout %
 - **By email** — `*@megabyte.space` → always on (internal testing)
 
 ### Rollout automation via API
+
 ```typescript
 async function updateRollout(flagKey: string, percentage: number, env: Env): Promise<void> {
   await fetch(`https://posthog.megabyte.space/api/projects/${env.POSTHOG_PROJECT_ID}/feature_flags`, {

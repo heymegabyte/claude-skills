@@ -10,6 +10,7 @@ description: "Keep codebase in sync: README (install.doctor template, shields.io
 Stale docs are bugs. The entire codebase (code, comments, markdown, configs) stays in sync at all times.
 
 ## README.md (install.doctor Template)
+
 ```markdown
 <div align="center">
   <img src=".config/assets/logo.png" width="148" height="148" />
@@ -29,6 +30,7 @@ Stale docs are bugs. The entire codebase (code, comments, markdown, configs) sta
 ```
 
 ## CLAUDE.md Standards
+
 - **Required sections:** What This Is, Tech Stack, Project Structure, Key Patterns, Commands, Current State
 - Keep <200 lines
 - Update after every session
@@ -36,6 +38,7 @@ Stale docs are bugs. The entire codebase (code, comments, markdown, configs) sta
 ## Code Comments
 
 ### When
+
 - WHY (not what)
 - Complex algorithms
 - Workarounds with issue links
@@ -43,6 +46,7 @@ Stale docs are bugs. The entire codebase (code, comments, markdown, configs) sta
 - Security decisions
 
 ### Never
+
 - Restating code
 - TODO without issue link
 - Commented-out code (git has history)
@@ -55,11 +59,13 @@ user.name = clerkUser.display_name;
 ```
 
 ## JSDoc
+
 Every exported function — `@param`, `@returns`, `@example`, `@see` (with URL). Descriptions <2 sentences.
 
 ## Stale Code Removal
 
 ### Remove
+
 - Commented-out code
 - Unused imports
 - Dead functions
@@ -68,6 +74,7 @@ Every exported function — `@param`, `@returns`, `@example`, `@see` (with URL).
 - Old applied migrations
 
 ### Keep
+
 - User-written code
 - Documented workarounds with links
 - Active feature flags
@@ -75,11 +82,13 @@ Every exported function — `@param`, `@returns`, `@example`, `@see` (with URL).
 **Rule:** Never remove user code without asking. Use `npx knip` for unused exports.
 
 ## Sync Protocol
+
 - **Every session** — README matches reality, CLAUDE.md current, remove deleted file refs
 - **Feature completion** — update README features, CLAUDE.md patterns, relevant skills
 - **Refactor** — update all docs, rename refs, grep for old names, update project structure
 
 ## Naming Conventions
+
 - **Files** — kebab-case
 - **Functions** — camelCase
 - **Types** — PascalCase
@@ -87,6 +96,7 @@ Every exported function — `@param`, `@returns`, `@example`, `@see` (with URL).
 - **DB columns** — snake_case
 
 ## Quality Checks
+
 ```bash
 grep -rn "TODO\|FIXME" src/ --include="*.ts" | head -20
 grep -rn "console\.log" src/ --include="*.ts" | grep -v "// keep"
@@ -94,5 +104,6 @@ npx knip --reporter compact
 ```
 
 ## Ownership
+
 - **Owns:** README template, CLAUDE.md standards, code comment quality, JSDoc, stale code removal, cross-project sync, AI-readable formatting
 - **Never owns:** Content writing (→09, 22), implementation (→06), testing (→07), deployment (→08)

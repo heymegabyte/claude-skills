@@ -26,9 +26,11 @@ paths:
 # 02 — Goal and Brief
 
 ## Run FIRST on every new project / rebuild
+
 Before code, write `PROJECT_BRIEF.md`. The brief drives every downstream decision (skill 05 stack, skill 06 build, skill 09 brand, skill 16 site mode).
 
 ## Org-type inference (drives everything)
+
 Detect from domain + folder name + scraped homepage + Google Places category:
 
 | Pattern | Org type |
@@ -89,11 +91,13 @@ One sentence: what this project does + for whom + why now.
 ```
 
 ## Question discipline
+
 - Before code, scan brief for gaps. Use `AskUserQuestion` ONLY for genuinely unresolvable items (e.g., bilingual-staff confirmation, NAP verification, license number).
 - Per `brian-preferences.md`: pick ONE answer when inferable, never offer options.
 - Silence = approval.
 
 ## What this skill produces
+
 - `PROJECT_BRIEF.md` — committed
 - `_org_type.json` — input to skill 05 (stack) + skill 09 (brand) + skill 16 (site mode)
 - `_brief_summary.txt` — 100-word digest for downstream agents

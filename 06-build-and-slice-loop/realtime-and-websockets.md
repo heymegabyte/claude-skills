@@ -8,6 +8,7 @@ description: "Cloudflare Durable Objects for WebSocket-based realtime features. 
 # Realtime and WebSockets
 
 ## Durable Object WebSocket Handler
+
 ```typescript
 // src/do/room.ts
 import { DurableObject } from 'cloudflare:workers';
@@ -101,6 +102,7 @@ export class Room extends DurableObject {
 ```
 
 ## Wrangler Config
+
 ```toml
 [[durable_objects.bindings]]
 name = "ROOM"
@@ -112,6 +114,7 @@ new_classes = ["Room"]
 ```
 
 ## Worker Router (connect client to DO)
+
 ```typescript
 // src/routes/realtime.ts
 import { Hono } from 'hono';
@@ -132,6 +135,7 @@ export { realtime };
 ```
 
 ## Client Reconnection with Exponential Backoff
+
 ```typescript
 // realtime.service.ts — Angular 21 signals
 import { Injectable, OnDestroy, signal, computed } from '@angular/core';
@@ -204,6 +208,7 @@ export class RealtimeService implements OnDestroy {
 ```
 
 ## Typing Indicator Pattern
+
 ```typescript
 // Component usage
 private typingTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -219,6 +224,7 @@ onInput(): void {
 ```
 
 ## Live Cursors Pattern
+
 ```typescript
 // Track mouse position, throttle to 50ms
 @HostListener('mousemove', ['$event'])
@@ -231,6 +237,7 @@ onMouseMove(e: MouseEvent): void {
 ```
 
 ## Hibernation API Cost Optimization
+
 - DO "sleeps" when no messages pending
 - No compute charge during hibernation
 - `webSocketMessage`/`webSocketClose` wake the DO on demand

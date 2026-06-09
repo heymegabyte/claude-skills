@@ -8,7 +8,9 @@ description: "Lightweight /admin panel for content moderation and data review. E
 # Admin Dashboard
 
 ## Philosophy
+
 This is NOT a full CMS or code editor. Code management happens through the embedded bolt.diy editor at `editor.projectsites.dev`. The admin dashboard is for:
+
 - Moderating user-submitted content (testimonials, feedback)
 - Reviewing webhook event logs
 - Managing newsletter subscribers
@@ -16,6 +18,7 @@ This is NOT a full CMS or code editor. Code management happens through the embed
 - Blog post draft review (if blog uses D1)
 
 ## Architecture
+
 - `/admin` → Dashboard overview (auth-protected)
 - `/admin/feedback` → Manage feedback submissions
 - `/admin/testimonials` → Approve/reject testimonials
@@ -24,6 +27,7 @@ This is NOT a full CMS or code editor. Code management happens through the embed
 - `/admin/editor` → Embedded bolt.diy iframe
 
 ## Auth Protection
+
 ```typescript
 // Simple admin auth middleware
 app.use('/admin/*', async (c, next) => {
@@ -42,6 +46,7 @@ app.use('/admin/*', async (c, next) => {
 ```
 
 ## Dashboard Overview
+
 ```typescript
 app.get('/admin', async (c) => {
   const db = drizzle(c.env.DB);
@@ -59,6 +64,7 @@ app.get('/admin', async (c) => {
 ## Content Moderation
 
 ### Feedback Review
+
 ```typescript
 app.get('/admin/feedback', async (c) => {
   const items = await db.select().from(feedback).orderBy(desc(feedback.createdAt)).limit(50);
@@ -77,10 +83,12 @@ app.post('/admin/feedback/:id/reject', async (c) => {
 ```
 
 ### Testimonial Moderation
+
 - Same pattern
 - Approved testimonials display on the homepage (skill 09 social proof)
 
 ## Embedded AI Editor
+
 ```html
 <!-- /admin/editor page -->
 <div class="editor-container" style="height: calc(100vh - 60px);">
@@ -96,6 +104,7 @@ app.post('/admin/feedback/:id/reject', async (c) => {
 All code changes, feature additions, and refactors go through this editor. The admin dashboard just handles data moderation.
 
 ## Design
+
 - Dark theme matching the site (#060610 background)
 - Simple table layouts with approve/reject action buttons
 - No heavy frameworks — server-rendered HTML from Hono
@@ -103,9 +112,11 @@ All code changes, feature additions, and refactors go through this editor. The a
 - **Navigation sidebar** — Overview, Chat, Feedback, Testimonials, Webhooks, Subscribers, Editor
 
 ## AI Chat Interface (Build Critique Assistant)
+
 Every admin dashboard includes an AI chat for discussing post-build critiques.
 
 ### Features
+
 - Claude-powered responses via Cloudflare Worker proxy to Anthropic API
 - Pre-loaded with the latest post-build critique as the first message
 - User can ask follow-up questions about quality issues
@@ -113,6 +124,7 @@ Every admin dashboard includes an AI chat for discussing post-build critiques.
 - Message history stored in D1
 
 ### Implementation
+
 ```typescript
 app.post('/admin/chat', async (c) => {
   const key = c.req.query('key');
@@ -138,12 +150,15 @@ app.post('/admin/chat', async (c) => {
 ```
 
 ### Quick Actions Panel
+
 - Purge CDN cache (Cloudflare API)
 - Run Playwright tests
 - View latest Lighthouse report
 - View analytics dashboard link (PostHog)
 
 ### Post-Build Notification
+
 After every deploy, send critique email via Resend:
+
 - Include link to admin dashboard for follow-up
 - Severity levels — CRITICAL (blocks launch), WARNING (should fix), INFO (nice to have)

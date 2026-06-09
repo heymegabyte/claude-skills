@@ -8,6 +8,7 @@ description: "Zod schema validation against live Hono API endpoints. Runtime typ
 # Contract Testing
 
 ## Core Pattern
+
 - Zod = source of truth (see 05/api-design)
 - Contract tests verify live endpoints conform at runtime
 - No mocks — hit the real API, validate the real response
@@ -17,6 +18,7 @@ Define Zod schema → fetch live endpoint → z.parse(response) → fail on mism
 ```
 
 ## Drizzle v1 Schema-to-Zod (Auto-Derive Contracts)
+
 Drizzle v1 (`drizzle-zod`) generates Zod schemas directly from table definitions — contracts stay in sync with DB schema automatically:
 
 ```typescript
@@ -43,6 +45,7 @@ export const UserListSchema = paginatedContract(UserResponseSchema);
 ```
 
 ## Shared Schema Pattern
+
 ```
 src/shared/schemas.ts     ← Drizzle tables + drizzle-zod derived schemas
   ├── used by Hono route  ← @hono/zod-validator (insert schema)
@@ -51,6 +54,7 @@ src/shared/schemas.ts     ← Drizzle tables + drizzle-zod derived schemas
 ```
 
 ## Contract Runner
+
 ```typescript
 // tests/contracts/contract-runner.ts
 const BASE_URL = process.env.PROD_URL ?? 'http://localhost:8787';
@@ -72,6 +76,7 @@ export async function runContractTest(tc: {
 ```
 
 ## Standard Contracts (every project)
+
 ```typescript
 export const HealthContract = z.object({ status: z.enum(['ok','degraded','down']), version: z.string(), timestamp: z.string().datetime() });
 export const ErrorContract = z.object({ error: z.string(), code: z.string().optional(), details: z.unknown().optional() });
@@ -81,6 +86,7 @@ export function paginatedContract<T extends z.ZodType>(item: T) {
 ```
 
 ## Vitest Suite
+
 ```typescript
 describe('API Contracts', () => {
   it('GET /health', async () => expect((await runContractTest({ name:'health', method:'GET', path:'/health', expectedStatus:200, schema:HealthContract })).passed).toBe(true));
@@ -89,6 +95,7 @@ describe('API Contracts', () => {
 ```
 
 ## When to Run
+
 - **Post-deploy** — always (verify live API)
 - **PR checks** — against staging URL
 - **Nightly** — production
@@ -98,12 +105,14 @@ describe('API Contracts', () => {
 ## Anti-Patterns
 
 ### Never
+
 - Mock responses
 - Skip error envelope validation
 - Test against localhost in CI
 - Hardcode test data that changes
 
 ### Always
+
 - Test success + error paths
 - Validate pagination contracts
 - Run against real deployed URL

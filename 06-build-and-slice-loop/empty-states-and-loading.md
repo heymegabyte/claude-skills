@@ -10,12 +10,14 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 ## Empty States: Prompt Action, Don't Show Nothing
 
 ### Every Empty List Gets
+
 1. An illustration or icon (on-brand, not generic)
 2. A clear headline ("No donations yet")
 3. A helpful subtext ("Share your page to start receiving donations")
 4. A primary CTA button ("Share Your Page" or "Create Your First [Thing]")
 
 ### Template
+
 ```html
 <div class="empty-state">
   <div class="empty-icon">
@@ -29,6 +31,7 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 ```
 
 ### CSS
+
 ```css
 .empty-state {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -52,6 +55,7 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 | Notifications | "All caught up" | "You'll see new notifications here." | — (positive empty state) |
 
 ### Positive vs Negative Empty States
+
 - **Negative** (something should be here but isn't) — strong CTA to create/add
 - **Positive** (everything is handled) — reassuring message, no CTA needed
   - Example — "All caught up!" with a checkmark
@@ -59,16 +63,19 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 ## Loading States: Skeleton Screens
 
 ### Never Show
+
 - Blank white/dark page while loading
 - Spinning wheel with no context
 - "Loading..." text alone
 
 ### Always Show
+
 - Skeleton screens that match the layout of the content being loaded
 - Animated shimmer effect
 - Content appears progressively as it loads
 
 ### Skeleton CSS
+
 ```css
 .skeleton {
   background: linear-gradient(90deg,
@@ -92,6 +99,7 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 ```
 
 ### Skeleton Templates
+
 ```html
 <!-- Card skeleton -->
 <div class="card skeleton-card">
@@ -118,6 +126,7 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 ```
 
 ### Button Loading State
+
 ```html
 <button type="submit" class="btn-primary" id="submitBtn">
   <span class="btn-text">Save Changes</span>
@@ -139,6 +148,7 @@ description: "Every empty list, dashboard, and data view prompts a meaningful fi
 ```
 
 ## Playwright Tests
+
 ```typescript
 test('empty state shows CTA', async ({ page }) => {
   // Navigate to a page that would show empty state for new users

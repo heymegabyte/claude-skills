@@ -7,6 +7,7 @@ updated: "2026-04-23"
 # Testing Matrices
 
 ## Payment Flow Testing Matrix (auto-generate for every Stripe integration)
+
 For EVERY payment / donation flow, generate these tests:
 
 1. **Successful payment** — complete checkout with Stripe test card `4242424242424242`, verify success page + thank-you email sent
@@ -18,6 +19,7 @@ For EVERY payment / donation flow, generate these tests:
 7. **Third-party script failure** — block `js.stripe.com` in test, verify page still loads with helpful fallback message
 
 ## Email Deliverability Smoke Test
+
 After any feature that sends transactional email:
 
 1. **Send test email** — trigger the flow with test data, verify Resend API returns 200
@@ -25,6 +27,7 @@ After any feature that sends transactional email:
 3. **Verify unsubscribe link** — if present, confirm it works and is CAN-SPAM compliant
 
 ## Graceful Degradation Tests
+
 For every third-party dependency (Stripe, Turnstile, analytics, maps):
 
 1. **Script blocked** — block the CDN URL, verify page loads without JS errors and shows fallback
@@ -32,6 +35,7 @@ For every third-party dependency (Stripe, Turnstile, analytics, maps):
 3. **API timeout** — mock a 10s timeout on the API call, verify the UI shows a timeout message (not infinite spinner)
 
 ## Form Testing Matrix (auto-generate for every form)
+
 For EVERY `<form>` element found on the page, generate these 8 tests:
 
 1. **Empty submission** — submit with all fields empty, verify error messages
@@ -44,7 +48,9 @@ For EVERY `<form>` element found on the page, generate these 8 tests:
 8. **Double-submit** — click submit twice rapidly, verify only one submission processes
 
 ## Breakpoint Test Matrix
+
 Every visual test runs at ALL 6 widths:
+
 ```typescript
 const BREAKPOINTS = [
   { name: 'iPhone SE', width: 375, height: 667 },
@@ -57,6 +63,7 @@ const BREAKPOINTS = [
 ```
 
 ## Stripe Webhook Event Testing Matrix
+
 For every Stripe integration, verify these webhook events are handled correctly (no mocks — use Stripe CLI `stripe trigger`):
 
 - **`checkout.session.completed`** — create subscription record, send welcome email — test via `stripe trigger checkout.session.completed`
@@ -80,6 +87,7 @@ test('webhook idempotency — duplicate event creates no duplicate record', asyn
 ```
 
 ## Content Integrity Checks
+
 - No text containing: "Lorem", "ipsum", "TBD", "TODO", "placeholder", "coming soon"
 - No images with `naturalWidth === 0` (broken)
 - No empty sections (sections with no visible text content)

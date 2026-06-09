@@ -8,6 +8,7 @@ description: "Consolidated webhook handling for Stripe, Clerk, GitHub, and custo
 # Webhook System
 
 ## Universal Webhook Handler Pattern
+
 ```typescript
 // src/routes/webhooks.ts
 import { Hono } from 'hono';
@@ -85,6 +86,7 @@ export { webhooks };
 ```
 
 ## Idempotency Table (D1)
+
 ```sql
 CREATE TABLE webhook_events (
   event_id TEXT PRIMARY KEY,
@@ -102,6 +104,7 @@ DELETE FROM webhook_events WHERE processed_at < datetime('now', '-30 days');
 ## Event Handlers
 
 ### Stripe: Checkout Complete
+
 ```typescript
 async function handleCheckoutComplete(session: Stripe.Checkout.Session, env: Env) {
   const db = drizzle(env.DB);
@@ -126,6 +129,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session, env: Env
 ```
 
 ### Clerk: User Created
+
 ```typescript
 async function handleUserCreated(user: ClerkUser, env: Env) {
   const db = drizzle(env.DB);
@@ -143,6 +147,7 @@ async function handleUserCreated(user: ClerkUser, env: Env) {
 ## Registering Webhooks
 
 ### Stripe
+
 ```bash
 # Via Stripe CLI (development)
 stripe listen --forward-to https://domain.com/webhooks/stripe
@@ -154,6 +159,7 @@ stripe listen --forward-to https://domain.com/webhooks/stripe
 ```
 
 ### Clerk
+
 ```
 # Clerk Dashboard → Webhooks → Add endpoint
 # URL: https://domain.com/webhooks/clerk
@@ -161,15 +167,18 @@ stripe listen --forward-to https://domain.com/webhooks/stripe
 ```
 
 ## Outbound Webhooks (Customer-Facing)
+
 For API/platform products — let customers register webhook endpoints to receive events from your app.
 
 ### Architecture
+
 ```
 App event → Inngest/Queue → sign + deliver → retry on failure → log delivery
 Customer dashboard: manage endpoints, view delivery history, retry failed
 ```
 
 ### Webhook Dispatch Pattern
+
 ```typescript
 // src/services/webhooks.ts
 import { createHmac } from 'node:crypto';
@@ -205,6 +214,7 @@ async function dispatchWebhook(
 ```
 
 ### Delivery Worker (retry with backoff)
+
 ```typescript
 // Consumer: exponential backoff (1s, 5s, 30s, 2m, 15m)
 const BACKOFF = [1, 5, 30, 120, 900];
@@ -239,6 +249,7 @@ export default {
 ```
 
 ### D1 Schema
+
 ```sql
 CREATE TABLE webhook_endpoints (
   id TEXT PRIMARY KEY,
@@ -262,6 +273,7 @@ CREATE INDEX idx_deliveries_endpoint ON webhook_deliveries(endpoint_id);
 ```
 
 ### Event Catalog (document all outbound events)
+
 ```typescript
 const EVENT_CATALOG = {
   'user.created': { description: 'New user registered', schema: userSchema },
@@ -274,6 +286,7 @@ const EVENT_CATALOG = {
 ```
 
 ## Wrangler.toml
+
 ```toml
 # Register webhook routes + outbound queue
 [[queues.producers]]
@@ -287,6 +300,7 @@ max_retries = 5
 ```
 
 ## Testing Webhooks
+
 ```typescript
 test('Stripe webhook processes checkout', async ({ request }) => {
   const payload = JSON.stringify({ id: 'evt_test', type: 'checkout.session.completed', data: { object: { /* ... */ } } });

@@ -5,6 +5,7 @@ Cloudflare Workers automatic tracing is in open beta. Zero-config OpenTelemetry 
 ## Enable
 
 `wrangler.jsonc`:
+
 ```jsonc
 {
   "observability": { "enabled": true }
@@ -16,6 +17,7 @@ Free until **March 1, 2026** — then billed.
 ## Export to External Backends
 
 ### Axiom (Cloudflare partner — cheapest at edge volumes)
+
 ```ts
 import { setupAxiomOtel } from '@axiomhq/cloudflare-workers';
 
@@ -26,6 +28,7 @@ setupAxiomOtel({
 ```
 
 ### Honeycomb (best for trace exploration + BubbleUp anomaly detection)
+
 ```ts
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 
@@ -36,6 +39,7 @@ const exporter = new OTLPTraceExporter({
 ```
 
 ### Grafana / Datadog
+
 Same OTLP pattern — change URL + auth headers.
 
 ## Pillar Roles (avoid duplication)
@@ -83,6 +87,7 @@ posthog.init(env.POSTHOG_TOKEN, {
 ```
 
 CSP additions:
+
 ```
 script-src 'self' https://us.i.posthog.com;
 connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com;

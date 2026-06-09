@@ -7,12 +7,14 @@ updated: "2026-04-23"
 # Audio-Video Sync Pattern
 
 ## Architecture
+
 - `activeCallAudio` Map keyed by `echoId` stores live mulaw audio chunks from Twilio WebSocket
 - `registerCallAudio(echoId, chunks)` called when profile with applications detected
 - `unregisterCallAudio(echoId)` on stream stop
 - Form automation checks map before R2 upload
 
 ## Merge Pipeline
+
 1. Collect mulaw base64 chunks from `activeCallAudio.get(echoId)`
 2. Decode base64 → Buffer, concatenate
 3. Convert mulaw 8kHz → PCM 16-bit signed LE
@@ -23,16 +25,19 @@ updated: "2026-04-23"
 8. Cleanup temp WAV
 
 ## Mulaw Decode
+
 - Mulaw → PCM lookup: flip bits, extract sign/exponent/mantissa
 - Compute `((mantissa << (exponent + 3)) + bias[exponent]) * (sign ? -1 : 1)`
 - Bias table: `[33, 66, 132, 264, 528, 1056, 2112, 4224]`
 
 ## Error Recovery
+
 - ffmpeg missing or fails → return original video (graceful degradation)
 - WAV write fails → skip merge
 - All errors logged but never block form submission
 - Temp files cleaned in `finally` block
 
 ## Integration Points
+
 - `app.js` WebSocket — push `msg.media.payload` to chunks array on every media event
 - `form-automation-service.js` — call `mergeAudioWithVideo(videoPath, echoId)` after Playwright recording stops, before R2 upload

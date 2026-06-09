@@ -10,6 +10,7 @@ description: "Every site gets a working contact form with Turnstile captcha, Zod
 ## Default Contact Form (EVERY site)
 
 ### Frontend
+
 ```html
 <form id="contact" action="/api/contact" method="POST">
   <div class="form-group">
@@ -36,6 +37,7 @@ description: "Every site gets a working contact form with Turnstile captcha, Zod
 ```
 
 ### Backend (Hono)
+
 ```typescript
 import { z } from 'zod';
 import { Resend } from 'resend';
@@ -90,6 +92,7 @@ app.post('/api/contact', async (c) => {
 ```
 
 ### JavaScript (Progressive Enhancement)
+
 ```javascript
 document.getElementById('contact')?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -131,6 +134,7 @@ document.getElementById('contact')?.addEventListener('submit', async (e) => {
 ```
 
 ## 8-Point Form Test Matrix (EVERY form)
+
 ```typescript
 test.describe('Contact form', () => {
   test('1. Empty submission shows errors', async ({ page }) => {
@@ -192,6 +196,7 @@ test.describe('Contact form', () => {
 ## Other Form Types
 
 ### Newsletter Signup (Listmonk)
+
 ```html
 <form action="/api/subscribe" method="POST">
   <input type="email" name="email" required placeholder="you@example.com">
@@ -201,7 +206,9 @@ test.describe('Contact form', () => {
 ```
 
 ### Donation Form (Stripe — `13/stripe-billing`)
+
 Redirect to Stripe Checkout. No form processing needed on our side.
 
 ### Feedback Form (`13/user-feedback-collection`)
+
 In-app widget with rating + text. Stored in D1.

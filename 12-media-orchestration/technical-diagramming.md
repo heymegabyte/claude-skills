@@ -15,6 +15,7 @@ updated: "2026-04-23"
 - **D2** — declarative alternative to Mermaid, auto-layout
 
 ### When to Use Which
+
 - **README** — ASCII (renders everywhere, no extensions)
 - **GitHub PR/wiki** — Mermaid (native rendering, diffable)
 - **Architecture doc** — Mermaid + SVG export (version + present)
@@ -24,6 +25,7 @@ updated: "2026-04-23"
 ## ASCII Diagrams
 
 ### Box-Drawing Characters
+
 ```
 ┌─────────┐    ┌──────────┐    ┌─────────┐
 │  Client  │───▶│  Worker  │───▶│   D1    │
@@ -36,12 +38,14 @@ updated: "2026-04-23"
 ```
 
 Chars:
+
 - `┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴ ┼` for boxes
 - `─→ ──▶ ◀── ←─` for arrows
 - `···` for optional
 - `═══` for emphasis
 
 ### Reusable Architecture Template
+
 ```
 ┌──────────────────────────────────────────┐
 │              Cloudflare Edge             │
@@ -58,6 +62,7 @@ Chars:
 ## Mermaid.js
 
 ### Diagram Types
+
 - `flowchart` — system arch
 - `sequence` — API flows
 - `classDiagram` — data models
@@ -67,6 +72,7 @@ Chars:
 - `C4Context` — high-level arch
 
 ### Flowchart
+
 ```mermaid
 flowchart LR
     A[Client] -->|HTTPS| B[CF Worker]
@@ -77,6 +83,7 @@ flowchart LR
 ```
 
 ### Sequence
+
 ```mermaid
 sequenceDiagram
     participant U as User
@@ -92,6 +99,7 @@ sequenceDiagram
 ```
 
 ### ER Diagram
+
 ```mermaid
 erDiagram
     USER ||--o{ ORDER : places
@@ -107,11 +115,13 @@ erDiagram
 - **Excalidraw** — hand-drawn aesthetic, collaborative, embeddable
 
 ### freeze Example
+
 ```bash
 freeze --language mermaid -o arch.png diagram.mmd
 ```
 
 ### mermaid-cli
+
 ```bash
 npx -p @mermaid-js/mermaid-cli mmdc -i diagram.mmd -o diagram.svg -t dark -b '#060610'
 ```

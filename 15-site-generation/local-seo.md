@@ -13,6 +13,7 @@ A gorgeous website means nothing if it doesn't rank. Local businesses live and d
 Website and GBP must match EXACTLY — divergence hurts rankings. After site generation:
 
 ### Auto-sync fields
+
 - Business name, address, phone (NAP consistency across ALL citations)
 - Hours (including holiday exceptions)
 - Services list
@@ -22,7 +23,9 @@ Website and GBP must match EXACTLY — divergence hurts rankings. After site gen
 - Photos (upload hero + top 5 from `assets/`)
 
 ### GBP Posts
+
 Generate 3 initial posts from site content:
+
 1. Welcome/intro post
 2. Featured service/product
 3. Special offer or event
@@ -30,10 +33,13 @@ Generate 3 initial posts from site content:
 Schedule via GBP API or manual upload instructions in `_gbp_sync.json`.
 
 ### Output file
+
 `_gbp_sync.json` — structured data matching GBP fields exactly. Worker can auto-push via Google My Business API (OAuth required) or generate human-readable instructions for manual update.
 
 ### NAP consistency check
+
 After build, verify Name+Address+Phone match across:
+
 - Site header, site footer
 - JSON-LD
 - Google Maps embed
@@ -47,6 +53,7 @@ Any mismatch = build failure.
 Citations = mentions of business NAP on external directories. More consistent citations = higher local rank.
 
 ### Tier 1 — Essential (submit within 24hr of site launch)
+
 - Google Business Profile
 - Apple Maps Connect
 - Bing Places
@@ -55,6 +62,7 @@ Citations = mentions of business NAP on external directories. More consistent ci
 - Better Business Bureau
 
 ### Tier 2 — Industry Directories (submit within 1 week)
+
 - **Medical** — Healthgrades, Vitals, ZocDoc, WebMD, RateMDs
 - **Legal** — Avvo, FindLaw, Justia, Martindale-Hubbell, Lawyers.com
 - **Restaurant** — TripAdvisor, OpenTable, Grubhub, DoorDash, Zomato
@@ -69,13 +77,16 @@ Citations = mentions of business NAP on external directories. More consistent ci
 - **Pet Services** — Rover, Care.com, BringFido
 
 ### Tier 3 — General Directories (submit within 2 weeks)
+
 - Yellow Pages, Manta, Foursquare, Hotfrog, Superpages
 - CitySearch, Local.com, MerchantCircle, Brownbook, eLocal
 
 ### Output file
+
 `_citations.json` — list of directories with: name, URL, submission status (pending/submitted/verified), NAP data to submit, category. Worker tracks submission status in D1.
 
 ### Automation
+
 - For directories with APIs (Yelp, Foursquare, Apple Maps): auto-submit via Worker
 - For manual-only directories: generate step-by-step instructions with pre-filled data in `_citation_instructions.md`
 
@@ -84,18 +95,23 @@ Citations = mentions of business NAP on external directories. More consistent ci
 Review velocity (new reviews per month) is the single biggest Map Pack ranking signal. Not fake reviews — systematic request workflow.
 
 ### QR-to-Review Flow
+
 Generate `assets/review-qr.svg` — QR code linking to: `https://search.google.com/local/writereview?placeid={PLACE_ID}`. Display on:
+
 - Thank-you page
 - Email footer
 - Printable card (PDF in `assets/`)
 
 ### Review Request Page
+
 Build `/review` page on generated site:
+
 - "How was your experience?" → 5-star rating
 - If **≥4 stars**: redirect to Google review page
 - If **<3 stars**: show feedback form (captures complaint privately, prevents negative public review)
 
 ### Post-Visit Automation (instructions for business owner)
+
 Generate `_review_automation.md` with setup instructions for:
 
 - **Email** — Resend template triggered 24hr after appointment/purchase. Subject: "How was your visit to `{business_name}`?" CTA: "Leave a Review →" linking to Google review URL.
@@ -103,6 +119,7 @@ Generate `_review_automation.md` with setup instructions for:
 - **In-store** — Printable QR card design (PDF) for counter/receipt stapling.
 
 ### Review Widget on Site
+
 - Pull Google Places reviews → display on site with: star rating, reviewer name, date, text (truncated with "Read more" linking to Google)
 - Carousel on mobile
 - Min 3 reviews displayed
@@ -113,6 +130,7 @@ Generate `_review_automation.md` with setup instructions for:
 Don't just list certifications — verify and display them with badge images.
 
 ### Auto-Discovery Pipeline
+
 From research data, identify claimed certifications. Attempt verification:
 
 - **BBB Rating** — BBB API or scrape → BBB badge with rating letter
@@ -127,9 +145,11 @@ From research data, identify claimed certifications. Attempt verification:
 - **ABMP** (massage) — ABMP directory → Member badge
 
 ### Badge image generation
+
 If no official badge image available, generate clean SVG badge with Ideogram: `{Certification Name}` + icon + year. Store in `assets/badges/`.
 
 ### Display pattern
+
 - Trust badges section after hero or in sidebar
 - Footer row of badge images
 - Service pages show relevant certifications inline
@@ -152,19 +172,23 @@ SaaS conversions (trial-to-paid) are irrelevant for local businesses. Track thes
 - `social_click` — social media profile link clicked
 
 ### GA4 Goals (auto-configure via GTM)
+
 1. **Phone Call** — `phone_click` event
 2. **Direction Request** — `direction_click` event
 3. **Form Submission** — `form_submit` event
 4. **Booking** — `booking_click` event
 
 ### Call Tracking (optional, premium)
+
 If business opts in:
+
 - **Google forwarding number** via Google Ads (free with ads account)
 - **CallRail** integration ($45/mo)
 
 Tracks: call duration, caller location, call recording, missed call alerts. Without call tracking: count `tel:` clicks as proxy.
 
 ### Local Funnel
+
 Visit → Page View → Engagement (scroll 50%+) → Micro-conversion (menu view, gallery browse) → Macro-conversion (call, directions, form, booking)
 
 PostHog funnel: define per-site, track weekly conversion rate. Alert if rate drops >20% week-over-week.

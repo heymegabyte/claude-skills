@@ -8,7 +8,9 @@ description: "Every automated form submission creates a complete evidence packag
 # Evidence Collection Pattern
 
 ## Per-Submission Package
+
 Every `fillForm()` call creates:
+
 - EvidenceCollector instance
 - Screenshots at each step
 - Red circle overlays on button clicks (Node canvas, 30px radius `rgba(255,0,0,0.9)`)
@@ -19,6 +21,7 @@ Every `fillForm()` call creates:
 Package uploaded to R2 at `evidence/{echoId}/{appId}/{packageId}/`.
 
 ## R2 Storage Patterns
+
 ```typescript
 // Upload evidence package to R2
 async function uploadEvidencePackage(env: Env, pkg: EvidencePackage): Promise<string> {
@@ -65,12 +68,14 @@ async function listEvidencePackages(env: Env, echoId: string, appId: string) {
 ```
 
 ## Video Recording
+
 - `context.newContext({ recordVideo: { dir, size: { width:1280, height:720 } } })` captures full session
 - Video finalized on `page.close()`
 - Uploaded to R2 as WebM
 - Public URL returned in API response + stored in application record
 
 ## Manifest Schema
+
 ```typescript
 interface EvidenceManifest {
   packageId: string; echoId: string; appId: string; program: string;
@@ -82,12 +87,14 @@ interface EvidenceManifest {
 ```
 
 ## Access Patterns
+
 - **Dashboard** — status cards show video play button when `videoUrl` exists
 - **Your Data panel** — "Submission Videos" section lists all recordings with R2 presigned URLs
 - **Chat** — AI surfaces video via `application-video` widget
 - **API** — `GET /api/evidence/:appId` returns manifest + URLs
 
 ## R2 Binding (wrangler.toml)
+
 ```toml
 [[r2_buckets]]
 binding = "R2"

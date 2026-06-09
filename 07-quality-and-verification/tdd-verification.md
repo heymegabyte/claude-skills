@@ -8,6 +8,7 @@ description: "Full-application test user simulation. 10-point journey test that 
 # TDD Verification (Test User Simulation)
 
 ## The Test User
+
 Every application has a synthetic "test user" that walks through the ENTIRE product:
 
 ```typescript
@@ -136,6 +137,7 @@ test.describe('Full Application Journey (Test User)', () => {
 ```
 
 ## Completion-Driven Execution
+
 Every prompt should drive toward this test suite passing 100%. The workflow:
 
 1. Build / modify code
@@ -150,14 +152,17 @@ Every prompt should drive toward this test suite passing 100%. The workflow:
 This means every prompt ends with a verified, visually inspected, fully tested production site.
 
 ## Assumption Protocol (When Answers Are Needed)
+
 When the AI needs information to proceed:
 
 1. **Can it be inferred?** (from domain name, project type, existing code) → infer and proceed
 2. **Is it a default?** (from `CONVENTIONS.md`, `SKILL_PROFILES.md`) → use the default
 3. **Is it blocking?** (API key, domain name, billing decision) → ask casually, provide the default:
+
    ```
    Quick question — should this be a donation site or a SaaS product?
    I'm going with donation site based on the domain name.
    Let me know if that's wrong, otherwise I'll keep building.
    ```
+
 4. **Never block on non-critical decisions.** Make the best assumption, document it, keep going.

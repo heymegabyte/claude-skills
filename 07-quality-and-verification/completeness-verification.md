@@ -11,6 +11,7 @@ related: visual-inspection-loop.md (3-round per-page), ui-completeness-sweep.md 
 **A project is NOT complete until vision AI examines every page and finds nothing to improve.**
 
 ## The Loop (max 3 iterations, ***$1 HARD CAP***)
+
 ```
 REPEAT {
   1. Enumerate all routes
@@ -27,17 +28,20 @@ REPEAT {
 ```
 
 ### Cost discipline
+
 - a11y tree is FREE and catches layout/functional/a11y issues
 - GPT-4o vision ONLY for color harmony, visual hierarchy, brand consistency, "does it look good?" — things pixels reveal that DOM can't
 - Never send 6 breakpoints to GPT-4o when 2 (mobile + desktop) suffice for aesthetic checks
 
 ## Vision Analysis Prompt
+
 - **Categories:** LAYOUT, TYPOGRAPHY, COLOR, CONTENT, INTERACTION, ACCESSIBILITY, POLISH, COMPLETENESS
 - **Per issue:** Category, Severity (critical / major / minor / cosmetic), Location, Fix (specific CSS/HTML)
 - **Production ready:** `{"status": "verified", "issues": []}`
 - **Needs work:** `{"status": "needs_fixes", "issues": [...]}`
 
 ## Provider Priority
+
 1. Playwright MCP a11y tree (FREE — functional, a11y, layout structure)
 2. axe-core via Playwright (FREE — WCAG violations)
 3. OpenAI GPT-4o `detail:low` (aesthetic-only, $0.01/shot — 2 breakpoints max)
@@ -46,6 +50,7 @@ REPEAT {
 Vision is the LAST resort, not the first. A11y tree catches 80% of issues at zero cost.
 
 ## Breakpoints
+
 ```typescript
 const BREAKPOINTS = [
   { name: 'iPhone SE', width: 375, height: 667 },
@@ -58,6 +63,7 @@ const BREAKPOINTS = [
 ```
 
 ## Convergence Criteria
+
 1. Every route screenshotted at all 6 breakpoints
 2. GPT-4o returns `"verified"` for EVERY screenshot
 3. All E2E tests pass
@@ -68,15 +74,19 @@ const BREAKPOINTS = [
 ## 5-Pass Verification Protocol (ALL must pass)
 
 ### Pass 1: Functional
+
 Every route 200, forms submit correctly, interactive elements respond, API returns valid Zod shape, E2E green.
 
 ### Pass 2: Visual
+
 AI screenshot critique at 1280 + 375px finds zero layout issues, no overflow/overlap, typography hierarchy clear, brand consistent. Passes "agency test."
 
 ### Pass 3: Content
+
 Zero placeholder text (Lorem / TBD / TODO / "coming soon" / sample data), copy specific to product, microcopy complete (labels, empty states, errors, tooltips), alt text on all images, Flesch ≥60.
 
 ### Pass 4: Technical
+
 - Lighthouse Perf ≥90
 - LCP <2.5s, INP <200ms, CLS <0.1
 - SEO (title + meta + H1 + canonical + JSON-LD + OG)
@@ -84,11 +94,13 @@ Zero placeholder text (Lorem / TBD / TODO / "coming soon" / sample data), copy s
 - Security (CSP, Zod, no `eval` / `innerHTML`)
 
 ### Pass 5: Business & Psychology
+
 Serves actual user need, clear conversion path (CTA visible, value above fold), Peak-End Rule satisfied, social proof present, ethical persuasion only.
 
 **Failure protocol:** Fix → re-deploy → re-run failed pass + all subsequent passes. Never skip.
 
 ## Cost (***HARD CAP $1***)
+
 - A11y tree + axe-core: FREE — use for ALL functional / a11y / layout checks
 - GPT-4o vision (2bp × `detail:low`): ~$0.02/page
 - **Homepage/ATF priority:** spend vision budget on homepage above-the-fold FIRST. Only vision-check other pages if homepage passes AND budget remains
@@ -96,11 +108,13 @@ Serves actual user need, clear conversion path (CTA visible, value above fold), 
 - Previous uncapped approach ($24/run) burned $100 in 9 hours — NEVER again
 
 ## Trigger Conditions
+
 - User says "verify" / "check everything" / "is it done?"
 - After deploy
 - After design changes affecting multiple pages
 
 ## Anti-Patterns
+
 - DO NOT skip breakpoints
 - DO NOT mark verified without GPT-4o analysis
 - DO NOT implement fixes without re-verifying

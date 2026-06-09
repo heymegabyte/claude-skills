@@ -22,6 +22,7 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 - Never sequentially
 
 ### Pipeline
+
 1. Orchestrator boots
 2. In single `Promise.all([...])` block launches:
    - `research_task`
@@ -34,9 +35,11 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 3. All must complete before `content_synthesis_task` fires
 
 ### Concurrency floor
+
 - 7 boot tasks
 
 ### Validator
+
 - `validate-parallel-boot.mjs` — parse `_build_trace.json`, assert ≥7 tasks have overlapping `started_at` windows within 5s of orchestrator boot AND `content_synthesis_task.started_at >= max(boot_tasks.ended_at)`
 
 ## Every build (***PARALLELISM #2 — DEEP-RESEARCH AGENTS PER ERA/TOPIC — UNIVERSAL — BUILD-BREAKING***)
@@ -45,15 +48,18 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 - Never single-agent serial crawl
 
 ### Splits
+
 - **Era-based** (institutions) — pre-1900 | 1900-1970 | 1970-present
 - **Topic-based** (orgs) — products | team | press | case-studies | careers | engineering-blog
 
 ### Per-agent output
+
 - `research/<era|topic>-<slug>.json` matching `njsk-timeline-v1` schema
 - Fields: `events[]`, `refs[]`, `uncertainties[]`, `verbatim_quotes[]`
 - Then merge → dedupe → typecheck → render
 
 ### Validator
+
 - `validate-parallel-research.mjs` — assert `research/` contains ≥3 era/topic-segmented JSON files AND their `started_at` windows overlap within 30s
 
 ## Every build (***PARALLELISM #3 — CRITICAL-PATH OPTIMIZATION + CONCURRENCY FLOOR — UNIVERSAL — BUILD-BREAKING***)
@@ -63,6 +69,7 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 - Phase ordering MUST optimize critical path (longest dependency chain) — never serialize independent tasks
 
 ### Concurrency floor per phase
+
 - **Phase 0 (boot)** — ≥7
 - **Phase 1 (synthesis)** — ≥3 (page-by-page parallel)
 - **Phase 2 (media fill)** — ≥10 (DALL-E batch)
@@ -70,11 +77,13 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 - **Phase 4 (deploy)** — ≥1
 
 ### Total wall-clock target
+
 - 5-page site — 10 min
 - 20-page site — 15 min
 - 100-page site — 25 min
 
 ### Validator
+
 - `validate-critical-path.mjs` — assert `_critical_path.json` exists with all phases declared + concurrency floors met in `_build_trace.json` AND total duration ≤ projected wall-clock × 1.5
 
 ## Every build (***PARALLELISM #4 — ASSUMPTION-DRIVEN SLICING WITH CONFIDENCE-TRACKED DECISIONS — UNIVERSAL — BUILD-BREAKING***)
@@ -82,6 +91,7 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 - Every build plan MUST decompose into vertical slices where each slice carries explicit assumption + confidence (0-1) + fallback
 
 ### Format
+
 ```
 _slice_plan.json[i] = {
   slice_id,
@@ -95,9 +105,11 @@ _slice_plan.json[i] = {
 ```
 
 ### Confidence rules
+
 - **<0.7** — slice MUST emit fact-check sub-task before main task fires
 - **≥0.7 + low-risk** — auto-execute
 - Assumptions discovered violated during build → slice rolls back to fallback + logs to `_assumption_violations.json`
 
 ### Validator
+
 - `validate-slice-confidence.mjs` — assert `_slice_plan.json` has all 5 fields per slice AND no slice with confidence <0.7 lacks fact-check sub-task AND no assumption violation went unlogged

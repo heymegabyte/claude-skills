@@ -8,6 +8,7 @@ description: "glyphhanger → WOFF2 → R2 self-host. Sora, Space Grotesk, JetBr
 # Font Subsetting
 
 ## glyphhanger Subset Command
+
 ```bash
 # Install
 npm install -g glyphhanger
@@ -27,6 +28,7 @@ glyphhanger https://example.com --formats=woff2 --subset=*.ttf
 ```
 
 ## @font-face Declarations
+
 ```css
 /* src/styles/fonts.css — self-hosted from R2 */
 @font-face {
@@ -76,6 +78,7 @@ glyphhanger https://example.com --formats=woff2 --subset=*.ttf
 ```
 
 ## Preload Critical Fonts (HTML head)
+
 ```html
 <!-- Preload only above-fold fonts (body + heading) — max 2-3 -->
 <link rel="preload" href="/fonts/Sora-Regular-subset.woff2" as="font" type="font/woff2" crossorigin>
@@ -85,9 +88,11 @@ glyphhanger https://example.com --formats=woff2 --subset=*.ttf
 `crossorigin` attribute required even for same-origin fonts (CORS fetch mode). Only preload fonts used above the fold — preloading all fonts wastes bandwidth and delays LCP.
 
 ## @fontsource Alternative (pre-subset, tree-shakeable)
+
 ```bash
 pnpm add @fontsource-variable/sora @fontsource-variable/space-grotesk @fontsource/jetbrains-mono
 ```
+
 ```typescript
 // In Angular styles.css or main.ts
 import '@fontsource-variable/sora/wght.css';           // Variable font, all weights
@@ -98,6 +103,7 @@ import '@fontsource/jetbrains-mono/400.css';            // Single weight
 @fontsource ships WOFF2-only, pre-subset to Latin by default. Faster setup than manual glyphhanger. Trade-off: less control over exact subset, slightly larger than custom subset.
 
 ## R2 Upload + Cache Headers
+
 ```bash
 # Upload subset fonts to R2 with immutable caching
 for f in fonts/*-subset.woff2; do
@@ -108,6 +114,7 @@ done
 ```
 
 ## Worker Font Serving (if not using R2 public bucket)
+
 ```typescript
 app.get('/fonts/:filename', async (c) => {
   const object = await c.env.R2.get(`fonts/${c.req.param('filename')}`);
@@ -123,10 +130,12 @@ app.get('/fonts/:filename', async (c) => {
 ```
 
 ## Size Budget
+
 - **Target per font file** — 15-25KB (subset WOFF2)
 - **Total all fonts** — ≤100KB
 
 ### Typical breakdown
+
 - Sora 400 (~18KB)
 - Sora 500 (~18KB)
 - Space Grotesk 600 (~16KB)

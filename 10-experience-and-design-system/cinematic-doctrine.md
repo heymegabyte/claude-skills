@@ -135,6 +135,7 @@ Don't go past 1.06/1.08 — destroys photo grades and pumps reds in skin tones.
 Pre-built menu. Pick at least 3 — Brian's directive is "a lot of random creative stuff."
 
 1. **Headline shimmer** — tri-stop gradient + `background-clip:text` + 8s slide animation on `h1, h2`:
+
    ```css
    .hero h1, section h2 {
      background: linear-gradient(90deg, #fff 0%, var(--cyan) 50%, #fff 100%);
@@ -145,13 +146,17 @@ Pre-built menu. Pick at least 3 — Brian's directive is "a lot of random creati
    }
    @keyframes titleShimmer { 0%,100%{background-position:200% 0;} 50%{background-position:0 0;} }
    ```
+
 2. **Drop-cap on first manifesto paragraph** — `:first-of-type::first-letter`, 4rem cyan with text-shadow.
 3. **3D card tilt** — perspective + custom-prop `rotateX/rotateY` from pointer position. Disabled on `(pointer: coarse)` and `prefers-reduced-motion`:
+
    ```css
    .card { transform: perspective(900px) rotateX(calc(var(--ty,0) * -3deg)) rotateY(calc(var(--tx,0) * 3deg)); transition: transform .3s ease; }
    @media (pointer: coarse), (prefers-reduced-motion: reduce) { .card { transform: none !important; } }
    ```
+
 4. **Cinema-poster gradient borders** — `mask-composite: exclude` to render only the border path:
+
    ```css
    .card::after {
      content:''; position:absolute; inset:0; border-radius:inherit; padding:1px;
@@ -162,12 +167,15 @@ Pre-built menu. Pick at least 3 — Brian's directive is "a lot of random creati
    }
    .card:hover::after { opacity:1; }
    ```
+
 5. **Button shimmer-sweep on hover** — `::before` linear-gradient sliding `left: -75% → 125%`:
+
    ```css
    .hero-cta { position:relative; overflow:hidden; }
    .hero-cta::before { content:''; position:absolute; top:0; left:-75%; width:50%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent); transform: skewX(-25deg); transition: left .6s ease; }
    .hero-cta:hover::before { left: 125%; }
    ```
+
 6. **Establishing-shot section glow** — `section:not(.hero)::before` radial gradient overhead, varies per section.
 7. **Decorative chapter glyph** — `.section-header::after` 80px gradient line + diamond/dot, like an HBO scene-divider.
 8. **Card-image bottom-fade** — `.card-img-wrap::after` linear-gradient overlay (0deg, black, transparent).
@@ -201,6 +209,7 @@ Pre-built menu. Pick at least 3 — Brian's directive is "a lot of random creati
 ## Build gate (***E2E SPEC — `e2e/cinematic.spec.ts` MANDATORY***)
 
 Six-breakpoint guard. Per breakpoint asserts:
+
 - (a) `bodyScrollWidth ≤ viewportWidth + 1` (no horizontal scroll)
 - (b) `htmlScrollWidth ≤ viewportWidth + 1`
 - (c) `.container` computed `padding-inline-{start,end} ≥ 16px`

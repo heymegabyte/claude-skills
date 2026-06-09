@@ -8,12 +8,14 @@ description: "OneSignal web push notifications for product updates, donation mil
 # Notification System
 
 ## When to Include
+
 - SaaS products where users return regularly
 - Donation campaigns with milestones
 - Products with content updates (blog, features)
 - **NOT for** — simple marketing sites with no return visitors
 
 ## Architecture
+
 ```
 Event occurs → Create notification in D1 → Push via OneSignal + Email via Resend
                                          → Show in-app notification bell
@@ -22,6 +24,7 @@ Event occurs → Create notification in D1 → Push via OneSignal + Email via Re
 ## Web Push (OneSignal)
 
 ### Setup
+
 ```html
 <!-- OneSignal SDK -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -38,6 +41,7 @@ Event occurs → Create notification in D1 → Push via OneSignal + Email via Re
 ```
 
 ### Request Permission (After Value Moment)
+
 ```javascript
 // Don't ask on first visit — ask after the user gets value
 async function requestPushPermission() {
@@ -64,6 +68,7 @@ function showPushPrompt() {
 ```
 
 ### Send Push from Worker
+
 ```typescript
 async function sendPushNotification(env: Env, title: string, message: string, url: string) {
   await fetch('https://onesignal.com/api/v1/notifications', {
@@ -86,6 +91,7 @@ async function sendPushNotification(env: Env, title: string, message: string, ur
 ## In-App Notification Bell
 
 ### D1 Schema
+
 ```sql
 CREATE TABLE notifications (
   id TEXT PRIMARY KEY,
@@ -101,6 +107,7 @@ CREATE INDEX idx_notifications_user ON notifications(user_id, read);
 ```
 
 ### API
+
 ```typescript
 // Get unread notifications
 app.get('/api/notifications', async (c) => {
@@ -125,6 +132,7 @@ app.post('/api/notifications/:id/read', async (c) => {
 ```
 
 ### Bell UI
+
 ```html
 <button class="notification-bell" onclick="toggleNotifications()" aria-label="Notifications">
   🔔
@@ -153,7 +161,9 @@ app.post('/api/notifications/:id/read', async (c) => {
 | Testimonial approved | No | Yes | Yes |
 
 ## User Preferences
+
 Let users control what they receive:
+
 ```sql
 CREATE TABLE notification_preferences (
   user_id TEXT PRIMARY KEY,
@@ -166,6 +176,7 @@ CREATE TABLE notification_preferences (
 ```
 
 ## Best Practices
+
 - Never ask for push permission on first visit (ask after value moment)
 - Limit to 2-3 pushes per week maximum
 - Always include an unsubscribe/preference link

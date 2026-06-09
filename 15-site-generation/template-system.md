@@ -53,6 +53,7 @@ template/
 ## Customization Points
 
 ### Brand tokens (`tailwind.config.ts`)
+
 - `primary` → `_brand.json.colors.primary`
 - `secondary` → `colors.secondary`
 - `accent` → `colors.accent`
@@ -60,13 +61,16 @@ template/
 - `foreground` → `colors.foreground`
 
 ### Font
+
 - `heading` → `_brand.json.fonts.heading`
 - `body` → `fonts.body`
 
 ### Content slots
+
 SITE_NAME | HERO_HEADLINE | HERO_SUBTEXT | HERO_CTA | PHONE | EMAIL | ADDRESS | HOURS — all replaced with real data from `_research.json`.
 
 ### Page generation
+
 - Claude Code reads `_scraped_content.json` to determine page count and structure
 - **Minimum 4 pages** (Home/About/Services/Contact)
 - NEVER reduce page count vs original site — create pages for all substantial scraped content
@@ -89,11 +93,13 @@ All presets respect `prefers-reduced-motion`. Scroll-driven hero parallax via `a
 IntersectionObserver-driven reveal animations cause a visible→invisible→fade-in twitch on first paint when JS adds the `.reveal` (opacity:0) class AFTER paint. Fix: pre-paint class gate set synchronously inline.
 
 `index.html` — FIRST line inside `<head>`, before any `<link>` or `<style>`:
+
 ```html
 <script>document.documentElement.classList.add('js-reveal-active');</script>
 ```
 
 `src/index.css`:
+
 ```css
 html.js-reveal-active main section:not(:has(.hero-rise)),
 html.js-reveal-active main [data-reveal] {
@@ -121,6 +127,7 @@ html.js-reveal-active main [data-reveal]:not(.reveal-visible) {
 ## inspect.js (Post-Build Validator)
 
 Runs after `npm run build`. Checks:
+
 1. `dist/` exists with `index.html`
 2. No `SITE_NAME`/`HERO_HEADLINE`/`TODO`/lorem placeholders remain
 3. All images referenced exist in `dist/assets/`
@@ -140,6 +147,7 @@ All styled via CSS variables matching brand tokens.
 Local business sites need components SaaS templates don't have. These are pre-built in `template/src/components/local/`:
 
 ### HeroWithPhoto.tsx
+
 - Full-viewport hero with actual business photo (not abstract gradient)
 - `assets/hero-*` image fills background with `object-fit:cover`
 - Dark overlay `rgba(0,0,0,0.55)`
@@ -148,6 +156,7 @@ Local business sites need components SaaS templates don't have. These are pre-bu
 - Mobile: CTAs stack full-width, sticky bottom bar with phone icon persists on scroll
 
 ### ServiceCards.tsx
+
 - Grid of services from `_research.json.offerings.services[]`
 - Each card: relevant image from `_image_profiles.json` (matched by keyword), service name, 2-sentence description, price range (if available)
 - Glassmorphism: `bg-white/5 backdrop-blur-md border-white/10`
@@ -155,18 +164,21 @@ Local business sites need components SaaS templates don't have. These are pre-bu
 - Mobile: horizontal scroll carousel
 
 ### TestimonialCarousel.tsx
+
 - Google Places reviews from `_research.json.trust.reviews[]`
 - Each: star rating (filled SVG stars), reviewer name, date, truncated text with "Read more on Google →" link
 - Auto-advances 5s, pause on hover
 - Min 3 reviews or fallback to CTA "Be the first to review us →" with Google review link
 
 ### MapEmbed.tsx
+
 - Google Maps iframe from `_research.json.operations.geo` (lat/lng)
 - 100% width, 400px height, rounded corners, `loading="lazy"`
 - Below map: formatted address (clickable → directions), hours grid (today highlighted in brand-primary), parking/transit info if available
 - Dark mode map: `&style=feature:all|element:geometry|color:0x212121`
 
 ### StickyPhoneCTA.tsx
+
 - Mobile-only (`@media (max-width: 768px)`)
 - Fixed bottom bar: brand-primary background, phone icon + "Call Now" centered, `tel:` link
 - `z-index:50`
@@ -174,23 +186,27 @@ Local business sites need components SaaS templates don't have. These are pre-bu
 - Min 44px touch target
 
 ### NAPFooter.tsx
+
 - Name, Address, Phone block matching JSON-LD exactly
 - Logo, business name, full address (Google Maps link), phone (`tel:`), email (`mailto:`), hours (collapsible on mobile), social icons row
 - Schema.org LocalBusiness microdata attributes on each element
 - This block is THE source of truth for NAP consistency
 
 ### TrustBadges.tsx
+
 - Horizontal row of verification badges from `_research.json.trust` + `_citations.json`
 - Google rating badge (star + number), BBB rating, industry certifications, "Licensed & Insured" if applicable
 - Lazy-loaded images from `assets/badges/`
 - Placed below hero and in footer
 
 ### ReviewCTA.tsx
+
 - "Love our service? Leave us a review!" card with Google review QR code (`assets/review-qr.svg`) and direct link button
 - Placed on thank-you page and contact page
 - Star-gate logic: 4+ stars → Google, <3 → private feedback form
 
 ### GalleryGrid.tsx
+
 - Masonry layout of ALL images in `assets/`
 - Full-width section
 - Lightbox on click (Dialog component)
@@ -199,6 +215,7 @@ Local business sites need components SaaS templates don't have. These are pre-bu
 - Min 12 images visible without scrolling on desktop
 
 ### BeforeAfterSlider.tsx
+
 - CSS clip-path drag comparison for contractors/salons/dental
 - Props: `beforeSrc`, `afterSrc`, `labels`
 - Touch-enabled handle
@@ -206,6 +223,7 @@ Local business sites need components SaaS templates don't have. These are pre-bu
 - No external deps
 
 ### QuickActions.tsx
+
 - Mobile-only 2x2 action grid (`md:hidden`)
 - Icons: Phone, MapPin, Calendar, UtensilsCrossed
 - Min 48px touch targets
@@ -213,24 +231,29 @@ Local business sites need components SaaS templates don't have. These are pre-bu
 - Replaces hamburger menu for local businesses
 
 ### EmergencyBanner.tsx
+
 - Auto-detects after-hours from `_research.json.operations.hours` vs client timezone
 - Shows urgent red banner: "After Hours? Call {emergencyPhone}"
 - `tel:` with `phone_click` + `after_hours:true` property
 - Hidden during business hours
 
 ### SpeedDial.tsx
+
 - Floating action button (bottom-right, `z-index:55`, above StickyPhoneCTA)
 - Expands on tap to radial/vertical layout of 2-4 actions (phone/email/directions/booking)
 - Collapse on outside click
 - Mobile-only
 
 ### LocalSchemaGenerator.tsx
+
 Utility module (not visual). Exports:
+
 - `generateLocalBusinessSchema(research)` → complete JSON-LD with `@type`, `name`, `PostalAddress`, `telephone`, `geo`, `openingHoursSpecification`, `image`, `sameAs`, `aggregateRating`, `priceRange`, `areaServed`, `hasMenu`, `paymentAccepted`, `knowsAbout`
 - `generateFAQSchema(faqs)`
 - `generateBreadcrumbSchema(items)`
 
 ### BookingEmbed.tsx
+
 - Wraps Calendly/Acuity/Square iframe OR custom booking form
 - Props: `provider`, `embedUrl`, `phone`
 - `booking_click` tracking on all interactions
@@ -238,6 +261,7 @@ Utility module (not visual). Exports:
 - Custom form: name, phone, preferred date, service dropdown, message
 
 ### DonationForm.tsx
+
 - One-time + monthly toggle (defaults to MONTHLY)
 - Suggested amount buttons ($10/$25/$50/$100/$250 — customizable via props)
 - Custom amount input
@@ -248,6 +272,7 @@ Utility module (not visual). Exports:
 - Visual: glassmorphism card, brand-primary CTA, impact statement ("$25 feeds a family for a week")
 
 ### BlogList.tsx
+
 - Paginated blog listing
 - Props: `posts[]` (title, slug, excerpt, date, image, author, readingTime)
 - Grid layout: 2-col desktop, 1-col mobile
@@ -257,6 +282,7 @@ Utility module (not visual). Exports:
 - RSS link icon in header
 
 ### BlogPost.tsx
+
 - Full blog post page
 - Props: `title, content, date, author, image, readingTime, relatedPosts[]`
 - Renders markdown/HTML content
@@ -268,6 +294,7 @@ Utility module (not visual). Exports:
 - Previous/next post navigation
 
 ### RSSFeed
+
 - Not a component — generated as `public/feed.xml` during build
 - Atom 2.0 format
 - Includes all blog posts with title, link, published date, summary, author
@@ -276,6 +303,7 @@ Utility module (not visual). Exports:
 ## Citation Components (***skill 15 + rules/citations.md***)
 
 ### Citation.tsx
+
 - Inline superscript citation
 - Props: `refId: string`, `children: ReactNode`
 - Renders `<span>children<sup><a href="#refId">[N]</a></sup></span>` where N is the auto-numbered position from `_citations.json`
@@ -290,22 +318,28 @@ Utility module (not visual). Exports:
 `always.md` mandates `<MailLink>`/`<TelLink>`/`<AddressBlock>` + universal hyperlink + lightbox capture-restore + count-up + per-route metadata + route-conditional maps + inline markdown links. None work unless template ships the implementation.
 
 ### MailLink.tsx
+
 ```tsx
 export function MailLink({email, className=''}: {email:string;className?:string}) {
   return <a href={`mailto:${email}`} className={`underline-hover ${className}`}>{email}</a>;
 }
 ```
+
 Never hand-code `<a href="mailto:...">` ad-hoc — always import this.
 
 ### TelLink.tsx
+
 Strips formatting to E.164 in `href`, renders formatted display text:
+
 ```tsx
 const e164 = '+1' + phone.replace(/\D/g,'').replace(/^1/,'');
 return <a href={`tel:${e164}`} className={`underline-hover ${className}`}>{phone}</a>;
 ```
+
 Pair with optional `sms:` button per always.md.
 
 ### AddressBlock.tsx
+
 - Bordered card with map-pin SVG, three size variants
 - Props: `lines: string[]; label?: string; mapsQuery?: string; mapsMode?: 'dir'|'search'; size?: 'sm'|'md'|'lg'`
 - `mapsMode='dir'` → `https://www.google.com/maps/dir/?api=1&destination=<urlencoded>` (default for street addresses)
@@ -315,6 +349,7 @@ Pair with optional `sms:` button per always.md.
 - The whole tile is the click target (per always.md "tile-as-link" rule), not just inner text
 
 ### Lightbox.tsx (overflow-lock + viewport-fixed root + explicit scroll-restore)
+
 Fixes both lightbox-renders-at-page-top AND close-jumps-to-top bugs.
 
 YARL portal mount with `overflow:hidden` body lock + scrollbar-gutter compensation + forced `position:fixed; inset:0; zIndex:9999` on YARL root + capture-scrollY-at-open + `window.scrollTo(0, scrollY)` on cleanup.
@@ -326,6 +361,7 @@ But **pure `overflow:hidden` alone is ALSO insufficient** — some browsers (Saf
 **Belt-and-suspenders**: capture `scrollY` at open AND explicitly call `window.scrollTo(0, scrollY)` in the cleanup return — guaranteeing the page is exactly where the user clicked when the lightbox closes.
 
 Correct pattern:
+
 ```tsx
 useEffect(() => {
   if (!open) return;
@@ -355,10 +391,12 @@ useEffect(() => {
 - Lightbox-eligible: `kind!=logo AND dims≥1024×768 AND quality_score≥7` — logo grids use grayscale→color hover instead
 
 **Reference fixes**:
+
 - njsk.org 2026-05-01 — initial body-shift pattern caused dialog to render at page-top; corrected to overflow-lock + viewport-fixed root
 - njsk.org 2026-05-02 — overflow-lock alone proved insufficient under some browser/React combinations; added explicit `window.scrollTo(0, scrollY)` in cleanup return so close always restores exact click-origin scroll position
 
 ### FullWidthMap.tsx (route-conditional, per skill 15 §Quality Bar(2))
+
 - Used ONLY on dedicated `/contact` AND `/mass-schedule` (or equivalent location-pages)
 - Full-bleed (breaks out of `max-w-*` containers via negative margin or `100vw` width)
 - 560px height, `loading="lazy"`, `referrerpolicy="no-referrer-when-downgrade"`
@@ -367,12 +405,14 @@ useEffect(() => {
 - NEVER use this on home/about/services — those use `<MapEmbed>` with `max-w-*` container per skill 10 §Local Business or `<StylizedMap>` SVG thumbnail
 
 ### StylizedMap.tsx (route-conditional alternate)
+
 - Hand-drawn SVG of neighborhood/region with brand-color paths, business pin marker, decorative streets — NO third-party iframe
 - Used on home hero overlay, footer mini-map, section thumbnails
 - May overlay an `<AddressBlock>`
 - Renders at any size, no LCP cost
 
 ### PageHead.tsx + page-meta.ts (HARD GATE per rules/per-route-metadata.md)
+
 Central registry of `RouteMetadata` for every route. Template ships `src/data/page-meta.ts`:
 
 ```ts
@@ -397,6 +437,7 @@ export function meta(path: string): RouteMetadata {
 - Validator `scripts/validate-route-metadata.mjs` greps `dist/**/*.html` for required fields + uniqueness, fails build on miss
 
 ### CountUp.tsx
+
 - Production default per skill 11 §Number-Roll Counters
 - IntersectionObserver+rAF, `threshold:0.5`, ease-out cubic
 - `prefers-reduced-motion` jumps to final
@@ -404,6 +445,7 @@ export function meta(path: string): RouteMetadata {
 - Reuse from skill 11 reference impl
 
 ### renderInline.ts (markdown link parser, used by FAQ/blog/donate-FAQ/AddressBlock children)
+
 ```ts
 export function renderInline(text: string): ReactNode[] {
   const parts: ReactNode[] = []; const re = /\[([^\]]+)\]\(([^)]+)\)/g;
@@ -418,6 +460,7 @@ export function renderInline(text: string): ReactNode[] {
   return parts;
 }
 ```
+
 6 lines of logic, auto-detects `mailto:`/`tel:`/`http`/internal. Plain-text mode if no matches.
 
 ### Universal underline-hover sweep (global CSS, ships in `src/index.css`)
@@ -431,6 +474,7 @@ Every `<a>` in body content gets a single animated underline sweep on hover. Thr
 3. NEVER set `color` on the auto-apply selector — let the link inherit text color from its parent (`text-maroon-100` on a maroon hero would be defeated by `color: var(--color-maroon-800)` rendering dark-on-dark)
 
 Canonical block:
+
 ```css
 /* OUTSIDE @layer components — at end of index.css */
 .underline-hover,
@@ -477,6 +521,7 @@ main h3 > a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:ha
 These six template components ship in `template/src/components/` and `template/src/lib/` to enforce the 13 universal rules added to `~/.claude/rules/always.md`. Each maps to a `validate-*.mjs` gate in `quality-gates.md`.
 
 ### BrandLogo.tsx (transparent-variant `<picture>` swap — fixes invisible-logo-on-matching-bg)
+
 Every container with potential bg-luminance mismatch (header on light bg, footer on dark bg, mobile menu, modal) renders the logo via `<BrandLogo variant="auto"|"dark"|"light" container="header"|"footer"|"hero">`.
 
 Component reads `_brand.json.logo.{transparent_dark, transparent_light, original}` and emits `<picture>` with `<source media="(prefers-color-scheme: dark)" srcset="<transparent_light>">` + `<img src="<transparent_dark>">` swap.
@@ -484,6 +529,7 @@ Component reads `_brand.json.logo.{transparent_dark, transparent_light, original
 Build pipeline (skill 09 logo extraction) MUST emit BOTH variants — if source logo has solid `<rect>` background, run `sharp.removeAlphaBackground()` + GPT-4o vision verify transparent corners.
 
 `_brand.json.logo` schema:
+
 ```ts
 interface BrandLogo {
   original_url: string;             // full horizontal/wordmark
@@ -496,7 +542,9 @@ interface BrandLogo {
 ```
 
 ### XIcon.tsx (official X brand path — replaces stale Twitter bird)
+
 Ships in `template/src/components/icons/XIcon.tsx`:
+
 ```tsx
 export function XIcon({ className = "h-5 w-5", ...props }: React.SVGAttributes<SVGElement>) {
   return (
@@ -512,7 +560,9 @@ Social-icon barrel `template/src/components/icons/index.ts` exports `XIcon` NOT 
 **Validator** (`validate-x-not-twitter.mjs`) greps `dist/**/*.{html,js}` for `viewBox="0 0 24 24"` paths starting `M23.643 4.937` (legacy Twitter bird) — any match=fail.
 
 ### FullBleedSection.tsx (full-viewport-width wrapper — fixes max-width-cropped sections)
+
 Ships in `template/src/components/FullBleedSection.tsx`:
+
 ```tsx
 export function FullBleedSection({ children, className = "", ...props }: React.HTMLAttributes<HTMLElement>) {
   return (
@@ -534,11 +584,13 @@ export function FullBleedSection({ children, className = "", ...props }: React.H
 **Validator** (`validate-full-bleed-sections.mjs`): for every `<section data-fullbleed>`, asserts `getBoundingClientRect().width === window.innerWidth` at 6bp.
 
 ### ExpandableCard.tsx (FLIP animation, no-crop-on-expand)
+
 Ships in `template/src/components/ExpandableCard.tsx`. Pattern uses CSS Grid `grid-template-rows: 0fr → 1fr` transition with `min-height: 0; overflow: hidden` on collapsed state, switching to `overflow: visible; max-height: none` AFTER expand transition completes (`onTransitionEnd` handler removes the overflow clip).
 
 **Critical**: NEVER leave `overflow: hidden` on the expanded state — children with absolute-positioned tooltips, dropdowns, or multi-line text get clipped at the original card height.
 
 Pattern:
+
 ```tsx
 const [expanded, setExpanded] = useState(false);
 const [transitionDone, setTransitionDone] = useState(false);
@@ -552,6 +604,7 @@ const overflowClass = expanded && transitionDone ? 'overflow-visible' : 'overflo
 ```
 
 For complex layouts where Grid `0fr→1fr` is insufficient (sibling animation, FLIP across columns), fallback to FLIP technique:
+
 - **First** — capture `getBoundingClientRect()`
 - **Last** — set state
 - **Invert** — via `transform: translateY(<delta>) scale(<ratio>)`
@@ -560,7 +613,9 @@ For complex layouts where Grid `0fr→1fr` is insufficient (sibling animation, F
 **Validator** (`validate-expandable-card-no-crop.mjs`): Playwright clicks each `[data-expandable]`, waits 600ms, asserts `scrollHeight === clientHeight` (no overflow) AND no descendant with `position: absolute` is clipped by `overflow: hidden` ancestor.
 
 ### R2AssetRewriter (build-time CDN rewrite — self-host all source images)
+
 Ships in `template/scripts/rewrite-cdn-assets.mjs`. Runs as Vite plugin AND as post-build pass:
+
 ```js
 // Vite plugin
 export function r2AssetRewriter(): Plugin {
@@ -585,6 +640,7 @@ export function r2AssetRewriter(): Plugin {
 ```
 
 **Build pipeline**:
+
 1. Source-site scrape captures every `<img src>` + CSS `background-image:` URL pointing to source CDN
 2. Asset rewriter downloads each to `public/assets/migrated/<hash>.<ext>`
 3. Source code references rewrite to local paths
@@ -595,11 +651,13 @@ Survives source-site CDN expiration, paywall, geofencing, robots block.
 **Companion validator** — `validate-no-cdn-hotlinks.mjs` greps `dist/**/*.{html,js,css}` for hostnames in `cdnHosts[]` array; any match=fail.
 
 ### Stripe-first DonationForm (***supersedes prior DonationForm spec — Stripe-Checkout-only, no PayPal fallback***)
+
 Prior DonationForm spec ALSO listed external-platform fallbacks (Donorbox/Givebutter/Classy/Bonterra). Three-site review showed njsk.org `/donate` shipped a PayPal link as primary CTA, looked dated + low-trust.
 
 **New rule**: every non-profit `/donate` page MUST default to Stripe Checkout primary CTA, with external-platform link demoted to "Other ways to give" footer.
 
 **Implementation** (requires Stripe Connect OAuth — skill 06 stripe-first-donations.md):
+
 1. Non-profit signs up via projectsites.dev → connects Stripe account via Standard OAuth (`https://connect.stripe.com/oauth/authorize?response_type=code&client_id=<ca_*>&scope=read_write&state=<csrf>`)
 2. ProjectSites stores `stripe_account_id` (acct_*) on `sites.stripe_connect_account` D1 column
 3. DonationForm POSTs to `/api/sites/<id>/donate-checkout` with `{amount_cents, recurrence: 'one-time'|'monthly', donor_email?, on_behalf_of?, in_memory_of?}`
@@ -607,12 +665,14 @@ Prior DonationForm spec ALSO listed external-platform fallbacks (Donorbox/Givebu
 5. Returns Checkout URL → DonationForm `window.location.href` redirects donor to Stripe-hosted page
 
 **GiveDirectly preset amounts** (universal default for all non-profits):
+
 - `[10, 25, 50, 100, 250, 500]` + Custom input
 - Defaults to `recurrence: 'monthly'` (recurring donor LTV ~3x one-time per Fundraise Up 2024 benchmark)
 - Cover-fees checkbox defaults ON, adds `Math.ceil((amount * 0.029 + 0.30) / 0.971 * 100) - amount * 100` cents to keep nonprofit's net = stated amount
 - Tribute fields ("In honor of" / "In memory of") map to Stripe Checkout `metadata.tribute_*` for receipt rendering
 
 **DonationForm props (post-three-site-review)**:
+
 ```ts
 interface DonationFormProps {
   siteId: string;                                    // for /api/sites/<id>/donate-checkout
@@ -664,6 +724,7 @@ Replaces the prior bare DonationForm. Used by nonprofits at `/donate`, churches 
 7. **Other ways to give (footer of /donate)** — Mail-in check (PO Box wrapped in `<AddressBlock mapsMode='search'>`), planned giving anchor link, in-kind donations contact (`<MailLink>`).
 
 ### DonationForm props (full)
+
 ```ts
 stripePaymentLink?:string;
 externalDonationUrl?:string;
@@ -687,6 +748,7 @@ Per `[[page-set-expansion]]` § Nonprofit standard+jewel set + `[[i18n-by-demogr
 Validator `validate-jewel-components.mjs` greps `template/src/components/jewels/` confirming every jewel exists pre-build for `_research.json.category === 'non-profit'`.
 
 ### FinancialBreakdown.tsx
+
 - 4-bar program/admin/fundraising/infrastructure horizontal chart
 - Bars animate width on IntersectionObserver via `<CountUp>` ease-out
 - Percentages cited inline from Form 990 / GuideStar / Charity Navigator (rules/citations.md APA refId)
@@ -695,6 +757,7 @@ Validator `validate-jewel-components.mjs` greps `template/src/components/jewels/
 - **Props**: `allocations:Array<{label:string;pct:number;refId:string}>; form990Url:string; form990Year:number; charityNavigatorRating?:1|2|3|4; ein:string`
 
 ### PlannedGivingGrid.tsx
+
 - 5-card jewel grid (bequest | IRA-QCD | DAF | stock | charitable-gift-annuity)
 - Each card: icon + 1-sentence pitch + tax-benefit callout + "Learn more →" link to `/planned-giving#{slug}`
 - Sample bequest language `<pre><code>` block with copy-button ("I give, devise and bequeath to {orgName}, EIN {ein}, …")
@@ -702,6 +765,7 @@ Validator `validate-jewel-components.mjs` greps `template/src/components/jewels/
 - **Props**: `ein:string; orgName:string; officer:{name:string;email:string;phone:string;photo:string;bio:string}`
 
 ### WaysToGiveTaxonomy.tsx
+
 - 10-path card grid linking dedicated routes (`/donate` | `/donate/recurring` | `/donate/major-gift` | `/planned-giving` | `/donate/in-kind` | `/donate/stock` | `/donate/crypto` | `/donate/vehicle` | `/donate/employer-match` | `/donate/tribute`)
 - Each card: icon + label + 1-sentence benefit + arrow link
 - Groups visually by giving-vehicle-class (cash/securities/legacy/non-cash/match)
@@ -709,12 +773,14 @@ Validator `validate-jewel-components.mjs` greps `template/src/components/jewels/
 - **Props**: `enabledPaths:Array<{slug:string;label:string;benefit:string;icon:LucideIcon}>`
 
 ### PartnerLogoWall.tsx
+
 - Grayscale→color-on-hover logo grid (`<img class="grayscale hover:grayscale-0 transition">`) grouped by partner-type (foundations | corporate | government | community | media)
 - Each logo: hover-revealed relationship description tooltip + outbound link + verified-since year
 - Logos NEVER lightboxed (per always.md exclusion)
 - **Props**: `partners:Array<{type:string;name:string;logo:string;url:string;relationship:string;since:number}>`
 
 ### PressMentions.tsx
+
 - Card list (outlet logo + headline + date + 1-paragraph paraphrase + outbound link with `target="_blank" rel="noopener noreferrer"`)
 - Sorted reverse-chronological
 - Filter by outlet
@@ -722,7 +788,9 @@ Validator `validate-jewel-components.mjs` greps `template/src/components/jewels/
 - **Props**: `mentions:Array<{outlet:string;outletLogo:string;headline:string;date:string;paraphrase:string;url:string}>`
 
 ### TestimonialCarousel.tsx (extended)
+
 Existing Google-reviews spec PLUS consent-tagged guest/volunteer/donor stories:
+
 - `<source type="guest"|"volunteer"|"donor"|"alumni"|"partner">` filter
 - Each story carries `consent:{signed_date:string; renewable:boolean}` from `_research.json.testimonials[]` — un-consented stories never render
 - Story card: photo (or initial-tile if no consent for image) + name (or "Name withheld" per consent) + role + 2-sentence quote + outcome stat with citation
@@ -730,6 +798,7 @@ Existing Google-reviews spec PLUS consent-tagged guest/volunteer/donor stories:
 - **Props**: `stories:Array<{source:string;name:string;photo?:string;role:string;quote:string;outcome?:{stat:string;refId:string};consent:{signed_date:string;renewable:boolean}}>`
 
 ### TranscriptPlayer.tsx
+
 - Paired audio (`<audio>` for podcast/sermon) or video (`<video>`) + structured transcript blocks `{timestamp:'00:01:23'; speaker:string; text:string}` rendered as scrollable side panel with click-to-seek
 - Chapters `Array<{title:string;start:string}>` rendered as chapter-markers on scrubber + chapter-list above transcript
 - VTT + SRT downloads `<a href="/transcripts/{slug}.vtt" download>` + `.srt`
@@ -738,12 +807,14 @@ Existing Google-reviews spec PLUS consent-tagged guest/volunteer/donor stories:
 - **Props**: `mediaUrl:string; mediaType:'audio'|'video'; chapters:Array<{title:string;start:string}>; transcript:Array<{timestamp:string;speaker:string;text:string}>; vttUrl:string; srtUrl:string`
 
 ### AlumniGrid.tsx
+
 - Card grid (past-role at org → current-role elsewhere → "still gives back" story)
 - Each card: photo + past-role-label + current-role + 2-sentence "still gives back" narrative + outbound LinkedIn link
 - Filter by program / decade
 - **Props**: `alumni:Array<{name:string;photo:string;pastRole:string;currentRole:string;currentOrg:string;story:string;linkedinUrl?:string;givesBack:string}>`
 
 ### CampaignThermometer.tsx
+
 - Raised/goal animated vertical thermometer (SVG `<rect>` mask) + percentage ticker via `<CountUp>` + raised-as-of-date timestamp
 - Named gift opportunities table (`Array<{level:string;amount:number;naming:string;committed:boolean}>` — committed rows show donor name or "Anonymous donor")
 - Match-grant callout banner ("Every $1 → $2 through {matchSponsor}, expires {date}")
@@ -751,12 +822,14 @@ Existing Google-reviews spec PLUS consent-tagged guest/volunteer/donor stories:
 - **Props**: `campaignName:string; goal:number; raised:number; asOf:string; opportunities:Array<{level:string;amount:number;naming:string;committed:boolean;donor?:string}>; match?:{sponsor:string;ratio:string;expires:string}; stripeAccountId:string; siteId:string`
 
 ### ParishToolkitDownloads.tsx
+
 - 4-section PDF download grid (bulletin inserts | donation drive guides | sermon outlines | fundraiser templates)
 - Each card: thumbnail preview (first-page PDF render or icon) + title + 1-sentence use-case + file-size + `<a download>` button + view-count
 - Filter by season (advent/lent/year-round/back-to-school)
 - **Props**: `sections:Array<{type:'bulletin'|'guide'|'sermon'|'template';items:Array<{title:string;useCase:string;url:string;sizeBytes:number;thumbnail?:string;season?:string}>}>`
 
 ### LocaleSwitcher.tsx
+
 - Header dropdown (flag emoji or SVG + native language name e.g. "Español" not "Spanish")
 - Auto-detect via `Accept-Language` header + `navigator.languages[]`
 - Persisted preference in `localStorage['locale']` + `cookie 'NEXT_LOCALE'` for SSR
@@ -766,13 +839,16 @@ Existing Google-reviews spec PLUS consent-tagged guest/volunteer/donor stories:
 - **Props**: `currentLocale:string; locales:Array<{code:string;nativeName:string;flag:string;rtl?:boolean}>`
 
 ### HrefLangHead.tsx
+
 - Emits `<link rel="alternate" hreflang="{locale}" href="{baseUrl}/{locale}{currentPath}">` for every shipped locale + `<link rel="alternate" hreflang="x-default" href="{baseUrl}{currentPath}">` per route
 - Mounted inside `<PageHead>` so static-prerender includes hreflang in HTML head (NOT script-injected — Google crawler requires static)
 - Reads `locales[]` from `_research.json.i18n.locales` populated by `[[i18n-by-demographics]]` ACS pipeline
 - **Props**: `baseUrl:string; locales:string[]; currentPath:string`
 
 ### Component count
+
 39 total in template:
+
 - 16 local
 - BlogList + BlogPost + DonationForm[expanded]
 - Citation + ReferencesList + SourcedStat
@@ -786,6 +862,7 @@ Update tailwind safelist + index exports + `validate-route-metadata.mjs` registr
 ## Blog Routing (React Router)
 
 Template `App.tsx` includes catch-all blog routes:
+
 ```tsx
 <Route path="/blog" element={<BlogListPage />} />
 <Route path="/blog/:slug" element={<BlogPostPage />} />
@@ -801,19 +878,23 @@ Template `App.tsx` includes catch-all blog routes:
 ## PWA & Print (***EVERY SITE***)
 
 ### PWA manifest
+
 - `public/site.webmanifest` with business name, brand colors, icons (192+512)
 - `<link rel="manifest">` in `index.html`
 - Favicon set: ico (16+32+48), apple-touch-icon (180), android-chrome (192+512)
 - Meta `theme-color` matches brand primary
 
 ### Print stylesheet
+
 `@media print` in `index.css`:
+
 - Hide nav/footer/sticky-cta/speed-dial
 - White bg, black text
 - Show link URLs via `a[href]::after`
 - `img max-width 100%`
 
 ### Service worker
+
 - `public/sw.js` caches app shell + images (cache-first, max 200) + HTML (network-first)
 - Excludes analytics
 - Registered in `main.tsx` (production only)
@@ -821,6 +902,7 @@ Template `App.tsx` includes catch-all blog routes:
 - Verify offline: disconnect → refresh → site loads
 
 ### Responsive images
+
 - `<ResponsiveImage>` component in `src/components/local/`
 - Renders `<picture>` with AVIF→WebP→fallback, srcset 320/640/1280/1920w, blur placeholder, dominant color
 - Hero uses `eager` prop
@@ -828,6 +910,7 @@ Template `App.tsx` includes catch-all blog routes:
 - Built on skill 12 image-optimization.md pipeline
 
 ### SMS deep links
+
 - Every `tel:` link paired with `sms:` option
 - Track as `sms_click`
 - Mobile: "Call" and "Text" buttons side by side
@@ -835,10 +918,12 @@ Template `App.tsx` includes catch-all blog routes:
 ## Dual-Template Architecture
 
 Two template repos serve different site types:
+
 - **`megabytespace/template.projectsites.dev`** — local business (this template). 19 components (16 local + BlogList + BlogPost + DonationForm), CSS var brand slots, conversion tracking, PWA.
 - **`megabytespace/saas-starter`** — SaaS products. Hono+D1+Clerk+Stripe+Inngest+Resend on CF Workers.
 
 Container selects template from `_form_data.json.category`:
+
 - Local categories → `~/template-local`
 - SaaS categories → `~/template-saas`
 

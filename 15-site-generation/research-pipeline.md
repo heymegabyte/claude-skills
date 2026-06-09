@@ -11,6 +11,7 @@ All research runs on the Worker (not in the container). Results are written as `
 ## Phase 0a: Business Profile (Google Places API)
 
 **Query** — `GOOGLE_PLACES_API_KEY` → `findplacefromtext` with business name + address. Then `place/details` for:
+
 - `name`, `formatted_address`, `formatted_phone_number`
 - `opening_hours`, `website`, `rating`, `user_ratings_total`
 - `reviews` (top 3)
@@ -20,28 +21,33 @@ All research runs on the Worker (not in the container). Results are written as `
 **Confidence**: `google_places` source at 80-95 depending on field.
 
 ### Fallback chain
+
 1. **Yelp Fusion API** (`YELP_API_KEY`) — business match by name+location, returns reviews/photos/hours/categories (confidence 60-80)
 2. **Facebook Graph API** — page search by business name, returns about/hours/phone/address (confidence 55-70)
 3. **BBB API/scrape** — search by business name, returns rating/accreditation/complaints (confidence 70-85, trust signal)
 4. **Workers AI (Llama 3.3 70b) research prompt** — synthesize from web search results (confidence 50-70, LAST RESORT)
 
 ### Competitor analysis (auto, no extra API cost)
+
 Google Places `nearbysearch` with same `type` within 5mi radius. Top 5 competitors: extract names, ratings, review counts, websites. Used in build prompt for differentiation ("You have 4.8 stars vs competitors averaging 4.2 — emphasize this").
 
 ## Phase 0b: Website Scraping (Deep Crawl)
 
 If business has existing website:
+
 - Crawl up to 50 pages (was 20 — content-rich sites need full migration)
 - For each: extract title, headings, body text, images (download to R2), nav structure, footer content, meta tags, schema.org data
 - Store as `_scraped_content.json` keyed by URL path
 
 **Extract**:
+
 - All text content for reuse
 - All image URLs for download
 - Sitemap structure for page recreation
 - Blog posts for content migration
 
 ### Sitemap fetch (***CRITICAL FOR URL PRESERVATION***)
+
 - Before crawling, fetch `/sitemap.xml` and `/sitemap_index.xml`
 - Parse all `<loc>` URLs into `_scraped_content.json.sitemap_urls[]`
 - These become the canonical list of URLs that must resolve (200 or 301) on the new site
@@ -53,6 +59,7 @@ If business has existing website:
 ## Phase 0c: Social Media Verification
 
 For each platform (Facebook, Instagram, Twitter/X, LinkedIn, YouTube, TikTok, Pinterest, Yelp, Google Business):
+
 - Construct candidate URL from business name → HEAD request → verify 200 status
 - Only include URLs at 90%+ confidence
 - Dead links: exclude entirely
@@ -62,6 +69,7 @@ For each platform (Facebook, Instagram, Twitter/X, LinkedIn, YouTube, TikTok, Pi
 **Priority order for primary color**: logo dominant color → header/nav background → CTA button color → accent borders → hero overlay.
 
 **Extract via**:
+
 1. **Brandfetch API** (`BRANDFETCH_API_KEY`) — returns full brand kit (colors, fonts, logos) at 90% confidence
 2. **Logo.dev API** (`LOGODEV_TOKEN`) — logo image → GPT-4o vision extracts dominant colors
 3. **GPT-4o vision** on screenshot of existing site
@@ -85,6 +93,7 @@ For each platform (Facebook, Instagram, Twitter/X, LinkedIn, YouTube, TikTok, Pi
 ```
 
 ### Color source tracking (***CRITICAL***)
+
 - Every color must have `color_source`: `extracted_from_logo|extracted_from_website|extracted_from_assets|derived_from_primary|contrast_calculated|generated`
 - NEVER guess colors from business category
 - The njsk.org burgundy incident: system guessed "warm soup kitchen colors" instead of extracting their actual burgundy brand
@@ -92,7 +101,9 @@ For each platform (Facebook, Instagram, Twitter/X, LinkedIn, YouTube, TikTok, Pi
 - `foreground` is calculated for WCAG AA contrast against background
 
 ### New business fallback (no web presence)
+
 If business has no website, no logo, and no social media:
+
 1. **Google Places photos** → extract dominant color from storefront/signage images
 2. **Google Street View screenshot** → extract from building facade, awning, signage
 3. **Industry-neutral defaults** as LAST RESORT: primary=`#2563EB` (accessible blue), secondary=`#1E293B` (slate), accent=`#F59E0B` (amber)
@@ -113,19 +124,23 @@ Every data point gets `Conf<T>`:
 **Merge rule** — higher confidence wins, corroboration boosts +0.1 (capped at 0.99)
 
 **UI policy**:
+
 - Prominent **≥0.85**
 - Standard **0.70-0.84**
 - Deemphasize **0.50-0.69**
 - Hide **<0.50**
 
 ### APA citation requirement (***NON-NEGOTIABLE — see rules/citations.md***)
+
 Every quantitative field (%, N, $, ratio, comparison, year-claim) MUST carry `apa_citation` (APA 7th ed) and `source_url`. Examples:
+
 - `apa_citation: "U.S. Bureau of Labor Statistics. (2024). Occupational employment statistics: Restaurant industry. https://www.bls.gov/oes/"`
 - `apa_citation: "Brewer, S. (2024). AI search citation rates. Journal of Search Engine Optimization, 15(2), 88-104. https://doi.org/10.xxxx/xxxxx"`
 
 **Thresholds**: Confidence ≥0.85 requires 2+ corroborating cites; single source = 0.70; unsourced = rejected.
 
 ### Warnings generated for missing
+
 - phone (<0.5), email (<0.5), geo (<0.3), booking_url (<0.5), reviews (<0.3)
 - apa_citation on any quantitative claim (auto-fail)
 
@@ -177,12 +192,14 @@ Internal `/portfolio/<slug>` stub pages that just re-display the citation block 
 7. **Journal homepage search** if journal known
 
 ### Persistence
+
 - Persist to `_research.json.publications[]` with `{ title, authors[], journal, year, doi?, pmid?, arxiv_id?, deeplink_url, deeplink_source, paraphrased_summary, image_url?, citation_apa }`
 - `deeplink_source` ∈ `crossref|pubmed|arxiv|scholar|tavily|journal_search`
 - **Confidence**: ≥0.85 on doi/pmid/arxiv hit, 0.70 on scholar/tavily, 0.50 on journal_search fallback
 - NEVER mark `deeplink_url=null` and ship — fail build instead
 
 ### Render
+
 - Tile wrapper: `<a href={deeplink_url} target="_blank" rel="noopener noreferrer" data-card="publication">` with entire surface clickable
 - Inner action button "Read Full Paper →" points to SAME `deeplink_url` (validator compares card-wrapper href vs button href, fail on mismatch)
 - Journal/conference name in tile body hyperlinked to journal homepage (institution-name anchor, NEVER "click here")
@@ -216,18 +233,22 @@ Every linked PDF in source (CV, resume, brochure, menu, whitepaper, annual repor
 ```
 
 ### Other PDF types
+
 - **Brochure** — `{ services[], pricing?[], contact_block }`
 - **Menu** — `{ sections[]: { name, items[]: { name, description, price? } } }`
 - **Annual report** — `{ year, executive_summary, financials?, programs[], impact_metrics[] }`
 
 ### Web-research enrichment per timeline node (CVs especially)
+
 - For every `position`/`education`/`grant`/`publication`/`award`, run Tavily/Exa search `<institution> <year> <person-name>`
 - Enrich with: institution canonical URL, news/press mentions, related papers, grant agency project page, award announcement
 - Persist back into the timeline node as `enrichment: { institution_url, related_papers[], news_mentions[], canonical_event_url? }`
 - Hyperlink all of it in render
 
 ### CV render = interactive Timeline component
+
 On `/about` (or dedicated `/cv` route when CV is a primary credential):
+
 - Vertical chronological line with year markers (left rail)
 - Role/event cards on alternating sides
 - Concise summary headline + 1-2 sentence body
@@ -242,6 +263,7 @@ On `/about` (or dedicated `/cv` route when CV is a primary credential):
 The lonemountainglobal.com `Vian_CV_Long_4-2-2024.pdf` is the canonical case — Dr. Taryn Vian's 30+ years of WHO/USAID/BU positions, anti-corruption publications, and global health grants become a living timeline, not a buried PDF link.
 
 ### Per-prompt context injection
+
 `_pdf_facts.json` is loaded into EVERY downstream content prompt (about-page, team-page, services-page, blog-post-generation, JSON-LD personSchema, FAQ generation) so the CV's structured facts back every assertion the rebuild makes about the person/org. Without this, the LLM hallucinates dates/positions and the fact-checker (skill 09 grammar-audit) flags inconsistencies.
 
 **Validator** — `validate-pdf-facts.mjs` asserts every linked PDF in source has corresponding `_pdf_facts.json` entry before container build can start.
@@ -255,6 +277,7 @@ Rebuild prompts MUST emit a superset, never a subset, of source. Three parallel 
 See [[source-site-enhancement]] § Union-Output Contract + [[monitor-orchestration]] Known-shortcoming #7 (monitor-fire on rebuild prompts) + [[page-set-expansion]] § Org-Type Canonical Floor + [[i18n-by-demographics]] § ACS B16001 Lookup.
 
 ### (a) ACS B16001 demographic lookup (locale gap) → `_locales.json`
+
 - **Input**: `_research.json.operations.service_area` (city/county/ZIP set) + `_research.json.operations.geo`
 - **Query**: Census API `https://api.census.gov/data/2022/acs/acs5?get=NAME,B16001_001E,B16001_<group>E&for=county:<fips>&in=state:<fips>&key=$CENSUS_API_KEY` for every county touching service area
 - **Output**: `{ primary_locale: "en", secondary_locales: [{ code, name, pct_speakers, lep_pct, source_county, apa_citation }], translation_strategy: "full_route_alt|hreflang_only|none" }`
@@ -263,6 +286,7 @@ See [[source-site-enhancement]] § Union-Output Contract + [[monitor-orchestrati
 - NEVER infer locales from business-name heuristics ("Casa de…" ≠ Spanish locale gate) — Census data is the only source of truth
 
 ### (b) Page-set gap diff (route gap) → `_page_set_gap.json`
+
 - **Input**: `_scraped_content.json.sitemap_urls[]` (source URL inventory, post-Squarespace-dedup) + `_research.json.identity.schema_org_type` (org-type → canonical-floor mapping in [[page-set-expansion]] § Org-Type Canonical Floor)
 - For each org type (NonProfit, Restaurant, LegalService, MedicalBusiness, Salon, Church, ProfessionalService, SaaS, Portfolio): emit `{ org_type, source_routes: [], canonical_floor_routes: [], missing_routes: [], extra_routes: [], jewel_candidates: [] }` where:
   - `missing_routes` = floor − source (rebuild must ADD these)
@@ -270,6 +294,7 @@ See [[source-site-enhancement]] § Union-Output Contract + [[monitor-orchestrati
 - **Example**: NonProfit floor = `/about`, `/programs`, `/impact`, `/team`, `/donate`, `/volunteer`, `/we-need`, `/events`, `/blog`, `/contact`, `/financials`, `/annual-report`, `/faq` — source might only have 6 of these; missing 7 become jewel_candidates
 
 ### (c) Jewel content briefs (content gap) → `_jewels.json`
+
 Per [[page-set-expansion]] § Jewel Content Authoring Playbook, each route in `missing_routes` gets a `JewelBrief`:
 
 ```ts
@@ -288,14 +313,17 @@ Per [[page-set-expansion]] § Jewel Content Authoring Playbook, each route in `m
 Briefs are dense — each one is the seed prompt for a parallel jewel-content-author agent (see [[monitor-orchestration]] § Parallel-agent playbook).
 
 **Confidence**:
+
 - Jewel content authored from `_pdf_facts.json`+`_research.json` confirmed data = 0.85
 - LLM-synthesized with web_search corroboration = 0.70
 - Pure inference = 0.50 (flagged in `warnings[]`)
 
 ### Persistence
+
 Persist all three to `_research.json.gaps = { locales: ref, page_set: ref, jewels: ref }` so the build prompt loads the union(source, floor, jewels, locales) automatically.
 
 **Validator** — `validate-rebuild-union.mjs` (skill 15 quality-gates.md) fails build if:
+
 - Shipped sitemap.xml count < `source_routes.length + missing_routes.length`
 - OR any `secondary_locales[].translation_strategy = "full_route_alt"` lacks `/<locale>/<route>` siblings
 

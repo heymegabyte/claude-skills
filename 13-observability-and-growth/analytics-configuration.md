@@ -117,10 +117,13 @@ connect-src: https://www.google-analytics.com https://analytics.google.com https
 ## Full Analytics Auto-Provision (***MANDATORY — ALL THREE***)
 
 ### Sentry (Error Tracking + Performance)
+
 Every project gets Sentry from day one. Missing `@sentry/cloudflare` (Workers) or `@sentry/node` → install SDK + wrap entry point + create project via `mcp__sentry__create_project` (org: megabyte-labs, team: megabyte-labs, platform: javascript) → set `SENTRY_DSN` via `wrangler secret put`. Full-stack traces: `tracesSampleRate`, `app.onError()` → `captureException` with route + userId tags, breadcrumbs before risky ops, `SENTRY_RELEASE` for deploy tracking.
 
 ### PostHog (Product Analytics + Feature Flags + Session Recording)
+
 Every HTML page gets PostHog snippet. Config:
+
 - `persistence:'memory'` (cookie-free, no GDPR banner)
 - `capture_pageview:true`
 - `capture_pageleave:true`
@@ -131,7 +134,9 @@ CSP: script-src + connect-src for PostHog API host. PostHog project key stored a
 Events: `page_viewed`, `cta_clicked`, `form_submitted`, `donate_click`, `newsletter_signup`, `scroll_depth`.
 
 ### GA4/GTM (Marketing Analytics + Tag Management)
+
 Every HTML page gets GTM container (head script + noscript iframe after body). GTM container ID: `get-secret GTM_CONTAINER_ID` (Megabyte Labs). CSP:
+
 - `script-src` — googletagmanager.com + google-analytics.com
 - `connect-src` — analytics.google.com + region1.google-analytics.com
 - `img-src` — googletagmanager.com + google-analytics.com
@@ -139,6 +144,7 @@ Every HTML page gets GTM container (head script + noscript iframe after body). G
 GA4 configured inside GTM (never standalone). Custom dimensions over separate events. 14-month retention. Google Signals enabled.
 
 ### Enforcement
+
 Missing ANY of the three → add in same prompt. No page ships without all three firing. Every action: GA4 event + PostHog event + Sentry breadcrumb. CSP must allow all three domains. Verify in browser DevTools Network tab before marking deploy as done.
 
 ## Verification Checklist

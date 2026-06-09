@@ -28,6 +28,7 @@ paths:
 # 07 — Quality and Verification
 
 ## 5-level pyramid (bottom to top)
+
 1. **Static** — TS strict + ESLint + oxlint + Prettier + knip (dead code)
 2. **Unit** — Vitest 3 (40% faster on 5k+ tests, Rust sharding, browser mode default)
 3. **Playwright E2E** — homepage-first, 6 viewports × 3 browsers, hermetic, parallel
@@ -35,6 +36,7 @@ paths:
 5. **Post-deploy** — `wrangler tail` clean + console-error-free + axe-clean + Lighthouse green
 
 ## 8-check quality gate (every PR)
+
 1. `npm run typecheck` clean (0 errors)
 2. `npm run lint` clean (0 errors, 0 warnings)
 3. `npm test` (Vitest) green
@@ -47,6 +49,7 @@ paths:
 Any fail = blocker. Fix-forward per `rules/verification-loop.md`.
 
 ## Playwright Test Agents (v1.59+)
+
 - `npx playwright init-agents --loop=claude` once per repo
 - **Planner** — Markdown plan
 - **Generator** — test code
@@ -55,6 +58,7 @@ Any fail = blocker. Fix-forward per `rules/verification-loop.md`.
 - `page.screencast` for video receipts on flaky specs
 
 ## Hermetic spec contract (per `rules/e2e-tdd-organization.md`)
+
 1. Starts at homepage (`/`); navigates via clicks/keyboard
 2. Seeds own data via `_fixtures/`
 3. Cleans own data after-each
@@ -65,6 +69,7 @@ Any fail = blocker. Fix-forward per `rules/verification-loop.md`.
 Violating any = build fail.
 
 ## Parallel execution
+
 - `fullyParallel: true`
 - `workers: process.env.CI ? '50%' : '75%'`
 - Sharded via `--shard=$INDEX/$TOTAL`
@@ -72,6 +77,7 @@ Violating any = build fail.
 - 3 browsers: Chromium, Firefox, WebKit
 
 ## AI visual QA
+
 - Random snapshot sampling 30% per step (seeded hash, reproducible)
 - New-section AI vision: `e2e/__seen-routes__.json` gates first render of any unknown route
 - Rubric: layout sane / contrast WCAG AA / brand / no slop / ≥8/10 (Claude Sonnet 4.6 or GPT-4o)
@@ -81,6 +87,7 @@ Violating any = build fail.
 Per `rules/e2e-visual-inspection.md`.
 
 ## Visual regression
+
 - **Percy AI Visual Review** — 3× faster review, 40% OCR-based noise filter, full-page + flows
 - **Chromatic** — component-level via Storybook
 - **pixelmatch** — local deterministic CI
@@ -88,7 +95,9 @@ Per `rules/e2e-visual-inspection.md`.
 Three-tier: local → PR → deploy.
 
 ## Multi-agent testing
+
 Spawn parallel in single `Agent` call:
+
 - **functional-tester** — happy path + edge cases
 - **security-reviewer** — OWASP Top 10:2025 per `_kernel/standards.md#owasp2025`
 - **accessibility-auditor** — axe 6bp + WCAG 2.2 manual review
@@ -98,22 +107,26 @@ Spawn parallel in single `Agent` call:
 Each: 100-300 word brief, ≤200 word summary back. Per `rules/agent-selection.md`.
 
 ## INP debugging
+
 - `PerformanceObserver` type `long-animation-frame` (LoAF, Chrome 123+)
 - For SPA per-route CWV: web-vitals v4+ w/ `softNavs:true`
 - Target ≤100ms cinematic, ≤200ms = fail per `_kernel/standards.md#cwv`
 
 ## Console-error gate
+
 - After every deploy, check browser console for CSP violations, JS errors, failed resources
 - ALL must be 0 before marking complete
 - Fixed by `rules/verification-loop.md` console-error gate
 
 ## E2E accumulation
+
 - Tests NEVER deleted, only appended
 - `journey.spec.ts` serial + stateful — each feature adds steps
 - 100% feature coverage matrix in `e2e/FEATURES.md`
 - Removed features: skip + comment, don't delete
 
 ## Inventory enforcement
+
 - `e2e/FEATURES.md` — row per feature
 - `e2e/COVERAGE.yml` — feature→spec map; CI fails on any feature without entry/test
 - Pre-commit lint: new component without matching `e2e/<feature>/` warns

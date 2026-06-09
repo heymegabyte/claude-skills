@@ -7,6 +7,7 @@ updated: "2026-04-23"
 # Coolify, Docker, and Proxmox
 
 ## CRITICAL: First-Use Confirmation Required
+
 **Before using this skill for the first time in any project, ALWAYS ask:**
 
 ```
@@ -22,6 +23,7 @@ Want me to go ahead?
 **Wait for explicit "yes" before proceeding.**
 
 After first confirmation per project, subsequent Coolify operations in the same project don't need re-confirmation UNLESS they:
+
 - Deploy a NEW service (not just configure an existing one)
 - Delete or restart an existing service
 - Change environment variables on a shared service
@@ -30,13 +32,16 @@ After first confirmation per project, subsequent Coolify operations in the same 
 ## Infrastructure Overview
 
 ### Proxmox Host (361 conversations about Proxmox in ChatGPT history)
+
 Brian's Proxmox box runs Coolify as the PaaS layer. Coolify manages 70+ Docker services.
+
 - **Hardware** — Bare metal Proxmox with ZFS storage
 - **VMs** — OPNsense, Ubuntu Desktop, macOS, Windows 11, Home Assistant OS, Coolify server
 - **Backup** — Daily ZFS snapshots → R2 (3-2-1 pattern)
 - **Network** — VLAN segmentation, 10+ VLANs
 
 ### OPNsense (250 conversations)
+
 - Virtualized on Proxmox as primary firewall/router
 - **VPN** — Multi-provider WireGuard + OpenVPN + Cloudflare WARP
 - **DNS** — Unbound with DNSSEC + DNS-over-TLS
@@ -45,6 +50,7 @@ Brian's Proxmox box runs Coolify as the PaaS layer. Coolify manages 70+ Docker s
 - Mesh VPN coordination via Headscale
 
 ### Coolify Access (136 mentions — THE hub)
+
 - **URL** — `{service}.megabyte.space` pattern (behind CF Tunnel + Authentik)
 - **API** — `{coolify-url}/api/v1/`
 - **Token** — `~/.config/emdash/coolify-token`
@@ -73,6 +79,7 @@ Brian's Proxmox box runs Coolify as the PaaS layer. Coolify manages 70+ Docker s
 All services follow `{service}.megabyte.space` pattern. Discoverable via Coolify API.
 
 ### Common Coolify Problems (from debugging sessions)
+
 1. Healthcheck failures in Docker compose (10+ conversations)
 2. Container file permissions (9999:root pattern)
 3. Redirect loops — Cloudflare → Authentik → Service
@@ -83,30 +90,35 @@ All services follow `{service}.megabyte.space` pattern. Discoverable via Coolify
 ## Coolify API Reference
 
 ### Authentication
+
 ```bash
 COOLIFY_TOKEN=$(cat ~/.config/emdash/coolify-token)
 COOLIFY_URL="https://coolify.megabyte.space/api/v1"
 ```
 
 ### List All Services
+
 ```bash
 curl -s "$COOLIFY_URL/services" \
   -H "Authorization: Bearer $COOLIFY_TOKEN" | jq '.[].name'
 ```
 
 ### Get Service Details
+
 ```bash
 curl -s "$COOLIFY_URL/services/{service_id}" \
   -H "Authorization: Bearer $COOLIFY_TOKEN" | jq '{name, status, fqdn}'
 ```
 
 ### Get Environment Variables
+
 ```bash
 curl -s "$COOLIFY_URL/services/{service_id}/envs" \
   -H "Authorization: Bearer $COOLIFY_TOKEN" | jq '.[].key'
 ```
 
 ### Set Environment Variable
+
 ```bash
 # CONFIRMATION REQUIRED for shared services
 curl -X POST "$COOLIFY_URL/services/{service_id}/envs" \
@@ -116,6 +128,7 @@ curl -X POST "$COOLIFY_URL/services/{service_id}/envs" \
 ```
 
 ### Restart Service
+
 ```bash
 # CONFIRMATION REQUIRED
 curl -X POST "$COOLIFY_URL/services/{service_id}/restart" \
@@ -123,6 +136,7 @@ curl -X POST "$COOLIFY_URL/services/{service_id}/restart" \
 ```
 
 ### Deploy New Service
+
 ```bash
 # CONFIRMATION REQUIRED — always ask first
 curl -X POST "$COOLIFY_URL/services" \
@@ -137,6 +151,7 @@ curl -X POST "$COOLIFY_URL/services" \
 ```
 
 ### Check Service Health
+
 ```bash
 curl -s "$COOLIFY_URL/services/{service_id}" \
   -H "Authorization: Bearer $COOLIFY_TOKEN" | jq '.status'
@@ -167,6 +182,7 @@ curl -s "$COOLIFY_URL/services/{service_id}" \
 ## Docker Compose Patterns
 
 ### Simple Service
+
 ```yaml
 version: "3"
 services:
@@ -185,6 +201,7 @@ volumes:
 ```
 
 ### Service with PostgreSQL
+
 ```yaml
 version: "3"
 services:
@@ -210,12 +227,14 @@ volumes:
 ## Disaster Recovery for Self-Hosted Services
 
 ### Backup Strategy
+
 - Coolify auto-backs up configurations
 - PostgreSQL databases — `pg_dump` via cron to R2
 - Volumes — periodic tar to R2
 - Environment variables — exported and stored encrypted
 
 ### Recovery
+
 ```bash
 # 1. Restore Coolify from backup
 # 2. Re-deploy services from docker-compose configs
@@ -238,6 +257,7 @@ See `08/backup-and-disaster-recovery` for the full single-zip restore plan.
 | API timeout | Coolify may be overloaded; check Proxmox CPU/RAM |
 
 ## What This Skill Owns
+
 - Coolify API interaction
 - Docker service deployment and management
 - Self-hosted service orchestration

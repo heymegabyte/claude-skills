@@ -7,6 +7,7 @@ R2 buckets accumulate stale deploy artifacts (Angular chunks, source-map files, 
 ## Inventory (***THREE CANONICAL PATHS — PICK FIRST AVAILABLE***)
 
 ### (A) S3-compat CLI — preferred
+
 When `aws-cli` or `rclone` installed. Set `~/.aws/credentials [r2]` profile with R2 access-key-id + secret from CF dashboard r2 API tokens page.
 
 ```bash
@@ -15,6 +16,7 @@ aws s3 ls "s3://project-sites-production/marketing/" --recursive \
 ```
 
 ### (B) REST list — works with GLOBAL KEY, no install
+
 Cursor pagination in 6 lines of bash.
 
 ```bash
@@ -34,6 +36,7 @@ echo "]" >> /tmp/r2-marketing.json
 ```
 
 ### (C) Quick key-only inventory (no metadata)
+
 ```bash
 ACCOUNT=84fa0d1b16ff8086dd958c468ce7fd59 BUCKET=project-sites-production PREFIX=marketing/
 CURSOR=""; > /tmp/r2-keys.txt
@@ -48,6 +51,7 @@ wc -l /tmp/r2-keys.txt
 ```
 
 ### Common prefixes in `project-sites-production`
+
 - `sites/<slug>/` — client data, PRESERVE
 - `marketing/` — homepage assets
 - `templates/<category>/`
@@ -57,6 +61,7 @@ wc -l /tmp/r2-keys.txt
 - `test/` — probes
 
 ## Stale-asset classification (***Angular/Vite hash-named chunks accumulate fastest***)
+
 ```bash
 # Identify hash-named build artifacts: chunk-ABC123.js, main-XYZ456.js, polyfills-DEF.js
 grep -E "/(chunk|main|polyfills)-[A-Z0-9]+\.js$" /tmp/r2-keys.txt > /tmp/stale-chunks.txt
@@ -70,6 +75,7 @@ comm -23 <(sort /tmp/stale-chunks.txt) <(sort /tmp/live-refs.txt) > /tmp/r2-dele
 ```
 
 ## Batch delete (***ONLY AFTER USER CONFIRMATION on production buckets***)
+
 ```bash
 # Dry-run first
 wc -l /tmp/r2-delete.txt # confirm count matches expectation
@@ -82,6 +88,7 @@ xargs -I{} -P 4 npx wrangler r2 object delete "<bucket>/{}" --remote < /tmp/r2-d
 ```
 
 ## Lifecycle policy (***SHIP WITH EVERY NEW BUCKET***)
+
 Cloudflare R2 supports object lifecycle rules via `wrangler r2 bucket lifecycle`. Apply at bucket creation:
 
 ```bash
@@ -95,11 +102,13 @@ npx wrangler r2 bucket lifecycle add <bucket> --prefix templates/ --age-days 60 
 Without lifecycle rules every deploy is a permanent cost. **Verify with** `npx wrangler r2 bucket lifecycle list <bucket> --remote`.
 
 ## Prevention (***BUILD-CONFIG CHANGES***)
+
 - Vite / Angular `outDir` should write to a versioned subdirectory (`marketing/v<commit-sha>/`), with the worker resolving `marketing/index.html` → latest version. Old versions become trivially purgeable by directory.
 - Worker upload script (`scripts/deploy-r2.mjs`) MUST delete old artifacts before uploading new ones — never just `--no-prefix` upload that accumulates.
 - Per `~/.claude/rules/builtin-tools-first.md` — probe `wrangler <subcommand> --help` before citing — wrangler v4 r2 object has no `list`. REST endpoint or `aws s3 ls --endpoint-url` are the real list paths.
 
 ## See Also
+
 - `~/.claude/rules/builtin-tools-first.md` (universal vendor-CLI-first rule)
 - `~/.agentskills/08-deploy-and-runtime-verification/SKILL.md` (deploy gate)
 - `migrations/_applied.md` (wrangler global-key rejection on D1 migrations only — does NOT extend to R2)

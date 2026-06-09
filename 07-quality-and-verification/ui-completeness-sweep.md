@@ -8,20 +8,24 @@ related: visual-inspection-loop.md (3-round per-page vision), completeness-verif
 # UI Completeness Sweep (***MANDATORY BEFORE DONE***)
 
 ## Why This Exists
+
 AI builds 90% of a feature then declares done. The last 10% — empty states, error handling, loading skeletons, disabled buttons, placeholder text — is what users actually see. This sweep catches everything the AI skipped.
 
 ## The Sweep (Playwright + GPT-4o)
 
 ### Phase 1: Static Code Scan (fast, catches obvious)
+
 ```bash
 # Run BEFORE visual sweep — catches what's in the code but not rendered
 grep -rn --include="*.ts" --include="*.tsx" --include="*.html" --include="*.js" \
   -iE "coming soon|todo|fixme|placeholder|lorem|not implemented|stub|mock data|fake|dummy|sample|example\.com|TBD|WIP|hack|temp|untitled" \
   src/ | grep -v node_modules | grep -v ".spec." | grep -v ".test."
 ```
+
 ANY match = not done. Fix every one.
 
 ### Phase 2: Playwright Interactive Sweep
+
 ```typescript
 // Navigate every route as a real user would
 // For EACH page:
@@ -81,8 +85,10 @@ for (const img of await page.locator('img').all()) {
 ```
 
 ### Phase 3: GPT-4o Vision Analysis
+
 For each screenshot, ask GPT-4o:
 > "You are a QA engineer reviewing a deployed SaaS product. Look at this screenshot and identify:
+>
 > 1. Any UI element that looks unfinished, placeholder, or broken
 > 2. Any button/link that appears non-functional (grayed out, no hover state)
 > 3. Any section that looks empty or missing content
@@ -95,6 +101,7 @@ For each screenshot, ask GPT-4o:
 > Rate completeness 0-10. List every finding with exact location. 10 = ship it. Below 8 = not done."
 
 ### Phase 4: Fix Loop
+
 ```
 findings = sweep()  // a11y tree + axe-core first (FREE), GPT-4o detail:low 2bp only for aesthetics
 while findings.length > 0 AND round < 3:
@@ -107,6 +114,7 @@ while findings.length > 0 AND round < 3:
 ```
 
 ## What Specifically to Catch
+
 - **Disabled buttons** (UI) → implement the handler or remove the button
 - **"Coming soon" text** (anywhere) → build the feature or remove the section
 - **Empty arrays rendering blank** (lists, tables, feeds) → add empty state with CTA
@@ -122,6 +130,7 @@ while findings.length > 0 AND round < 3:
 - **Missing OG image** (social sharing) → generate 1200×630 preview image
 
 ## Integration Points
+
 - `completeness-checker` agent runs this sweep
 - `visual-qa` agent runs the GPT-4o analysis
 - `deploy-verifier` agent runs post-deploy checks

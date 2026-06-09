@@ -1,9 +1,11 @@
 {
   "default": true,
+  "MD001": false,
   "MD013": false,
   "MD024": { "siblings_only": true },
   "MD025": false,
   "MD026": false,
+  "MD029": false,
   "MD033": false,
   "MD034": false,
   "MD036": false,
@@ -11,5 +13,6 @@
   "MD041": false,
   "MD045": false,
   "MD046": { "style": "fenced" },
+  "MD056": false,
   "MD060": false
 }

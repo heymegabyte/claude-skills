@@ -19,6 +19,7 @@ Migrated from `~/.claude/rules/always.md` 2026-05-03.
 ## Every stat block
 
 `150+ Publications`, `30+ Years`, `$2.4M raised`:
+
 - IntersectionObserver + rAF roll-in counter ≤1.6s ease-out
 - Respects `prefers-reduced-motion`
 - `+` / `%` / `x` suffix renders OUTSIDE animated digit node
@@ -26,6 +27,7 @@ Migrated from `~/.claude/rules/always.md` 2026-05-03.
 ## Every site (interactive 2 — 4 distinct states + universal underline-hover)
 
 All 4 distinct + animated states required per button/link/input/tile:
+
 - `:active`
 - `:hover`
 - `:focus`
@@ -44,6 +46,7 @@ Auto-apply selectors set `text-decoration: none !important` + `position: relativ
 The `::after` uses `background: currentColor` (NEVER a hardcoded brand var) so the sweep matches the link's text color in any context — light hero text → light sweep; dark body text → dark sweep.
 
 Pattern:
+
 ```css
 .underline-hover, .blog-paragraph a, main p a:not([class*="btn-"]):not([data-no-underline]):not(:has(img)):not(:has(svg)) {
   position:relative;
@@ -70,6 +73,7 @@ Tailwind `underline` class on the anchor remains harmless (overridden); existing
 Desktop-only (`(min-width:768px) and (pointer:fine)` AND NOT `prefers-reduced-motion: reduce`).
 
 ### Rules
+
 - **NEVER** hide native cursor — keep system cursor visible at all times
 - **NO** cursor-ring/follower/dot/halo (Brian removed 2026-05-02 — felt clingy, hurt accessibility, fought OS cursor themes)
 - `mousedown` spawns `<span class="cursor-ripple">` at click coords:
@@ -93,6 +97,7 @@ Build gate `validate-cursor.mjs` (skill 15): assert NO `.cursor-ring` element ev
 `<img>` / `<picture>` / `<svg>` `:hover` / `:focus` MUST NOT mutate `border | outline | padding | margin | width | height | border-width | inset | top | left | right | bottom`.
 
 ### Allowed
+
 - `transform` (scale/translate)
 - `filter` (brightness/saturate/blur)
 - `box-shadow` (incl. `inset 0 0 0 2px var(--brand-accent)` for "border on hover" without reflow)
@@ -109,7 +114,9 @@ Card components (project tiles, blog cards, team cards, service cards, pricing c
 **Root cause** — setting hover transitions on `background-color` or `box-shadow` without specifying the FROM-state explicitly — browser interpolates from `initial` (transparent/none) to target, producing a white flash.
 
 ### Required pattern
+
 Explicitly set the rest-state value on the base selector:
+
 ```css
 .card {
   background-color: var(--card-bg);
@@ -139,6 +146,7 @@ View Transitions API cross-fade 220ms ease-out, `html{background-color:var(--bg-
 Every generated site MUST implement ≥3 advanced browser APIs that provide genuine interactive value — not gimmicks. The bar: each API must serve a real user need OR create a moment of delight that reinforces brand quality.
 
 ### Mandatory baseline (all sites)
+
 1. **Web Audio API** — at minimum, UI feedback sounds on primary CTA interactions
    - Button click: subtle synthetic "confirm" tone 80ms, 220Hz → 440Hz
    - Hover: gentle 20ms brush at 880Hz, 0.02 gain
@@ -150,6 +158,7 @@ Every generated site MUST implement ≥3 advanced browser APIs that provide genu
 3. **Pointer Events API** — replace all `mouseenter` / `mouseleave` with `pointerenter` / `pointerleave` (works with touch, pen, mouse); for card tilt effect on `pointermove`: `transform: perspective(800px) rotateX(${-y*6}deg) rotateY(${x*6}deg)` where `x/y` are pointer offsets normalized to `[-1,1]` within the card — disable when `prefers-reduced-motion`
 
 ### Required 4th API choice (pick by site type)
+
 - **WebGL/Three.js** — tech/SaaS — hero particle field or isometric 3D icon render (Three.js instanced mesh, 2000 particles, `requestAnimationFrame` ticker, GPU-composited, never blocks main thread)
 - **Web Speech API** — service businesses — "Press / to search" command prompt on desktop that accepts voice search query (graceful degradation when API unavailable)
 - **Vibration API** — mobile-local-business — gentle 40ms pulse on booking confirmation, 10ms on nav tap, 0ms on error
@@ -162,6 +171,7 @@ Validator (`validate-advanced-apis.mjs`): grep dist/ JS bundle for at minimum `A
 ## Every entrance animation (***DURATION CAP 600ms + TRANSFORM/OPACITY ONLY — UNIVERSAL — BUILD-BREAKING***)
 
 All entrance/exit/reveal animations MUST:
+
 - (a) Complete within 600ms total (no 1.2s+ "atmospheric" fades — users wait, conversions drop)
 - (b) Animate ONLY `transform` and `opacity` (GPU-composited, no layout reflow); NEVER animate `height`, `margin`, `padding`, `font-size`, `width`, `left`, `top`, `right`, `bottom` (all trigger reflow = jank)
 
@@ -178,14 +188,17 @@ Build gate `validate-animation-timing.mjs`: parse dist/ CSS for `@keyframes` + `
 All web fonts MUST use `font-display: swap` in `@font-face` declarations to prevent invisible text (FOIT).
 
 ### Required
+
 - `<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/{primary}.woff2">` in `<head>` for primary display + body fonts before any `<link rel="stylesheet">`
 - **Google Fonts** — embed via `?display=swap` param
 - Fallback fonts in `font-family` stack MUST use metric-adjusted system fonts (CSS `size-adjust` + `ascent-override` + `descent-override` + `line-gap-override`) to minimize FOUT layout shift
 
 Example:
+
 ```css
 @font-face { font-family: 'Inter-Fallback'; src: local('Arial'); size-adjust: 100.06%; ascent-override: 90%; descent-override: 22%; line-gap-override: 0%; }
 ```
+
 Then `font-family: 'Inter', 'Inter-Fallback', sans-serif`.
 
 Build gate: Lighthouse `font-display: optional|swap` audit — any FOIT-causing font = fail; CLS from font-swap must be <0.05.
@@ -195,17 +208,21 @@ Build gate: Lighthouse `font-display: optional|swap` audit — any FOIT-causing 
 Every module (text block, title, image card, video, multimedia, section) MUST fadeIn ONCE when entering viewport (IntersectionObserver + animate.css `animate__fadeInUp animate__faster`, single trigger).
 
 ### Anti-FOUC
+
 Text MUST start at `opacity:0` (`@starting-style` OR `.reveal-init { opacity: 0; transform: translateY(20px) }`) until JS attaches the observer — NEVER allow text to flash visible then jump to animated state.
 
 ### Pattern
+
 INLINE `<script>` in `<head>` (BEFORE any CSS `<link>`) adds `js-reveal-active` class to `<html>` — this MUST be the very first script, inlined (not external), blocking (not defer/async), so the class is present before the browser paints the first pixel.
 
 CSS rule `html.js-reveal-active .reveal:not(.is-visible) { opacity: 0; transform: translateY(20px) }`, JS toggles `.is-visible` on `entry.isIntersecting`.
 
 ### Reduced motion
+
 `prefers-reduced-motion: reduce` users MUST see ALL content at `opacity: 1` immediately — the JS observer MUST check `matchMedia('(prefers-reduced-motion: reduce)').matches` and if true, call `el.classList.add('is-visible')` synchronously on ALL reveal elements on DOMContentLoaded — NEVER leave content hidden for reduced-motion users.
 
 ### Safety timeout fallback
+
 After 1500ms, if ANY `.reveal:not(.is-visible)` element still exists in DOM, auto-add `is-visible` to ALL (catches IntersectionObserver failures, SSR, noJS).
 
 Validator: post-deploy E2E screenshots at t=0, t=200ms, t=2s — assert no text element has opacity <0.1 after 2s; assert no CLS spike between frames.
@@ -213,21 +230,25 @@ Validator: post-deploy E2E screenshots at t=0, t=200ms, t=2s — assert no text 
 ## Every `<img>` (***LAZY LOADING + DIMENSIONS + FETCHPRIORITY — UNIVERSAL — BUILD-BREAKING***)
 
 Every `<img>` element in dist/ output MUST have:
+
 - (a) `width` and `height` attributes set to the image's natural dimensions (prevents CLS — browser reserves space before image loads; intrinsic size expressed in px, aspect ratio derived)
 - (b) `loading="lazy"` on every image NOT in the above-the-fold viewport (ATF = first 100vh of each route)
 - (c) ATF images get `loading="eager" fetchpriority="high"` — NEVER `loading="lazy"` on the hero/above-fold image (lazy hero = high LCP, Core Web Vitals fail)
 - (d) `decoding="async"` on all non-hero images (offloads decode to background thread)
 
 ### Required `<img>` shape
+
 - **Hero** — `<img src="/assets/hero.webp" width="1920" height="1080" loading="eager" fetchpriority="high" decoding="sync" alt="…">`
 - **Card** — `<img src="/assets/card.webp" width="800" height="600" loading="lazy" decoding="async" alt="…">`
 
 WebP as primary format with `<picture>` AVIF source:
+
 ```html
 <picture><source type="image/avif" srcset="…"><img …></picture>
 ```
 
 Every hero has `srcset` at 640/1280/1920:
+
 ```html
 srcset="/assets/hero-640.webp 640w, /assets/hero-1280.webp 1280w, /assets/hero-1920.webp 1920w" sizes="100vw"
 ```
@@ -239,6 +260,7 @@ Validator (`validate-img-attributes.mjs`): grep dist/ HTML — any `<img>` witho
 Every `<video>` used as a background/hero loop MUST have exactly: `autoplay muted loop playsinline preload="metadata"` — all five attributes.
 
 ### Explanation
+
 - `autoplay` without `muted` is blocked by browsers
 - `muted` enables autoplay
 - `loop` for continuous background loop
@@ -252,14 +274,18 @@ Every `<video>` used as a background/hero loop MUST have exactly: `autoplay mute
 `<video>` element MUST have `aria-hidden="true"` when purely decorative (background loop).
 
 ### Reduced motion
+
 When `prefers-reduced-motion: reduce`, pause via JS:
+
 ```js
 const mql = matchMedia("(prefers-reduced-motion: reduce)");
 if (mql.matches) video.pause()
 ```
 
 ### Source
+
 MUST be self-hosted in R2 as `.mp4` (H.264 baseline, ≤8MB for hero loops) + `.webm` (VP9) for browser choice:
+
 ```html
 <source src="/assets/hero.webm" type="video/webm">
 <source src="/assets/hero.mp4" type="video/mp4">
@@ -272,6 +298,7 @@ Validator (`validate-video-attributes.mjs`): every `<video>` in dist/ — assert
 Every external `<script src>` tag in the HTML `<head>` MUST use `defer` or `async` — no render-blocking scripts.
 
 ### Rules
+
 - `defer` for scripts that need DOM-ready and need to run in order (analytics, tag managers)
 - `async` for fully independent scripts (chat widgets, conversion pixels)
 - **Google Tag Manager** — `<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXXXX">`
@@ -280,6 +307,7 @@ Every external `<script src>` tag in the HTML `<head>` MUST use `defer` or `asyn
 - First-party `<script>` with `type="module"` also deferred by default
 
 ### EXCEPTION
+
 The anti-FOUC inline script `<script>…</script>` (no src) MUST remain synchronous and blocking — it needs to run before first paint (per "Every site anti-FOUC" rule). All other inline scripts that reference DOM MUST move to `DOMContentLoaded` listener.
 
 Build gate: grep dist/ HTML for `<script src=` without `defer` or `async` or `type="module"` — any match outside the FOUC whitelist = fail.
@@ -291,11 +319,13 @@ Validator (`validate-script-defer.mjs`): parse dist/index.html head — assert e
 Every page's above-the-fold (ATF) CSS MUST be inlined in `<style>` within `<head>` before any `<link rel="stylesheet">` — max 14KB compressed (browser render budget for inline styles without blocking paint).
 
 ### Implementation
+
 Build step runs `critical` npm package (or `penthouse`) against each route URL to extract ATF CSS → inlines it in `<style id="critical-css">`.
 
 Full stylesheet `<link rel="stylesheet">` gets `media="print" onload="this.media='all'"` (non-render-blocking load pattern) + `<noscript><link rel="stylesheet" href="/styles.css"></noscript>` fallback.
 
 ### Critical CSS must include
+
 - `body`, `html`
 - Typography base (`font-family`, `font-size`, `line-height`)
 - Nav background
@@ -316,6 +346,7 @@ Every site MUST use the native View Transitions API (`document.startViewTransiti
 Per-route opt-in via `<meta name="view-transition" content="same-origin">` + `@view-transition { navigation: auto }` CSS.
 
 ### Required treatments
+
 - Cross-fade for unrelated routes (default)
 - Shared-element morph for hero → detail pages (`view-transition-name: hero-<slug>` on both source + destination images)
 - Slide-from-right for forward nav
@@ -332,6 +363,7 @@ Reference: prompt-improvements brainstorm rec #35 (2026-05-10) — View Transiti
 Every site MUST use CSS-native `animation-timeline: view()` AND `animation-timeline: scroll()` for scroll-progress bars, parallax sections, sticky hero zoom-outs, and section reveals — NOT JavaScript-driven IntersectionObserver where CSS suffices.
 
 JS-driven scroll animations are permitted ONLY for:
+
 - (a) Audio-reactive heroes
 - (b) WebGL particle fields
 - (c) Interactive scrubbers requiring exact position
@@ -347,6 +379,7 @@ Reference: prompt-improvements brainstorm rec #36 (2026-05-10) — Chrome 115+, 
 Every component CSS MUST use `@scope` syntax to isolate selectors to component subtree — prevents CSS leakage without Shadow DOM overhead.
 
 Pattern:
+
 ```css
 @scope (.card) to (.card-content > *) {
   h2 { ... }
@@ -373,10 +406,12 @@ Reference: prompt-improvements brainstorm rec #38 (2026-05-10) — Chrome 114+, 
 ## Every site (***LATEST-TECH FLEX #5 — SPECULATION RULES API — UNIVERSAL — BUILD-BREAKING — instant nav prefetch***)
 
 Every site MUST ship a Speculation Rules block in `<head>` prefetching/prerendering likely-next navigation targets:
+
 - Nav links + hero CTA destinations get `prerender` (full pre-execution)
 - Footer links + body links get `prefetch` (resources only)
 
 Pattern:
+
 ```html
 <script type="speculationrules">
 {
@@ -397,6 +432,7 @@ Reference: prompt-improvements brainstorm rec #39 (2026-05-10) — Chrome 121+.
 Every site SHOULD use HTML invoker commands (`command="show-modal"` / `command="hide-popover"` / `command="show-picker"`) on buttons targeting Popover/Dialog/Picker elements — declarative replacement for JS event handlers.
 
 Pattern:
+
 ```html
 <button commandfor="filter-modal" command="show-modal">Filter</button>
 ```

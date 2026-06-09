@@ -11,6 +11,7 @@ After all copy is generated (hero, body, blog, FAQ, microcopy, legal), run `gram
 ## Mandate (NON-NEGOTIABLE)
 
 ### Fix
+
 - Typos
 - Spelling
 - Subject-verb agreement
@@ -31,6 +32,7 @@ After all copy is generated (hero, body, blog, FAQ, microcopy, legal), run `gram
 - affect vs effect
 
 ### NEVER
+
 - Rewrite for style
 - Shorten
 - Lengthen
@@ -43,6 +45,7 @@ After all copy is generated (hero, body, blog, FAQ, microcopy, legal), run `gram
 - Translate idioms
 
 ## Output Shape
+
 ```json
 {
   "edits": [
@@ -55,6 +58,7 @@ After all copy is generated (hero, body, blog, FAQ, microcopy, legal), run `gram
 Apply edits in-place via `Edit` tool calls. Idempotent — re-running on already-corrected copy produces empty `edits[]`.
 
 ## Run Conditions
+
 1. After `clean_content` blog import (skill 15) and after `enhance-blog-posts.mjs`
 2. After main page copy generation (homepage, about, services, contact, FAQ)
 3. After legal page copy (privacy, terms, accessibility, cookies)
@@ -62,12 +66,14 @@ Apply edits in-place via `Edit` tool calls. Idempotent — re-running on already
 5. Re-run on demand via `node scripts/grammar-audit.mjs --only=<file>`
 
 ## Concurrency + Cost
+
 - GPT-4o-mini at ~$0.15/1M input + $0.60/1M output
 - Per site — ~50K input tokens (all copy concatenated) + ~5K output (diff only) = ~$0.01/site
 - Concurrency 5-8 against the API
 - CLI — `--only=path`, `--limit=N`, `--dry-run`
 
 ## Scope Boundaries (***WHAT IT NEVER TOUCHES***)
+
 - Direct quotes (preserve verbatim — author voice)
 - Named-entity spelling (verified against `_research.json`)
 - Brand names
@@ -81,12 +87,15 @@ Apply edits in-place via `Edit` tool calls. Idempotent — re-running on already
 - Proper nouns flagged in `_research.json.entities[]`
 
 ## Hard Gate
+
 After grammar pass — re-run `gate` script. If grammar pass introduced any error caught by other gates (link 404, citation regex match, banned-word match), revert that specific edit and flag in `audit_logs`. Grammar pass is corrective — it never breaks other gates.
 
 ## Voice Preservation
+
 Author voice is sacred. Never normalize "ain't" → "is not" if voice is colloquial. Never remove rhetorical fragments. Never add "that" when omitted intentionally ("She knew [that] he'd come."). The audit asks — "Did the author intend this?" → if yes, leave alone.
 
 ## Reference Anchors
+
 - Strunk & White (1959) for clarity baseline
 - Chicago Manual of Style 17th ed for capitalization / comma
 - APA 7th for academic citations

@@ -184,6 +184,7 @@ async function createCampaign(env: Env, opts: {
 ## Webhook Integration (Listmonk → Hono)
 
 Listmonk webhook events:
+
 - `subscriber.created`, `subscriber.modified`, `subscriber.deleted`
 - `campaign.sent`, `campaign.updated`
 

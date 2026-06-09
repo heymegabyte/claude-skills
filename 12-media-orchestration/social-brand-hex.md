@@ -81,6 +81,7 @@ Every social icon link has descriptive aria-label including platform AND busines
 ## Build Gate
 
 `validate-social-brand-hex.mjs` — for every `<a>` matching `[class*="social-link--"]`, assert:
+
 - `--social-brand-hex` CSS var resolves to a hex matching `SOCIAL_BRAND_HEX[platform]`
 - Hover transition declared
 - `focus-visible` state distinct from default

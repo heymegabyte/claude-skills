@@ -171,6 +171,7 @@ Brand-voice microcopy for every UI surface. Flesch≥60, active voice, no "pleas
 ```
 
 ## Usage Rules
+
 1. **Never use generic framework defaults** — every user-facing string must come from this dictionary or match its tone
 2. **Contractions always** — "You're" not "You are", "It's" not "It is", "Can't" not "Cannot"
 3. **No "please"** — direct without being rude. "Enter your email" not "Please enter your email."
@@ -181,6 +182,7 @@ Brand-voice microcopy for every UI surface. Flesch≥60, active voice, no "pleas
 8. **Test readability** — if you'd cringe reading it aloud, rewrite it
 
 ## Implementation Pattern
+
 ```typescript
 // src/lib/microcopy.ts
 const copy = {
@@ -208,6 +210,7 @@ export { copy, t };
 ```
 
 ## Angular Integration
+
 ```typescript
 // In components, use the t() function directly:
 import { t } from '../lib/microcopy';

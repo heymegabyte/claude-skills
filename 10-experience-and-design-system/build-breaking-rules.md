@@ -19,6 +19,7 @@ Migrated from `~/.claude/rules/always.md` 2026-05-03.
 ## Every clickable card/tile (***UNIVERSAL — supersedes "tile-as-link" partial***)
 
 Every card/tile (publication, person, service, project, product, blog) that ENTIRELY links to ONE deep target MUST:
+
 - (a) Wrap the entire surface in `<a href>` (or `role="link" tabindex=0` with onClick)
 - (b) `cursor: pointer` on the whole tile (NOT just inner button)
 - (c) Hover lift `transform: translateY(-3px)` + accent border glow
@@ -37,6 +38,7 @@ Build gate: research pipeline annotates each card item with `deeplink_url` in `_
 When a section/page contains ≥2 lightbox-eligible images on the SAME topic (gallery, services, team, portfolio, blog hero set, before/after, location grid), ALL images MUST share ONE `data-gallery="<section-slug>"` ID — never split same-section images across multiple lightbox groups.
 
 Captions: every image carries a meaningful caption (title + 1-line description + optional credit) shipped IN BOTH:
+
 - The section UI (visible card overlay or below-image figcaption)
 - The lightbox modal (visible bottom strip + screen-reader announcement via `aria-describedby`)
 
@@ -62,6 +64,7 @@ Supersedes "Every interactive feature" for blog-specific surfaces.
 Every page that lists ≥2 posts/articles/case-studies/projects/products MUST ship working category filter + tag filter + free-text search + sort-by-date AND each filter MUST be wired to real corpus data, NOT decorative.
 
 ### Required behaviors
+
 1. **Category click** — filters `[data-post-card]` to that category only AND updates URL `?category=<slug>` AND updates `aria-pressed=true` on active chip AND updates "Showing N of M posts" counter AND deep-link-on-load reads `?category=<slug>` and pre-applies filter
 2. **Tag click** — same as category but with `?tag=<slug>` (multi-tag = comma-separated)
 3. **Free-text `[data-search]` input** — filters by title + excerpt + tags (case-insensitive substring) within 150ms debounce, updates URL `?q=<term>`
@@ -72,6 +75,7 @@ Every page that lists ≥2 posts/articles/case-studies/projects/products MUST sh
 Implementation MUST be client-side state (signals/useState) reading from a single `posts: Post[]` array — NEVER server round-trip per filter (slow + breaks SPA navigation). Categories + tags rendered MUST be the actual unique values from `posts.flatMap(p => p.categories)` deduped — NEVER hand-authored chip lists that drift from corpus.
 
 Validator (`validate-blog-filters.mjs`): for every route matching `/blog|/news|/articles|/posts|/press|/portfolio|/projects|/case-studies|/insights|/stories`, Playwright:
+
 - (a) Counts posts before filter
 - (b) Clicks each category chip in turn
 - (c) Asserts post count after click is `<` initial count AND `>` 0 (assuming ≥2 categories exist)
@@ -88,6 +92,7 @@ FAIL any step where state-after === state-before OR URL doesn't sync OR pre-appl
 - **Active/selected state** — **INVERTED** (filled accent bg, bg-color text — fg/bg swap), NEVER a different accent color
 
 Pattern:
+
 ```css
 .chip { color: var(--brand-accent); border: 1px solid var(--brand-accent); background: transparent }
 .chip[aria-pressed="true"], .chip.is-active { color: var(--bg-primary); background: var(--brand-accent); border-color: var(--brand-accent) }
@@ -113,16 +118,19 @@ Validator (`validate-mega-menu-hover.mjs`): Playwright desktop run hovers trigge
 `cursor: pointer` MUST appear on AND ONLY ON elements that actually do something on click. Hovering a non-clickable element with the pointer cursor = lying to the user about interactivity.
 
 ### Forbidden
+
 - Decorative cards with `cursor: pointer` but no onclick/href
 - Stat-counter blocks with pointer cursor
 - Hero illustrations with pointer cursor
 - Plain `<p>`/`<div>` text blocks with pointer cursor inherited from a parent
 
 ### Required
+
 - Every `<a href>` / `<button>` / `<role=button>` / element with attached onClick handler GETS `cursor: pointer`
 - Every element WITHOUT click behavior gets `cursor: default` (or unset, inheriting body default)
 
 ### Edge cases
+
 - Text input/textarea/select — use `cursor: text`/`cursor: pointer` natively; don't override
 - Drag handles — `cursor: grab` → `cursor: grabbing`
 
@@ -133,6 +141,7 @@ Validator (`validate-pointer-cursor-honesty.mjs`): Playwright at 6bp samples com
 When lightbox modal closes (Esc key, X button, backdrop click, swipe-down on touch), the underlying page scroll position MUST snap back to the EXACT scrollY where the user was when they opened the lightbox — never reset to 0, never jump to top, never lose the scroll context.
 
 ### Implementation
+
 - **On lightbox open** — capture `const restoreY = window.scrollY` AND apply `document.body.style.cssText = 'position: fixed; top: -' + restoreY + 'px; left: 0; right: 0; overflow-y: scroll'` (the `overflow-y: scroll` prevents scrollbar layout shift on platforms with persistent scrollbars)
 - **On close** — `document.body.style.cssText = ''` THEN `window.scrollTo({ top: restoreY, behavior: 'instant' })` — instant, NOT smooth (smooth feels broken when returning from a modal)
 
@@ -145,6 +154,7 @@ Validator (`validate-modal-scroll-preservation.mjs`): Playwright opens lightbox/
 Cards/blocks with collapsed-by-default text + "More details" / "Read more" / "Show full" / "Expand" toggle MUST render the FULL expanded content visibly within the card's expanded box — never crop, never truncate after expand, never require the user to scroll within the card.
 
 ### Implementation
+
 - **Collapsed state** — `max-height: <N>px; overflow: hidden; mask-image: linear-gradient(180deg, #000 70%, transparent 100%)` (fade-out mask makes the truncation feel intentional)
 - **Expanded state** — `max-height: none; overflow: visible; mask-image: none` — let the card grow to fit
 - **NEVER** — expanded state with `max-height: 600px; overflow-y: scroll` (creates double-scroll UX, content hidden behind inner scrollbar)
@@ -157,6 +167,7 @@ Validator (`validate-expandable-card-no-crop.mjs`): Playwright clicks every `[da
 Every `<input type="search">` / `<input data-search>` MUST render at minimum 50 visible characters (`min-width: clamp(20rem, 60vw, 40rem)`) on viewports ≥768px. On viewports <768px the search input MUST stack to full width (`width: 100%`) below adjacent filter chips/sort controls — never crammed into a 200px sliver beside chips.
 
 ### Pattern
+
 - Filter chips in a flex-wrap container with `gap: 0.5rem`
 - Search input as a separate row with `width: clamp(20rem, 100%, 40rem)` and `font-size: 1rem` (≥16px on iOS to prevent input zoom)
 - Search results dropdown/inline-filter MUST be at least as wide as the input
@@ -168,6 +179,7 @@ Validator (`validate-search-input-width.mjs`): Playwright at 1280px samples `[ty
 Site shells MUST distinguish between text-content sections (constrained `max-width: 65ch / 1100px / clamp(min, content, 1280px)` with side gutters) and visual-impact sections (hero, image gallery, full-bleed video, immersive section dividers, comparison-table, data-grid) which MUST break out to full viewport width (`100vw`, edge-to-edge, no side gutters, ignoring parent container padding).
 
 ### Implementation
+
 - Outer `<main>` has `padding-inline: clamp(1rem, 4vw, 3rem)`
 - Full-bleed sections use `margin-inline: calc(50% - 50vw); padding-inline: clamp(1rem, 4vw, 3rem)` to escape parent gutters and re-apply as inner padding — content stays readable but section bg/imagery extends to viewport edges
 - **Hero images** — full-bleed by default
@@ -184,13 +196,16 @@ When a page section renders content that STACKS VERTICALLY (timelines with alter
 Narrow `max-w-3xl` is reserved EXCLUSIVELY for body prose (≤65ch reading line). Anything that's a structured/interactive surface — even on an otherwise prose-heavy page — MUST break out of the prose container.
 
 ### Rationale
+
 - Alternating-card timelines squeezed into a 768px container render as a single column on desktop (defeating the design)
 - Pastor grids in `max-w-3xl` show 2 columns max instead of 4
 - Founding-facts dl shows tiny stat cards
 - Mobile-responsive constraint preserved via standard 1-col stack at `<768px` — widening the desktop container does NOT break mobile
 
 ### Pattern
+
 Structure About/Services/History-style pages as sibling `<section>` elements each with their own `max-w-*` based on content type:
+
 - Prose `<section className="max-w-3xl">`
 - Structured `<section className="max-w-7xl">`
 - Immersive media `<section>` full-bleed
@@ -204,6 +219,7 @@ Validator (`validate-vertical-stack-width.mjs`): Playwright at 1280px finds `[da
 Every generated site at every viewport from 320px through 3840px MUST consume the available screen real-estate — never leave dead margins on ultrawide, never trap cinematic content in narrow prose columns, never crash to a single 600px column on a 1024px tablet.
 
 ### Implementation
+
 - Outer container token scales fluidly `--container: min(1680px, calc(100vw - clamp(1rem, 4vw, 3rem)))`
 - Ultrawide bumps:
   - `@media (min-width: 1920px) { --container: min(1820px, calc(100vw - 4rem)); }`
@@ -213,6 +229,7 @@ Every generated site at every viewport from 320px through 3840px MUST consume th
 - Every section: structured/interactive surfaces (timeline, dossier, stat-rollup, gallery, team grid, comparison table, partner strip, FAQ accordion, content cards) USE FULL CONTAINER WIDTH; only true reading prose stays constrained at `≤78ch`
 
 ### Forbidden patterns
+
 - Hard pixel `max-width: 1120px` on shells when viewport is 2560px (loses 1440px to dead space)
 - Hard `max-width: 640px` on prose blocks within sections meant to feel cinematic
 - `max-width: 960px` on timelines when outer container is already widened
@@ -221,11 +238,13 @@ Every generated site at every viewport from 320px through 3840px MUST consume th
 - Viewport units without `svh/dvh` fallback for mobile chrome
 
 ### Required pattern
+
 Every shell/panel/section uses fluid `min(<cinema-cap>, <viewport-pct>)` so it expands toward the cap on big screens, contracts gracefully on small.
 
 Validator (`validate-real-estate-usage.mjs`): Playwright at 6 breakpoints (375, 768, 1280, 1680, 1920, 2560) screenshots every `<section>`, samples widest content block bounding-rect width vs viewport width — fail if at 1920px+ the widest content block uses <80% of viewport (excluding intentional reading-prose containers tagged `[data-prose]` or `<article class="prose">` which may stay ≤78ch) OR if at 375px any block overflows viewport horizontally (`scrollWidth > clientWidth`) OR if at 1280px the canvas-utilization ratio across ALL non-prose sections averages <75%.
 
 Fail codes:
+
 - `real-estate.dead-margin-ultrawide`
 - `real-estate.cramped-mobile`
 - `real-estate.fixed-pixel-shell`
@@ -236,6 +255,7 @@ Fail codes:
 Every `<img>` element that renders inside a `[data-gallery]` container, `[class*="carousel"]`, `[class*="slider"]`, `[class*="gallery"]`, `.swiper-slide`, `.splide__slide`, `.glide__slide`, or any multi-image grid section MUST open a fullscreen lightbox modal when clicked — no exceptions.
 
 ### Lightbox must
+
 - (a) Render within 300ms of click
 - (b) Show the full-resolution image (not the thumbnail)
 - (c) Display the caption from `data-caption-title` + `data-caption-description`
@@ -249,6 +269,7 @@ Images NOT in a gallery context (inline editorial photos, single hero, logo, ico
 Lightbox eligibility: `kind != logo AND dims >= 200×200 AND inside multi-image parent`.
 
 ### Implementation
+
 Template ships `src/lib/lightbox.ts` — MUST use BOTH DOMContentLoaded AND `MutationObserver` to wire all `[data-gallery] img` elements because React renders images ASYNCHRONOUSLY after DOMContentLoaded fires (root cause of first-image-only bug confirmed 2026-05-06).
 
 ```js
@@ -262,6 +283,7 @@ new MutationObserver(muts => muts.flatMap(m=>[...m.addedNodes]).filter(n=>n.node
 Every `<img>` inside `[data-gallery]` in the static HTML output MUST have `data-zoomable data-caption-title="..." data-caption-description="..."` attributes — NOT added via JS after render. Lazy-loads full-res from `data-full-src` attr (thumbnail in `src`, full-res in `data-full-src`).
 
 ### NEVER
+
 - Clicking a gallery image navigates to a new page instead of opening lightbox
 - Clicking opens lightbox but it's empty/broken
 - Clicking does nothing
@@ -294,6 +316,7 @@ Validator: at 6bp, Playwright samples nav `getBoundingClientRect().top` — asse
 Adjacent sections MUST have visually distinct treatment so users can perceive section boundaries.
 
 ### Allowed alternation strategies (pick ≥1 per section boundary)
+
 - (a) Alternate bg: `var(--bg-primary)` / `var(--bg-secondary)` / accent-tinted band
 - (b) Geometric shape divider (wave, diagonal, angled clip-path) between sections
 - (c) Explicit `border-top 1px solid var(--border-subtle)`
@@ -308,6 +331,7 @@ Validator: for each pair of sibling `<section>` elements, compute their computed
 In any card/tile grid, ALL cards MUST have images or NONE do. Mixed grids (some cards with a hero image, others with empty/placeholder bg) look broken and inconsistent.
 
 When generating cards:
+
 - If ≥50% of items in the corpus have images, ALL cards get images (augment missing ones via DALL-E per-slot prompt)
 - If <50% of items have images, render ALL cards without images (use icon/number/initial avatar as uniform accent)
 
@@ -318,6 +342,7 @@ Validator (`validate-card-image-uniformity.mjs`): for each `[data-card-grid]`, c
 CSS `background-image: url(...)` properties are NEVER lightbox-eligible regardless of size, quality, or context. Only `<img src>` and `<picture><source>` elements are lightbox-eligible.
 
 ### Reasons
+
 - CSS bg images have no natural alt text
 - No semantic meaning
 - Decorative by definition
@@ -334,6 +359,7 @@ Any `<img>` whose nearest ancestor is `<a href="...">` (blog/news/portfolio list
 Lightbox handlers MUST early-return on `img.closest('a[href]')` and skip cursor:zoom-in marking. The ONLY exception: the anchor itself carries `data-lightbox` or `data-gallery` (explicit opt-in for "linked-image-also-zooms" UX, very rare). Cursor: linked images use `cursor: pointer` (default for anchors), not `zoom-in`.
 
 ### Lightbox eligibility check order
+
 1. Reject in header/footer/data-no-zoom/button
 2. Accept if explicit `[data-lightbox]/[data-gallery]` opt-in
 3. Reject if inside `a[href]`
@@ -360,6 +386,7 @@ Section-slug derivation: `kebabCase(section.dataset.section || section.id || h2/
 ## Every image element (***DESCRIPTIVE ALT TEXT — UNIVERSAL — BUILD-BREAKING***)
 
 Every `<img>` must have an `alt` attribute that:
+
 - (a) Is non-empty
 - (b) Does NOT equal `"image"`, `"photo"`, `"picture"`, `"img"`, or the filename
 - (c) Describes the SUBJECT matter in 5-15 words
@@ -377,6 +404,7 @@ Comparison tables (pricing tiers, feature matrices, paperboard-substrate specs, 
 **Mobile (≤768px) reflow pattern** — stack table as cards, each card showing one row with column headers as labels (`<dl>` per row OR CSS `display: contents` + grid with `grid-template-areas`).
 
 Validator (`validate-comparison-table-fullbleed.mjs`): for every `<table data-comparison>` AND every `[data-grid][data-cols≥4]`:
+
 - At 1280px assert table renders full-bleed (width ≥ container 100vw - allowable scrollbar) AND no right column is clipped (rightmost cell `right` ≤ viewport width)
 - At 375px assert table reflows to stacked cards (no horizontal scroll)
 
@@ -391,6 +419,7 @@ Every route whose URL depth is ≥2 (e.g. `/blog/post-slug`, `/team/jane-doe`, `
 ```
 
 Each breadcrumb item:
+
 ```html
 <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
   <a itemprop="item" href="/"><span itemprop="name">Home</span></a>
@@ -407,12 +436,15 @@ Validator (`validate-breadcrumbs.mjs`): for every route with URL depth ≥2, ass
 ## Every site (***SKIP-TO-CONTENT FIRST FOCUSABLE — UNIVERSAL — BUILD-BREAKING — WCAG 2.4.1***)
 
 The FIRST focusable element in every HTML page MUST be:
+
 ```html
 <a href="#main-content" class="skip-link">Skip to main content</a>
 ```
+
 (or the locale-equivalent).
 
 ### CSS pattern
+
 ```css
 .skip-link { position: absolute; top: -60px; left: 0; z-index: 10000; background: var(--brand-accent); color: var(--bg-primary); padding: .5rem 1.5rem; font-weight: 700; border-radius: 0 0 4px 0; transition: top .15s ease }
 .skip-link:focus { top: 0 }
@@ -427,12 +459,15 @@ Fail codes: `a11y.skip_link_missing` | `a11y.skip_link_not_first` | `a11y.skip_t
 ## Every site (***BACK-TO-TOP BUTTON — UNIVERSAL — BUILD-BREAKING***)
 
 Every site with any page whose scrollable content exceeds two viewports MUST include a back-to-top button:
+
 ```html
 <button class="back-to-top" aria-label="Back to top">↑</button>
 ```
+
 Rendered `position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500`.
 
 ### Behavior
+
 - Hidden at `scrollY === 0`
 - Appears with `opacity: 0→1; transform: translateY(8px)→translateY(0)` 200ms ease when `scrollY > 300`
 - Click scrolls to top via `window.scrollTo({ top: 0, behavior: 'smooth' })`
@@ -445,6 +480,7 @@ Validator (`validate-back-to-top.mjs`): Playwright scrolls to `scrollY=1000`, as
 ## Every accordion / collapsible / "Read More" (***SMOOTH HEIGHT + ARIA STATE — UNIVERSAL — BUILD-BREAKING — extends "Every expandable card"***)
 
 Every accordion panel MUST animate height smoothly:
+
 - **Collapsed state** — `max-height: 0; overflow: hidden; opacity: 0`
 - **Expanded state** — JS reads `panel.scrollHeight`, sets `max-height: panel.scrollHeight + 'px'; opacity: 1` with transition `max-height .3s cubic-bezier(.4,0,.2,1), opacity .2s ease`
 - After `transitionend`, set `max-height: none` (prevents cropping on dynamic content resize)
@@ -452,6 +488,7 @@ Every accordion panel MUST animate height smoothly:
 The trigger MUST have `aria-expanded="false"` (collapsed) / `aria-expanded="true"` (expanded) toggled on every click. Panel MUST have matching `aria-hidden="true"/"false"` and `role="region"` + `aria-labelledby="<trigger-id>"`.
 
 ### Keyboard
+
 - `Enter`/`Space` — toggles
 - `Escape` — collapses and returns focus to trigger
 
@@ -462,6 +499,7 @@ Validator (`validate-accordion-aria.mjs`): Playwright clicks every `[aria-expand
 ## Every modal dialog (***FOCUS TRAP + RESTORATION — UNIVERSAL — BUILD-BREAKING — WCAG 2.4.3***)
 
 Every modal/dialog (`role="dialog"`, `role="alertdialog"`, lightbox, mobile menu overlay) MUST:
+
 - (a) Trap Tab cycle inside modal while open — Tab at last focusable returns to first, Shift+Tab at first returns to last
 - (b) On open, move focus to first focusable inside modal OR the dialog element itself (`dialog.focus()`)
 - (c) On close, return focus EXACTLY to the DOM element that triggered the open (store reference: `const trigger = document.activeElement` before opening)
@@ -477,11 +515,13 @@ Fail codes: `a11y.focus_escapes_modal` | `a11y.focus_not_restored`.
 ## Every form (***ASSOCIATED LABELS + AUTOCOMPLETE + LOADING STATE — UNIVERSAL — BUILD-BREAKING***)
 
 Every `<input>`, `<select>`, `<textarea>` MUST:
+
 - (a) Have an explicit `<label for="input-id">` (NEVER placeholder-only — placeholder disappears on focus, fails WCAG 1.3.1)
 - (b) Have appropriate `autocomplete` attribute: `given-name`, `family-name`, `email`, `tel`, `organization`, `street-address`, `postal-code`, `cc-number` etc.
 - (c) Have `aria-required="true"` when required (not just `required` HTML attr — some AT don't announce)
 
 ### Submit button MUST
+
 - Show a spinner + `aria-busy="true"` + `disabled` while the request is in-flight — NEVER allow double-submit
 - **On success** — replace form with a success message that tells the user the next step (`"Thanks, Jane! We'll respond within 24 hours. Check your inbox for a confirmation."`)
 - **On error** — display inline field errors via `aria-describedby` linked to `<span role="alert">` per field, NOT just a generic toast
@@ -493,6 +533,7 @@ Validator (`validate-form-accessibility.mjs`): for every `<form>`, assert every 
 ## Every `<table>` (***CAPTION + SCOPE HEADERS — UNIVERSAL — BUILD-BREAKING***)
 
 Every `<table>` MUST have:
+
 - (a) `<caption>` element as first child (describes what the table shows — visible text, NOT `aria-label` on the table)
 - (b) Column headers as `<th scope="col">` in `<thead><tr>`
 - (c) Row headers (when present) as `<th scope="row">` in each `<tbody><tr>`
@@ -505,6 +546,7 @@ Validator (`validate-table-accessibility.mjs`): grep dist/ for `<table` — asse
 ## Every SVG icon (***ACCESSIBLE LABELING — UNIVERSAL — BUILD-BREAKING***)
 
 Every `<svg>` that conveys meaningful information (not purely decorative) MUST have:
+
 - `role="img"` on the `<svg>` element
 - `<title id="icon-[name]-title">Descriptive text</title>` as first child
 - `aria-labelledby="icon-[name]-title"` on the `<svg>` element
@@ -512,6 +554,7 @@ Every `<svg>` that conveys meaningful information (not purely decorative) MUST h
 Every decorative `<svg>` (used only for visual effect alongside text) MUST have `aria-hidden="true"` AND `focusable="false"` (IE11 compat).
 
 ### Pattern examples
+
 - **Informative** — `<svg role="img" aria-labelledby="icon-email-title"><title id="icon-email-title">Send email</title>…</svg>`
 - **Decorative** — `<svg aria-hidden="true" focusable="false">…</svg>`
 
@@ -524,6 +567,7 @@ Validator (`validate-svg-accessibility.mjs`): for every `<svg>` NOT inside `<but
 Component-level responsive layouts MUST use CSS Container Queries (`container-type: inline-size; @container (min-width: 640px)`) — NOT viewport media queries — for any component that can appear in multiple layout slots (cards, sidebars, modals, asides). Media queries reserved ONLY for global page layout (nav collapse, sidebar drawer trigger).
 
 Pattern:
+
 ```css
 .card { container-type: inline-size; }
 @container (min-width: 400px) { .card-grid { grid-template-columns: 1fr 1fr; } }
@@ -538,6 +582,7 @@ Reference: prompt-improvements brainstorm rec #41 (2026-05-10) — Chrome 105+, 
 Every site MUST use `:has()` parent selector for state-dependent styling instead of JS class-toggling where CSS suffices.
 
 Examples:
+
 ```css
 form:has(input:invalid) .submit-btn { opacity: 0.5 }
 .card:has(img[data-loading="true"]) { background: skeleton-gradient }
@@ -555,6 +600,7 @@ Reference: prompt-improvements brainstorm rec #42 (2026-05-10) — Chrome 105+, 
 Every component that enters the DOM (dialog opening, popover showing, list item adding, route content mounting) MUST use `@starting-style` rule for enter animation — NOT JS-orchestrated requestAnimationFrame double-rAF hack.
 
 Pattern:
+
 ```css
 dialog { opacity: 1; @starting-style { opacity: 0; } }
 ```
@@ -570,6 +616,7 @@ Reference: prompt-improvements brainstorm rec #43 (2026-05-10) — Chrome 117+, 
 Every site MUST set `text-wrap: balance` on ALL headings (h1-h6) AND `text-wrap: pretty` on ALL body paragraphs (p, li, blockquote). Replaces decades of manual `<br>` hacks and JS balance libraries.
 
 CSS layer:
+
 ```css
 @layer base {
   h1,h2,h3,h4,h5,h6 { text-wrap: balance }

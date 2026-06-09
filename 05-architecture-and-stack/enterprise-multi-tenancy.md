@@ -7,11 +7,13 @@ updated: "2026-04-23"
 # Enterprise Multi-Tenancy
 
 ## Tenant Isolation (D1-per-Tenant)
+
 - Each tenant gets its own D1 database
 - Create on signup — `wrangler d1 create tenant-${orgId} --jurisdiction eu`
 - Bind dynamically via `env.DB_${orgId}` or D1 binding per request using org lookup table in shared D1
 
 ### Benefits
+
 - Data isolation by default
 - Per-tenant backup/restore
 - Jurisdiction compliance
@@ -19,17 +21,20 @@ updated: "2026-04-23"
 - Shared D1 for cross-tenant data (plans, features, billing)
 
 ### Migration Strategy
+
 - Run `drizzle-kit push` against each tenant DB on deploy
 - Track schema version in shared DB
 - Batch migrate with `wrangler d1 execute --batch`
 - Rollback — D1 Time Travel per-tenant PIT recovery
 
 ## Authorization (RBAC + ABAC)
+
 - **Clerk Organizations** — built-in org membership, roles (admin/member/viewer), permissions. `auth().orgRole` in middleware.
 - **Complex policies** — Cerbos (policy-as-code, sidecar on CF Container) or OPA (Rego policies, compile to WASM for Workers)
 - **Pattern** — Clerk authenticates → org context → Cerbos/OPA authorizes per-resource
 
 ### Default Roles
+
 - **owner** — full CRUD + billing + member mgmt
 - **admin** — CRUD + member mgmt
 - **member** — CRUD own resources
@@ -38,16 +43,19 @@ updated: "2026-04-23"
 - Custom roles via Clerk Dashboard or API
 
 ### ABAC Attributes
+
 - `org.plan`, `resource.owner`, `user.role`, `request.ip`, `time.hour`
 - Example — "members can edit documents they own, admins can edit all, viewers can only read, free-tier orgs limited to 10 documents"
 
 ## Audit Logging (R2 WORM)
+
 - Every mutating API call — `{ timestamp, actor, orgId, action, resource, before, after, ip, userAgent }`
 - Write to R2 with WORM (Write Once Read Many) lifecycle policy — immutable for compliance
 - Batch via `ctx.waitUntil()` to avoid latency
 - Query via R2 SQL (when GA) or export to BigQuery/ClickHouse
 
 ### Retention
+
 - 7 years financial (SOX)
 - 6 years GDPR
 - Configurable per-tenant
@@ -55,6 +63,7 @@ updated: "2026-04-23"
 - Sentry breadcrumbs for real-time error context
 
 ## SSO/SCIM (Clerk Enterprise Connections)
+
 - **Clerk Enterprise Connections** — SAML/OIDC SSO, SCIM provisioning
 - Per-org SSO config via dashboard or API
 - **SCIM endpoints** — auto-sync user create/update/deactivate from IdP (Okta/Azure AD/OneLogin)
@@ -62,6 +71,7 @@ updated: "2026-04-23"
 - **Enterprise plan gate** — SSO/SCIM features behind `enterprise` plan check via Stripe Entitlements API. Show "Contact Sales" on pricing page.
 
 ## Data Residency (D1 Jurisdiction)
+
 - `--jurisdiction eu` — restricts D1 to EU data centers (GDPR Art. 44)
 - `--jurisdiction fedramp` — for US government
 - Per-tenant jurisdiction stored in shared config DB
@@ -69,12 +79,14 @@ updated: "2026-04-23"
 - Display data location in tenant settings
 
 ## Per-Tenant Rate Limiting
+
 - CF Rate Limiting binding — `env.RATE_LIMITER.limit({ key: orgId })`
 - **Tier-based limits** — free=100 req/min, pro=1000 req/min, enterprise=custom
 - Return `429` with `Retry-After` header
 - Track in PostHog — `rate_limit_hit` event with `orgId`
 
 ## White-Labeling (CF for SaaS)
+
 - Cloudflare for SaaS — tenants bring custom domains
 - `PUT /zones/{zone_id}/custom_hostnames` to register
 - SSL auto-provisioned
@@ -82,6 +94,7 @@ updated: "2026-04-23"
 - Per-tenant — logo, colors, favicon, email templates (Resend per-domain)
 
 ## Admin Impersonation
+
 - Clerk `impersonate()` — admin logs in as any user within their org
 - Audit-logged (impersonator ID stored)
 - **Visual indicator** — persistent banner "Acting as [user]"
@@ -90,6 +103,7 @@ updated: "2026-04-23"
 - Disable for billing/payment actions
 
 ## Data Portability (EU Data Act 2025)
+
 - **Export endpoint** — `GET /api/org/{orgId}/export` returns ZIP of all tenant data (JSON + media)
 - **Include** — users, content, settings, billing history, audit logs
 - **Exclude** — system internals, other tenants
@@ -98,6 +112,7 @@ updated: "2026-04-23"
 - **Deletion endpoint** — `DELETE /api/org/{orgId}` with 30-day grace period
 
 ## IP Allowlisting
+
 - Enterprise customers — restrict API access to approved IP ranges
 - Store per-org in D1 (`org_ip_allowlist` table)
 - Check in auth middleware after Clerk JWT verification
@@ -107,12 +122,14 @@ updated: "2026-04-23"
 - Bypass for Clerk webhook IPs and health endpoints
 
 ## Compliance Certification Display
+
 - SOC 2 Type II / HIPAA / GDPR badges on pricing page + footer
 - **Trust page at `/trust`** — certifications, data processing agreements (DPA), subprocessor list, security practices, uptime history
 - Auto-generate from Vanta/Drata API if available, otherwise static markdown
 - Link DPA download (PDF in R2)
 
 ## Zero-Human-Loop Automation
+
 - **Tenant creation** — Clerk org webhook → D1 create → Stripe customer create → welcome email (Resend) → PostHog identify. All automated.
 - **Tenant deletion** — grace period webhook → data export to R2 → D1 delete → Stripe cancel → purge confirmation
 - **Plan upgrades** — Stripe webhook → Entitlements check → feature unlock → notification

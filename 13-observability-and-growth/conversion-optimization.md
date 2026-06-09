@@ -70,6 +70,7 @@ Measure → hypothesis → test → analyze → iterate. Never skip baseline mea
 ## Anti-Patterns
 
 Never:
+
 - Dark patterns (hidden costs, forced continuity, misdirection)
 - Fake urgency
 - Guilt-tripping cancel copy
@@ -86,17 +87,20 @@ Local businesses don't have trial-to-paid funnels. Their conversions are physica
 ### Event Taxonomy (PostHog + GA4 + Sentry breadcrumb)
 
 **Primary (highest intent):**
+
 - `phone_click` — `tel:` link clicked
 - `direction_click` — Google Maps directions clicked
 - `form_submit` — Contact/booking form submitted
 - `booking_click` — External booking CTA (OpenTable, Calendly, etc.)
 
 **Secondary:**
+
 - `email_click` — `mailto:` link clicked
 - `chat_open` — Live chat widget opened
 - `review_click` — "Leave a Review" CTA clicked
 
 **Micro:**
+
 - `menu_download` — PDF menu/brochure downloaded
 - `coupon_claim` — Special offer clicked
 - `social_click` — Social media profile link clicked

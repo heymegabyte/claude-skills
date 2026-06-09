@@ -10,6 +10,7 @@ description: "Beautiful branded error pages for every HTTP status: 404 (not foun
 ## Required Error Pages (EVERY site)
 
 ### 404 — Not Found
+
 The most common error. Must be helpful, not dead-end.
 
 ```typescript
@@ -19,6 +20,7 @@ app.notFound((c) => {
 ```
 
 **Design requirements:**
+
 - Brand colors, logo, and typography
 - Animated element (floating orbs, particle effect — reuse from domain provisioning)
 - "This page doesn't exist" headline (friendly, not technical)
@@ -28,6 +30,7 @@ app.notFound((c) => {
 - Easter egg opportunity (`06/easter-eggs`)
 
 ### 500 — Server Error
+
 ```typescript
 app.onError((err, c) => {
   console.error(`[${c.req.method}] ${c.req.path}:`, err);
@@ -37,6 +40,7 @@ app.onError((err, c) => {
 ```
 
 **Design requirements:**
+
 - "Something broke on our end" (never blame the user)
 - "We've been notified" (because Sentry captures it)
 - Contact email link
@@ -44,6 +48,7 @@ app.onError((err, c) => {
 - No technical details exposed to user
 
 ### 503 — Maintenance
+
 ```typescript
 // Optional: manual maintenance mode via KV flag
 app.use('*', async (c, next) => {
@@ -54,12 +59,14 @@ app.use('*', async (c, next) => {
 ```
 
 **Design requirements:**
+
 - "We're upgrading" (not "site is down")
 - Estimated return time if known
 - Newsletter signup to get notified
 - Social links
 
 ### Offline — PWA Fallback
+
 ```html
 <!-- /offline.html — cached by service worker -->
 <html>
@@ -73,6 +80,7 @@ app.use('*', async (c, next) => {
 ```
 
 ## HTML Template (404 Example)
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -138,6 +146,7 @@ app.use('*', async (c, next) => {
 ```
 
 ## Playwright Test
+
 ```typescript
 test('404 page is branded', async ({ page }) => {
   const res = await page.goto('/this-page-does-not-exist-abc123');

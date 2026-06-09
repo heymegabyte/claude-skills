@@ -13,6 +13,7 @@ Two layers: universal features (every site gets these) + category-specific featu
 These cost near-zero to add and dramatically increase value. Include ALL of these in every build.
 
 ### SEO & Discovery
+
 - **Sitemap.xml** — auto-generated from all pages, `lastmod` dates
 - **robots.txt** — allow all crawlers, reference sitemap
 - **JSON-LD schema** — minimum 4 types: Organization/LocalBusiness, WebSite with SearchAction, WebPage, BreadcrumbList + category-specific
@@ -24,12 +25,14 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **AI search optimization (GEO)** — quotable 40-60 word answer blocks, entity definitions, structured data
 
 ### PWA & Installability
+
 - **Web App Manifest** — `site.webmanifest` with name, icons (192+512), `theme_color`, `display: standalone`
 - **Favicon complete set** — favicon.ico (16+32+48), favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png (180), android-chrome-192x192.png, android-chrome-512x512.png
 - **Meta theme-color** — matches brand primary
 - **Apple mobile web app capable** — fullscreen on iOS
 
 ### Trust & Social Proof
+
 - **Google Reviews widget** — pull rating + top reviews from Places API, display with stars
 - **Review count badge** — "4.8★ from 127 reviews" in hero/header
 - **Social media links** — verified from research, icons in header/footer
@@ -37,6 +40,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Testimonial section** — real reviews from Google/Yelp, carousel or grid
 
 ### Contact & Conversion
+
 - **Contact form** — with Turnstile invisible captcha, Zod validation, Resend delivery
 - **Click-to-call button** — `tel:` link, prominent on mobile
 - **Click-to-directions** — Google Maps directions URL with encoded address
@@ -50,6 +54,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Emergency banner** — auto-shows after business hours with emergency number (medical/dental/plumber/HVAC/legal)
 
 ### Legal & Compliance
+
 - **Privacy Policy page** — AI-generated from business type + jurisdiction, GDPR/CCPA compliant
 - **Terms of Service page** — AI-generated, covers website usage
 - **Accessibility statement page** — WCAG 2.2 AA commitment, contact info for issues
@@ -57,6 +62,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **ADA compliance** — meets Title II requirements (effective April 2026)
 
 ### Performance & Analytics
+
 - **PostHog snippet** — cookie-free (`persistence:'memory'`), autocapture, pageview, pageleave
 - **GA4 via GTM** — container snippet, custom dimensions
 - **Sentry error tracking** — client-side, catches JS errors
@@ -66,6 +72,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Print stylesheet** — `@media print` for contact/about pages (useful for directories)
 
 ### UX Enhancements
+
 - **Dark/light mode** — CSS `prefers-color-scheme` + manual toggle, saves preference
 - **Back to top button** — smooth scroll, appears after 300px
 - **Smooth scroll anchors** — for single-page sections
@@ -79,6 +86,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Weather-aware hero** — outdoor businesses get dynamic hero based on local weather conditions
 
 ### Content Enrichment
+
 - **Blog/news section** — AI-generated 3-5 initial posts from research + scraped content, with RSS feed
 - **RSS feed** — `/feed.xml` or `/rss.xml`, auto-generated from blog posts (AI search crawlers consume this)
 - **Reading time estimates** — on blog posts
@@ -88,11 +96,13 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Service area pages** — pSEO `/service-area/{city}` for service-area businesses
 
 ### Booking & Scheduling
+
 - **Cal.com embed** — free tier, embeddable scheduling widget (if no existing booking system)
 - **Appointment request form** — for businesses needing human confirmation (medical, legal)
 - **Booking CTA** — links to existing system (OpenTable, Resy, Calendly, etc.) if discovered in research
 
 ### Communication
+
 - **Live chat widget** — Chatwoot embed (self-hosted on Coolify) for businesses with support needs
 - **Notification bar** — dismissible announcement banner at top (for specials, events, COVID updates)
 - **Exit-intent email capture** — triggered on desktop mouse-leave, offers value (coupon, guide, consultation)
@@ -100,6 +110,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 ## Category→Feature Map
 
 ### Restaurant/Cafe
+
 - Menu with categories+prices+dietary icons (V/VG/GF/DF)
 - OpenTable/Resy reservation widget or built-in form
 - Hours with holiday exceptions
@@ -110,6 +121,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: daily specials section, happy hour callout, online ordering link
 
 ### Salon/Spa
+
 - Service menu with duration+price+description
 - Online booking CTA (link to existing system or built-in form)
 - Before/after gallery (side-by-side layout)
@@ -120,6 +132,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: loyalty program highlight
 
 ### Medical/Dental
+
 - Provider profiles with credentials+headshots
 - Insurance accepted list (searchable)
 - Patient portal link
@@ -131,6 +144,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: emergency contact prominent, ADA compliance critical
 
 ### Legal
+
 - Practice areas with detailed descriptions
 - Attorney profiles with bar admissions+education
 - Case results/verdicts (anonymized)
@@ -141,6 +155,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: disclaimer footer, no guarantees language
 
 ### Fitness/Gym
+
 - Class schedule (weekly grid, filterable)
 - Membership tiers (comparison table)
 - Trainer profiles with certifications
@@ -151,6 +166,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: mobile-first schedule view
 
 ### Automotive
+
 - Services list with price ranges
 - Online appointment scheduling
 - Vehicle makes/models served
@@ -161,6 +177,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: emergency/towing number prominent
 
 ### Construction/Contractor
+
 - Project portfolio (masonry grid with filters: residential/commercial/type)
 - License+insurance+bonding badges
 - Service area map
@@ -171,6 +188,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: license number in footer
 
 ### Photography
+
 - Portfolio gallery (masonry, lightbox, categories)
 - Pricing packages (session types)
 - Booking calendar or inquiry form
@@ -181,6 +199,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: image-heavy, minimal text, full-bleed hero
 
 ### Real Estate
+
 - Property listings (grid+map view)
 - Agent profiles
 - Market reports/blog
@@ -192,6 +211,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: IDX integration link, MLS disclaimer
 
 ### Education
+
 - Programs/courses list with details
 - Faculty directory
 - Admissions process timeline
@@ -203,6 +223,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: accreditation badges
 
 ### Financial/Accounting
+
 - Services matrix (tax/audit/advisory/bookkeeping)
 - Team credentials (CPA, EA, CFP)
 - Client portal link
@@ -213,6 +234,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: regulatory disclaimers
 
 ### Retail
+
 - Product highlights (featured, not full catalog)
 - Store locator if multi-location
 - Brand story section
@@ -237,11 +259,13 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 7. **Other ways to give** — mail-in check with `<AddressBlock mapsMode='search'>` (PO Box uses search not directions), planned giving anchor, in-kind via `<MailLink>`
 
 **Standard routes (14)**:
+
 - `/` (home), `/about`, `/mission`, `/programs`, `/impact`
 - `/get-involved`, `/volunteer`, `/events`, `/news`, `/contact`
 - `/donate`, `/privacy`, `/terms`, `/accessibility`
 
 **Jewel routes (10)**:
+
 - `/financials` — 4-bar program/admin/fundraising/infra `<FinancialBreakdown>` + Form 990 PDF + Charity Navigator badge
 - `/planned-giving` — `<PlannedGivingGrid>` bequest|IRA-QCD|DAF|stock|charitable-gift-annuity + sample bequest language + planned-giving-officer card
 - `/ways-to-give` — `<WaysToGiveTaxonomy>` 10-path grid → `/donate/recurring | /donate/major-gift | /donate/in-kind | /donate/stock | /donate/crypto | /donate/vehicle | /donate/employer-match | /donate/tribute | /planned-giving | /donate`
@@ -254,6 +278,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - `/parish-toolkit` or `/resources` — `<ParishToolkitDownloads>` bulletin inserts | donation drive guides | sermon outlines | fundraiser templates PDFs
 
 **Other features**:
+
 - Donation CTA prominent (3+ placements linking to `/donate`)
 - Impact metrics counters via `<CountUp>` (suffix outside digit node)
 - `<LocaleSwitcher>` header dropdown + `<HrefLangHead>` per route when `_research.json.i18n.locales[]` populated
@@ -263,6 +288,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 **Cross-refs**: Standard+jewel union per `[[page-set-expansion]]` § Nonprofit; demographic locale mirrors per `[[i18n-by-demographics]]`; rebuild from source via `[[source-site-enhancement]]`.
 
 ### Government/Institutional
+
 - Service finder (search/filter)
 - Department directory
 - Document library (PDFs, organized by category)
@@ -274,6 +300,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: WCAG AAA target, plain language
 
 ### SaaS/Tech
+
 - Feature comparison table (3-tier)
 - Interactive demo/video hero
 - Pricing toggle (monthly/annual)
@@ -286,6 +313,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: dark theme default, code snippets section
 
 ### Church/Religious
+
 - Service times (weekly schedule)
 - Sermon archive (audio/video embeds)
 - Event calendar
@@ -298,6 +326,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: livestream embed, warm welcoming tone
 
 ### Pet Services
+
 - Services (grooming/boarding/training) with pricing
 - Pet gallery
 - Staff profiles with certifications
@@ -308,6 +337,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Special**: friendly playful design, pet safety badges
 
 ### Wedding/Events
+
 - Portfolio gallery (by event type)
 - Package pricing comparison
 - Availability calendar

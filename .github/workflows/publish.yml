@@ -35,6 +35,10 @@ jobs:
             lefthook.yml \
             .github/workflows/*.yml
 
+      - name: Self-lint Markdown (rules/ + skill-dirs, pass-43)
+        run: |
+          npx --yes markdownlint-cli2@^0.18.1 "rules/*.md" "[0-9][0-9]-*/**/*.md"
+
       - name: Check doc counts
         run: |
           EXPECTED=$(grep -o '[0-9]* reference docs' README.md | grep -o '[0-9]*')

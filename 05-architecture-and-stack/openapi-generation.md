@@ -7,6 +7,7 @@ updated: "2026-04-23"
 # OpenAPI Generation
 
 ## Route Definition (createRoute)
+
 ```typescript
 // src/routes/users.ts
 import { createRoute, z, OpenAPIHono } from '@hono/zod-openapi';
@@ -62,6 +63,7 @@ const createUserRoute = createRoute({
 ```
 
 ## App Setup with OpenAPI + Swagger UI
+
 ```typescript
 // src/index.ts
 import { OpenAPIHono } from '@hono/zod-openapi';
@@ -96,6 +98,7 @@ export default app;
 ```
 
 ## Client SDK Generation
+
 ```bash
 # Generate TypeScript client from live OpenAPI spec
 npx openapi-typescript-codegen --input https://api.example.com/api/v1/doc --output src/client --client fetch
@@ -109,6 +112,7 @@ npx openapi-typescript-codegen --input openapi.json --output src/client --client
 - Generated SDK for external/third-party consumers
 
 ## Versioning Strategy
+
 ```typescript
 // Version prefix on all route groups
 const v1 = new OpenAPIHono<{ Bindings: Env }>();
@@ -124,6 +128,7 @@ v1.doc('/doc', { openapi: '3.1.0', info: { title: 'My API', version: '1.0.0' } }
 ```
 
 ## Security Definitions
+
 ```typescript
 app.doc('/api/v1/doc', {
   openapi: '3.1.0',
@@ -146,12 +151,14 @@ const publicRoute = createRoute({
 ```
 
 ## Dependencies
+
 ```bash
 pnpm add @hono/zod-openapi @hono/swagger-ui
 pnpm add -D openapi-typescript-codegen
 ```
 
 ## Pattern
+
 - Zod schemas — single source of truth
 - `createRoute` defines request/response contracts
 - OpenAPI spec auto-generated

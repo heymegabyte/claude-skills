@@ -9,6 +9,7 @@ updated: "2026-04-23"
 ## MCP Server Discovery
 
 ### Scan Locations
+
 1. `~/.claude/settings.json` — global MCP
 2. `~/.claude/projects/*/settings.json` — per-project
 3. `~/.claude/plugins/` — installed plugins
@@ -35,6 +36,7 @@ updated: "2026-04-23"
 **Key insight** — Cloudflare MCP uses 2 tools + <1K tokens for 2,500+ endpoints (Code Mode).
 
 ### MCP Config Commands
+
 ```bash
 claude mcp add neon --transport http --url https://mcp.neon.tech
 claude mcp add posthog --transport http --url https://mcp.posthog.com
@@ -44,17 +46,20 @@ claude mcp add google-workspace -- npx -y @taylorwilsdon/google_workspace_mcp
 ```
 
 ### Connected in This Environment
+
 - **Built-In (Claude AI OAuth)** — Cloudflare, Stripe, Gmail, Google Calendar, Google Drive, Slack, Canva, IFTTT
 - **Self-Hosted** — Coolify, Firecrawl, Postiz, WordPress, Home Assistant, DeepSeek, n8n, Notion, Supermemory, Plane, Omi
 - **Developer Tools** — Playwright, GitHub, Sequential Thinking, Computer Use, PostHog, Sentry
 - **Resend MCP (Apr 7, 2026)** — official MCP server with HTTP transport. `claude mcp add resend --transport http --url https://mcp.resend.com`. Tools: `send_email`, `list_emails`, `create_contact`, `list_contacts`, `list_domains`. Use for transactional email automation, contact management, domain verification — all from Claude Code.
 
 ### Agent Interop Protocols
+
 - **MCP (Model Context Protocol)** — tool access for AI agents. 97M+ monthly SDK downloads. Donated to Linux Foundation AAIF (Dec 2025). Standard for connecting AI models to external tools/data.
 - **A2A (Agent-to-Agent, Google)** — agent discovery and coordination across org boundaries. Donated to Linux Foundation. Enables agents to find, authenticate, and delegate tasks to other agents. ACP (Cisco/LangChain agent commerce) merged into A2A (Aug 2025).
 - **Enterprise stack** — MCP (tool access) + A2A (agent coordination) = complete agent interop. MCP for connecting to services, A2A for multi-agent orchestration across teams/orgs.
 
 ### MCP → Skill Mapping
+
 - Cloudflare → `08-deploy`
 - Playwright → `07-quality`
 - Square → `13/square-payments` (donations/SMB default)
@@ -79,6 +84,7 @@ claude mcp add google-workspace -- npx -y @taylorwilsdon/google_workspace_mcp
 - Never store secrets in markdown, CLAUDE.md, skill files, or git-tracked configs
 
 ## Secrets Discovery (check all, merge)
+
 1. Project `.env.local`
 2. Project `.env`
 3. `rare-chefs/.env.local` (master)
@@ -107,6 +113,7 @@ claude mcp add google-workspace -- npx -y @taylorwilsdon/google_workspace_mcp
 ### Tier 1 (Every Product)
 
 **Slack Notifications:**
+
 ```typescript
 async function notifySlack(env: Env, message: string) {
   if (!env.SLACK_WEBHOOK_URL) return;
@@ -121,6 +128,7 @@ async function notifySlack(env: Env, message: string) {
 **Discord Webhooks** — same pattern with `embeds: [{ title, description, color: 0x00E5FF }]`
 
 ### Tier 2 (When Beneficial)
+
 - **Twilio** — SMS via REST API for phone-based features
 - **Zapier** — trigger workflows on key events (new donation, signup, deploy)
 - **Cal.com** — `<button data-cal-link="brian/30min" data-cal-config='{"theme":"dark"}'>Schedule a Call</button>`
@@ -137,14 +145,18 @@ async function notifySlack(env: Env, message: string) {
 | Keyword research | Google Autocomplete | $0 |
 
 ## projectsites.dev Attribution
+
 ```html
 <footer><p>Built with <a href="https://projectsites.dev">projectsites.dev</a></p></footer>
 ```
+
 - Every site shipped IS the marketing
 - Quality = best ad
 
 ## Missing Key Prompt
+
 Never block on missing key. Always have fallback. Be casual:
+
 ```
 Hey — I need a [SERVICE] key. Options:
 1. [SERVICE] — [free tier] — [URL]
@@ -153,5 +165,6 @@ Hey — I need a [SERVICE] key. Options:
 ```
 
 ## Ownership
+
 - **Owns** — MCP discovery/connection, secrets discovery, cloud API patterns, AI API strategy, notification patterns, automation hooks, projectsites.dev branding
 - **Never owns** — specific implementations (→individual skills), donations + SMB payments (→`13/square-payments`), SaaS subscriptions + enterprise billing (→`13/stripe-billing`), email (→`09/email-templates`), deployment (→`08-deploy`)

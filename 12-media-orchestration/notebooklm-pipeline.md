@@ -19,6 +19,7 @@ Pipeline runs in Phase 0 alongside Media Slot Manifest enumeration so artifacts 
 Mirrors `_media_slots.json` shape so the same fail-CLOSED auto-regenerate pattern applies.
 
 ### Schema
+
 ```json
 {
   "podcast": {
@@ -71,6 +72,7 @@ Mirrors `_media_slots.json` shape so the same fail-CLOSED auto-regenerate patter
 ## Audio Podcast — Two-Host Overview (***PRIMARY: ElevenLabs Studio***)
 
 ### Provider order
+
 1. **ElevenLabs Studio Create Podcast** (`POST /v1/studio/podcasts` with `mode:"conversation"`, two voice IDs, source text = condensed research brief 8-15K chars) — production REST API, deterministic, no browser automation, ships finished MP3 + transcript JSON. ~$0.30/episode at 30 min
 2. **AutoContent API** ($39/mo unlimited, NotebookLM-format mimicry) — when ElevenLabs quota exhausted
 3. **`teng-lin/notebooklm-py`** wrapper (Python lib, browser-automated NotebookLM consumer) — ONLY in CF Container with feature flag `NOTEBOOKLM_BROWSER=1` — used for true NotebookLM-format match when client demands "made in NotebookLM" as marketing claim
@@ -79,7 +81,9 @@ Mirrors `_media_slots.json` shape so the same fail-CLOSED auto-regenerate patter
 NEVER block deploy on podcast — it's enrichment, not infrastructure.
 
 ### Source brief construction (Phase 0 step 2a)
+
 gpt-4o-mini condenses `_research.json` + top-N pages of `_corpus.json` + `_pdf_facts.json` into 8-15K-char Markdown briefing. MUST include:
+
 - Brand mission
 - Top 3 services/products
 - Key stats (with citations per `rules/citations.md`)
@@ -90,13 +94,16 @@ gpt-4o-mini condenses `_research.json` + top-N pages of `_corpus.json` + `_pdf_f
 Saved to `_podcast_source.md` for human review + future re-runs.
 
 ### Voice selection
+
 Default voice IDs from `~/.claude/.env`:
+
 - `ELEVENLABS_VOICE_HOST_A=21m00Tcm4TlvDq8ikWAM` (Rachel)
 - `ELEVENLABS_VOICE_HOST_B=AZnzlk1XvdvUeBnXmlld` (Domi)
 
 Override per-site via `_brand.json.podcast.voices[]` when client supplies brand voices. NEVER use the same voice for both hosts (defeats the conversation format).
 
 ### ElevenLabs API call
+
 ```ts
 const r = await fetch("https://api.elevenlabs.io/v1/studio/podcasts", {
   method: "POST",
@@ -114,6 +121,7 @@ const { project_id } = await r.json();
 ```
 
 ### Output assets per episode
+
 - `episode-NN.mp3` — 96kbps stereo VBR, ≤1MB/min
 - `transcript.json` — ElevenLabs-provided word-timing JSON
 - `transcript.vtt` — derived for `<audio>` track
@@ -121,6 +129,7 @@ const { project_id } = await r.json();
 - `chapters.json` — auto-extracted from transcript via gpt-4o-mini topical-segmentation pass
 
 ### `/about` page embed (template ships `<PodcastPlayer>`)
+
 ```tsx
 import Plyr from 'plyr';
 import 'plyr/dist/plyr.css';
@@ -148,9 +157,11 @@ export function PodcastPlayer({ src, transcriptUrl, captionsVtt }: Props) {
 ```
 
 ### Transcript on-page (mandatory for SEO + accessibility)
+
 Full transcript rendered below the player as collapsed `<details><summary>Full transcript</summary>...</details>` — search engines + AI search crawlers index the text, screen-reader users get the content, mobile users save scroll. `<details>` `[open]` on desktop ≥1280px via CSS `@media (min-width:1280px) { details[data-podcast-transcript] { open:open } }` (use the JS `details.open=true` if pure-CSS unsupported).
 
 ### RSS feed `/podcast.xml` (Hono route)
+
 ```ts
 app.get('/podcast.xml', async (c) => {
   const episodes = await c.env.D1.prepare("SELECT * FROM podcast_episodes WHERE published=1 ORDER BY published_at DESC").all();
@@ -171,6 +182,7 @@ app.get('/podcast.xml', async (c) => {
 ```
 
 ### RSS template (iTunes + podcast namespace 1.0)
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
@@ -203,6 +215,7 @@ app.get('/podcast.xml', async (c) => {
 ```
 
 ### Dual JSON-LD on `/about` (mandatory)
+
 ```json
 [
   {"@context":"https://schema.org","@type":"PodcastSeries","name":"<Brand> Podcast","url":"<URL>/about","webFeed":"<URL>/podcast.xml","image":"<URL>/podcast/cover-3000.jpg","author":{"@type":"Person","name":"<Founder>"}},
@@ -211,7 +224,9 @@ app.get('/podcast.xml', async (c) => {
 ```
 
 ### Submission automation (post-deploy)
+
 First-episode auto-submit to:
+
 - (a) **Apple Podcasts Connect** via `https://podcastsconnect.apple.com/api/v1/podcasts` (requires `APPLE_PODCAST_KEY_ID` + `APPLE_PODCAST_PRIVATE_KEY` JWT auth — manage at `https://podcastsconnect.apple.com/access`)
 - (b) **Spotify for Podcasters** via web UI (no API — manual)
 - (c) **Google Podcasts deprecated 2024** → submit to YouTube Music podcast directory instead
@@ -227,20 +242,24 @@ Three-panel minimum mandatory; can scale to 6-9 panels for content-heavy sites (
 ### Panel sources (priority order per panel type)
 
 1. **Data chart panel** (mandatory — 1 of 3 minimum) — **Vega-Lite + Puppeteer** SVG render — free, deterministic, version-controlled. Source data from `_research.json.stats[]` + cited per `rules/citations.md`. Vega-Lite spec template:
+
    ```json
    {"$schema":"https://vega.github.io/schema/vega-lite/v5.json","width":1200,"height":675,"background":"#060610","title":{"text":"Impact in Numbers","color":"#FFF","fontSize":42},"data":{"values":[{"category":"Volunteers","value":847},{"category":"Meals Served","value":52000}]},"mark":{"type":"bar","color":"#00E5FF"},"encoding":{"x":{"field":"category","type":"nominal","axis":{"labelColor":"#FFF","titleColor":"#FFF"}},"y":{"field":"value","type":"quantitative","axis":{"labelColor":"#FFF","titleColor":"#FFF"}}}}
    ```
+
    Render via `npx vl2svg spec.json out.svg` then optimize via SVGO. Falls back to `vl2png` for raster sharing previews.
 2. **Process / flow panel** (recommended) — **Recraft v3 API** SVG generation — best programmatic SVG output with text rendering accuracy, brand-palette-aware. `POST https://external.api.recraft.ai/v1/images/generations` with `style:"vector_illustration"` + `model:"recraftv3"` + per-slot prompt naming brand palette + composition + topic. ~$0.04/SVG
 3. **Hero illustration panel** (recommended) — **GPT Image 2** (`gpt-image-2` via OpenAI Images API) — ~99% character-level text accuracy in 2026, best for illustrations needing brand-text legibility. Per-slot prompt with all 6 mandatory fields (skill 12 SKILL.md "Per-Slot Prompt Mandatory Fields"). ~$0.06/image at 1536×1024
 4. **Napkin AI API** (`api.napkin.ai`) when both Recraft + GPT-Image saturated for the slot — produces SVG/PNG/PDF infographics from text prompt, $39/mo unlimited. Best for concept-explainer panels (org charts, comparison tables, timelines)
 
 ### Per-panel slot record (slots into `_notebooklm.json.infographic.panels[]`)
+
 Identical 6-field prompt structure as DALL-E slot manifest (page topic + brand palette + composition + subject specificity + technical specs + negative prompt).
 
 Validator `validate-infographic-on-about.mjs` greps for ≥3 `<svg>` OR `<img>` inside `[data-infographic-gallery]` on `/about`.
 
 ### Render on `/about` (template ships `<InfographicGallery>`)
+
 ```tsx
 export function InfographicGallery({ panels }: Props) {
   return (
@@ -264,6 +283,7 @@ Lightbox grouping inherits `data-gallery="infographic"` per always.md "Every mul
 ## Explainer Video — Homepage BTF (Second Screen)
 
 ### Provider order
+
 1. **HeyGen API** (`https://api.heygen.com/v2/video/generate`) — production winner for talking-head explainer. ~$1/min standard avatars, $4/min Avatar IV 1080p personalized. 60-90 second target ($1.50-$6/site). Custom-branded backgrounds + intro/outro animations. API docs `https://docs.heygen.com`
 2. **Synthesia API** (`https://api.synthesia.io/v2/videos`) — fallback, ~$0.80-1.20/min. 140+ avatars + 120+ languages
 3. **Tavus API** ($59/mo subscription + per-min credits) — when client has founder photo + voice samples for personalized digital twin. Best for high-touch B2B SaaS
@@ -271,7 +291,9 @@ Lightbox grouping inherits `data-gallery="infographic"` per always.md "Every mul
 5. **Sora 2** ($0.10/sec 720p, 25s hard cap) — deprecates Sept 24, 2026 — evaluate replacements (likely Sora 3 by then)
 
 ### Script generation (Phase 0 step 2c)
+
 gpt-4o synthesizes 75-second script from `_podcast_source.md` summary (reuses the brief):
+
 - Hook (10s)
 - Problem (15s)
 - Solution (30s)
@@ -281,6 +303,7 @@ gpt-4o synthesizes 75-second script from `_podcast_source.md` summary (reuses th
 Saved to `_video_script.md`. Script feeds HeyGen `script` field directly.
 
 ### HeyGen API call
+
 ```ts
 const r = await fetch("https://api.heygen.com/v2/video/generate", {
   method: "POST",
@@ -302,6 +325,7 @@ const { video_id } = await r.json();
 ```
 
 ### Cloudflare Stream upload + embed
+
 ```ts
 // Server-side upload
 const upload = await fetch(`https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/stream/copy`, {
@@ -339,6 +363,7 @@ export function ExplainerVideo({ uid, posterUrl, captionsVtt }: Props) {
 **BTF placement = second screen** (immediately after hero, BEFORE features/services). Validator `validate-explainer-video-btf.mjs` asserts the `[data-section="explainer-btf"]` element appears as the 2nd `<section>` in `<main>` on `/`. Hero loop video (when used) does NOT count — it's hero, not BTF.
 
 ### JSON-LD `VideoObject` (mandatory on `/`)
+
 ```json
 {
   "@context":"https://schema.org",
@@ -362,7 +387,9 @@ export function ExplainerVideo({ uid, posterUrl, captionsVtt }: Props) {
 ```
 
 ### Video description (the third NotebookLM artifact)
+
 The `_notebooklm.json.video_description` block becomes:
+
 - (a) Cloudflare Stream `meta.name` + `meta.description`
 - (b) YouTube/Vimeo upload metadata when cross-posted
 - (c) The `description` + `transcript` fields in `VideoObject` JSON-LD
@@ -381,11 +408,13 @@ Description paragraph 1 MUST be a 40-60 word quotable answer block (per `rules/c
 ## Cost Tracking + Budget Ceiling
 
 `_notebooklm_daily.json` schema:
+
 ```json
 {"date":"2026-05-02","spend_usd":47.20,"sites":{"site-id-1":{"podcast":0.30,"infographic":0.18,"video":1.50,"hosting":0.05}}}
 ```
 
 Daily ceiling `NOTEBOOKLM_DAILY_BUDGET` (default $300 = ~100 sites). Exhaustion → fall back to:
+
 - **Video** → Veo 3.1 Fast 8s loop ($1.20 → $0.80)
 - **Infographic** → Vega-Lite only (free)
 - **Podcast** → defer to next day, skip with warning

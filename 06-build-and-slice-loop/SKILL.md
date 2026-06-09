@@ -27,9 +27,11 @@ paths:
 # 06 — Build and Slice Loop
 
 ## Vertical-slice principle
+
 Every iteration ships ONE feature end-to-end through every layer (UI → API → DB → tests → deploy). Never half a feature across two passes.
 
 ## Homepage FIRST (every project, no exceptions)
+
 - First slice is always the homepage hero + nav + footer
 - Real H1, real meta tags, real OG card, real JSON-LD
 - Deploy this minimal version BEFORE adding any other route
@@ -38,6 +40,7 @@ Every iteration ships ONE feature end-to-end through every layer (UI → API →
 Per `rules/website-build-doctrine.md` Phase 0 / Phase 1.
 
 ## Anti-placeholder (NON-NEGOTIABLE)
+
 - ❌ Lorem ipsum
 - ❌ TODO / FIXME / TBD in shipped user-visible strings (source-comment TODOs OK per `rules/todos-are-roadmap.md`)
 - ❌ Gray placeholder boxes / silhouettes (real content or no element)
@@ -50,6 +53,7 @@ Per `rules/website-build-doctrine.md` Phase 0 / Phase 1.
 Per `rules/copy-writing.md` § Production-review copy gate. Build validator greps `dist/` for these patterns.
 
 ## Slice contract (every slice ships ALL of these)
+
 1. **Types** + **Zod schemas** at boundaries (`rules/zod-everywhere.md`)
 2. **Contract-first API** (typed request/response)
 3. **Loading + empty + error + success states** (4-state system per `10-experience-and-design-system`)
@@ -64,6 +68,7 @@ Per `rules/copy-writing.md` § Production-review copy gate. Build validator grep
 ## File organization
 
 ### Worker (Hono)
+
 ```
 src/worker/
 ├── index.ts              # entry — Sentry wrapper, route mounts, onError, notFound
@@ -77,6 +82,7 @@ src/worker/
 ```
 
 ### Frontend (React + Vite)
+
 ```
 src/web/
 ├── main.tsx              # entry — router, providers
@@ -90,6 +96,7 @@ src/web/
 ```
 
 ### Shared
+
 ```
 src/shared/
 ├── plans.ts              # pricing tiers
@@ -98,6 +105,7 @@ src/shared/
 ```
 
 ### Tests
+
 ```
 e2e/
 ├── FEATURES.md           # row-per-feature matrix (CI gate)
@@ -112,6 +120,7 @@ e2e/
 ```
 
 ## Build loop (per slice)
+
 1. **Write failing test** (Playwright TDD-RED first per `rules/e2e-tdd-organization.md`)
 2. **Author migration** (drizzle/0NNN_<feature>.sql) + update `db/schema.ts`
 3. **Apply locally** (`npm run db:apply:local`)
@@ -127,6 +136,7 @@ e2e/
 13. **Update `e2e/FEATURES.md`** + CHANGELOG
 
 ## Real content sourcing
+
 - Copy: brand voice per `09-brand-and-content-system`; never AI-default phrasing
 - Images: real photos > AI-generated brand-aligned > zero (skill 12)
 - Data: real API / Workers AI / D1 query > mocked
@@ -134,6 +144,7 @@ e2e/
 - Stats: cited per `rules/citations.md`
 
 ## When to stop adding sections
+
 Per `rules/website-build-doctrine.md` Phase 2: keep adding until next would dilute. Stop criterion is "next hurts," never "we have enough."
 
 ## See submodules: vertical-slice.md, file-organization.md, anti-placeholder.md.

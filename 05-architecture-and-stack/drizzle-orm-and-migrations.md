@@ -7,6 +7,7 @@ updated: "2026-04-23"
 # Drizzle ORM and Migrations
 
 ## Why Drizzle (v1.0.0-beta.2, passed Prisma in downloads)
+
 - Type-safe queries, 5KB bundle (vs Prisma 40KB+), zero-overhead SQL
 - RQBv2 — 363 commits, 9K+ tests, relational query builder rewrite
 - 10x schema introspection speed (10s → <1s)
@@ -18,12 +19,14 @@ updated: "2026-04-23"
 ## Setup
 
 ### Install
+
 ```bash
 npm install drizzle-orm
 npm install -D drizzle-kit
 ```
 
 ### drizzle.config.ts
+
 ```typescript
 import { defineConfig } from 'drizzle-kit';
 
@@ -36,6 +39,7 @@ export default defineConfig({
 ```
 
 ### Worker Binding
+
 ```typescript
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from './db/schema';
@@ -49,6 +53,7 @@ app.use('*', async (c, next) => {
 ## Schema Conventions
 
 ### Standard Columns (Every Table)
+
 ```typescript
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
@@ -67,6 +72,7 @@ export const users = sqliteTable('users', {
 ```
 
 ### Naming Rules
+
 - **Tables** — plural snake_case (`users`, `blog_posts`, `donation_records`)
 - **Columns** — snake_case (`created_at`, `stripe_customer_id`)
 - **TypeScript** — camelCase (`createdAt`, `stripeCustomerId`) — Drizzle maps automatically
@@ -74,6 +80,7 @@ export const users = sqliteTable('users', {
 - **Foreign keys** — `{referenced_table}_id` (`user_id`, `post_id`)
 
 ### Relations
+
 ```typescript
 import { relations } from 'drizzle-orm';
 
@@ -97,6 +104,7 @@ export const postsRelations = relations(posts, ({ one }) => ({
 ```
 
 ### Indexes
+
 ```typescript
 import { index, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
@@ -112,18 +120,21 @@ export const posts = sqliteTable('posts', {
 ## Migration Workflow
 
 ### Generate Migration
+
 ```bash
 npx drizzle-kit generate
 # Creates: drizzle/0001_initial.sql
 ```
 
 ### Apply to D1
+
 ```bash
 npx wrangler d1 migrations apply DB --local  # Test locally first
 npx wrangler d1 migrations apply DB          # Apply to production
 ```
 
 ### Migration Best Practices
+
 - Always generate, never hand-write SQL
 - Test locally before applying to production
 - Never rename columns in production (add new, migrate data, drop old)
@@ -133,6 +144,7 @@ npx wrangler d1 migrations apply DB          # Apply to production
 ## Common Query Patterns
 
 ### Select with Relations
+
 ```typescript
 const postsWithAuthor = await db.query.posts.findMany({
   with: { author: true },
@@ -143,6 +155,7 @@ const postsWithAuthor = await db.query.posts.findMany({
 ```
 
 ### Insert
+
 ```typescript
 import { ulid } from 'ulid';
 
@@ -154,6 +167,7 @@ await db.insert(users).values({
 ```
 
 ### Update
+
 ```typescript
 await db.update(users)
   .set({ name: parsed.name, updatedAt: sql`datetime('now')` })
@@ -161,6 +175,7 @@ await db.update(users)
 ```
 
 ### Soft Delete
+
 ```typescript
 await db.update(users)
   .set({ deletedAt: sql`datetime('now')` })
@@ -173,6 +188,7 @@ const activeUsers = await db.query.users.findMany({
 ```
 
 ### Transaction
+
 ```typescript
 await db.batch([
   db.insert(donations).values({ id: ulid(), amount: 5000, userId }),
@@ -181,6 +197,7 @@ await db.batch([
 ```
 
 ## Seed Data
+
 ```typescript
 // src/db/seed.ts — run after migrations
 async function seed(db: DrizzleD1Database) {
@@ -191,7 +208,9 @@ async function seed(db: DrizzleD1Database) {
 ```
 
 ## Neon (PostgreSQL) Variant
+
 When D1 isn't enough (complex joins, full-text search, >1TB, RLS):
+
 ```typescript
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
@@ -203,6 +222,7 @@ const db = drizzle(sql, { schema });
 Schema uses `pgTable` instead of `sqliteTable`, identity columns (not serial) for IDs, and `timestamp` instead of `text` for dates. Use `$inferSelect`/`$inferInsert` for type derivation. Zod integration via `createInsertSchema`/`createSelectSchema`.
 
 ## D1 Notes (2026)
+
 - Global read replication (beta) — routes reads to nearest replica, reduces latency 40-60%
 - Storage — 1TB per account (paid), Time Travel 30-day PIT recovery
 - PRAGMA optimize support for query performance

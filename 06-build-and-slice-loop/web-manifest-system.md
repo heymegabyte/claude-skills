@@ -23,6 +23,7 @@ description: "MANDATORY: Every site gets full PWA manifest with screenshots, sho
 | `screenshots/mobile-*.png` | PWA install UI (narrow, form_factor: narrow) | Screenshot |
 
 ## site.webmanifest (COMPREHENSIVE — match install.doctor)
+
 ```json
 {
   "name": "Full Product Name — Tagline",
@@ -81,18 +82,21 @@ description: "MANDATORY: Every site gets full PWA manifest with screenshots, sho
 ```
 
 ### CRITICAL: Shortcut Rules (fixes Chrome DevTools errors)
+
 - **url MUST be within scope** — no `tel:` links, no external URLs
 - **Every shortcut MUST have a 96x96 icon** — generate `icon-96x96.png` from the 512px icon
 - **url must start with `/`** — relative to the manifest scope
 - Use `/#section` for same-page anchors
 
 ### CRITICAL: Screenshots (fixes "Richer PWA Install UI" warnings)
+
 - **At least 1 screenshot with `form_factor: "wide"`** (desktop)
 - **At least 1 screenshot with `form_factor: "narrow"`** or without `form_factor` (mobile)
 - Take screenshots with Playwright — `npx playwright screenshot --viewport-size "1920,1080" URL output.png`
 - Recommended sizes — 1920x1080 (wide), 1080x1920 (narrow)
 
 ## HTML `<head>` Meta Tags (COMPREHENSIVE — match install.doctor)
+
 ```html
 <!-- Core -->
 <meta charset="utf-8">
@@ -169,7 +173,9 @@ description: "MANDATORY: Every site gets full PWA manifest with screenshots, sho
 ```
 
 ## Cross-Site Linking (MANDATORY for multi-site projects)
+
 Every Megabyte Labs site must link to its siblings:
+
 ```html
 <link rel="alternate" href="https://mission.megabyte.space" title="Megabyte Labs Mission">
 <link rel="alternate" href="https://donate.megabyte.space" title="Donate">
@@ -177,6 +183,7 @@ Every Megabyte Labs site must link to its siblings:
 ```
 
 Also add in JSON-LD `sameAs` array:
+
 ```json
 "sameAs": [
   "https://mission.megabyte.space",
@@ -188,9 +195,11 @@ Also add in JSON-LD `sameAs` array:
 ```
 
 ## JSON-LD Structured Data (Rich Snippets)
+
 - Every page needs at minimum — Organization + WebSite + WebPage
 
 Additional types by page purpose:
+
 - **Donation page** — `DonateAction`
 - **FAQ** — `FAQPage` with `Question` + `Answer`
 - **Contact** — `ContactPoint`
@@ -200,7 +209,9 @@ Additional types by page purpose:
 - **Breadcrumbs** — `BreadcrumbList` on all subpages
 
 ## Screenshot Generation Workflow
+
 Use Playwright to capture real screenshots (not mockups):
+
 ```bash
 # Desktop (wide) screenshot
 npx playwright screenshot --browser chromium --viewport-size "1920,1080" "https://domain.com" screenshots/desktop.png
@@ -221,6 +232,7 @@ img.save('screenshots/mobile-1080x1920.png')
 ```
 
 ## Verification Checklist (EVERY deploy)
+
 - [ ] `site.webmanifest` has screenshots (wide + narrow)
 - [ ] All shortcut URLs are within scope (no `tel:`, no external)
 - [ ] All shortcuts have 96x96 icons

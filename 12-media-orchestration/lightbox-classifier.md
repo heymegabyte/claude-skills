@@ -25,6 +25,7 @@ function inferLightboxEligibility(p: ImageProfile): boolean {
 ## Forbidden Combinations
 
 NEVER lightbox:
+
 - Logos
 - Institutional/sponsor/partner/trusted-by logo grids
 - Social media icons
@@ -61,12 +62,14 @@ Section-slug = kebab-cased section heading or route segment (`hero-team` | `prog
 Build gate (`validate-lightbox-grouping.mjs`): for every section element containing ≥2 `[data-zoomable]` descendants, assert all share ONE `data-gallery` value — multiple distinct values inside same `<section>` / `[data-section]` ancestor = fail. Cross-section grouping forbidden — never `data-gallery="all-photos"` spanning the whole page.
 
 Every lightbox-eligible image MUST carry `{ title, description, credit?, link? }` caption metadata sourced from:
+
 1. Source-site `<figcaption>`
 2. Source-site `alt` (when ≥6 words and not filename-like)
 3. AI-generated 8-15 word description via GPT-4o vision
 4. Manual brand voice pass
 
 Render captions in TWO places:
+
 - **(a)** Section UI as `<figcaption>` (gallery grid) OR overlay-on-hover (hero/cards) with `aria-describedby` linking image to caption text
 - **(b)** Lightbox modal as bottom strip (NOT corner badge) with title (16px semibold) + description (14px regular) + credit if present + link button when source-cite URL exists
 
@@ -117,17 +120,20 @@ Builder reads `profile.is_lightbox_eligible` and only wraps with `data-zoomable`
 ## Runtime YARL Configuration (***BUILD-BREAKING — RUNS IN BROWSER***)
 
 Two distinct layers:
+
 - **(A)** Build-time profiling above sets `data-gallery`/`data-lightbox` attributes
 - **(B)** Runtime `isEligible()` gate in `lightbox.tsx` fires on every click
 
 Both must agree or images open inconsistently.
 
 ### Mandatory attribute contracts
+
 - Every multi-image section container: `data-gallery="<section-slug>"` on the wrapper div, `cursor-zoom-in` class on every `<img>` inside
 - Every standalone zoomable image: `data-lightbox="<name>"` directly on `<img>`, `cursor-zoom-in` class
 - Images in `header`, `footer`, `<a>`, `button`, `[data-no-zoom]`: NEVER get either attribute. Lightbox will skip them.
 
 ### Runtime `isEligible()` — canonical implementation (copy verbatim into `lightbox.tsx`)
+
 ```ts
 function isEligible(img: HTMLImageElement): boolean {
   if (img.closest('header, footer, a, [data-no-zoom], button')) return false;
@@ -143,12 +149,15 @@ function isEligible(img: HTMLImageElement): boolean {
 Key threshold: **80px** (not 200px). Rationale: 4-column grid at `max-w-4xl` (~56rem ÷ 4 = ~196px per column) falls under 200px, breaking the entire partner/gallery grid. Use `offsetWidth` not `img.width` — `img.width` returns 0 for `loading="lazy"` images not yet in viewport.
 
 ### `findGallery()` isolation behavior
+
 When `img` is inside `[data-gallery="id"]`, `findGallery()` collects ONLY images inside that same named group — never bleeds into adjacent sections. Without `data-gallery`, it walks up the DOM until it finds a container with ≥2 eligible siblings. Always prefer `data-gallery` to guarantee isolation.
 
 ### `markZoomable()` cursor sync
+
 Runs every 1500ms (for lazy-loaded late arrivals). Applies `cursor: zoom-in` and `data-zoomable="true"` to all eligible images. Requires the same opt-in check: `data-lightbox`/`data-gallery` → zoomable regardless of size; else size must be ≥80×80px.
 
 ### Attribute checklist per page section
+
 - **Hero photo** — container: `data-lightbox="<page>-hero"` on `<img>`; classes: `cursor-zoom-in`
 - **2-column photo grid** — container: `data-gallery="<page>-photos"` on wrapper div; classes: `cursor-zoom-in`
 - **4-column partner grid** — container: `data-gallery="partner-photos"` on wrapper div; classes: `cursor-zoom-in`

@@ -29,6 +29,7 @@ paths:
 # 11 — Motion and Interaction System
 
 ## Motion serves one of three purposes
+
 1. **Feedback** — confirm user action (button press, form submit, save)
 2. **Continuity** — preserve spatial context across state changes (page transition, modal open)
 3. **Delight** — express brand personality (hero parallax, signature reveal)
@@ -36,6 +37,7 @@ paths:
 Anything else = AI slop. Cut it.
 
 ## 3-Tier Hierarchy
+
 - **Tier 1 — Functional** — feedback on every interaction (hover, focus, active, tap). Duration 100-200ms. Transform/opacity only.
 - **Tier 2 — Choreographic** — page transitions, modal entrance, section reveal. Duration 300-500ms. View Transitions or `@starting-style`.
 - **Tier 3 — Cinematic** — hero parallax, signature reveal, scroll-driven storytelling. Duration ≥600ms. Scroll-timeline.
@@ -43,6 +45,7 @@ Anything else = AI slop. Cut it.
 Never stack 3 tiers in same surface — overwhelming. One cinematic per page.
 
 ## Mandatory `prefers-reduced-motion`
+
 EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final state, never hide content. Pair with `animation-duration:1ms` fallback for unsupported browsers.
 
 ```css
@@ -57,6 +60,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 ```
 
 ## View Transitions API
+
 - Same-document SPA: `document.startViewTransition(() => updateDOM())`
 - Cross-document MPA: `@view-transition { navigation: auto; }` in CSS
 - Per-element: `view-transition-name: hero-image;` on persistent elements
@@ -70,6 +74,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 ```
 
 ## Scroll-Driven Animations
+
 - `animation-timeline: scroll()` (root scroller) or `view()` (element-in-viewport)
 - Off-main-thread on Chrome stable + Safari 26 (2025)
 - Firefox unsupported — pair w/ `prefers-reduced-motion` AND duration:1ms fallback
@@ -80,6 +85,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 ```
 
 ## `@starting-style` (DOM-insert animation)
+
 - Baseline 2026
 - Animates from explicit "starting" state to default state when element enters DOM
 
@@ -89,6 +95,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 ```
 
 ## Container Scroll-State Queries (Baseline 2026)
+
 - `@container scroll-state(stuck: top)` — apply styles when element is stuck
 - Replaces JS scroll-listener-based sticky styling
 
@@ -98,6 +105,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 ```
 
 ## Micro-Interactions (Tier 1 patterns)
+
 - **Button press** — `transform: scale(0.98)` on `:active`, 100ms transition
 - **Hover** — `transform: translateY(-1px)` + color shift + 200ms
 - **Focus-visible** — 3px brand-accent ring, 2px offset, 0ms transition (instant)
@@ -106,6 +114,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 - **Loading** — pulse animation 1.2s ease-in-out infinite
 
 ## Stagger sequences (no JS needed)
+
 ```css
 .list-item { animation: fade-up 0.4s ease-out backwards; }
 .list-item:nth-child(1) { animation-delay: 0ms; }
@@ -115,13 +124,16 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 ```
 
 ## Performance constraints
+
 - Animate `transform` + `opacity` ONLY on hot paths
 - `will-change` sparingly (transform, opacity only when actually animated)
 - Drop GPU layers after animation completes
 - INP target ≤100ms per `_kernel/standards.md#cwv` — animations shouldn't block input
 
 ## Interaction polish (every interactive element)
+
 Per `10-experience-and-design-system` § 4-state distinction:
+
 - Default → neutral
 - Hover → underline-sweep + color shift + `translateY(-1px)`
 - Focus-visible → 3px brand-accent ring 2px offset (distinct from hover)
@@ -130,6 +142,7 @@ Per `10-experience-and-design-system` § 4-state distinction:
 Audit gate: Playwright cycles each interactive through 4 states → diff ≥3px pixel-difference or fail.
 
 ## Banned motion
+
 - ❌ Uniform fade-in on every element (AI slop tell)
 - ❌ Parallax on every section (one cinematic per page)
 - ❌ Spinning loaders that don't progress (use indeterminate progress bars or skeletons)

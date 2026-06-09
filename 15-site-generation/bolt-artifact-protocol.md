@@ -114,6 +114,7 @@ Container with: Node 20+, Bun 1.x optional, ImageMagick (favicon fallback), pdft
 - **Claude Code Tool Use** — individual `Write` tool calls. Works in IDE, doesn't fit a generation API.
 
 Picked Bolt's shape because:
+
 1. Widely understood by Claude from training data
 2. Streamable token-by-token (file content streams while next file's metadata buffers)
 3. Verifiable (parser can reject malformed envelopes before any file write)
@@ -149,6 +150,7 @@ Failed validation → re-prompt Claude with error list. Max 2 retries.
 ## Streaming Considerations
 
 When using Anthropic streaming API:
+
 - Stream `text_delta` events into a parser emitting `boltAction-start`, `boltAction-body-delta`, `boltAction-end` events
 - Write file as soon as `boltAction-end` fires (don't buffer entire artifact)
 - Lets user see file-by-file progress in projectsites.dev dashboard

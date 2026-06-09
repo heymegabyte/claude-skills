@@ -3,6 +3,7 @@
 Long-running pipelines (CF Workflows, build queues, generation jobs, container orchestrators) must be inspected for wedged / error rows BEFORE any new trigger. Universal protocol — see `~/.claude/rules/failed-pipeline-protocol.md` for the full rule. This file is the project-sites runbook: exact commands, exact tables, exact thresholds.
 
 ## Detect — One-Line D1 Query
+
 ```bash
 cd <repo> && set -a && source .env.local && set +a
 npx wrangler d1 execute project-sites-db-production --remote --env production --json --command \
@@ -15,6 +16,7 @@ npx wrangler d1 execute project-sites-db-production --remote --env production --
 - **Workflow instance status** (when needed): `instance.status()` from worker code OR `wrangler workflows instances describe <workflow> <id> --env production`
 
 ## Diagnose — Five Canonical Failure Modes
+
 Order by historical frequency at project-sites:
 
 1. **Schema CHECK constraint silently rejecting status writes** — `SELECT sql FROM sqlite_master WHERE name='sites'` → confirm allowed values include EVERY status the code writes (`draft|queued|collecting|imaging|generating|building|uploading|published|error|archived`). If missing any, table needs recreation.
@@ -24,6 +26,7 @@ Order by historical frequency at project-sites:
 5. **Container / orchestrator OOM / credit-balance** — Anthropic credit hold, R2 quota, container OOM. `audit_logs WHERE site_id=<id> ORDER BY created_at DESC LIMIT 50` shows the last action before silence.
 
 ## Fix — Schema Recreation Pattern (D1 has no `ALTER CHECK`)
+
 ```sql
 PRAGMA foreign_keys=OFF;
 CREATE TABLE sites_new ( /* full schema with expanded CHECK */ );
@@ -36,6 +39,7 @@ PRAGMA foreign_keys=ON;
 Run via `wrangler d1 execute project-sites-db-production --remote --env production --file /tmp/migrate.sql`. Always test on local D1 first (`--local`).
 
 ## Verify Fix — Status Write Smoke Test
+
 ```bash
 npx wrangler d1 execute project-sites-db-production --remote --env production --command \
   "UPDATE sites SET status='error' WHERE id='<test-id>'; SELECT status FROM sites WHERE id='<test-id>'"
@@ -44,17 +48,21 @@ npx wrangler d1 execute project-sites-db-production --remote --env production --
 Must return `error`, not silently fail. Then deploy: `cd apps/project-sites && npx wrangler deploy --env production` (sandbox often blocks log writes — use `dangerouslyDisableSandbox: true`).
 
 ## Retrigger — Session Mint + Direct Worker URL
+
 - Public hostname `https://projectsites.dev` triggers CF Bot Fight challenge for scripted POSTs → use direct worker URL `https://project-sites.manhattan.workers.dev`
 - Reference one-shot script: `/tmp/claude/retrigger-builds.mjs` — mints session via D1 INSERT (sha256 token_hash), POSTs `/api/sites/<id>/reset` with Bearer token
 - Always pair with a background monitor task polling D1 every 60s, max 35min
 
 ## Operator Stance
+
 This work IS the business. Detect → diagnose → fix → verify → retrigger → monitor → report URLs + codes in one session, no handoff. Document new failure modes in this file the same prompt they occur. Stale runbook = bug.
 
 ## Canonical Incident: 2026-05-01 (4 wedged sites, 15+ hours)
+
 **Root cause:** `sites.status` CHECK allowed only 5 values, code wrote 10. Every error-path write silently rejected → cron saw fresh heartbeat `updated_at` → never fired unsticker. Compounded by 60min threshold + no `MAX_POLLS` cap + no `notifyBuildFailed` at error paths.
 
 **Fix bundle:**
+
 - Expanded CHECK
 - `MAX_POLLS=30`
 - Cron 30min

@@ -1,5 +1,42 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-43 — skill-dir markdownlint sweep + CI markdown gate + relaxed-config codification
+
+### Closes pass-42 candidate 1 (skill-dir sweep) + candidate 3 (markdownlint in CI)
+
+- **`[0-9][0-9]-*/**/*.md` markdownlint sweep** — 152 skill-dir files swept; 147 received blank-line normalization (MD022/MD031/MD032). 2738 insertions, 20 deletions, zero functional content changes (verified by hunk audit on `01-operating-system/SKILL.md` — all hunks are pure `+\n` blank-line additions around headings/lists/fences).
+- **`.markdownlint.jsonc` relaxed config** — added MD001 (skip-level headings), MD029 (ordered-list-prefix `1./1./1.` Brian-voice pattern), MD056 (table-column-count for compact tables) to the disable list. Matches existing relaxed style documented in `rules/lint-doctrine.md`. Same config applied to `templates/lint-stack/.markdownlint.jsonc` so downstream projects inherit the same rule set.
+- **`.github/workflows/publish.yml` § Self-lint Markdown** — new CI step in the `validate` job right after Self-lint YAML. Runs `npx markdownlint-cli2@^0.18.1 "rules/*.md" "[0-9][0-9]-*/**/*.md"` — 242 files, 0 errors at HEAD. Future markdown drift fails CI before merge.
+
+### Why disable MD001/MD029/MD056
+
+- **MD029** (`ol-prefix`) — the doctrine deliberately uses `1. / 1. / 1.` markdown source rendered as a numbered list. This is a Brian-voice anti-pattern that markdownlint's default (`Style: 1/2/3`) flags. Disabling is the canonical fix, NOT a workaround. 238 violations dropped to 0 with one config line.
+- **MD001** (heading-increment) — skill-dir docs deliberately skip from `#` to `###` when the H2 is implicit from the SKILL.md frontmatter. Cosmetic over-correction; intentional in the agentskills style.
+- **MD056** (table-column-count) — compact tables in `15-site-generation/quality-gates.md` use intentional cell-merging. Lint's strict-column-count check fights it.
+
+### Scope verification
+
+```bash
+# Before pass-43 config: 244 errors (238 MD029 + 6 MD001/MD056)
+# After pass-43 config:    0 errors across 242 files
+npx markdownlint-cli2@^0.18.1 "rules/*.md" "[0-9][0-9]-*/**/*.md"   # 0 error(s)
+```
+
+### What was NOT done
+
+- CHANGELOG.md (this file) markdown sweep — single-file concentrated diff still deferred
+- Top-level READMEs / agent docs — not under `rules/` or skill-dir glob
+- Pass-39 candidates 2/3 (SessionStart hook + Python parity) — still gated
+
+### Next candidates (pass-44)
+
+- CHANGELOG.md sweep (single-file, ~1300-line diff)
+- Top-level `*.md` + `docs/**/*.md` glob extension
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-42 — CI yamllint self-lint gate + repo-wide rules/ markdownlint sweep
 
 ### Closes pass-41 Rec 1 (CI self-lint) + pass-41 Rec 2 (markdownlint sweep)

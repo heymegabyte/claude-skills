@@ -8,9 +8,11 @@ description: "MANDATORY on every service/product. Workers AI + Vectorize RAG cha
 # AI Chat Widget
 
 ## Mandatory Inclusion Rule
+
 **Every product/service built by this system MUST include an AI chat widget** trained on that specific service's content. This is not optional.
 
 The chat must:
+
 1. Be trained exclusively on the service's own pages, docs, and content
 2. Auto-re-index at every deploy (content changes = chat knowledge updates)
 3. Know the service's name, purpose, pricing, and features
@@ -19,7 +21,9 @@ The chat must:
 6. Work within the CF Workers AI free tier (10K neurons/day)
 
 ## Context Training Per Service
+
 Each AI chat is unique because it indexes ONLY that service's content:
+
 ```typescript
 // At deploy time, index THIS service's content
 async function indexServiceContent(env: Env) {
@@ -49,6 +53,7 @@ async function indexServiceContent(env: Env) {
 ```
 
 ## System Prompt Template (Per Service)
+
 ```typescript
 const systemPrompt = `You are the AI assistant for ${env.SITE_NAME}.
 ${env.SITE_DESCRIPTION}
@@ -66,12 +71,14 @@ ${context}`;
 ```
 
 ## Architecture
+
 ```
 User types question → Worker AI embeds query → Vectorize finds relevant chunks
 → Worker AI generates answer from chunks → Stream response to user
 ```
 
 ### Vector Index (Built at Deploy Time)
+
 ```typescript
 // Index all page content into Vectorize
 async function indexSiteContent(env: Env) {
@@ -92,6 +99,7 @@ async function indexSiteContent(env: Env) {
 ```
 
 ### Chat API Endpoint
+
 ```typescript
 app.post('/api/chat', async (c) => {
   const { message } = await c.req.json();
@@ -123,6 +131,7 @@ app.post('/api/chat', async (c) => {
 ```
 
 ### Chat Widget UI
+
 ```html
 <button id="chatToggle" class="chat-toggle" aria-label="Open chat">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -143,6 +152,7 @@ app.post('/api/chat', async (c) => {
 ```
 
 ### Styling
+
 ```css
 .chat-toggle {
   position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1000;
@@ -164,4 +174,5 @@ app.post('/api/chat', async (c) => {
 ```
 
 ## Cost
+
 Free on CF Workers AI free tier (10K neurons/day).

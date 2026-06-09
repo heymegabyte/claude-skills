@@ -8,6 +8,7 @@ description: "Full SEO engine: keyword research, competitor analysis, per-page p
 # SEO and Keywords
 
 Every page targets:
+
 - 1 holy-grail keyword (high-volume)
 - 1-2 longtail phrases (lower competition, high intent)
 - Semantic variations woven naturally
@@ -15,11 +16,13 @@ Every page targets:
 ## Keyword Research Workflow
 
 ### Step 1: Seed from Product
+
 `Domain → category → features → user problems`. E.g. `"instantidle.com" → container deployment → "docker hosting" → "cheap docker hosting"`.
 
 ### Step 2: Expand with APIs
 
 #### Google Autocomplete (FREE, no key)
+
 ```typescript
 async function getAutocompleteSuggestions(seed: string): Promise<string[]> {
   const url = `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(seed)}`;
@@ -30,17 +33,20 @@ async function getAutocompleteSuggestions(seed: string): Promise<string[]> {
 ```
 
 #### Other tools
+
 - **DataForSEO** (~$0.01/keyword) — returns volume, CPC, competition, trends
 - **Google Search Console** (FREE) — real clicks, impressions, position for existing sites
 - **Google Trends** — relative interest over time
 
 ### Step 3: Competitor Analysis
+
 1. Identify 3-5 competitors
 2. Scrape `sitemap.xml` → fetch pages → extract title / h1 / meta
 3. Find gaps (keywords they rank for that we don't)
 4. Find easy wins (high volume + low competition)
 
 ### Step 4: Selection Matrix
+
 - **Holy-grail** — highest volume relevant keyword
 - **Longtail 1** — lower competition, commercial intent
 - **Longtail 2** — informational intent, blog / resource page
@@ -48,21 +54,26 @@ async function getAutocompleteSuggestions(seed: string): Promise<string[]> {
 ## Per-Page Yoast Checklist (ALL GREEN)
 
 ### Title Tag
+
 50-60 chars, keyword at start, unique, includes brand. Format: `{Keyword} — {Supporting} | Brand`.
 
 ### Meta Description
+
 120-156 chars, contains keyword, includes CTA, unique per page.
 
 ### URL
+
 Short, readable, keyword-rich, lowercase, hyphens. Good: `/docker-hosting`.
 
 ### Headings
+
 - One H1 with keyword
 - H2s with longtail / semantic variations
 - Logical hierarchy
 - No skipped levels
 
 ### Content
+
 - Keyword in first 100 words
 - Density 0.5-3% (natural)
 - Min 300 words (600+ preferred)
@@ -72,6 +83,7 @@ Short, readable, keyword-rich, lowercase, hyphens. Good: `/docker-hosting`.
 - Transition words ≥30% of sentences
 
 ### Images
+
 - Alt text with keyword (natural)
 - Descriptive filename
 - Width / height set
@@ -79,18 +91,22 @@ Short, readable, keyword-rich, lowercase, hyphens. Good: `/docker-hosting`.
 - WebP <200KB
 
 ### Links
+
 - **Internal** — 2-3+ per page, descriptive anchors
 - **External** — 1-2 outbound to authoritative sources, `target="_blank" rel="noopener"`
 
 ### Schema / JSON-LD (4+ per page minimum)
+
 Organization + WebSite + WebPage + domain-specific (FAQ, Product, BreadcrumbList, Article, HowTo, SoftwareApplication, DonateAction).
 
 ### Technical
+
 Canonical URL, mobile-friendly, LCP <2.5s, HTTPS, no duplicate content, XML sitemap, robots.txt.
 
 ## Readability Enforcement (Flesch ≥60)
 
 ### Yoast 9 Checks (All Automatable)
+
 - **Flesch** — ≥60
 - **Sentence length** — avg ≤20 words
 - **Paragraph length** — ≤150 words
@@ -102,6 +118,7 @@ Canonical URL, mobile-friendly, LCP <2.5s, HTTPS, no duplicate content, XML site
 - **Single H1** — exactly one
 
 ### By Section
+
 - Hero — 80+
 - Body — 50-65
 - Technical docs — 40-50
@@ -110,6 +127,7 @@ Canonical URL, mobile-friendly, LCP <2.5s, HTTPS, no duplicate content, XML site
 - CTAs — 80+
 
 ## Programmatic SEO
+
 ```typescript
 // Dynamic pages: "Docker hosting in [city]"
 const cities = ['New York', 'San Francisco', 'London'];
@@ -119,6 +137,7 @@ for (const city of cities) {
 ```
 
 ### Internal Linking Strategy
+
 - Homepage → category pages → product pages
 - Blog → relevant products + related posts
 - Every page — 2-3 internal links min
@@ -126,7 +145,9 @@ for (const city of cities) {
 - Orphan detection after build
 
 ## SEO Audit (Every Deploy)
+
 Playwright test verifying:
+
 - Title 30-60 chars
 - Meta desc 120-160 chars
 - Exactly 1 H1
@@ -140,6 +161,7 @@ Playwright test verifying:
 - `sitemap.xml` 200
 
 ## API Stack ($8/mo total)
+
 - **Google Search Console** — Free — real clicks / impressions
 - **VebAPI** — $8/mo — competitor keywords, SERP
 - **Serper free tier** — Free — 2,500/mo SERP + PAA
@@ -148,6 +170,7 @@ Playwright test verifying:
 - **DataForSEO** — $0.0006/query — bulk volumes at scale
 
 ## Google's SEO Rules (2026 Core Update)
+
 - Original research / proprietary data rewarded (Information Gain signal)
 - Write naturally, no stuffing
 - Core Web Vitals — LCP <2.5s is hard ranking factor
@@ -155,6 +178,7 @@ Playwright test verifying:
 - Meta keywords tag ignored
 
 ## Longtail Strategy (Moz 2026)
+
 - Ultra-long-tail is "new normal"
 - Short-tail triggers AI Overviews
 - Modifier stacking — `[product] + [use case] + [audience] + [qualifier]`
@@ -162,6 +186,7 @@ Playwright test verifying:
 - GSC — impressions >10 but position >10 = low-hanging fruit
 
 ## MANDATORY: Research BEFORE Writing
+
 1. Identify 5-10 candidate keyphrases
 2. Evaluate — volume, difficulty, intent, relevance
 3. Select PRIMARY (1-4 words, unique to page)
@@ -170,6 +195,7 @@ Playwright test verifying:
 6. Write content optimized from first sentence
 
 ## Keyword-to-Page Map
+
 ```typescript
 const keywordMap = {
   '/': { primary: 'main keyword', related: ['variation 1', 'variation 2'] },
@@ -179,8 +205,10 @@ const keywordMap = {
 ```
 
 ## Rich Snippets
+
 Every page — Organization + WebSite(SearchAction) + WebPage + domain-specific schema. OpenSearch XML at `/opensearch.xml`. Validate with Google Rich Results Test.
 
 ## Ownership
+
 - **Owns:** Keyword research, competitor analysis, per-page targeting, Yoast checks, readability, programmatic SEO, audit automation, internal linking, schema / JSON-LD, OG / Twitter tags, sitemap, robots.txt, keyword-to-page mapping
 - **Never owns:** Content writing (→09, 22), visual design (→10), deployment (→08)

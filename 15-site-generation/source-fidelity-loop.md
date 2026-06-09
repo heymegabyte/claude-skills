@@ -19,6 +19,7 @@ Before generation starts, Worker captures source-domain homepage. Three capture 
 3. **Operator-supplied screenshot upload** to R2 at `sites/{slug}/_source_screenshot.png`. Last resort for owner-provided brand decks where no public source exists.
 
 **Output**:
+
 - `_source_screenshot.png` saved to build dir + R2 archive at `sites/{slug}/build-context/_source_screenshot.png` (versioned)
 - Also extract palette + fonts from screenshot via GPT-4o vision into `_brand.json` (see skill 09 brand-extraction)
 - `_brand.json.fonts.heading` + `.fonts.body` + `.primary` + `.secondary` become the authority — generation prompts MUST receive them and build MUST honor them
@@ -35,6 +36,7 @@ After staging deploy succeeds (Worker URL responds 200), capture rebuilt homepag
 - Then `page.screenshot({ fullPage: false, type: 'png' })`
 
 **Output**:
+
 - `_rebuild_screenshot.png` saved alongside `_source_screenshot.png` in build dir
 - Re-capture on every rebuild iteration (do NOT cache — comparison must reflect latest deploy)
 - Cache key in `validate-source-fidelity.mjs` is `sha256(source_buf + rebuild_buf)`, so byte-identical rebuilds short-circuit; any visual change re-scores
@@ -56,6 +58,7 @@ Validator sends BOTH images + brand hint (`_brand.json.fonts` + `_brand.json.pri
 ```
 
 **Pass threshold** — ALL of:
+
 - `logo_match === true`
 - `color_match ≥ 7`
 - `typography_match ≥ 7`
@@ -71,27 +74,32 @@ Result cached in `.source-fidelity-cache.json` keyed by `sha256(source_buf+rebui
 On fail, project agent `source-fidelity-fixer` (declared in `apps/project-sites/.claude/agents/source-fidelity-fixer.md` — task #35) reads `result.notes`, `result.missing_elements`, and per-axis scores, then issues TARGETED regenerations:
 
 ### `logo_match=false`
+
 - Re-run skill 12 logo extraction from source (favicon → about page → header SVG → Wayback header)
 - NEVER auto-generate via Ideogram unless source logo genuinely unrecoverable
 - If Ideogram fallback fires, log `_brand.json.warnings[].logo_synthesized=true` so operator knows
 
 ### `color_match<7`
+
 - Re-extract palette from `_source_screenshot.png` via GPT-4o vision (skill 09 brand-color-extraction)
 - Overwrite `_brand.json.primary`/`secondary`/`accent`
 - Regenerate `tokens.css` + Tailwind config, redeploy
 - **Common cause**: build prompt guessed "burgundy" when source was actually crimson `#A81F32` — exact hex matters, not category
 
 ### `typography_match<7`
+
 - Cross-check `_brand.json.fonts.heading`/`body` against fonts actually loaded in `_rebuild_screenshot.png` (Computed Style via puppeteer `getComputedStyle(document.querySelector('h1')).fontFamily`)
 - If fonts on disk match `_brand.json` but rebuild loading different stack, issue is missing `<link>` preload or Tailwind theme override — fix font preload + theme
 - If `_brand.json.fonts` themselves wrong, re-extract via skill 09 (vision sees actual letterforms — Poppins vs Inter is distinguishable)
 
 ### `hero_structure<7`
+
 - Regenerate hero block
 - Provide GPT-4o-extracted hero spec from source (image-on-right vs image-on-left vs full-bleed-photo vs gradient-only, headline length, CTA count) to build prompt
 - **Common drift**: source had photo background + dark scrim + 4-word headline; rebuild produced gradient + 12-word headline + 2 CTAs
 
 ### `overall_fidelity<8` with sub-scores all ≥7
+
 - Typically means cumulative drift (each axis "close enough" but gestalt is off)
 - Trigger one full hero re-render with `_source_screenshot.png` passed as few-shot reference image to GPT Image 1.5 (skill 12 image-generation supports image-conditioning)
 
@@ -100,6 +108,7 @@ After each fix: redeploy staging, recapture `_rebuild_screenshot.png`, re-run `v
 ## Phase 5: Escalation (iteration 4)
 
 Generate `_source_fidelity_report.html` with:
+
 - Source screenshot + latest rebuild screenshot side-by-side at 100%, 50%, 25% scales
 - Per-axis scores from each iteration (showing trajectory)
 - GPT-4o `notes` field per iteration

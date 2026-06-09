@@ -9,6 +9,7 @@ always-load: false
 # Security Hardening
 
 ## Security Headers (MANDATORY every Worker)
+
 ```typescript
 app.use('*', async (c, next) => {
   await next();
@@ -25,6 +26,7 @@ app.use('*', async (c, next) => {
 ```
 
 ## CSP Template
+
 ```typescript
 const CSP = [
   "default-src 'self'",
@@ -39,6 +41,7 @@ const CSP = [
 ```
 
 ## OWASP Top 10:2025 Prevention
+
 - **A01 Broken Access Control** — Clerk JWT on protected routes
 - **A02 Security Misconfiguration** — security headers on every response
 - **A03 Supply Chain Failures (NEW)** — `npm audit` in CI, Dependabot, lockfile audit, SRI
@@ -51,6 +54,7 @@ const CSP = [
 - **A10 Exceptional Conditions (NEW)** — `try/catch` all, `onError` handler, graceful degradation
 
 ### Notable 2025 changes
+
 - Supply chain elevated to #3 (expanded from A06:2021 Vulnerable Components)
 - Exceptional condition handling added at #10
 - Misconfiguration moved to #2 (up from #5)
@@ -59,6 +63,7 @@ const CSP = [
 - **Shai-Hulud Worm (npm, Sep 2025)** — self-replicating worm compromised npm maintainer accounts, 500+ downstream packages — reinforce lockfile auditing and SRI
 
 ## Rules
+
 1. Zod on ALL input (body, query, params, headers). No unvalidated input touches logic.
 2. Never `eval()`, `innerHTML`, `document.write()`. Use `textContent`.
 3. Parameterized queries only. Drizzle default. Raw must `.bind()`.
@@ -75,6 +80,7 @@ const CSP = [
 ## Key Patterns
 
 ### Rate Limiting (KV)
+
 ```typescript
 function rateLimit({ limit, window, keyPrefix }: RateLimitConfig) {
   return async (c, next) => {
@@ -89,6 +95,7 @@ function rateLimit({ limit, window, keyPrefix }: RateLimitConfig) {
 ```
 
 ### Turnstile Verification
+
 ```typescript
 async function verifyTurnstile(token: string, secret: string, ip: string): Promise<boolean> {
   const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
@@ -99,6 +106,7 @@ async function verifyTurnstile(token: string, secret: string, ip: string): Promi
 ```
 
 ### Auth Middleware (Clerk JWT)
+
 ```typescript
 function requireAuth() {
   return async (c, next) => {
@@ -112,15 +120,18 @@ function requireAuth() {
 ```
 
 ### XSS Prevention
+
 `escapeHtml()` for dynamic content in server-rendered HTML.
 
 ## Secret Rotation (Every 90 days)
+
 - Rotate: `STRIPE_API_KEY`, `TURNSTILE_SECRET`, `CLERK_SECRET_KEY`
 - Verify `npm audit` 0 critical/high
 - Review Dependabot
 - Check CF WAF
 
 ## Headers to REMOVE
+
 - `X-XSS-Protection` — creates XSS vulns in older browsers, CSP replaces
 - `Expect-CT` — deprecated per Mozilla
 - `Public-Key-Pins` / HPKP — deprecated
@@ -129,6 +140,7 @@ function requireAuth() {
 - `X-AspNet-Version` — exposes framework
 
 ## CSP Best Practices (2026)
+
 - Nonce-based or hash-based strict CSP preferred over allowlist
 - `strict-dynamic` trusts scripts created by trusted scripts
 - `form-action` at least `'self'`
@@ -139,6 +151,7 @@ function requireAuth() {
 - **Trusted Types** (cross-browser since Feb 2026 — Chrome + Firefox) — `require-trusted-types-for 'script'` in CSP eliminates DOM XSS sinks. No longer experimental — recommend for all new projects.
 
 ## OWASP Agentic Top 10 (2026)
+
 For apps calling LLM APIs (AI chat, copilot features, agent workflows):
 
 1. **Prompt Injection** — input sanitization, system prompt isolation, output filtering
@@ -153,6 +166,7 @@ For apps calling LLM APIs (AI chat, copilot features, agent workflows):
 10. **Uncontrolled Agent Behavior** — kill switches, max iterations, human-in-the-loop gates
 
 ## Compliance (2026 Deadlines)
+
 - **PCI DSS v4.0** (mandatory Mar 2025) — script inventory + integrity on payment pages (6.4.3), WAF mandatory for internet-exposed web apps, real-time tamper detection on payment pages (11.6.1). Stripe Checkout handles PCI scope — custom checkout pages need compliance.
 - **CCPA 2026** (Jan 1) — dark pattern rules codified (accept/decline equal size, no pre-selected defaults), 12 US states mandate GPC signal honoring. Detect `Sec-GPC: 1` header.
 - **EU AI Act Art. 50** (Aug 2, 2026) — users must be informed they're interacting with AI chatbot/content. GPAI providers need labeling. Biometric/employment/credit AI = high-risk conformity assessment.
@@ -160,6 +174,7 @@ For apps calling LLM APIs (AI chat, copilot features, agent workflows):
 - **Chrome LNA** (v142+) — public sites accessing local networks need `Access-Control-Allow-Private-Network` response header.
 
 ## Security Audit Quick Scan
+
 ```bash
 grep -rn 'eval\|innerHTML\|document\.write' src/ --include="*.ts"
 grep -rn 'password.*=.*["\x27]\|api_key.*=.*["\x27]' src/ --include="*.ts"
@@ -167,5 +182,6 @@ grep -rn "origin.*['\"]\\*['\"]" src/ --include="*.ts"
 ```
 
 ## Ownership
+
 - **Owns:** CSP, security headers, OWASP prevention, Zod validation, Turnstile, rate limiting, secret management, dependency scanning, XSS/CSRF/injection prevention, CORS, auth middleware, security audits
 - **Never owns:** Auth provider selection (→05), webhook logic (→45), form UI (→32), CI/CD (→35), API routes (→25)

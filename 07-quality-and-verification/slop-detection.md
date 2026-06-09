@@ -8,6 +8,7 @@ description: "Automated detection of AI filler, placeholder content, and banned 
 # Slop Detection
 
 ## Pattern Registry
+
 ```typescript
 const AI_FILLER = [
   'leverage','utilize','in order to','it\'s important to note','I\'d be happy to','I cannot',
@@ -30,6 +31,7 @@ const STRUCTURAL = [/\{\{.*?\}\}/,/\[.*?]\(#\)/,/src=["']#["']/,/href=["']#["']/
 ```
 
 ## Pre-Commit Hook
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -48,6 +50,7 @@ done
 ```
 
 ## Codebase Scanner
+
 ```typescript
 // scripts/slop-scan.ts
 import { readFileSync, readdirSync, statSync } from 'fs';
@@ -76,9 +79,11 @@ process.exit(hits.length>0?1:0);
 ```
 
 ## GEO Anti-Slop (AI Search Optimization)
+
 AI search engines (Perplexity / ChatGPT / Gemini) prefer quotable direct answers. Slop patterns reduce citation rate from 16% → 54%.
 
 ### Rules
+
 - Lead paragraphs answer query directly
 - 40-60 word quotable blocks
 - Specific numbers not vague claims
@@ -87,10 +92,12 @@ AI search engines (Perplexity / ChatGPT / Gemini) prefer quotable direct answers
 - No hedging phrases
 
 ### Check
+
 ```bash
 grep -rn "it's worth noting\|in today's digital\|plays a crucial role" src/
 ```
 
 ## Package Scripts + Exceptions
+
 - `"lint:slop": "bun run scripts/slop-scan.ts"` — runs in CI, blocks merge on any hit
 - **Exceptions:** test files | docs referencing banned patterns | node_modules | error messages quoting user input

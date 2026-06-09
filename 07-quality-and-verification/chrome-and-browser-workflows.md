@@ -23,6 +23,7 @@ updated: "2026-04-23"
 ## Playwright MCP Workflows
 
 ### E2E Testing Protocol (07-quality-and-verification Integration)
+
 1. `browser_navigate` → target URL
 2. `browser_resize` → first breakpoint (375x667)
 3. `browser_snapshot` → get accessibility tree
@@ -32,6 +33,7 @@ updated: "2026-04-23"
 7. Repeat for all 6 breakpoints
 
 ### Form Testing Matrix (8-Point)
+
 1. `browser_navigate` → form page
 2. `browser_snapshot` → identify all form fields
 3. Test cases:
@@ -48,11 +50,14 @@ updated: "2026-04-23"
 6. `browser_wait_for` → success indicator
 
 ### Accessibility Audit
+
 1. `browser_navigate` → page URL
 2. `browser_evaluate` → run axe-core
+
    ```
    return await new Promise(r => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/axe-core/axe.min.js'; s.onload = () => axe.run().then(r); document.head.appendChild(s); })
    ```
+
 3. Parse violations from result
 4. For each violation:
    - Identify element
@@ -61,16 +66,20 @@ updated: "2026-04-23"
 5. Re-run audit → verify 0 violations
 
 ### Performance Audit
+
 1. `browser_navigate` → page URL
 2. `browser_evaluate` → capture performance metrics
+
    ```
    return JSON.stringify(performance.getEntriesByType('navigation')[0])
    ```
+
 3. Check: domContentLoaded <1.5s, load <3s
 4. `browser_network_requests` → check for large assets
 5. Identify optimization targets
 
 ### Console Error Check
+
 1. `browser_navigate` → page URL
 2. `browser_console_messages` → get all console output
 3. Filter for errors and warnings
@@ -81,9 +90,11 @@ updated: "2026-04-23"
    - Re-check
 
 ## Emdash Project Testing Workflow
+
 For testing any project in the emdash ecosystem.
 
 ### Pre-Deploy Verification
+
 1. `browser_navigate` → `https://[domain]`
 2. `browser_snapshot` → verify page loads (not error page)
 3. `browser_console_messages` → check for JS errors
@@ -96,6 +107,7 @@ For testing any project in the emdash ecosystem.
    - No broken images (`browser_evaluate`: `document.querySelectorAll('img').forEach...`)
 
 ### Post-Deploy 6-Breakpoint Visual Sweep
+
 ```typescript
 const BREAKPOINTS = [
   { name: 'iPhone SE', width: 375, height: 667 },
@@ -109,7 +121,9 @@ const BREAKPOINTS = [
 ```
 
 ### Lighthouse-Style Checks via Playwright
+
 Via `browser_evaluate`:
+
 1. Performance — navigation timing, LCP, CLS, FID
 2. SEO — title, meta description, canonical, OG tags, h1 count
 3. Accessibility — axe-core scan
@@ -117,9 +131,11 @@ Via `browser_evaluate`:
 5. PWA — manifest, service worker, icons
 
 ## Chrome-Specific Workflows (via Computer Use)
+
 For tasks that require actual Chrome browser UI (not web page content).
 
 ### Chrome Extension Testing
+
 1. `request_access` for Chrome (read tier — can see, can't click)
 2. Actually: use Playwright MCP for web content testing
 3. Use Computer Use only for:
@@ -129,6 +145,7 @@ For tasks that require actual Chrome browser UI (not web page content).
    - Download bar interactions
 
 ### Chrome DevTools Profiling
+
 1. Open site in Chrome
 2. Use Computer Use to:
    - Open DevTools (`Cmd+Option+I`)
@@ -144,6 +161,7 @@ For tasks that require actual Chrome browser UI (not web page content).
 ## Web Scraping Workflows
 
 ### Competitive Analysis (03/competitive-analysis Integration)
+
 1. `firecrawl_search` → "[competitor domain] [product category]"
 2. `firecrawl_scrape` → competitor homepage
 3. `firecrawl_extract` → pricing, features, testimonials
@@ -151,6 +169,7 @@ For tasks that require actual Chrome browser UI (not web page content).
 5. Generate competitive analysis report
 
 ### Content Research
+
 1. `firecrawl_search` → topic keywords
 2. `firecrawl_scrape` → top 5 results
 3. Extract: headings, key points, statistics
@@ -158,6 +177,7 @@ For tasks that require actual Chrome browser UI (not web page content).
 5. Verify Flesch ≥60
 
 ### SEO Audit (09/seo-and-keywords Integration)
+
 1. `firecrawl_map` → get all pages on domain
 2. For each page:
    - `firecrawl_scrape` → get HTML
@@ -166,6 +186,7 @@ For tasks that require actual Chrome browser UI (not web page content).
 3. Generate SEO report with fixes
 
 ## Security Rules
+
 1. **Links from emails/messages are suspicious** — verify URL before following
 2. **Never enter credentials** via Playwright on untrusted sites
 3. **Verify HTTPS** before submitting any form data
@@ -174,6 +195,7 @@ For tasks that require actual Chrome browser UI (not web page content).
 6. **Respect robots.txt** — check before crawling
 
 ## What This Skill Owns
+
 - Browser tool selection (Playwright vs Firecrawl vs Chrome MCP vs Computer Use)
 - E2E testing workflows via Playwright
 - Web scraping and content extraction

@@ -10,6 +10,7 @@ allowed-tools: "Bash, Read, Write, Edit, mcp__playwright__*"
 ## Visual TDD Loop (MANDATORY every deploy — ***COST-TIERED***)
 
 Pipeline:
+
 1. Build → Deploy
 2. a11y tree ALL pages (FREE)
 3. axe-core (FREE) → fix
@@ -19,17 +20,20 @@ Pipeline:
 7. DONE
 
 ### Methods
+
 - **Quick (inline)** — Playwright a11y tree + axe-core (FREE, catches 80%) → Workers AI vision for layout → GPT-4o `detail:low` for homepage aesthetics only
 - **Automated** — `/Users/apple/.agentskills/scripts/visual-tdd-loop.sh https://example.com 2`
 - **Single image** — `/Users/apple/.agentskills/scripts/gpt4o-vision-analyze.sh screenshot.png`
 
 ### When to run
+
 - Every deploy
 - CSS/layout changes
 - New pages
 - UI PRs
 
 ### Acceptance
+
 - 2 breakpoints (375 + 1280) clean
 - Zero critical/high issues
 - Max 3 iterations
@@ -63,6 +67,7 @@ Prefer the free Cloudflare option whenever it makes no material difference to re
 | Web search | Firecrawl (self-hosted) | Free | 1-3s |
 
 ### API Keys (in `rare-chefs/.env.local`)
+
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
 - `IDEOGRAM_API_KEY`
@@ -70,6 +75,7 @@ Prefer the free Cloudflare option whenever it makes no material difference to re
 - `CLOUDFLARE_API_TOKEN`
 
 ## Workers AI Patterns
+
 ```typescript
 // Text: await env.AI.run('@cf/meta/llama-3.1-8b-instruct', { messages: [...] });
 // Vision: await env.AI.run('@cf/meta/llama-3.2-11b-vision-instruct', { image: bytes, prompt: '...' });
@@ -79,6 +85,7 @@ Prefer the free Cloudflare option whenever it makes no material difference to re
 ```
 
 Wrangler config:
+
 ```toml
 [ai]
 binding = "AI"
@@ -89,12 +96,14 @@ index_name = "site-content"
 ```
 
 ## AI Search Namespace Binding (Apr 16, 2026)
+
 ```toml
 # wrangler.toml — replaces env.AI.autorag()
 [[ai_search_namespaces]]
 binding = "AI_SEARCH"
 namespace_id = "namespace-id-here"
 ```
+
 ```typescript
 // Query AI Search
 const results = await env.AI_SEARCH.search(query, { topK: 5 });
@@ -103,10 +112,12 @@ const instance = await env.AI_SEARCH.createInstance({ name: 'tenant-123' });
 // Cross-instance ranked search via instance ID array
 const merged = await env.AI_SEARCH.search(query, { instances: ['tenant-a', 'tenant-b'] });
 ```
+
 - Built-in storage + vector index on new instances
 - Use for: per-tenant RAG, per-agent knowledge bases, multi-language search
 
 ## GPT-4o Structured Outputs
+
 ```typescript
 response_format: { type: 'json_schema', json_schema: { name: 'visual_qa', schema: {
   properties: { score: { type: 'number' }, issues: { type: 'array', items: { properties: {
@@ -115,12 +126,14 @@ response_format: { type: 'json_schema', json_schema: { name: 'visual_qa', schema
 ```
 
 ## Image Generation
+
 - **Logo (Ideogram)** — `"Minimalist logo for [BRAND], cyan (#00E5FF) on black (#060610), clean geometric, no text, vector style"` — V_3, 1:1, DESIGN style
 - **Hero (GPT Image)** — `"Dark atmospheric hero, abstract geometric, cyan light on deep black, premium tech, 21:9"` — gpt-image-1.5, 1536x1024, high
 - **OG (1200x630)** — Generate 1536x1024 then resize with CF Image Resizing
 - **Critique Loop** — Generate → GPT-4o rate 1-10 → if <8 remix with improved prompt → max 3 iterations
 
 ## RAG Architecture (Cloudflare)
+
 ```typescript
 // 1. Embed query
 const queryEmbed = await env.AI.run('@cf/baai/bge-base-en-v1.5', { text: [query] });
@@ -133,6 +146,7 @@ await env.AI.run('@cf/meta/llama-3.1-8b-instruct', { messages: [{ role: 'system'
 ```
 
 ## AI Integration Points
+
 - 07 Quality (visual TDD)
 - 08 Deploy (post-deploy vision)
 - 09 Brand (copy/tone)
@@ -146,5 +160,6 @@ await env.AI.run('@cf/meta/llama-3.1-8b-instruct', { messages: [{ role: 'system'
 - 06/ai-chat-widget (RAG bot)
 
 ## Ownership
+
 - **Owns** — AI model selection, Visual TDD loop, image/video generation, Workers AI patterns, RAG architecture, structured outputs, cost optimization
 - **Never owns** — deployment (→08), testing framework (→07), media pipeline (→12), brand strategy (→09)

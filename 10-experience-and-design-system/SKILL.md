@@ -28,13 +28,16 @@ paths:
 # 10 — Experience and Design System
 
 ## The Apple Test
+
 After every design: would Apple's design team find this acceptable?
+
 - Two elements compete: remove one
 - Crowded: whitespace
 - Busy type: reduce sizes, increase weight contrast
 - Final: effortless, inevitable
 
 ## CSS Patterns
+
 - Overlay `rgba(0,0,0,0.81)` · Text shadow `1px 1px 1px rgba(255,255,255,0.333)` · Box shadow `2px 2px 2px rgba(0,0,0,0.69)`
 - Border-radius 5px interactive, 10px containers (never 0, never pill)
 - Hero padding 40px · Max text 720px · Line-height 1.4
@@ -43,6 +46,7 @@ After every design: would Apple's design team find this acceptable?
 - Reference: Linear, Notion, Stripe
 
 ## Typography
+
 - Body: Sora 400/500 · Headings: Space Grotesk 600/700 · Mono: JetBrains Mono 400/500 · Display: Clash Display 700 (hero only)
 - Variable fonts: WOFF2, subset to needed chars, self-host (never Google Fonts CDN), `font-display:swap`
 
@@ -65,6 +69,7 @@ After every design: would Apple's design team find this acceptable?
 - `text-wrap:balance` headings, `text-wrap:pretty` paragraphs
 
 ## Color (Dark Default)
+
 ```css
 :root {
   color-scheme: light dark;
@@ -84,18 +89,22 @@ After every design: would Apple's design team find this acceptable?
 - Cyan: primary CTAs · Blue: secondary · Gradients on buttons only · 6% borders · Subtle glow on primary interactive
 
 ### Dark-first
+
 - Elevation via lightness not shadows · base → surface 1 → surface 2 → surface 3
 - Status colors desaturate 10-20% from light-mode equivalents
 - Sans-serif fonts best in dark mode; use `-webkit-font-smoothing:antialiased`
 
 ### Theme
+
 - `color-scheme:light dark` · `data-theme="dark|light"` user override · `localStorage` persistence · `prefers-color-scheme` system default · Always provide toggle
 
 ### Modern color
+
 - OKLCH perceptually uniform · `color-mix()` for blending · Relative `oklch(from var(--brand) l c calc(h + 30))` · `light-dark()` theme-aware
 - Contrast 4.5:1 normal, 3:1 large/UI (WCAG 2.2 AA) · Target size min 24×24 px (2.5.8) · Focus 2px thick, 3:1 contrast (2.4.13)
 
 ## CSS Architecture (2026)
+
 ```css
 @layer reset, base, tokens, components, utilities, overrides;
 ```
@@ -106,9 +115,11 @@ After every design: would Apple's design team find this acceptable?
 - `appearance:base-select` native `<select>` (Chrome 135+) · `@supports` for progressive enhancement
 
 ### Baseline 2026
+
 - `@scope` · Anchor positioning · Scroll-state queries · `@starting-style` (all browsers) · `interpolate-size: allow-keywords` · `field-sizing: content` · `text-wrap: pretty` · `@property`
 
 ## W3C DTCG Design Tokens (2025.10 Stable)
+
 - JSON `.tokens` / `.tokens.json`, MIME `application/design-tokens+json`
 - Token: `$value` (required), `$type`, `$description`, `$deprecated`, `$extensions`
 - Types: color | dimension | duration | fontFamily | fontWeight | cubicBezier | number + composites (shadow, border, gradient, typography, transition)
@@ -118,6 +129,7 @@ After every design: would Apple's design team find this acceptable?
 - Tools: Tokens Studio, Style Dictionary, Penpot, Figma
 
 ## AI-Ready Design Documentation
+
 - `DESIGN.md`: plain-text markdown for LLM consumption
 - Sections: Visual Theme, Color Palette, Typography, Spacing + Layout, Components, Elevation
 - Atomic documentation: small context-rich units tied to components
@@ -125,19 +137,23 @@ After every design: would Apple's design team find this acceptable?
 - MCP servers (Figma Dev Mode MCP) for programmatic access
 
 ## Layout
+
 - Container 1140px (wide 1400, narrow 720), padding `clamp(1rem,3vw,3rem)`
 - Sections `clamp(4rem,8vw,8rem)`, border between
 - Grid `auto-fit minmax(280px,1fr)`, 1fr at 768px
 
 ### Patterns
+
 - Hero (full-viewport, centered) · Features (3-col icon + heading + desc) · Alternating (zigzag) · Pricing (3-tier highlighted) · FAQ (accordion) · CTA (full-width dark) · Footer (4-col stack)
 
 ### SaaS
+
 - Single-CTA 13.5%
 - Hero / Proof / Features / Demo / Testimonials / Pricing / FAQ / CTA
 - Bento grid for feature showcases
 
 ## Components
+
 - **Cards** — bg-card, border-subtle, 12px radius, hover: border-hover + shadow-glow
 - **Buttons** — Primary gradient #060610 text, 600 weight, 8px radius, hover 0.9, active scale(0.98), focus 3px cyan. Secondary: transparent, border, hover cyan
 - **Nav** — sticky, `rgba(6,6,16,0.85)`, `blur(16px)`
@@ -145,12 +161,15 @@ After every design: would Apple's design team find this acceptable?
 - **PrimeNG** — standalone (not NgModule), OnPush on all, lazy-load heavy (DataTable, Editor, Chart), design tokens for theming
 
 ## Interaction (every interactive element)
+
 `cursor:pointer`, hover state, focus-visible (3px cyan, 2px offset), active (scale 0.98), transition (0.2s color, 0.1s transform).
 
 WCAG 2.2 — min 24×24px targets, focus not obscured by sticky headers, dragging alternatives required, accessible auth.
 
 ### 4-state distinction (NON-NEGOTIABLE)
+
 Every link/button/card MUST visually differ across `:default | :hover | :focus-visible | :active` — NEVER let two states look identical.
+
 - Default → neutral
 - Hover → underline-sweep + color shift + `translateY(-1px)`
 - Focus-visible → 3px cyan ring 2px offset (distinct from hover)
@@ -159,6 +178,7 @@ Every link/button/card MUST visually differ across `:default | :hover | :focus-v
 Audit gate: Playwright cycles each interactive element through 4 states and screenshots → diff ≥3px pixel-difference between adjacent states or fail.
 
 ### Underline-sweep (text links default)
+
 ```css
 .underline-hover{position:relative}
 .underline-hover::after{content:"";position:absolute;z-index:1;left:51%;right:51%;bottom:0;background:var(--brand-accent);height:1px;transition:left .3s ease-out,right .3s ease-out}

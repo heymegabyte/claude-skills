@@ -15,6 +15,7 @@ Reference build: `~/emdash-projects/njsk.org` (live https://njsk-org.manhattan.w
 ### Mandatory inclusions in every generated site
 
 #### 1. Motion kit (9 utilities, ALL gated by `prefers-reduced-motion`)
+
 - `.hero-rise > *:nth-child(n)` — stepped 80/240/400/560ms delays, translateY(12px)→0 + blur(4px)→0 + opacity 0→1, 0.7s cubic-bezier(0.22,1,0.36,1) both
 - `.text-sheen` — `linear-gradient(110deg, currentColor 40%, var(--brand-200) 50%, currentColor 60%)` background-clip:text, 3s infinite shimmer
 - `.heading-underline::after` — 4px gradient bar that scaleX 0→1 on `.reveal-visible` toggle, 0.6s ease
@@ -26,12 +27,14 @@ Reference build: `~/emdash-projects/njsk.org` (live https://njsk-org.manhattan.w
 - `.reveal[data-reveal]` paired with IntersectionObserver toggling `.reveal-visible`; children stagger via `--i` custom prop
 
 #### 2. Stylized hand-drawn SVG map (NEVER Google Maps iframe)
+
 - Inline 500–800px wide SVG with brand-colored streets, landmark blocks, business pin
 - Below map: `Get Directions →` link to `https://www.google.com/maps/dir/?api=1&destination={url-encoded-address}` target=_blank
 - Reference pattern: `~/emdash-projects/njsk.org/src/components/stylized-map.tsx`
 - Iframes are slow, ugly, and leak data to Google
 
 #### 3. Lightbox (document-level click listener)
+
 - Auto-open any `<img>` ≥200×200 not inside `a|button|header|footer|[data-no-zoom]`
 - Render via `createPortal(modal, document.body)`
 - Body-scroll-lock: `body.style.position='fixed'; body.style.top='-${scrollY}px'; body.style.width='100%'; body.style.overflow='hidden'`
@@ -41,6 +44,7 @@ Reference build: `~/emdash-projects/njsk.org` (live https://njsk-org.manhattan.w
 - Reference: `~/emdash-projects/njsk.org/src/components/lightbox.tsx`
 
 #### 4. WCAG 2.2 AA (NOT 2.1)
+
 - 24×24px min targets (2.5.8)
 - Focus appearance `outline:2px solid var(--brand-500); outline-offset:2px` (2.4.11)
 - Focus-not-obscured (2.4.12)
@@ -49,35 +53,44 @@ Reference build: `~/emdash-projects/njsk.org` (live https://njsk-org.manhattan.w
 - Skip-link to `#main` first element in body
 
 #### 5. Two Google Fonts when `formality≥0.6`
+
 - Serif heading (Fraunces/Playfair/DM Serif) + sans body (Inter/DM Sans)
 - Single sans for casual
 - preconnect+preload
 - Font-loaded gate: `<style>html:not(.fonts-loaded) body{opacity:0}</style>` + `document.fonts.ready.then(()=>document.documentElement.classList.add('fonts-loaded'))`
 
 #### 6. 11-stop palette `--brand-50…--brand-950`
+
 - Via OKLCH lightness ramp from `brand_json.colors.primary`
 - Surfaces 50/100, text/accents 600/700/800, dark hero overlays 900/950
 
 #### 7. Drop-cap on first paragraph
+
 - `.lead::first-letter{float:left;font-size:4em;line-height:0.9;padding:0.1em 0.1em 0 0;font-family:var(--font-heading);color:var(--brand-700)}`
 
 #### 8. ≥4 JSON-LD blocks
+
 - Organization + LocalBusiness + WebSite + (FAQPage if FAQ present) + (BreadcrumbList if multi-page)
 
 #### 9. Banned-word grep — regenerate if any occurrence
+
 `revolutionize|leverage|seamless|robust|cutting-edge|world-class|empower|game-changing|unleash|supercharge|harness|foster|bolster|paradigm|holistic|ecosystem|next-generation|best-in-class|turnkey|synergy|disrupt|elevate|streamline|cornerstone|pivotal|myriad|plethora|transform|reimagine|redefine|transcend|boundless`
 
 Each occurrence -0.1 to professionalism+brand_consistency.
 
 #### 10. Ken-Burns slow-zoom on every hero bg image
+
 - `transform: scale(1.0→1.08)` 8s alternate
 
 #### 11. md5 image dedup before render
+
 - Never ship same hash twice
 - Source-code refs use FULL canonical filenames
 
 #### 12. Editorial typed-blocks for imported corpora
+
 Run any imported content (Squarespace export, scraped CMS, manual paste) through `clean_content` prompt FIRST. Output:
+
 ```json
 {
   "posts": [{
@@ -92,10 +105,12 @@ Run any imported content (Squarespace export, scraped CMS, manual paste) through
   "related_map": {"slug": ["siblingSlugs"]}
 }
 ```
+
 - Strip Squarespace residue
 - NEVER alter direct quotes, names, dates, or factual claims
 
 #### 13. Multi-page expansion when `complexity≥mid`
+
 - Run `generate_routes` prompt to plan 5–14 routes
 - Internal-link graph: every page → 3–5 contextual anchors with VARIED anchor text
 - BreadcrumbList JSON-LD on every non-home route
@@ -112,6 +127,7 @@ import → strip_cms_residue → ai_block_typing(lead/heading/paragraph/quote/ca
 ```
 
 ### Runtime prompts registered in `apps/project-sites/src/services/ai_workflows.ts`
+
 - `generate_website@2` — full motion kit + lightbox + stylized SVG map + WCAG 2.2 AA
 - `score_website@1` — 10-dim scoring including motion + typography + banned_words_found[]
 - `clean_content@1` — typed-block editorial pass
@@ -258,11 +274,14 @@ Parse _scraped_content.json for all original URL paths. Every original URL must 
 - Blog posts: preserve exact slug `/blog/2024/summer-event` → same route
 - Generate `public/_redirects` file in Cloudflare Pages format:
   ```
-  # Cloudflare Pages _redirects format: FROM TO STATUS
+
+# Cloudflare Pages _redirects format: FROM TO STATUS
+
   /old-about-us /about 301
   /our-team /about#team 301
   /news/2023/post-title /blog/post-title 301
   /services/old-service /services#old-service 301
+
   ```
   One redirect per line. `FROM` is the original path, `TO` is the new path, `STATUS` is 301 (permanent). For SPAs with client-side routing, also add a catch-all `/* /index.html 200` as the LAST line (Cloudflare Pages SPA fallback). Redirects are evaluated top-to-bottom, first match wins.
 - Validate: every URL from original sitemap.xml returns 200 or 301 — never 404
@@ -337,19 +356,25 @@ Web fonts loading from Google Fonts/CDN cause a visible Flash Of Unstyled Text (
     if(document.fonts&&document.fonts.ready)document.fonts.ready.then(reveal); setTimeout(reveal,1200)})();
   </script>
   ```
+
   The `setTimeout(reveal, 1200)` is a safety net — if `document.fonts.ready` never resolves (slow network, font CDN down), reveal at 1.2s anyway so the page never stays invisible
+
 - **Animate.css for in-page motion:** Use `animate__animated animate__fadeInUp animate__faster` etc. on hero sections, content cards, and route transitions. Glitch-free because animate.css uses transform/opacity only (GPU-composited, no layout thrash). All transitions gated on `prefers-reduced-motion: reduce`
 - **Hard gate:** Page-load video: capture first 1500ms with Playwright `recordVideo`. AI vision must NOT see a font-snap event (text shifts width/baseline mid-load). If snap is visible, preload directive missing or `<style>` block not blocking initial render
 
 ### Hero Image Context (***NEVER GENERIC — MATCH PAGE INTENT***)
+
 Hero backgrounds carry semantic weight. A food video on a Mass-schedule page or a generic stock-photo hero on a Health-Clinic page reads as careless. Every hero MUST visually align with the page's specific topic, not just the site's overall vibe.
+
 - **Audit pass:** For each route, ask: does the hero image/video literally depict what this page is about? `/donate` → volunteers-serving-meals (the impact). `/mass-schedule` → stained-glass church interior (worship). `/services/health-clinic` → medical-care imagery (not food). `/we-need` → pantry/donation-stock (not soup kitchen line)
 - **Source priority:** (1) original-site photos that match the page topic (2) blog post photos from the same topic cluster (3) stock photos from Pexels/Pixabay with `topic` query (`pexels.com/search/{topic}` → first non-people-faced result, license-free) (4) AI generation as last resort
 - **Hard gate:** Visual QA pass — AI vision scores each hero on `image_matches_page_topic` (0-10). Any hero <8/10 flagged for replacement. Score 6 example: food-prep video on /mass-schedule (food is on-brand for the org but off-topic for the page). Score 9 example: stained-glass-window photo on /mass-schedule
 - **The njsk.org Mass-schedule incident:** Hero used `/videos/volunteers-serving.mp4` because it was the only available video — semantically wrong (the page is about Sunday Catholic worship, not the kitchen). Fix: downloaded a stained-glass church interior from Pexels, applied ken-burns slow-zoom, dropped opacity to 40% with maroon gradient overlay. Now the hero matches what the page is actually about
 
 ### Parallel Verification Scan (***POST-DEPLOY GATE — ZERO 404s + ZERO CONSOLE ERRORS***)
+
 Manual click-through testing misses 80%+ of broken assets, console errors, and CSP violations because they fire only on specific routes/breakpoints/timings. Every deploy MUST run a parallel headless scan that captures every console error/warning and every failed network request across every route.
+
 - **Reference script:** `scripts/scan-assets.mjs` (Playwright + chromium, concurrency 6) — for each public route + sample of blog routes, opens a fresh context, attaches listeners for `console`, `pageerror`, `requestfailed`, and `response` (status >=400), navigates with `waitUntil:'networkidle'`, returns `{route, errors[], warnings[], failed[]}`. Sort + print per-route, end with summary, `process.exit(1)` if any errors or failures
 - **Bash sweep complement:** `scripts/check-routes.sh` — `curl -sk -o /dev/null -w "%{http_code}"` every route + every blog slug, print non-200s. Faster than Playwright (no browser), catches Worker-level 404s/redirects but not console errors
 - **Empty-config widgets (***NEVER SHIP WITH EMPTY data-sitekey OR PLACEHOLDER URLS***):** A `<div class="cf-turnstile" data-sitekey="">` produces a console error on every page render. Same for empty Stripe public keys, empty Resend tokens, empty PostHog snippets. Pattern: gate the widget render on the env var being set — `{import.meta.env.VITE_TURNSTILE_SITEKEY ? <div className="cf-turnstile" data-sitekey={...} /> : null}`. The script tag in `<head>` is fine to leave (loads silently); only the widget div with empty key produces the error
@@ -357,10 +382,12 @@ Manual click-through testing misses 80%+ of broken assets, console errors, and C
 - **The njsk.org scan incident:** Initial deploy passed the bash route-sweep (every route returned 200) but the Playwright scan revealed 72 console errors across services/volunteer/we-need pages — broken `<img>` references to short-alias filenames, plus Turnstile empty-sitekey errors. The bash sweep alone would have shipped a broken site; only the parallel Playwright scan caught the asset 404s. **Both scans now run on every deploy.**
 
 ### Full Blog Archive Crawl (***MANDATORY — 100% COVERAGE OR BUILD FAILS***)
+
 The /blog index on most CMSes (Squarespace, WordPress, Wix, Ghost) paginates. Stopping at page 1 = silently dropping 50–90% of the archive. The original site's blog is a multi-year corpus of partner spotlights, event recaps, donation announcements, and obituaries — every post is irreplaceable institutional history. **Coverage threshold: 100%, not "most".**
 
 **Squarespace canonical method (***ALWAYS USE THIS FIRST FOR SQUARESPACE — JSON API***):**
 The HTML pagination on Squarespace silently drops posts when "Load More" or themed pagination has bugs. The JSON endpoint is the source of truth — every post in the database appears here regardless of theme.
+
 - Endpoint: `GET https://{domain}/blog?format=json&offset=0` returns the first batch as JSON: `{ items: [...], pagination: { nextPage: bool, nextPageOffset: number } }`
 - Loop: start with `offset=0`, fetch, append `items` to a Map keyed by `item.id` (dedup), set `offset = items[items.length-1].publishOn` (a millisecond epoch), repeat until `items.length === 0` OR `pagination.nextPage === false`
 - Each item has: `id`, `urlId`, `fullUrl`, `title`, `body` (HTML), `excerpt`, `assetUrl` (hero image), `publishOn` (ms), `tags[]`, `categories[]`. `body` HTML contains `<img src|data-src|data-image="...">` — extract every src. CDN urls accept `?format=2500w` for high-res variants
@@ -368,6 +395,7 @@ The HTML pagination on Squarespace silently drops posts when "Load More" or them
 - Reference script (proven on njsk.org): see `~/.agentskills/15-site-generation/squarespace-full-crawl.mjs` template
 
 **Other CMS patterns (***SAME 100% COVERAGE RULE***):**
+
 - **WordPress:** `/wp-json/wp/v2/posts?per_page=100&page=N` — REST API with explicit `X-WP-Total` and `X-WP-TotalPages` response headers. Frontend pagination (`/page/N/`) is fallback only.
 - **Ghost:** `/ghost/api/content/posts/?key={contentKey}&limit=all` — single-shot API returns the entire archive when `limit=all`. Front-end pagination is unnecessary.
 - **Wix:** No public API — must crawl HTML pagination. Use Playwright (not WebFetch) because Wix relies on JS-rendered "Load More" buttons.
@@ -376,18 +404,21 @@ The HTML pagination on Squarespace silently drops posts when "Load More" or them
 - **Manual end-page check (***ALWAYS — FINAL VERIFICATION***):** Open the live site, navigate to /blog, click "Older Posts" repeatedly until the button disappears. The URL of the very last post is your canary — `grep` your generated `blogPosts[]` for that slug. If it's missing, the crawl is incomplete. *(The njsk.org cause: the user manually clicked Older through 13 pages and discovered `/blog/faith-lutheran-new-providence` from Dec 2018 was missing — 100% coverage gate caught what 80% threshold did not.)*
 
 **Per-post deep fetch (***INDEX EXCERPT IS NOT ENOUGH***):**
+
 - The JSON API `body` field is the complete HTML; the `excerpt` is truncated. Extract paragraphs from `body`, not `excerpt`
 - Convert `body` HTML to markdown-style content array: replace `<a href="X">Y</a>` with `[Y](X)`, decode entities (`&rsquo;` → `'`, `&mdash;` → `—`, etc.), split on `</p>` boundaries, filter empty
 - Capture EVERY `<img src|data-src|data-image="...">` from `body`, plus the top-level `assetUrl` (hero). Download all to `public/images/blog/{slug}-{1|body-N}.jpg`
 - Preserve original publish date (`publishOn` ms → `formatDate()`), author (`authorId` → resolve via `/blog?format=json` `authors` array)
 
 **Slug hygiene at scale (***MANDATORY — 100% UNIQUE, ZERO CMS GARBAGE***):**
+
 - Squarespace `urlId` is often a 30-char random hash for posts published before slugs were required (e.g. `zm2ilyi6ur54dz6kerktqt0kipj7on`). NEVER use these — derive a clean slug from the title
 - Multiple posts can share the same `urlId` across different years (e.g. annual "PSEG" or "Thanksgiving" partner days). Disambiguate by date suffix: `pseg-summer-2023`, `pseg-feb-2023`, `thanksgiving-2019`, `thanksgiving-2024`
 - Maintain a `slugOverrides` table for known-bad CMS slugs and a `datedSlugDisambig` table for collisions — both live in the generator script, version-controlled
 - Hard gate: `awk '/^    slug:/{print $2}' blog-posts.ts | sort | uniq -d` must return EMPTY. Any duplicate = build fails
 
 **Hard gates (***ALL MUST PASS BEFORE BUILD COMPLETES***):**
+
 1. `blogPosts.length` === sitemap.xml `/blog/*` count (100%, not 80%, not "most")
 2. Manual end-page slug present in `blogPosts[]` (grep for it)
 3. Every post has `images[]` populated if the original had any images (zero-image post on a site where peers have images = incomplete migration)
@@ -398,7 +429,9 @@ The HTML pagination on Squarespace silently drops posts when "Load More" or them
 - **The njsk.org archive incident:** First build crawled only the visible /blog page and shipped with 15 posts. Walking `?offset=` pagination revealed 75+ additional posts. Second build crawled JSON API and shipped 26 curated posts but discarded the rest as "old". User clicked "Older Posts" through 13 pages on the live site and found `/blog/faith-lutheran-new-providence` (Dec 2018) — proof the gate was still wrong. Final build: full 129-post import via JSON API + 1027 images + per-post pagination — and this rule rewritten to make 100% coverage non-negotiable. **The "manual click Older Posts to last page" check is now a permanent step in the verification loop.**
 
 ### Inline Interlinking (***EVERY PAGE — TEXT IS LINK OPPORTUNITY***)
+
 Plain prose with zero internal links wastes SEO equity and user navigation. Every page MUST treat body text as a network of contextual cross-links to other pages and posts. This is non-negotiable for content-heavy non-profit and local-business sites.
+
 - **Per-page minimum:** 4–8 inline links in body copy on every page (not counting nav/footer/CTA buttons). Hero subtitle, mission/about paragraphs, FAQ answers, blog post body, and footer CTA blocks all get inline links.
 - **Link targets per page type:** About → /services (each sub-program with anchor), /team, /volunteer, /donate, /blog, /contact. Services → /team (staff names link to bios), /volunteer, /donate, /we-need, /blog. Blog post → 3–5 sibling posts, /donate, /volunteer, /services anchor, /team. FAQ answers → corresponding deep pages. Contact → /volunteer, /donate, /mass-schedule, /we-need.
 - **Markdown link parser for string-array content:** When blog/FAQ/static content is stored as `string[]`, use a `renderInline()` helper that parses `[label](href)` syntax and emits React Router `<Link>` for internal hrefs (`/path`) and `<a target="_blank" rel="noopener">` for external (`http://`, `https://`, `mailto:`, `tel:`). Pattern: `/\[([^\]]+)\]\(([^)]+)\)/g`. Single component, used everywhere prose has links.
@@ -409,7 +442,9 @@ Plain prose with zero internal links wastes SEO equity and user navigation. Ever
 - **Hard gate:** Run `grep -c '<Link to=' src/pages/{page}.tsx` for each page. Pages with <4 inline `<Link>` instances are flagged as under-linked. Hero/footer chrome doesn't count — only body content links.
 
 ### Stylized Google Maps (***EVERY LOCATION-AWARE SITE — NEVER RAW IFRAME***)
+
 Default Google Maps embeds clash with brand colors and look generic. Every customer-facing map MUST be stylized to match the brand and overlaid with a branded address card. No external Maps JS API key required — pure CSS filter on the iframe.
+
 - **CSS filter recipe:** Apply to iframe `style.filter`. Maroon/red theme: `grayscale(100%) sepia(40%) hue-rotate(310deg) saturate(180%) contrast(95%) brightness(96%)`. Blue theme: `grayscale(100%) sepia(60%) hue-rotate(180deg) saturate(150%)`. Green theme: `grayscale(100%) sepia(60%) hue-rotate(70deg) saturate(140%)`. Tweak hue-rotate by 30° increments to nudge toward brand primary.
 - **Brand-tinted overlay:** Iframe sits in a `relative overflow-hidden` container with rounded corners and shadow. Address card absolutely positioned `bottom-4 left-4` (or `bottom-6 left-6` on desktop) using `bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-{brand}-100 p-5`.
 - **Address card content:** Brand-colored pin icon (40×40 rounded square with brand-800 background, white SVG pin), business name in heading font, full address as `<address>` element, "Get directions →" external link to `https://www.google.com/maps/dir/?api=1&destination={url-encoded-address}`.
@@ -418,8 +453,11 @@ Default Google Maps embeds clash with brand colors and look generic. Every custo
 - **Hard gate:** No raw `<iframe src="https://www.google.com/maps">` on any page. All map embeds route through the stylized component. Visual QA: AI vision must confirm map is brand-tinted, not default green/blue Google colors.
 
 ### Footer Logo Color Inversion (***ImageMagick alpha-channel recipe***)
+
 Most logos are designed for white backgrounds (dark text/marks on white). Footers are usually dark — placing a white-bg logo on a dark footer creates a glaring white rectangle. The fix is alpha-channel extraction + colorize, NOT `mix-blend-screen` (which leaves halos and breaks against gradients).
+
 - **The recipe (works for any single-color-on-white logo):**
+
   ```bash
   magick logo.png \
     \( +clone -alpha off -colorspace gray -level 0%,90% -negate \) \
@@ -427,19 +465,23 @@ Most logos are designed for white backgrounds (dark text/marks on white). Footer
     -fill white -colorize 100 \
     logo-footer.png
   ```
+
   How it works: `+clone -alpha off -colorspace gray` makes a grayscale copy of the original. `-level 0%,90% -negate` produces an alpha mask where dark pixels (text/marks) become opaque white and white background becomes transparent black. `-compose CopyOpacity -composite` applies that mask as the alpha channel of the original. `-fill white -colorize 100` paints all visible pixels pure white, leaving alpha intact.
 - **Color variants:** Replace `-fill white -colorize 100` with `-fill "#FFD700" -colorize 100` for gold, etc. The shape comes from alpha; the fill gives the new color.
 - **Output:** Save as PNG (preserves alpha). Generate two sizes: full (1920+ wide) and small (400px wide for retina/footer). Place in `public/logo-footer.png` + `public/logo-footer-small.png`.
 - **Verification (before shipping):** Composite the result onto the actual footer color to confirm visibility:
+
   ```bash
   magick -size 600x200 xc:"#3a0a18" logo-footer.png -gravity center -composite verify.png
   open verify.png
   ```
+
   If the logo is invisible or cut off, the alpha mask is wrong — re-run with `-level 0%,80%` or adjust threshold.
 - **Common failure modes:** (1) Output appears solid maroon = alpha was applied inversely; the recipe above already corrects this. (2) Output is fully transparent = alpha was zeroed everywhere; check that input logo actually has dark marks on white (run `magick identify -verbose logo.png | grep -i mean` — mean should be near white if the bg is white). (3) Halos/edges visible at small sizes = `-level` threshold too aggressive; lower the upper bound from 90% to 70%.
 - **Why not mix-blend-screen:** CSS blend modes work on rendered pixels but interact unpredictably with backdrop filters, browser rendering quirks on Safari, and partial-opacity gradient backgrounds. They also can't be used in OG share images, email headers, or PDF exports. ImageMagick produces a real PNG with a real alpha channel — works everywhere.
 
 ### Design System (***skill 10 — MANDATORY***)
+
 Read ~/.agentskills/10-experience-and-design-system/SKILL.md for full design system.
 Apply ALL patterns from "Local Business Design Patterns (SITE GENERATION)" section.
 
@@ -457,7 +499,9 @@ Apply ALL patterns from "Local Business Design Patterns (SITE GENERATION)" secti
 - Apple Test: "Would Apple ship this?" If no → redesign before deploy
 
 ### Sourced Facts (***NON-NEGOTIABLE — rules/citations.md***)
+
 Every quantitative claim (%, N, $, ratio, comparison, year-claim, "X% of users") MUST cite a source inline using APA 7th ed format. Read `_citations.json` for full bibliography keyed by `refId`.
+
 - Wrap claim with `<Citation refId="ref-1">claim text</Citation>` — renders inline superscript link
 - Add `<ReferencesList />` to every page footer that contains cited claims (auto-renders from `_citations.json`)
 - For hero/section stats use `<SourcedStat value={...} label={...} refId="ref-N" />` — animated number with citation badge
@@ -468,6 +512,7 @@ Every quantitative claim (%, N, $, ratio, comparison, year-claim, "X% of users")
 - Anecdotes and brand voice ("We're sharp.") don't need cites — only quantitative/comparative claims do. Hero headlines stay clean; citations live in body copy + ReferencesList.
 
 ### Content Rules (***PRESERVE EVERYTHING***)
+
 - Word count must MATCH OR EXCEED original site (never less content than before)
 - 5000+ words minimum real content (from research + scraped content) — most rebuilds will far exceed this
 - Migrate ALL substantive text from _scraped_content.json — rewrite for quality, preserve substance
@@ -479,6 +524,7 @@ Every quantitative claim (%, N, $, ratio, comparison, year-claim, "X% of users")
 - Primary keyword "{{businessType}} in {{city}}" in H1, title, meta, first paragraph
 
 ### Images (***CRITICAL***)
+
 - USE EVERY IMAGE in assets/ — check _image_profiles.json for placement suggestions
 - Hero: assets/hero-* or highest quality_score image as background with gradient overlay
 - Gallery: full-width slider/carousel with ALL images
@@ -487,7 +533,9 @@ Every quantitative claim (%, N, $, ratio, comparison, year-claim, "X% of users")
 - All images: lazy loading (except hero), width/height attributes, descriptive alt text
 
 ### Image Optimization Pipeline (***NON-NEGOTIABLE — skill 12***)
+
 Every image in assets/ MUST be processed before build:
+
 1. Generate responsive variants: 320w, 640w, 1280w, 1920w (skip if source narrower)
 2. Convert to WebP (quality 80) + AVIF (quality 70) for each variant
 3. Generate PNG fallback at 1280w for legacy browsers
@@ -496,9 +544,11 @@ Every image in assets/ MUST be processed before build:
 6. Store all variants alongside originals in assets/
 
 Use `<ResponsiveImage>` component from `src/components/local/ResponsiveImage`:
+
 ```html
 <ResponsiveImage src="assets/hero.jpg" alt="Business exterior" eager />
 ```
+
 Renders `<picture>` with AVIF→WebP→fallback, srcset 320-1920w, blur placeholder.
 
 Hero image: `eager` + `fetchpriority="high"` + preload link in `<head>`.
@@ -507,6 +557,7 @@ Max single optimized image: 200KB. Total page images: <500KB.
 Original PNG/JPG kept as source, never served to browser.
 
 ### Interactions
+
 - Every button: hover (scale + glow), active (press), focus (ring)
 - Every link: hover (color change + underline animation)
 - Every card: hover (lift + shadow + border glow)
@@ -515,6 +566,7 @@ Original PNG/JPG kept as source, never served to browser.
 - Back-to-top button with fade-in on scroll
 
 ### SEO (complete implementation)
+
 - <title> under 60 chars: "{{primaryKeyword}} | {{businessName}}"
 - <meta description> under 160 chars with keyword + CTA
 - <link rel="canonical" href="https://{{slug}}.projectsites.dev{{path}}">
@@ -527,7 +579,9 @@ Original PNG/JPG kept as source, never served to browser.
 - Image alt text contains relevant keywords
 
 ### Conditional Features
+
 {{#if business_email}}
+
 - Contact form POSTing to https://projectsites.dev/api/contact-form/{{slug}}
 - Fields: name (required), email (required, validated), phone (optional), service dropdown (from _domain_features.json services), message (required, 500 char max)
 - Turnstile invisible widget (data-appearance="interaction-only") on submit
@@ -541,6 +595,7 @@ Original PNG/JPG kept as source, never served to browser.
 {{/if}}
 
 {{#if lat_lng}}
+
 - Google Maps embed: <iframe src="https://www.google.com/maps/embed/v1/place?key={{GOOGLE_MAPS_KEY}}&q={{lat}},{{lng}}&maptype=roadmap" width="100%" height="400" style="border:0;border-radius:12px" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
 - "Get Directions" button → https://www.google.com/maps/dir/?api=1&destination={{encoded_address}}
 - Address card with opening hours (from _places.json) beside map
@@ -549,6 +604,7 @@ Original PNG/JPG kept as source, never served to browser.
 {{/if}}
 
 {{#if google_rating}}
+
 - Hero trust badge: "{{rating}}/5 stars from {{review_count}} reviews" with animated star SVGs (fill animation on scroll)
 - Dedicated testimonials section: 3 real review quotes in glassmorphism cards with reviewer initial avatar, star rating, relative date
 - JSON-LD aggregateRating on LocalBusiness schema
@@ -556,12 +612,14 @@ Original PNG/JPG kept as source, never served to browser.
 {{/if}}
 
 {{#if videos}}
+
 - Video hero section: YouTube embed with custom play button overlay (brand-colored), lazy iframe load on click (performance)
 - Video gallery: thumbnail grid, lightbox playback, category tabs if >3 videos
 - Pexels B-roll: muted autoplay background loops (max 2MB each, poster frame)
 {{/if}}
 
 ### Multimedia Enhancement (***ALWAYS***)
+
 - Hero: parallax background with gradient overlay (brand primary → transparent), floating geometric SVG accents
 - Gallery: masonry grid with lightbox (Dialog component), image count badge, swipe on mobile
 - Before/after slider (if applicable): CSS clip-path with drag handle for service showcases
@@ -570,7 +628,9 @@ Original PNG/JPG kept as source, never served to browser.
 - Trust badges section: payment icons, certifications, "Serving {{city}} since {{year}}" with verified year
 
 ### Offline Mode (***EVERY SITE — service worker***)
+
 Service worker (`public/sw.js`) pre-installed in template. Caches:
+
 - App shell: index.html, CSS, JS bundles, manifest, fonts
 - Images: cache-first, max 200 items (all gallery/hero/service images)
 - HTML pages: network-first with cache fallback
@@ -581,6 +641,7 @@ Critical for: rural businesses with poor connectivity, in-store kiosk displays, 
 After site build, verify: disconnect network → refresh → site loads from cache.
 
 ### Local Conversion Components (***ALWAYS FOR LOCAL BUSINESS***)
+
 - NAPFooter: schema.org microdata, tel:/mailto:/Maps links, hours with today highlighted, social icons
 - ReviewCTA: star-gate (>=4→Google review link, <3→private feedback), QR code
 - QuickActions: mobile-only 2x2 grid (Call, Directions, Book, Menu), 48px touch targets
@@ -591,13 +652,16 @@ After site build, verify: disconnect network → refresh → site loads from cac
 - BeforeAfterSlider: CSS clip-path drag comparison (contractors, salons, dental)
 
 ### Schema Generation (***NON-NEGOTIABLE***)
+
 Import `generateLocalBusinessSchema` from `src/components/local/LocalSchemaGenerator`.
 Pass `_research.json` data → outputs complete JSON-LD with: @type, name, PostalAddress, telephone, geo, openingHoursSpecification, image, sameAs, aggregateRating, priceRange, areaServed, hasMenu (restaurant), paymentAccepted, knowsAbout.
 Also generate: FAQPage schema on FAQ sections, BreadcrumbList on sub-pages.
 Validate: Google Rich Results Test before deploy.
 
 ### Service Area Pages (pSEO — IF service-area business)
+
 {{#if area_served}}
+
 - Generate `/service-area/{city}` for each city in _research.json.operations.areaServed
 - Each page: unique H1 "{service} in {city}", localized intro paragraph, embedded map centered on city
 - Link all service area pages from footer and sitemap.xml
@@ -605,12 +669,15 @@ Validate: Google Rich Results Test before deploy.
 {{/if}}
 
 ### GBP Review Deep Link
+
 - "Leave a Review" button: `https://search.google.com/local/writereview?placeid={{place_id}}`
 - Place in: thank-you state after form submit, contact page, ReviewCTA component
 - QR code SVG in assets/review-qr.svg for print materials
 
 ### Print Stylesheet
+
 Add to index.css:
+
 ```css
 @media print {
   header, footer, .sticky-cta, .speed-dial, nav, .back-to-top { display: none; }
@@ -621,7 +688,9 @@ Add to index.css:
 ```
 
 ### PWA Manifest
+
 Generate `public/site.webmanifest`:
+
 ```json
 {
   "name": "{{businessName}}",
@@ -636,14 +705,18 @@ Generate `public/site.webmanifest`:
   ]
 }
 ```
+
 Add `<link rel="manifest" href="/site.webmanifest">` to index.html.
 
 ### SMS Deep Links
+
 Alongside every `tel:` link, add `sms:` link option. Track as `sms_click` event.
 Mobile: show both "Call" and "Text" buttons side by side.
 
 ### Competitor Comparison Page (IF competitor data exists)
+
 {{#if competitors}}
+
 - Generate `/why-choose-us` page from _research.json.competitors[]
 - H1: "Why Choose {{businessName}} Over the Competition"
 - Comparison table: features, rating, reviews, years in business
@@ -652,36 +725,44 @@ Mobile: show both "Call" and "Text" buttons side by side.
 {{/if}}
 
 ### FAQ Auto-Generation from Reviews
+
 Mine _research.json.trust.reviews[] for recurring themes/questions.
 Generate 8-12 FAQ items with FAQPage schema. Real customer language = better AI citation.
 Place on dedicated /faq page AND inline on relevant service pages.
 
 ### Weather-Aware Hero (outdoor businesses only)
+
 {{#if outdoor_business}}
+
 - Fetch weather from _research.json.operations.geo via free weather API
 - Swap hero messaging based on conditions: rain→"Rainy season? Book your {service}" | snow→"Snow removal available" | heat→"Beat the heat with {service}"
 - Fallback: standard hero if API unavailable
 {{/if}}
 
 ### Domain-Specific Features
+
 Read _domain_features.json and implement ALL listed features for this business category.
 
 ### Universal Polish Rules (***BUILD-BREAKING — 13 rules from 2026-05-02 lonemountainglobal+njsk+nyfb cycle***)
+
 These rules cascade out of universal feedback gathered across the May 2026 benchmark batch. Every site must ship ALL of them on the first build — never as a follow-up patch. Each maps to a validator in `quality-gates.md` and a template component in `template-system.md`.
 
 **1. Logo Transparent Variant (***BUILD-BREAKING — `validate-logo-transparent-variant.mjs`***):**
+
 - Phase-0 brand research must produce TWO logo files: `public/logos/logo-light.{webp,png}` (dark logo on transparent BG, for light backgrounds) AND `public/logos/logo-dark.{webp,png}` (light logo on transparent BG, for dark headers/footers/hero scrims). ImageMagick recipe per skill 09 §"Logo Container Contrast"
 - Render via `<picture>` element with `prefers-color-scheme` media query: `<source srcset="logo-dark.webp" media="(prefers-color-scheme: dark)"><source srcset="logo-light.webp" media="(prefers-color-scheme: light)"><img src="logo-light.webp" alt="<brand>">`. Both header AND footer use `<BrandLogo>` component (template-system.md), never raw `<img>`
 - Validator greps dist HTML for raw `<img src=".*logo.*">` outside `<picture>` — fail. Greps for missing `logo-dark.*` or `logo-light.*` files in `public/logos/` — fail
 - Reference: lonemountainglobal.com 2026-05-02 — footer logo on burgundy BG was hotlinked source PNG with white BG box, looked broken. Fix: extract icon-only region with `magick logo.png -fuzz 10% -transparent white logo-icon.png`, generate dark variant with `magick logo-icon.png -channel RGB -negate logo-dark.png`
 
 **2. Address → Google Maps Hyperlink (***BUILD-BREAKING — `validate-address-mapslink.mjs`***):**
+
 - Every street-address render in body copy, footer, contact card, JSON-LD, blog post bodies MUST be wrapped in `<a href="https://www.google.com/maps/dir/?api=1&destination=<urlencoded-address>" target="_blank" rel="noopener noreferrer">`. NAP consistency rule from rules/always.md applies — same address string everywhere
 - Component: `<MapsLink address="..." />` from template-system.md auto-encodes + adds aria-label. Always use the component, never inline anchors
 - Validator greps dist HTML for `\d+\s+\w+(\s+\w+)?\s+(St|Ave|Blvd|Rd|Ln|Way|Dr|Ct|Pl|Pkwy)\b` text NOT inside `<a>` — fail
 - Reference: njsk.org 2026-05-02 — "115 Olive Street, Newark, NJ 07103" rendered as plain text on /contact + /about + footer; no maps deep-link
 
 **3. Stripe-First Donations (***BUILD-BREAKING — `validate-donation-stripe-first.mjs`***):**
+
 - Non-profit / give / donate routes use Stripe Connect Standard OAuth onboarding for the org. Account flow: `OAuth start → org connects Stripe account → platform stores stripe_account_id in D1 → Connect destination charges flow with platform fee 2.9%+30¢`
 - UI: GiveDirectly-style preset amounts `[10, 25, 50, 100, 250, 500]` + Custom field. Default frequency = monthly recurring, toggle to one-time. "Cover the fees" checkbox below presets — adds 2.9%+30¢ to total so org receives full amount. PayPal/Donorbox/Network for Good/etc are FORBIDDEN in primary CTA — Stripe is the rail, period
 - Component: `<StripeDonationForm orgConnectId="..." presets={[...]} defaultMonthly={true} />` from template-system.md
@@ -690,29 +771,34 @@ These rules cascade out of universal feedback gathered across the May 2026 bench
 - See: `06-build-and-slice-loop/stripe-first-donations.md` for full Connect OAuth implementation
 
 **4. X (formerly Twitter) Icon (***BUILD-BREAKING — `validate-x-not-twitter.mjs`***):**
+
 - Social-icon barrel-export at `src/components/icons/social.tsx` exports `<XIcon>` (NOT `<TwitterIcon>`). Path: official X logo SVG (post-July-2023 rebrand). Anchor href: `https://x.com/<handle>` (NOT twitter.com — auto-redirects but burns DNS). Brand-color hover hex: `#000000` light theme, `#ffffff` dark theme
 - Validator greps dist for `twitter.com|<TwitterIcon|twitter-icon|fa-twitter|bi-twitter|icon-twitter` — fail. Greps for blue Twitter bird path data (`M23.643 4.937c-.835.37-1.732.62-2.675.733...`) — fail
 - Reference: lonemountainglobal.com 2026-05-02 — footer used Font Awesome `fa-twitter` blue bird icon linked to twitter.com/lonemountainglobal. Brand died in 2023. Use the X cross-bar icon
 
 **5. Full-Bleed Sections (***BUILD-BREAKING — `validate-full-bleed-sections.mjs`***):**
+
 - Hero, gallery, comparison tables (>1100px viewport), testimonials carousels, CTA banners use full-viewport-width containers via `<FullBleed>` wrapper from template-system.md. Implementation: `width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw)` AND fallback `position: relative; left: 50%; right: 50%; transform: translateX(-50%)` (double-mechanism — Safari 14 ignores the calc form on some flex parents)
 - Inner content uses standard `max-w-7xl mx-auto px-6` for readable width — only the BG/visual extends edge-to-edge
 - Validator screenshots desktop (1280px + 1920px breakpoints), looks for sections that visually stop short of viewport edge with non-bg-color gutters — fail. Also greps for hero/gallery sections nested inside `max-w-*` parents — fail
 - Reference: njsk.org 2026-05-02 — hero photo had 80px white gutters left/right on 1920px monitor because hero `<section>` was inside `<main className="max-w-7xl">`. Fix: hero must escape the wrapper
 
 **6. Expandable Card No-Crop (***BUILD-BREAKING — `validate-expandable-card-no-crop.mjs`***):**
+
 - Cards with hidden→expanded states use CSS Grid pattern: `display: grid; grid-template-rows: 0fr` collapsed → `grid-template-rows: 1fr` expanded, child wrapper `min-height: 0; overflow: hidden`. On `transitionend` swap `overflow: visible` so dropdowns/tooltips/modals inside the card aren't clipped
 - Component: `<ExpandableCard summary={...} details={...} />` from template-system.md handles the overflow-swap automatically
 - Validator runs Playwright on dist, expands every `[data-expandable]`, asserts `getBoundingClientRect()` of children doesn't exceed parent + checks `overflow: visible` after transition — fail
 - Reference: nyfoldingbox.com 2026-05-02 — "Specs" expandable cards used `max-height` transition, on expand the dropdown specs table got cut off mid-row
 
 **7. R2 Self-Hosting (No CDN Hotlinks) (***BUILD-BREAKING — `validate-no-cdn-hotlinks.mjs`***):**
+
 - See `media-acquisition.md` "R2 Self-Hosting Pipeline" for full Vite plugin implementation
 - Phase-3 build pass runs `r2AssetRewriter()` Vite plugin (template-system.md) — every `https://*.cdn-host/*` URL in source code rewrites to `/assets/migrated/<sha256-prefix>.<ext>`, batch-downloads with realistic UA, build-cache via `.cdn-rewrite-cache.json`
-- Validator greps dist/ for any URL matching CDN_HOSTS regex (cdn.shopify.com, squarespace-cdn.com, wp.com, wixstatic.com, imgix.net, cloudinary.com, contentful.com, ctfassets.net, sanity.io, prismic.io, akamaized.net, cloudfront.net, fastly.net, etc.) outside excluded list (googletagmanager.com, posthog.com, sentry.io, js.stripe.com, *.youtube.com/embed, *.vimeo.com/video, fonts.googleapis.com) — fail
+- Validator greps dist/ for any URL matching CDN_HOSTS regex (cdn.shopify.com, squarespace-cdn.com, wp.com, wixstatic.com, imgix.net, cloudinary.com, contentful.com, ctfassets.net, sanity.io, prismic.io, akamaized.net, cloudfront.net, fastly.net, etc.) outside excluded list (googletagmanager.com, posthog.com, sentry.io, js.stripe.com, *.youtube.com/embed,*.vimeo.com/video, fonts.googleapis.com) — fail
 - Reference: lonemountainglobal.com 2026-05-02 — footer logo + 8 hero images hotlinked to source WordPress CDN. Source domain rotation/expiry would 404 the rebuilt site
 
 **8. Blog Featured-Image Fallback (***BUILD-BREAKING — `validate-blog-featured-images.mjs`***):**
+
 - See `media-acquisition.md` "Blog Featured-Image Fallback" for the 5-step chain
 - Every entry in `_corpus.json.posts[]` MUST have `featured_image_url` non-null AND HEAD-200 in dist AND dims ≥800×600. Stored at `public/assets/blog/<post-slug>-hero.<ext>` (slug-named, NOT hash-named — for human-readable diffs). JSON-LD `BlogPosting.image` references this path
 - Component: `<BlogPostHero post={post} />` from template-system.md auto-renders fallback chain at build time
@@ -720,31 +806,37 @@ These rules cascade out of universal feedback gathered across the May 2026 bench
 - Reference: njsk.org 2026-05-02 — 14 of 129 imported blog posts had broken Squarespace CDN hero URLs (404), shipped with `<img src="">` rendering as broken-image icon
 
 **9. Stat Counter Rollup Section (***auto-applied — every site with quantitative impact data***):**
+
 - Sites with quantitative claims (meals served, donors, years operating, projects completed, partners) get a homepage `<StatRollup>` section with IntersectionObserver-triggered count-up animation (rAF loop, 1500ms duration, ease-out cubic). 4 hero numbers on dark contrast band, large display font, brand-accent color, descriptive label below each
 - Component: `<StatRollup stats={[{value: 5000, label: 'Meals Served Weekly', suffix: '+'}]} />`
 - See: `~/.claude/rules/always.md` skill 11 bundle "Every stat block IO+rAF roll-in counter"
 
 **10. Pointer-Cursor Honesty (***auto-applied***):**
+
 - Every `<a>`, `<button>`, `[role="button"]`, `[onclick]`, `[data-zoomable]`, `[data-expandable]` element gets `cursor: pointer`. Conversely, decorative elements (cards that LOOK clickable but aren't) MUST get `cursor: default` to avoid lying. Tailwind: `cursor-pointer` on all interactive, audit `tailwind.config.ts` to ensure no global `cursor-default` override
 - See: `~/.claude/rules/always.md` skill 10 bundle "Every clickable element pointer-cursor honesty"
 
 **11. Card Hover No-White-Flash (***auto-applied***):**
+
 - First-hover white-flicker bug: caused by `transition: all` on cards with `background` rule. Fix: explicitly transition only `transform`, `box-shadow`, `border-color`, `opacity` — NEVER `background` unless using `transition-colors`. Use `will-change: transform` sparingly on hover-heavy cards
 - See: `~/.claude/rules/always.md` skill 11 bundle "Every card hover no white-flash on first hover"
 
 **12. Source-Site Contact Preservation (***auto-applied***):**
+
 - Phase-0 scrape extracts contact strings (email/phone/address) from source site's footer, contact page, and `mailto:`/`tel:` anchors. Persist to `_brand.json.contact = { email, phone, address }`. Rebuild MUST surface ALL three on /contact + footer + JSON-LD even if user form had blanks — never lose original contact info
 - Reference: nyfoldingbox.com 2026-05-02 — rebuild dropped phone number because user-form skipped the phone field. Source had `(212) 555-0142` in footer the whole time
 
 **13. Anti-FOUC Loader Class (***auto-applied***):**
+
 - Universal in-viewport fade-in animation MUST run AFTER fonts loaded + initial layout settled. Pattern: `<html class="js-reveal-loading">` → `<script>document.fonts.ready.then(() => document.documentElement.classList.replace('js-reveal-loading', 'js-reveal-active'))</script>`. CSS: `.js-reveal-loading .reveal { opacity: 0 }`, `.js-reveal-active .reveal { transition: opacity 600ms; }`. IntersectionObserver toggles `.is-visible` per element
 - See: `~/.claude/rules/always.md` skill 11 bundle "Every site anti-FOUC + universal in-viewport fadeIn"
 
 ## Phase 2: Build + Inspect + Fix
 
 After customizing all files:
+
 1. Run `npm run build` — fix ANY errors
-2. Run `node /home/cuser/validate-urls.js` — compare _scraped_content.json.original_urls against new sitemap + _redirects. Fail if any URL unaccounted.
+2. Run `node /home/cuser/validate-urls.js` — compare _scraped_content.json.original_urls against new sitemap +_redirects. Fail if any URL unaccounted.
 3. Run `node /home/cuser/validate-citations.js dist/` — grep for unsourced numeric claims. Fail if any `\d+%|\$\d+[MBK]|\d+x|\d+ users|since \d{4}` lacks a `<Citation refId="...">` wrapper resolving to `_citations.json`.
 4. Run `node /home/cuser/inspect.js dist/index.html` — read the GPT-4o critique
 4. Fix ALL issues scoring below 8/10 in the critique
@@ -754,6 +846,7 @@ After customizing all files:
 ## Phase 3: Polish Pass
 
 Review the entire site one more time:
+
 1. Every section has a dark or brand-colored background? No plain white sections.
 2. Every button/link has hover + active + focus styles?
 3. Smooth scroll on all same-page links?
@@ -772,6 +865,7 @@ Review the entire site one more time:
 
 After successful build, run: `node /home/cuser/upload-to-r2.mjs`
 This uploads all dist/ files to R2 at sites/{{slug}}/{{version}}/.
+
 ```
 
 ## Prompt Assembly Logic

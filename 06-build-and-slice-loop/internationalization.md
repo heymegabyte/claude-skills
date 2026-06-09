@@ -8,12 +8,14 @@ description: "Multi-language support via URL parameter (?lang=es) or dropdown. M
 # Internationalization (i18n)
 
 ## Architecture
+
 ```
 User visits ?lang=es → Worker checks KV for Spanish content → serves translated page
 User selects from dropdown → sets cookie + URL param → all future pages in that language
 ```
 
 ### Translation Storage (KV)
+
 ```
 i18n:en:hero_title     → "Feed a family today"
 i18n:es:hero_title     → "Alimenta a una familia hoy"
@@ -22,7 +24,9 @@ i18n:es:hero_subtitle  → "Tu donación marca una diferencia real"
 ```
 
 ### Translation at Deploy Time
+
 AI translates all content strings during the build/deploy process:
+
 ```typescript
 // At deploy time: translate all strings
 const strings = extractAllStrings(htmlContent); // Find all translatable text
@@ -35,6 +39,7 @@ for (const [key, enValue] of Object.entries(strings)) {
 ```
 
 ## Language Selector (Navbar)
+
 ```html
 <div class="lang-selector" role="listbox" aria-label="Select language">
   <button class="lang-current" aria-expanded="false">
@@ -50,6 +55,7 @@ for (const [key, enValue] of Object.entries(strings)) {
 Position — top-right of navbar, before any CTA button.
 
 ## Middleware
+
 ```typescript
 app.use('*', async (c, next) => {
   // Detect language: URL param > cookie > Accept-Language header > default
@@ -72,6 +78,7 @@ app.use('*', async (c, next) => {
 ```
 
 ## Translation Helper
+
 ```typescript
 async function t(key: string, lang: string, env: Env): Promise<string> {
   const value = await env.KV.get(`i18n:${lang}:${key}`);
@@ -85,6 +92,7 @@ const title = await t('hero_title', lang, env);
 ```
 
 ## SEO: hreflang Tags
+
 ```html
 <link rel="alternate" hreflang="en" href="https://domain.com/?lang=en">
 <link rel="alternate" hreflang="es" href="https://domain.com/?lang=es">
@@ -94,6 +102,7 @@ const title = await t('hero_title', lang, env);
 Include on EVERY page. Tells Google which language version to show in each country.
 
 ## Structured Data (Locale-Aware)
+
 ```json
 {
   "@context": "https://schema.org",
@@ -105,6 +114,7 @@ Include on EVERY page. Tells Google which language version to show in each count
 ```
 
 ## RTL Support Detection
+
 ```typescript
 const rtlLanguages = ['ar', 'he', 'fa', 'ur'];
 const isRtl = rtlLanguages.includes(lang);
@@ -112,6 +122,7 @@ const isRtl = rtlLanguages.includes(lang);
 ```
 
 ## What Gets Translated
+
 - All visible text (headings, paragraphs, buttons, labels)
 - Meta tags (title, description)
 - Alt text on images
@@ -120,6 +131,7 @@ const isRtl = rtlLanguages.includes(lang);
 - Form labels and placeholders
 
 ## What Does NOT Get Translated
+
 - Code snippets
 - Brand names and product names
 - URLs and slugs
@@ -127,6 +139,7 @@ const isRtl = rtlLanguages.includes(lang);
 - Technical identifiers
 
 ## Playwright Test
+
 ```typescript
 test('Spanish translation works', async ({ page }) => {
   await page.goto('/?lang=es');

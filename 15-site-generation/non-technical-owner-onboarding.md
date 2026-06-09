@@ -13,6 +13,7 @@ The projectsites.dev pipeline must work for owners who have never opened a termi
 ## Onboarding Flow (***THREE SCREENS, ZERO JARGON***)
 
 ### Screen 1 — Tell us about your business (`/start`)
+
 - Single text input: "Business name or website" (placeholder: "Mario's Pizza" or "mariospizza.com")
 - On blur: Worker fires Google Places `findplacefromtext` → returns business object preview card
 - Owner sees: business photo, name, address, phone, hours, rating
@@ -21,6 +22,7 @@ The projectsites.dev pipeline must work for owners who have never opened a termi
 - **NO** field-by-field form, multi-step wizard, or password creation
 
 ### Screen 2 — Pick a starting style (`/start/style`)
+
 - Three side-by-side previews — 1280×720 screenshots of the actual home page that will ship
 - Pre-rendered overnight by skill 12 from the same business data owner just confirmed (previews show THEIR photos, colors, copy)
 - Labels:
@@ -31,6 +33,7 @@ The projectsites.dev pipeline must work for owners who have never opened a termi
 - Picking happens in 3 seconds; refinement happens after launch via email
 
 ### Screen 3 — Where should we send your site? (`/start/finish`)
+
 - Single email field
 - On submit: Worker fires Inngest job → site-generation Workflow starts (skill 15 SKILL.md pipeline)
 - Owner sees confetti + "We're building. We'll email you in ~20 minutes."
@@ -67,11 +70,13 @@ Owner is NEVER asked:
 Owner clicks admin link in welcome email → Worker validates Clerk magic-link → renders `/admin` SPA. Single-page admin with FOUR cards:
 
 ### Card 1: Update business info
+
 - Pre-filled fields from Google Places (read-only with "Edit on Google Business Profile →" link — Google is the CMS, not us)
 - Override fields owner controls: tagline (1 sentence), about-us paragraph (3-5 sentences via TipTap), team bios (when ≥2 staff), custom service descriptions
 - Save → Inngest re-deploys affected pages within 60 seconds
 
 ### Card 2: Photos
+
 - Drag-drop uploader (Uppy bundled per skill 06)
 - Files go straight to R2
 - GPT-4o tags + scores relevance per skill 12 image-relevance gate
@@ -79,6 +84,7 @@ Owner clicks admin link in welcome email → Worker validates Clerk magic-link �
 - Owner can star Google Places photos to feature
 
 ### Card 3: Bookings & payments
+
 - ONE-CLICK Stripe onboarding (Stripe Express embedded onboarding, no manual KYC form)
 - Cal.com calendar connection (OAuth, one click)
 - Enable booking widget on site
@@ -86,6 +92,7 @@ Owner clicks admin link in welcome email → Worker validates Clerk magic-link �
 - **NO** API key paste, **NO** webhook URL configuration
 
 ### Card 4: Get help
+
 - "Email Brian" (`mailto:hey@megabyte.space`)
 - "Schedule 15min call" (Cal.com link)
 - "Live status of my site" (last deploy, last analytics ping, last cron success)
@@ -101,6 +108,7 @@ Single most-used "admin interface" is replying to any auto-email with free-text 
 - AI parses request, identifies affected files via embedded site-context, makes change, runs validators, deploys to staging, runs source-fidelity loop, deploys to production, replies with screenshot diff + "live now"
 
 ### Examples that work end-to-end via email today
+
 - "change our hours — Sunday 11-7 not closed" → updates `_research.json.business.opening_hours` + dispatches Google Business Profile update via Places API patch + redeploys
 - "make the headline say 'Family-owned for 22 years'" → updates home page H1, runs source-fidelity loop, redeploys
 - "add a blog post titled 'How we make our marinara' — [content]" → creates new blog post, generates featured image via skill 12, redeploys
@@ -108,6 +116,7 @@ Single most-used "admin interface" is replying to any auto-email with free-text 
 - "we're now offering catering, add a page" → creates `/services/catering` per pSEO scaffold, redeploys
 
 ### Examples that escalate to operator review
+
 - **Pricing changes** — need owner confirmation via reply-yes
 - **New payment processor** — Stripe onboarding required
 - **Domain change** — Cloudflare Registrar transfer process

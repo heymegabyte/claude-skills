@@ -7,6 +7,7 @@ updated: "2026-04-23"
 # Eval-Driven Development
 
 ## Core Pattern
+
 ```
 Generate output → Send to LLM judge (Haiku) → Score 1-10 → Pass if ≥ threshold → Fail with reasoning
 ```
@@ -14,6 +15,7 @@ Generate output → Send to LLM judge (Haiku) → Score 1-10 → Pass if ≥ thr
 Cost: ~$0.01/eval with `claude-haiku-4-5`. Run hundreds of evals for pennies. Treat evals like tests — they run in CI, they block merges, they catch regressions.
 
 ## Eval Runner
+
 ```typescript
 // evals/eval-runner.ts
 import Anthropic from '@anthropic-ai/sdk';
@@ -75,6 +77,7 @@ export { runEval, runEvalSuite, type EvalCase, type EvalResult };
 ## Eval Types
 
 ### Code Quality Eval
+
 ```typescript
 const codeQualityEval: EvalCase = {
   name: 'code-quality',
@@ -91,6 +94,7 @@ Deduct 1pt per violation. 10 = perfect, 1 = unusable.`,
 ```
 
 ### Copy Quality Eval
+
 ```typescript
 const copyQualityEval: EvalCase = {
   name: 'copy-quality',
@@ -110,6 +114,7 @@ const copyQualityEval: EvalCase = {
 ```
 
 ### Design Fidelity Eval
+
 ```typescript
 // Uses base64 screenshot — works with vision-capable models
 const designFidelityEval: EvalCase = {
@@ -130,6 +135,7 @@ const designFidelityEval: EvalCase = {
 ```
 
 ### SEO Compliance Eval
+
 ```typescript
 const seoComplianceEval: EvalCase = {
   name: 'seo-compliance',
@@ -150,6 +156,7 @@ const seoComplianceEval: EvalCase = {
 ```
 
 ## Vitest Integration
+
 ```typescript
 // evals/quality.eval.test.ts
 import { describe, it, expect } from 'vitest';
@@ -174,6 +181,7 @@ describe('Quality Evals', () => {
 ```
 
 ## Package.json
+
 ```json
 {
   "scripts": {
@@ -184,6 +192,7 @@ describe('Quality Evals', () => {
 ```
 
 ## Cost Model
+
 - Haiku: ~$0.25/MTok input, ~$1.25/MTok output
 - Typical eval: ~800 input + ~200 output tokens = ~$0.0005/eval
 - Suite of 20 evals = ~$0.01
@@ -191,6 +200,7 @@ describe('Quality Evals', () => {
 - Cheaper than one hour debugging a regression
 
 ## Best Practices
+
 - **Deterministic rubrics** — numeric criteria, not vibes
 - **Threshold tuning** — start at 7, tighten as quality improves
 - **Eval versioning** — bump version when rubric changes to avoid false regressions
@@ -198,6 +208,7 @@ describe('Quality Evals', () => {
 - **Baseline capture** — record scores on main branch, fail PR if score drops
 
 ## Anti-Patterns
+
 - Never use GPT-4o for evals (10x cost, marginally better)
 - Don't judge your own output with the same model that generated it
 - Don't skip reasoning field (can't debug failures)

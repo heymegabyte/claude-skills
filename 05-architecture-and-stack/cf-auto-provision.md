@@ -12,6 +12,7 @@ updated: "2026-04-23"
 - Use `cf` CLI (unified, ~3000 API ops) or CF MCP (Code Mode, 2 tools + <1K tokens)
 
 ## Function Signature
+
 ```typescript
 interface ProvisionResult {
   d1DatabaseId: string;
@@ -38,12 +39,14 @@ async function bootstrapProject(
 ## Provision Sequence
 
 ### 1. D1 Database
+
 ```
 MCP: d1_database_create
 Name: {project}-db (e.g. "megabyte-space-db")
 ```
 
 After creation, run initial Drizzle migration with base schema:
+
 ```typescript
 // Base schema varies by type:
 // marketing: contacts, form_submissions, page_views
@@ -54,6 +57,7 @@ After creation, run initial Drizzle migration with base schema:
 Push schema — `npx drizzle-kit push:sqlite --config=drizzle.config.ts`
 
 ### 2. KV Namespaces
+
 ```
 MCP: kv_namespace_create × 2
 1. {project}-cache   → binding: CACHE (page cache, API responses, TTL-based)
@@ -61,6 +65,7 @@ MCP: kv_namespace_create × 2
 ```
 
 ### 3. R2 Bucket
+
 ```
 MCP: r2_bucket_create
 Name: {project}-storage
@@ -68,6 +73,7 @@ Binding: STORAGE
 ```
 
 CORS config (set via API after creation):
+
 ```json
 {
   "cors_rules": [{
@@ -80,6 +86,7 @@ CORS config (set via API after creation):
 ```
 
 ### 4. DNS Records
+
 ```
 MCP: CF API — POST /zones/{zoneId}/dns_records
 
@@ -93,6 +100,7 @@ For wildcard (saas type):
 Zone ID lookup — `GET /zones?name={baseDomain}` → extract zone ID
 
 ### 5. Worker Route
+
 ```
 MCP: CF API — POST /zones/{zoneId}/workers/routes
 
@@ -103,6 +111,7 @@ For saas type, add: *.{domain}/*
 ```
 
 ### 6. Wrangler.toml Generation
+
 ```jsonc
 // wrangler.jsonc (preferred over .toml since 2025)
 {
@@ -128,6 +137,7 @@ For saas type, add: *.{domain}/*
 ## Third-Party Integration
 
 ### Clerk (saas type only)
+
 ```bash
 # Via Clerk Dashboard API or CLI
 curl -X POST https://api.clerk.com/v1/applications \
@@ -136,12 +146,14 @@ curl -X POST https://api.clerk.com/v1/applications \
 ```
 
 Extract `CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` from response. Add to wrangler secrets:
+
 ```bash
 echo "$CLERK_SECRET_KEY" | wrangler secret put CLERK_SECRET_KEY
 echo "$CLERK_PUBLISHABLE_KEY" | wrangler secret put CLERK_PUBLISHABLE_KEY
 ```
 
 ### Stripe
+
 ```bash
 # Via Stripe MCP: create_product
 # Product name: {project title}
@@ -155,6 +167,7 @@ echo "$CLERK_PUBLISHABLE_KEY" | wrangler secret put CLERK_PUBLISHABLE_KEY
 Store `STRIPE_API_KEY` and `STRIPE_WEBHOOK_SECRET` as wrangler secrets.
 
 ### PostHog
+
 ```bash
 # Via PostHog API
 curl -X POST https://posthog.megabyte.space/api/projects/ \
@@ -163,6 +176,7 @@ curl -X POST https://posthog.megabyte.space/api/projects/ \
 ```
 
 Extract project API key. Add to wrangler vars (not secret — it's public):
+
 ```toml
 [vars]
 POSTHOG_API_KEY = "{key}"
@@ -170,6 +184,7 @@ POSTHOG_HOST = "https://posthog.megabyte.space"
 ```
 
 ### Sentry
+
 ```bash
 # Via Sentry API
 curl -X POST https://sentry.megabyte.space/api/0/teams/{org}/{team}/projects/ \
@@ -178,12 +193,14 @@ curl -X POST https://sentry.megabyte.space/api/0/teams/{org}/{team}/projects/ \
 ```
 
 Extract DSN. Add to wrangler vars:
+
 ```toml
 [vars]
 SENTRY_DSN = "{dsn}"
 ```
 
 ## Orchestration
+
 ```typescript
 async function bootstrapProject(
   domain: string,

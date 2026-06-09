@@ -8,6 +8,7 @@ description: "Uppy (@uppy/core, @uppy/dashboard, @uppy/tus, @uppy/aws-s3) with C
 # File Uploads and Storage
 
 ## R2 Bucket Setup (wrangler.toml)
+
 ```toml
 [[r2_buckets]]
 binding = "R2"
@@ -19,6 +20,7 @@ R2_PUBLIC_URL = "https://cdn.example.com"
 ```
 
 ## Presigned URL Generator (Hono)
+
 ```typescript
 // src/routes/uploads.ts
 import { Hono } from 'hono';
@@ -83,6 +85,7 @@ export { uploads };
 ```
 
 ## Angular Uppy Wrapper Component
+
 ```typescript
 // uppy-uploader.component.ts
 import { Component, OnDestroy, AfterViewInit, ElementRef, ViewChild, Output, EventEmitter, Input } from '@angular/core';
@@ -166,6 +169,7 @@ export class UppyUploaderComponent implements AfterViewInit, OnDestroy {
 ```
 
 ## Tus Resumable Upload (large files)
+
 ```typescript
 import Tus from '@uppy/tus';
 
@@ -182,6 +186,7 @@ this.uppy.use(Tus, {
 ```
 
 ## File Type Validation (server-side)
+
 ```typescript
 const ALLOWED_MAGIC: Record<string, readonly number[]> = {
   'image/jpeg': [0xFF, 0xD8, 0xFF],
@@ -200,6 +205,7 @@ function validateMagicBytes(buffer: ArrayBuffer, claimed: string): boolean {
 ```
 
 ## D1 File Metadata Table
+
 ```sql
 CREATE TABLE files (
   id TEXT PRIMARY KEY,
@@ -215,6 +221,7 @@ CREATE INDEX idx_files_user ON files(uploaded_by);
 ```
 
 ## Usage Pattern
+
 ```typescript
 // In any feature component
 <app-uppy-uploader

@@ -8,6 +8,7 @@ description: "Novu for multi-channel notifications: in-app bell, push, email (vi
 # Notification Center
 
 ## Novu Setup (Server-Side)
+
 ```typescript
 // src/services/notifications.ts
 import { Novu } from '@novu/node';
@@ -48,6 +49,7 @@ async function notifyMany(subscriberIds: string[], workflowId: string, payload: 
 ```
 
 ## Hono Notification Routes
+
 ```typescript
 // src/routes/notifications.ts
 import { Hono } from 'hono';
@@ -94,12 +96,14 @@ export { notifications };
 ```
 
 ## Notification Workflows (Novu Dashboard or code)
+
 - **`welcome-email`** — Email (via Resend integration). Template variables — `{{firstName}}`, `{{productName}}`, `{{loginUrl}}`
 - **`invoice-paid`** — In-App + Email. Digest — batch per subscriber, 1hr window. Template — "{{count}} invoices paid totaling {{totalAmount}}"
 - **`team-invite`** — Email + In-App. Template — "{{inviterName}} invited you to {{teamName}}"
 - **`usage-alert`** — In-App + Email + Push. Template — "You've used {{percentage}}% of your {{resource}} quota"
 
 ## Novu + Resend Email Integration
+
 ```typescript
 // In Novu Dashboard: Integrations → Email → Custom (Resend)
 // Or configure via API:
@@ -115,6 +119,7 @@ async function setupResendIntegration(env: Env): Promise<void> {
 ```
 
 ## Angular In-App Notification Center
+
 ```typescript
 // notification-bell.component.ts
 import { Component, OnInit, signal, computed } from '@angular/core';
@@ -199,6 +204,7 @@ export class NotificationBellComponent implements OnInit {
 ```
 
 ## Digest/Batching Pattern
+
 - Novu workflow with digest step:
   1. Trigger event fires per-item (e.g. each comment)
   2. Digest step collects events for 1 hour

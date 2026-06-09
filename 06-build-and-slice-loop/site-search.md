@@ -10,11 +10,13 @@ description: "Cloudflare AI Search (formerly AutoRAG): hybrid semantic + keyword
 **MANDATORY for every product.** CF AI Search is free, zero-infrastructure, makes products feel premium.
 
 ## Wrangler Config
+
 ```jsonc
 { "ai_search_namespaces": [{ "binding": "AI_SEARCH", "namespace": "default" }] }
 ```
 
 ## Instance Creation
+
 ```typescript
 const instance = await env.AI_SEARCH.create({
   id: "projectsites-shared",
@@ -26,6 +28,7 @@ const instance = await env.AI_SEARCH.create({
 ```
 
 ## Multi-Tenant: Folder-Prefix Isolation
+
 ```typescript
 // Shared instance, filter by site prefix
 const results = await instance.search({
@@ -33,6 +36,7 @@ const results = await instance.search({
   filters: { folder: { $gte: `${siteId}/`, $lt: `${siteId}0` } },
 });
 ```
+
 Range query ensures `site-abc123/` matches but `site-abc1234/` does not.
 
 ### Tier Matrix
@@ -45,6 +49,7 @@ Range query ensures `site-abc123/` matches but `site-abc1234/` does not.
 | Enterprise | Dedicated namespace | Unlimited |
 
 ## Search API
+
 ```typescript
 app.get('/api/search', zValidator('query', searchSchema), async (c) => {
   const { q, siteId, limit } = c.req.valid('query');
@@ -60,9 +65,11 @@ app.get('/api/search', zValidator('query', searchSchema), async (c) => {
 ```
 
 ## MCP Endpoint for AI Agents
+
 Expose per-tenant search as MCP tool at `/api/mcp/:siteId`. Returns tool definition + handles tool calls with tenant-scoped search.
 
 ## Auto-Index at Deploy
+
 ```typescript
 async function indexSitePages(env: Env, siteId: string, pages: SitePage[]) {
   const isPremium = (await env.KV.get(`site:${siteId}:config`, 'json'))?.tier === 'premium';
@@ -77,6 +84,7 @@ async function indexSitePages(env: Env, siteId: string, pages: SitePage[]) {
 ```
 
 ## Cmd+K UI
+
 - Keyboard — Cmd/Ctrl+K opens, Escape closes
 - Debounced 200ms search on input
 - Arrow keys navigate results
@@ -84,16 +92,19 @@ async function indexSitePages(env: Env, siteId: string, pages: SitePage[]) {
 - Shows loading state, empty state
 
 ## Cross-Instance Search (Premium)
+
 ```typescript
 await env.AI_SEARCH.search({ messages: [...], ai_search_options: { instance_ids: ["site-abc", "site-def"] } });
 ```
 
 ## Relevance Boosting
+
 ```typescript
 boost: [{ field: "timestamp", method: "recency", weight: 1.2 }, { field: "category", method: "match", value: "docs", weight: 1.5 }]
 ```
 
 ## Migration from D1 LIKE
+
 1. Keep same `/api/search` endpoint
 2. Replace D1 query with AI Search
 3. Add `data-site-id` to `<html>`
@@ -101,5 +112,6 @@ boost: [{ field: "timestamp", method: "recency", weight: 1.2 }, { field: "catego
 5. Remove `search_index` table after verification
 
 ## Ownership
+
 - **Owns** — search indexing, multi-tenant isolation, search API, Cmd+K UI, MCP endpoint, auto-indexing, cross-instance search
 - **Never owns** — AI chat/conversational (→43), general MCP (→52), deployment (→08)

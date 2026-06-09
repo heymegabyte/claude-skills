@@ -17,6 +17,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ### Nonprofit (501c3 / charity / NGO / mission-driven)
 
 **Standard set (14 — every rebuild)**:
+
 - `/` — mission hero + impact line + 3-CTA donate-volunteer-learn
 - `/about` — story + founding year + EIN + IRS determination letter PDF
 - `/team` — board + staff + advisory council with photos+bios+LinkedIn
@@ -33,6 +34,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/terms` — donation T&Cs + photo release
 
 **Jewel set (10 — adds 'best-in-class' differentiation, AI-generated when source lacks)**:
+
 - `/annual-report` — last-year-in-review + financial summary + photo essay + board-chair letter; pull from Form 990 + Candid + GuideStar
 - `/financials` — Form 990 PDF + Charity Navigator badge + GuideStar Platinum badge + program/admin/fundraising 4-bar breakdown with citations
 - `/planned-giving` — bequest language + IRA charitable rollover + DAF grant + stock transfer instructions + planned-giving officer contact
@@ -46,6 +48,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/parish-toolkit` — downloadable resources for partner churches/synagogues/community groups (bulletin inserts, donation drive guides, sermon outlines, social-share kits, fundraiser templates)
 
 **Nonprofit reference incident (***njsk.org 2026-05-21***)**:
+
 - Source ships 8 unique non-blog routes
 - `njsk-org.manhattan.workers.dev` clone ships 8 keep + 14 standard + 10 jewels + 2 locales (`/es/*` + `/pt/*` per [[i18n-by-demographics]]) + 129 normalized blog slugs = ~210 routes from a single prompt
 - One-line prompt floor for nonprofit = NEVER less than the 14+10 standard+jewels above, regardless of source size
@@ -53,6 +56,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ### SaaS / API / Platform / Dev-Tool
 
 **Standard set (10)**:
+
 - `/` — hero + product demo + social proof + pricing teaser
 - `/pricing` — 3-tier comparison + monthly/annual toggle + FAQ
 - `/features` — every capability with screenshot+30-word explanation
@@ -65,6 +69,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/cookies` — per-jurisdiction consent disclosure
 
 **Jewel set (8)**:
+
 - `/changelog` — versioned releases + RSS + per-release pages
 - `/security` — SOC2 / GDPR / HIPAA / pen-test summary + responsible-disclosure policy
 - `/status` — uptime + incidents (link external Statuspage / self-host Uptime Kuma)
@@ -77,6 +82,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ### Local Business (restaurant / salon / medical / legal / fitness / retail / contractor)
 
 **Standard set (12)**:
+
 - `/` — NAP-prominent hero + hours + 3-CTA call-book-directions
 - `/about` — story + owner bio + license number when regulated
 - `/services` index + `/services/{service-slug}` per offering
@@ -90,6 +96,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/privacy` + `/accessibility`
 
 **Jewel set (8)**:
+
 - `/insurance` — accepted providers (medical/dental/optical/legal/auto)
 - `/financing` — payment plans / CareCredit / Affirm / Klarna
 - `/before-after` — visual proof (salon/dental/contractor/fitness)
@@ -102,6 +109,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ### Portfolio / Personal / Founder
 
 **Standard set (5)**:
+
 - `/` — name + role + 1-line bio + flagship project + CTA
 - `/about` — long bio + skills + timeline + contact
 - `/work` — project grid + per-project case study `/work/{slug}`
@@ -109,6 +117,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/contact` — form + email + social
 
 **Jewel set (6)**:
+
 - `/now` — Derek Sivers /now convention (current focus)
 - `/uses` — gear/stack/tools page
 - `/colophon` — site stack + design credits + build process
@@ -119,6 +128,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ### Church / Religious Org
 
 **Standard set (10)**:
+
 - `/` + `/about` — theology + history
 - `/leadership` — pastor + staff + elders/deacons
 - `/services` — Mass/service times + livestream
@@ -130,6 +140,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/contact`
 
 **Jewel set (6)**:
+
 - `/baptism|/sacraments|/lifecycle-events` — per-tradition
 - `/prayer-requests` — form + privacy
 - `/missions` — outreach + global partnerships
@@ -140,6 +151,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ### Government / Institutional / Civic
 
 **Standard set (12)**:
+
 - `/` + `/about` — mission + history + organizational structure
 - `/services` — service finder with search + filters
 - `/departments` — each with deep page
@@ -152,6 +164,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/privacy` + `/foia` (records request) + `/transparency` (budget + audits + salaries)
 
 **Jewel set (5)**:
+
 - `/feedback` — resident input form
 - `/jobs` — open positions
 - `/emergency` — preparedness + alerts signup
@@ -161,6 +174,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ### Education (K-12 / higher-ed / nonprofit-edu)
 
 **Standard set (12)**:
+
 - `/` + `/about` — mission + accreditation badges
 - `/academics` — programs index + per-program pages
 - `/faculty`
@@ -174,6 +188,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/contact`
 
 **Jewel set (6)**:
+
 - `/tuition` — fee schedule + financial aid + scholarships
 - `/visit` — campus tour + open house
 - `/library`
@@ -184,6 +199,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ### Healthcare (clinic / hospital / private practice)
 
 **Standard set (12)**:
+
 - `/` + `/about`
 - `/providers` — each provider with credentials + bio + headshot
 - `/services` — treatments index + per-service deep pages
@@ -197,6 +213,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/faq`
 
 **Jewel set (6)**:
+
 - `/billing` — financial assistance + payment plans + Good Faith Estimate per No Surprises Act
 - `/forms` — downloadable new-patient + consent + auth-to-disclose
 - `/conditions` — encyclopedia per condition treated (pSEO multiplier)
@@ -207,6 +224,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ### Legal (law firm / solo practice)
 
 **Standard set (10)**:
+
 - `/` + `/about` — firm history
 - `/attorneys` — per-attorney pages with bar admissions + JD school + clerkships + practice areas
 - `/practice-areas` — index + per-area deep page
@@ -217,6 +235,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/privacy` + `/disclaimer` (no-attorney-client until engagement letter)
 
 **Jewel set (6)**:
+
 - `/fees` — transparent pricing/retainer structure when ethically permissible
 - `/client-portal` — MyCase/Clio link
 - `/community` — pro bono + bar association leadership
@@ -227,6 +246,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 ## Discovery Rule (***org-type ambiguous? default UP, not down***)
 
 When prompt is ambiguous about org type:
+
 - Infer via skill 02 + `_research.json.category` + domain TLD heuristics (`.church|.org|.foundation`→nonprofit, `.app|.io|.dev`→saas, `.law`→legal, `.health`→healthcare)
 - When still ambiguous, default to the LARGER standard+jewel set rather than the smaller one
 - Over-shipping pages is cheap (AI generates each in seconds + Workers serves them at edge for free)

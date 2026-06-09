@@ -9,6 +9,7 @@ updated: "2026-04-23"
 ## Canonical Definitions
 
 ### Error Envelope (ALL error responses)
+
 ```typescript
 interface ErrorResponse { error: string; code?: string; details?: unknown; }
 interface ListResponse<T> { data: T[]; cursor?: string; hasMore: boolean; }
@@ -16,6 +17,7 @@ interface ItemResponse<T> { data: T; }
 ```
 
 ### HTTP Status Codes
+
 - **200** — success GET/PUT/PATCH
 - **201** — created POST
 - **204** — deleted
@@ -29,6 +31,7 @@ interface ItemResponse<T> { data: T; }
 - **500** — server error (`INTERNAL_ERROR`)
 
 ### Middleware Order
+
 1. Logger (global)
 2. Security Headers (global)
 3. CORS (`/api/*`)
@@ -38,6 +41,7 @@ interface ItemResponse<T> { data: T; }
 7. Handler
 
 ## Rules
+
 1. Inline handlers for type inference (Hono RPC requires it)
 2. Export `type AppType = typeof app` for RPC clients via `hc<AppType>`
 3. Zod schema = single source of truth (validate + types + OpenAPI)
@@ -54,6 +58,7 @@ interface ItemResponse<T> { data: T; }
 ## Key Patterns
 
 ### Hono RPC Mode
+
 ```typescript
 const routes = app
   .route('/api/v1/users', usersRoutes)
@@ -64,6 +69,7 @@ export type AppType = typeof routes;
 ```
 
 ### Cursor Pagination
+
 ```typescript
 // Fetch limit+1, if results > limit -> hasMore=true, slice off last
 // Cursor = last item's ID (ULID = lexicographically sortable)
@@ -74,6 +80,7 @@ return { data, cursor: data[data.length-1]?.id, hasMore };
 ```
 
 ### Centralized Error Handler
+
 ```typescript
 app.onError((err, c) => {
   if (err instanceof HTTPException) return c.json({ error: err.message, code: `HTTP_${err.status}` }, err.status);
@@ -85,6 +92,7 @@ app.notFound((c) => c.json({ error: `Route ${c.req.method} ${c.req.path} not fou
 ```
 
 ### Webhook Signature Verification
+
 ```typescript
 async function verifyHmacSignature(payload: string, signature: string, secret: string, algorithm = 'sha256'): Promise<boolean> {
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: `SHA-256` }, false, ['verify']);
@@ -95,6 +103,7 @@ async function verifyHmacSignature(payload: string, signature: string, secret: s
 ```
 
 ### CORS
+
 ```typescript
 app.use('/api/*', cors({
   origin: ['https://domain.com', 'https://www.domain.com'],
@@ -106,6 +115,7 @@ app.use('/api/*', cors({
 ```
 
 ### API Versioning
+
 - Mount both — `app.route('/api/v1', v1); app.route('/api/v2', v2);`
 - Add deprecation headers on v1:
   - `Deprecation: true`
@@ -113,7 +123,9 @@ app.use('/api/*', cors({
   - `Link: </api/v2>; rel="successor-version"`
 
 ## Checklist
+
 Every route has:
+
 - Zod validation
 - Error envelope
 - Correct status codes
@@ -130,5 +142,6 @@ Every route has:
 - Cache headers
 
 ## Ownership
+
 - **Owns** — Hono RPC setup, error envelope, middleware layering, rate limiting, pagination, OpenAPI generation, versioning, route organization, CORS, request IDs, webhook verification, API docs, error/404 handlers
 - **Never owns** — DB schema (→44), auth provider (→05), deployment (→08), frontend client UI (→06), business logic, security headers (→22), webhook logic (→45)

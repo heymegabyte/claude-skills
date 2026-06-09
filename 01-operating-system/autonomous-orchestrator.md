@@ -8,6 +8,7 @@ updated: "2026-04-23"
 # Autonomous Orchestrator
 
 ## Principles
+
 1. Never present options — pick best, implement, log in commits
 2. Complete execution — no stubs, no TODOs, all sub-tasks done
 3. Parallel agent spawning — identify independent streams, coordinate results
@@ -40,13 +41,16 @@ Orchestrator scans this inventory BEFORE planning. For every task ask: "Which co
 ## Master Process Flow
 
 ### 1. ANALYZE
+
 - Read context (CLAUDE.md, package.json, code)
 - Identify current vs desired state
 - Research competitors
 - Generate task list
 
 ### 1.5. ***ARCHITECTURE THOUGHT LOOP***
+
 Run `01/architecture-thought-loop.md` (30-point checklist):
+
 - **Phase 0** — pre-mortem, inversion, boundary, constraints, competitive snapshot
 - **Phase 1** — user stories, MECE decomposition, user journey, data flow, state machines
 - **Phase 2** — API-first contract, error-first design, 3 parallel paths, reversibility check
@@ -58,21 +62,25 @@ Run `01/architecture-thought-loop.md` (30-point checklist):
 ~22 min of thinking saves 22 hours of rework. Skip NOTHING.
 
 ### 2. PLAN
+
 - Group into parallel streams
 - Identify dependencies
 - Create execution order
 
 ### 3. EXECUTE (parallel)
+
 - Spawn agents
 - Build completely
 - Make creative decisions inline
 - Deploy continuously
 
 ### 4. VERIFY
+
 - E2E tests, Lighthouse, a11y (axe-core)
 - Responsive check (6 breakpoints)
 
 ### 4.5. ***UI COMPLETENESS SWEEP (MANDATORY — BLOCKS DONE)***
+
 a. **Static scan** — grep `src/` for `Coming soon|TODO|placeholder|lorem|not implemented|stub|mock|fake|dummy|TBD|WIP`
 b. **Playwright interactive** — click EVERY button (catch disabled/no-handler), submit EVERY form (valid+invalid), check EVERY link (catch 404s), verify EVERY image (catch broken/placeholder)
 c. **Empty state check** — render pages with no data; what does user see?
@@ -85,11 +93,13 @@ i. Re-sweep. Loop until ALL pages ≥8/10 AND zero findings OR budget exhausted.
 j. Log sweep results to `~/.claude/audit/sweep-results.jsonl` (Stop hook checks this)
 
 ### 5. ITERATE
+
 - Compare vs competitors
 - Fix gaps, re-deploy
 - Continue until exceeds
 
 ### 6. DOCUMENT
+
 - Update CLAUDE.md, skills, memories
 - Descriptive commits
 
@@ -107,6 +117,7 @@ j. Log sweep results to `~/.claude/audit/sweep-results.jsonl` (Stop hook checks 
 | Image Generator | Logos, icons, heroes via AI |
 
 ## Team Structure
+
 ```
 Team Lead (claude-opus-4-6) — plans, coordinates
 ├── Frontend Agent (claude-sonnet-4-6) — UI, design, motion, a11y
@@ -121,6 +132,7 @@ Team Lead (claude-opus-4-6) — plans, coordinates
 - Deploy runs AFTER all builds complete
 
 ## ToolSearch Bulk-Loading (***CRITICAL***)
+
 - When any computer-use tools are in the deferred list, load ALL in single call — `{ query: "computer-use", max_results: 30 }`
 - Never load individual tools one-by-one (wastes one round-trip per tool)
 - Same pattern for any deferred tool set — bulk-search by server name prefix, not `select:` for individuals
@@ -128,6 +140,7 @@ Team Lead (claude-opus-4-6) — plans, coordinates
 Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer, test-writer, seo-auditor, visual-qa, computer-use-operator.
 
 ## Completion Criteria
+
 - All features implemented (no stubs/TODOs)
 - Deployed to production
 - E2E tests pass
@@ -141,6 +154,7 @@ Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer,
 - GPT-4o visual verification converged on ALL routes
 
 ## Self-Healing Decision Tree
+
 - **TRANSIENT (retry)** — rate limit → backoff; timeout → retry 2s; 503 → check Coolify; cache stale → rebuild
 - **CODE BUG (fix)** — type error → fix types; null ref → add guard; logic → trace + fix; import → fix paths
 - **ARCHITECTURE (reassess)** — wrong framework → propose alt; schema mismatch → redesign; structure wrong → refactor
@@ -150,11 +164,13 @@ Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer,
 **Recovery** — detect → classify → fix → verify → if 3x same failure escalate one level → check for regressions
 
 ## Crons vs Completion
+
 - Crons = monitoring ONLY (health, uptime, deploy status)
 - Work completion = single deep session with parallel phases
 - If `/loop` or `/schedule` invoked for work (not monitoring), warn user: "This is work completion, not monitoring. Running deep session instead."
 
 ## Spawn/Kill Pattern
+
 - Decompose → parallel phases → agents complete + return (ephemeral, not persistent)
 - Master merges → next phase
 - Context >60% → `progress.md` → fresh agent
@@ -166,6 +182,7 @@ Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer,
 **SubagentStop hook** — `~/.claude/hooks/on-session-end.sh` fires when agent session ends. Auto-commits + pushes skill/memory changes to `heymegabyte/claude-skills`. Checks `~/.claude/audit/sweep-results.jsonl` — if latest sweep <8/10, blocks "done" and re-queues fixes.
 
 ## Anti-Patterns
+
 - Pick best, not ask
 - No skeletons "for next session"
 - Never sequential when parallel-safe
@@ -178,9 +195,11 @@ Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer,
 - No recurring tasks for one-run work
 
 ## Trigger/Stop Conditions
+
 - **Trigger** — new project, "build this" / "make this better", returning to project with pending improvements
 - **Stop** — exceeds all competitors, all quality gates pass, user explicitly says stop
 
 ## Ownership
+
 - **Owns** — master orchestration, task decomposition, autonomous decisions, parallel agent coordination, completion criteria, continuous improvement loop, competitive iteration
 - **Never owns** — implementation (→06), testing (→07), deployment (→08), design (→10), media (→12), policy (→01)

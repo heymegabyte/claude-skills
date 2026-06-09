@@ -8,6 +8,7 @@ description: "AG Grid (ag-grid-angular) for complex data tables with server-side
 # Data Tables
 
 ## Angular AG Grid Setup
+
 ```typescript
 // data-table.component.ts
 import { Component, input, signal, viewChild } from '@angular/core';
@@ -97,6 +98,7 @@ export class DataTableComponent {
 ```
 
 ## Hono Server-Side Pagination API
+
 ```typescript
 // src/routes/data.ts
 import { Hono } from 'hono';
@@ -176,6 +178,7 @@ export { data };
 ```
 
 ## Column Definition Patterns
+
 ```typescript
 const columnDefs: ColDef[] = [
   { field: 'id', headerName: 'ID', width: 80, hide: true },
@@ -203,6 +206,7 @@ const columnDefs: ColDef[] = [
 ```
 
 ## Infinite Scroll (no pagination)
+
 ```typescript
 // Replace pagination with infinite scroll
 <ag-grid-angular
@@ -216,6 +220,7 @@ const columnDefs: ColDef[] = [
 ```
 
 ## Print Layout
+
 ```typescript
 printTable(): void {
   this.gridApi.setDomLayout('print');
@@ -227,6 +232,7 @@ printTable(): void {
 ```
 
 ## Theming (dark-first)
+
 ```css
 .ag-theme-alpine-dark {
   --ag-background-color: #060610;

@@ -8,6 +8,7 @@ description: "Branded HTML transactional email: dark gradient header, clean body
 # Email Templates
 
 ## Design Principles (Source: Litmus, Really Good Emails)
+
 - **Dark mode support** — emails must look great in both light and dark email clients
 - **Max width: 560px** — optimal reading width across all clients
 - **System fonts** — `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`
@@ -16,6 +17,7 @@ description: "Branded HTML transactional email: dark gradient header, clean body
 - **Text-first** — key information must be readable without images loading
 
 ## Template Structure
+
 ```
 ┌─────────────────────────────┐
 │  Dark gradient header (#060610 → #0a0a1a)  │
@@ -31,6 +33,7 @@ description: "Branded HTML transactional email: dark gradient header, clean body
 ```
 
 ## Base HTML Template
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +84,9 @@ description: "Branded HTML transactional email: dark gradient header, clean body
 ## Email Types
 
 ### 1. Contact Form Confirmation
+
 **Subject:** "Got it — we'll be in touch"
+
 ```
 Hi {{name}},
 
@@ -98,7 +103,9 @@ Brian
 ```
 
 ### 2. Newsletter Welcome
+
 **Subject:** "You're in 🎉"
+
 ```
 Welcome to the [Brand] newsletter.
 
@@ -113,7 +120,9 @@ No spam. Unsubscribe anytime.
 ```
 
 ### 3. Donation Receipt
+
 **Subject:** "Thank you — here's your receipt"
+
 ```
 Thank you for your generous donation of ${{amount}}.
 
@@ -127,7 +136,9 @@ Your support directly funds [specific impact].
 ```
 
 ### 4. Volunteer Signup
+
 **Subject:** "Welcome aboard"
+
 ```
 You're officially signed up to volunteer.
 
@@ -140,7 +151,9 @@ Questions? Reply to this email.
 ```
 
 ### 5. Goal Reached Celebration
+
 **Subject:** "We did it! Goal reached."
+
 ```
 Thanks to people like you, we've reached our ${{goal}} goal!
 
@@ -152,6 +165,7 @@ This means [specific impact statement].
 ```
 
 ## Sending via Resend
+
 ```typescript
 import { Resend } from 'resend';
 
@@ -172,6 +186,7 @@ await resend.emails.send({
 - **For bulk** — use Listmonk on Cloudflare Containers
 
 ## Testing Checklist
+
 - [ ] Renders correctly in Gmail (web + mobile)
 - [ ] Renders correctly in Apple Mail
 - [ ] Dark mode displays properly

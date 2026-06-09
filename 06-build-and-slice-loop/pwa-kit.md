@@ -9,6 +9,7 @@ updated: "2026-05-01"
 Every projectsites.dev build ships a full PWA. Local business customers need contact info offline. SaaS visitors install to their dock. Lighthouse PWA score 100 is the floor.
 
 ## site.webmanifest (Required Fields)
+
 ```json
 {
   "name": "{BusinessName}",
@@ -47,7 +48,9 @@ Every projectsites.dev build ships a full PWA. Local business customers need con
 ```
 
 ## Real Manifest Screenshots (***PLAYWRIGHT — NEVER STOCK MOCKUPS***)
+
 After build, before R2 upload, run `node scripts/generate-pwa-screenshots.mjs http://localhost:4173`:
+
 - **Desktop wide 1920×1080** → `/screenshots/desktop-1920x1080.jpg` (Playwright Chromium, viewport 1920×1080, full-page=false, JPEG q=85)
 - **Mobile narrow 390×844** → `/screenshots/mobile-390x844.jpg` (Playwright iPhone 14 Pro emulation)
 - **Cover 1280×720** → optional `gpt-image-1.5` illustrative cover (brand colors + business name + tagline + abstract motif) for stores that prefer artistic covers
@@ -55,6 +58,7 @@ After build, before R2 upload, run `node scripts/generate-pwa-screenshots.mjs ht
 Each ≤200KB JPEG. **Gate** — `ls dist/screenshots/*.jpg` returns ≥2 files OR build fails.
 
 ## Service Worker via Workbox (`sw.js` generated at build)
+
 ```js
 // vite.config.ts → vite-plugin-pwa with workbox preset
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
@@ -72,9 +76,11 @@ self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 self.addEventListener('message', e => { if (e.data === 'SKIP_WAITING') self.skipWaiting(); });
 ```
+
 Navigation fallback to `/offline.html` when network fails AND cache empty.
 
 ## Static Head Tags (every page)
+
 ```html
 <link rel="manifest" href="/site.webmanifest" />
 <meta name="theme-color" content="{--brand-primary}" />
@@ -88,6 +94,7 @@ Navigation fallback to `/offline.html` when network fails AND cache empty.
 ```
 
 ## Branded offline.html (***NEVER GENERIC***)
+
 - Layout — site logo + headline "You're offline" + body "Last loaded at {HH:MM}. Check your connection and refresh." + retry button
 - Brand colors, brand fonts, dark or light per `_brand.json.theme`
 - NAP block (name + address + phone) embedded statically — phone is `tel:` link so user can call from offline state
@@ -95,7 +102,9 @@ Navigation fallback to `/offline.html` when network fails AND cache empty.
 - ≤30KB HTML, all assets inlined or cached
 
 ## Update Flow (***NO WHITE-SCREEN RELOAD, NO INFINITE LOOP***)
+
 SW registration script sends a discreet toast when a new version is ready, never auto-reloads:
+
 ```ts
 import { registerSW } from 'virtual:pwa-register';
 const updateSW = registerSW({
@@ -103,12 +112,14 @@ const updateSW = registerSW({
   onOfflineReady() { showToast('Ready to work offline'); },
 });
 ```
+
 - Toast uses skill 11 motion (slideInUp, 200ms)
 - Click "Refresh" → calls `updateSW(true)` (skipWaiting + clients.claim + reload)
 - NO automatic reload — user controls timing
 - NO infinite loop guard needed because toast only shows once per `onNeedRefresh`
 
 ## Build Gates (***SKILL 07 `quality-gates.md` PWA VALIDATION***)
+
 - `site.webmanifest` valid JSON, all required fields present
 - ≥6 icon entries (16/32/180/192/512/maskable-512)
 - ≥2 screenshots (wide + narrow), real not mocked, dimensions match declared
@@ -118,6 +129,7 @@ const updateSW = registerSW({
 - Update-flow toast component present in `src/`
 
 ## Lighthouse PWA Floor
+
 - PWA score ≥0.95 (effectively 100)
 - Installable
 - Manifest valid

@@ -8,6 +8,7 @@ description: "CopilotKit for AI-powered UX with useCopilotReadable, useCopilotAc
 # Copilot and AI Features
 
 ## CopilotKit Setup (Angular/React-compatible)
+
 - CopilotKit provides React hooks
 - For Angular — use the REST API + custom service, or embed CopilotKit React components via Angular elements wrapper
 
@@ -58,6 +59,7 @@ export class CopilotService {
 ```
 
 ## CopilotKit React Hooks (reference — use in React or wrapped)
+
 ```tsx
 import { useCopilotReadable, useCopilotAction } from '@copilotkit/react-core';
 import { CopilotTextarea } from '@copilotkit/react-textarea';
@@ -116,6 +118,7 @@ useCopilotAction({
 ```
 
 ## Hono Copilot Backend (Workers AI)
+
 ```typescript
 // src/routes/copilot.ts
 import { Hono } from 'hono';
@@ -168,6 +171,7 @@ export { copilot };
 ```
 
 ## Workers AI: Embeddings + Semantic Search
+
 ```typescript
 // Generate embeddings for content indexing
 async function embedContent(text: string, env: Env): Promise<number[]> {
@@ -190,6 +194,7 @@ async function searchSimilar(query: string, env: Env, topK = 5): Promise<Vectori
 ```
 
 ## CoAgents Pattern (autonomous in-app agents)
+
 - **CoAgent** — multi-step task execution with tool use
 - Example flow:
   1. User — "Set up my project for launch"
@@ -220,6 +225,7 @@ async function runCoAgent(goal: string, actions: CopilotAction[], env: Env): Pro
 ```
 
 ## Wrangler Bindings
+
 ```toml
 [ai]
 binding = "AI"

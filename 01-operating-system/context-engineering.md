@@ -26,22 +26,26 @@ Replaced "prompt engineering" as the discipline. **Context > prompting** — wha
 **Coordination** — shared task list + dependency tracking + peer messaging + file locking. Each agent sees only files it owns (specialization > generalism). Token costs scale linearly with agent count.
 
 ## Context Budget
+
 - Subagents — fill with 900K relevant context (skills + code + docs + web research). Return ≤200-word summary to main thread.
 - Main thread — orchestrate only, never implement.
 - Context >60% → save `progress.md` → spawn fresh.
 
 ## Anti-Patterns
+
 - **Context rot** — agent understanding degrades as conversation grows. Compact proactively.
 - **Autonomy outrunning verification** — every build step needs a check step.
 - **Security blindspot** — 48% of AI-generated code contains security vulnerabilities (Becker study). Never skip review.
 - **Idle time** — doubles in agentic mode. Keep agents busy, not developers waiting.
 
 ## Caching Strategy
+
 - Deterministic load order: Tools → System → CLAUDE.md → rules (alpha) → skill descriptions → MEMORY.md → conversation
 - Static prefix = cacheable (90% savings on repeated reads)
 - Min cacheable: Opus 4096 tokens, Sonnet 2048 tokens
 - Cache TTL: 5min default, 1hr with frequent access
 
 ## Ownership
+
 - **Owns** — context window strategy, compaction triggers, subagent context loading, caching order, note-taking protocol, JIT retrieval patterns, multi-agent coordination
 - **Cross-refs** — `autonomous-orchestrator.md` (Ralph Loop), `output-compression.md` (token reduction)

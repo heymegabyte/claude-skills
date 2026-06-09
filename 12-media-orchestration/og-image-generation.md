@@ -258,6 +258,7 @@ All use same template, different crop. `size` param on `/api/og` controls which 
 4. R2 default missing → 500 with error envelope
 
 Pre-generate `default.png` at deploy time:
+
 ```bash
 curl /api/og?title=Megabyte+Labs&desc=Ship+faster
 ```

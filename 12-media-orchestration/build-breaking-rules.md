@@ -21,6 +21,7 @@ Migrated from `~/.claude/rules/always.md` 2026-05-03.
 Phase 0 step 1 enumerates EVERY image slot on EVERY route into `_media_slots.json` BEFORE any agent fans out.
 
 ### Slot record shape
+
 ```
 {slot_id, route, section, role, aspect, min_dims, topic_keywords, topic_intent,
  brand_palette, preferred_motion, source_chain, dalle_prompt, negative_prompt,
@@ -28,7 +29,9 @@ Phase 0 step 1 enumerates EVERY image slot on EVERY route into `_media_slots.jso
 ```
 
 ### Per-slot DALL-E prompt — 6 mandatory fields
+
 Drafted at this stage (single batched gpt-4o call ~$0.05/site) MUST encode:
+
 1. Page topic + intent verbatim
 2. Brand palette tokens inline hex
 3. Composition + aspect ratio
@@ -37,6 +40,7 @@ Drafted at this stage (single batched gpt-4o call ~$0.05/site) MUST encode:
 6. Negative prompt block (`"no text, no watermarks, no logos, no extra fingers, no AI artifacts, no stock-photo cliches"`)
 
 ### Source-chain order
+
 1. Real-entity sources (Places/uploads/scrape)
 2. DALL-E
 3. Pexels
@@ -47,14 +51,17 @@ Drafted at this stage (single batched gpt-4o call ~$0.05/site) MUST encode:
 DALL-E elevated to PRIMARY slot-fill engine after real-entity exhaustion (Brian: *"DALL-E can literally create the ultra-realistic perfect photo for any given photo spot, so rely on that fact"*). Stock APIs run as parallel speed-pass fallback (instant return if DALL-E hangs >15s) but DALL-E output preferred at curation.
 
 ### Acceptance
+
 Every slot MUST end the build with `filled_url != null AND filled_score >= relevance_floor` (default 8/10 GPT-4o vision).
 
 ### Failure handling
+
 Failure (Pexels empty, NSFW flag, broken scrape, vision below floor) → REFINED-prompt regen via DALL-E (gpt-4o synthesizes refined prompt from `(original_prompt, vision_critique, relevance_floor)`), max 5 attempts × $0.08/img = $0.40/slot worst case. After exhaustion: log to `_unfillable_slots.json`, ship with brand-gradient floor (prevents 404), build marked `published_with_warnings`, dashboard surfaces slot for manual replacement.
 
 NEVER silent skip, NEVER substitute brand-gradient unless 5 regen attempts exhausted.
 
 ### Validators
+
 - `validate-media-slot-manifest.mjs` — every route enumerated, every slot record complete
 - `validate-no-empty-slots.mjs` — no `_unfillable_slots.json` entries on clean build, no slot below relevance_floor, no fallback-gradient unless exhaustion logged
 - `validate-dalle-slot-fill.mjs` — every DALL-E prompt has all 6 mandatory fields
@@ -74,21 +81,26 @@ Every site ships THREE auto-generated NotebookLM-style artifacts before deploy:
 Phase 0 step 2 enumerates `_notebooklm.json` manifest (mirrors Media Slot Manifest pattern) BEFORE Phase 1 page builds reference artifact URLs.
 
 ### Provider chains
+
 - **Podcast** — ElevenLabs Studio Create Podcast (`POST /v1/studio/podcasts` with `mode: conversation` + two voice IDs) → AutoContent API → `teng-lin/notebooklm-py` headless wrapper (only when client demands NotebookLM-format proof) → skip-with-warning
 - **Video** — HeyGen API ($1/min standard, $4/min Avatar IV 1080p, 60-90s talking-head) → Synthesia → Tavus → Veo 3.1 Fast 8s hero loop ($1.20) → skip-with-warning
 - **Infographic** — Vega-Lite (free deterministic) + Recraft v3 ($0.04/SVG) + GPT Image 2 ($0.06/img); fallback to Napkin AI ($39/mo) when Recraft + GPT-Image saturated
 
 ### Budgets
+
 - Per-site cost ceiling — $3.50
 - Daily ceiling — `NOTEBOOKLM_DAILY_BUDGET` (default $300 = ~100 sites) — exhaustion degrades to cheapest providers, NEVER blocks deploy
 
 ### Acceptance
+
 Every artifact MUST end the build with `filled_url != null AND filled_score >= 8/10` (GPT-4o vision for cover art, gpt-4o-mini topical-relevance for transcript) OR exhausted-with-warning state — same fail-CLOSED auto-regenerate pattern as Media Slot Manifest, max 3 attempts per artifact.
 
 ### Source brief construction
+
 gpt-4o-mini condenses `_research.json` + top-N `_corpus.json` + `_pdf_facts.json` into 8-15K-char `_podcast_source.md` (human-reviewable); same brief feeds 75-second `_video_script.md` synthesis (gpt-4o, structured Hook 10s → Problem 15s → Solution 30s → Proof 10s → CTA 10s).
 
 ### Submission automation (post-deploy)
+
 - Apple Podcasts Connect (JWT API, `APPLE_PODCAST_KEY_ID` + `APPLE_PODCAST_PRIVATE_KEY`)
 - Spotify for Podcasters (manual UI)
 - Podcast Index (free instant `https://podcastindex.org/add`)
@@ -96,6 +108,7 @@ gpt-4o-mini condenses `_research.json` + top-N `_corpus.json` + `_pdf_facts.json
 - YouTube Music podcast directory (Google Podcasts deprecated 2024)
 
 ### Validators
+
 - `validate-podcast-on-about.mjs` — `<audio>` + dual JSON-LD + transcript ≥500 chars on `/about`
 - `validate-infographic-on-about.mjs` — `[data-infographic-gallery]` ≥3 panels with caption attrs on `/about`
 - `validate-explainer-video-btf.mjs` — `[data-section="explainer-btf"]` is 2nd `<section>` of `<main>` on `/` + `<stream>` + VideoObject JSON-LD with hasPart chapters
@@ -108,6 +121,7 @@ Pipeline spec: `~/.agentskills/12-media-orchestration/notebooklm-pipeline.md`. A
 Every `<img>` rendered on a route MUST score ≥8/10 on per-page semantic relevance via GPT-4o vision.
 
 ### Scoring prompt names
+
 - (a) Page topic + intent (e.g. `/volunteer` = "people contributing time/labor", `/women-and-children-services` = "women + children specifically NOT mixed-gender adults")
 - (b) Image subject + composition extracted via vision
 - (c) Brand-tone fit
@@ -115,6 +129,7 @@ Every `<img>` rendered on a route MUST score ≥8/10 on per-page semantic releva
 Lightbulb on `/volunteer` = fail. Mixed-gender adults on `women-and-children-services` = fail. Generic stock corporate handshake on soup-kitchen page = fail.
 
 ### Hero image preference order (STRICT)
+
 1. Original-source-hero IF quality ≥7/10 (NEVER lucky-stock instead — Brian's njsk-light hero critique 2026-05-02)
 2. Pexels-video-loop matching topic
 3. Pexels-image scoring ≥8
@@ -128,6 +143,7 @@ Validator (`validate-image-relevance.mjs`): post-build, GPT-4o scores `(page_top
 Every blog/news/article/journal/case-study post MUST have a valid featured image (hero + OG card + listing thumbnail).
 
 ### Discovery chain
+
 1. Source post `<img>` with class containing `featured`/`hero`/`thumb`
 2. Source post first inline `<img>` ≥1024×768
 3. Source post `og:image` meta
@@ -152,17 +168,20 @@ Validator (`validate-blog-featured-images.mjs`): every `_corpus.json.posts[]` en
 Every image/video/PDF/font/CSS/JS reference inherited from the source site MUST be downloaded during scrape and re-uploaded to R2 under `sites/<slug>/assets/<deterministic-hash>.<ext>` BEFORE rebuild reaches `published`.
 
 ### NEVER ship
+
 - `<img src="https://images.squarespace-cdn.com/...">`
 - `<img src="https://static.wixstatic.com/...">`
 - `<img src="https://wp.com/...">`
 - `<source src="https://www.youtube.com/embed/<id>">` (YouTube embeds OK as iframes; raw assets NOT)
 
 ### Reasons
+
 - (a) Source site can revoke/migrate at any time, breaking our site instantly
 - (b) Source CDN headers strip our caching control, hurting LCP
 - (c) Hotlinks expose our generated site as "still depending on the old site" — undermines value prop
 
 ### Pipeline
+
 1. Crawler enumerates all asset URLs into `_assets.json.external_refs[]`
 2. Parallel `fetch` with REAL_UA + `Accept-Encoding: identity` for binary integrity
 3. Compute SHA-256 → store under `sites/<slug>/assets/<hash>.<ext>`
@@ -176,6 +195,7 @@ Validator (`validate-no-cdn-hotlinks.mjs`): grep dist/ HTML for hostnames matchi
 ## Every page (media density — ***FAVOR VIDEO + MULTI-SOURCE GENERATION***)
 
 Every page receives at minimum:
+
 1. ALL original media from corresponding source URL (images, videos, PDFs preserved)
 2. 1-2 supplemental DALL-E / GPT-Image purpose-crafted originals (per-slot prompts per skill 12)
 3. ≥1 Pexels Video API result for hero/module background (favor video over static for hero slots — `<video autoplay muted loop playsinline poster>`)
@@ -192,6 +212,7 @@ GPT-4o topic-relevance ≥8/10 is necessary but NOT sufficient. A second binary 
 E.g. clothing/shirts on a box factory = fail; ambulance on a bakery = fail; tropical beach on an accounting firm = fail.
 
 ### Prompt pattern
+
 - (a) Business category: `<_research.json.category>`
 - (b) Business type description: `<_research.json.business_type_description>`
 - (c) Image subject extracted by vision: `<vision_description>`
@@ -209,6 +230,7 @@ Before invoking DALL-E or any stock API, crawler MUST fully extract ALL media fr
 For `megabyte.space → megabytespace`, for `installdoctor.com → installdoctor`, for `nyfoldingbox.com → nyfoldingbox` — the primary domain is the single richest source of on-brand, topic-correct, legally-sound imagery.
 
 ### Extraction pipeline
+
 1. Firecrawl/Playwright deep crawl primary domain with REAL_UA
 2. Extract every `<img src>`, `<picture>`, `<video poster>`, `<source src>`, CSS `background-image` URL, `og:image`, JSON `image` fields
 3. Filter: keep ≥200×200px, ≥10KB, non-icon/sprite/tracking-pixel
@@ -223,6 +245,7 @@ Validator (`validate-source-media-extraction.mjs`): when `_research.json.source_
 ## Every team headshot (***1:1 SQUARE CROP + CONSISTENT STYLE — UNIVERSAL — BUILD-BREAKING***)
 
 Every person/staff/team member photo MUST be:
+
 - (a) Square aspect ratio (1:1), face centered, cropped at shoulder level — never portrait (4:5, 3:4) or landscape — unless the full team page uses a SINGLE consistent non-square format
 - (b) Consistent style across ALL team members (same background tone, same crop framing, same shadow/border treatment) — never a mix of office photos + LinkedIn headshots + casual outdoor shots in the same grid
 - (c) Resolution ≥400×400px source, served at 200×200 minimum rendered size
@@ -235,6 +258,7 @@ Validator (`validate-team-headshots.mjs`): for every `[data-card-type=person]` e
 ## Every listing-grid image (***CONSISTENT ASPECT RATIO WITHIN GRID — UNIVERSAL — BUILD-BREAKING***)
 
 All `<img>` elements within a single `[data-card-grid]` container MUST share the SAME aspect ratio — 16:9 OR 4:3 OR 1:1 (pick one per grid, determined at Phase 0 based on content type):
+
 - Portraits → 1:1
 - Products → 4:3
 - Hero/feature → 16:9
@@ -242,6 +266,7 @@ All `<img>` elements within a single `[data-card-grid]` container MUST share the
 Mixed aspect ratios in one grid (some cards at 16:9, others at 4:3, others at uncropped natural) create a broken, unprofessional grid rhythm.
 
 ### Implementation
+
 - All images within a grid are cropped to the grid's target aspect using Sharp `fit:'cover'` BEFORE upload to R2 — images are NEVER CSS-cropped via `object-fit: cover` alone without actual crop (CSS object-fit distorts when natural ratio differs greatly from target)
 - `<figure>` around each grid image uses CSS `aspect-ratio: 16/9` (or equivalent) as a size placeholder
 
@@ -252,6 +277,7 @@ Validator (`validate-grid-image-aspect.mjs`): for every `[data-card-grid]`, comp
 No two `<img>` elements on the same rendered route may share identical alt text (case-insensitive, whitespace-normalized).
 
 ### Reasons
+
 - Duplicate alts mislead screen readers (user hears "team photo" three times in a row, can't distinguish which person)
 - Kill image-search SEO (Google de-dupes images sharing alt within same page → only one indexed)
 - Reveal AI-generated boilerplate (`"placeholder"` / `"image"` / `"photo"` repeated)
@@ -267,14 +293,17 @@ Validator (`validate-alt-dedup.mjs`): per-route DOM walk extracts every `<img al
 Every route MUST have a UNIQUE `og:image` (and matching `twitter:image`) — no shared site-wide `og-image.png` across routes. Each route's social card is 1200×630 ≤100KB branded composition naming the page topic in headline + branded background + logomark + accent gradient.
 
 ### Discovery chain for per-route OG image
+
 1. When route has a hero image meeting topic-relevance ≥8/10, composite hero into 1200×630 with branded gradient overlay + page title text + logomark
 2. Else, render branded card via Satori/Resvg SSR or Vercel OG Image API or Bannerbear API with template tokens `{title, eyebrow, accent, logo}` per `_brand.json`
 3. Fallback: site-default OG card BUT logged to `_unfillable_og.json` for manual replacement
 
 ### File path
+
 `sites/<slug>/og/<route-hash>.png` (deterministic — `sha256(route)` first 8 chars).
 
 ### Per-route metadata MUST point to absolute URL
+
 - `og:image = https://<custom-hostname>/og/<route-hash>.png`
 - `og:image:width = 1200`
 - `og:image:height = 630`
@@ -282,6 +311,7 @@ Every route MUST have a UNIQUE `og:image` (and matching `twitter:image`) — no 
 - `og:image:alt = "<page-specific-description>"`
 
 Validator (`validate-route-og-image.mjs`): grep dist HTML for `<meta property="og:image" content="...">` per route, assert:
+
 - (a) Every route has og:image set
 - (b) Every og:image URL is unique across all routes (case-sensitive — same image shared across routes = fail)
 - (c) Every og:image URL HEAD-200 resolves to a real file in build output
@@ -297,12 +327,15 @@ All `<svg>` elements embedded inline in HTML or referenced as SVG files MUST pas
 Build pipeline MUST run `npx svgo --multipass` on all `.svg` source files AND on all `<svg>` blocks extracted from template HTML before final bundle.
 
 ### SVGO config
+
 ```js
 { plugins: ["preset-default", { name: "removeViewBox", active: false }] }
 ```
+
 Preserving `viewBox` for responsive scaling.
 
 ### Common SVGO gains
+
 - `<rect x="0" y="0" width="100%" height="100%">` → `<rect width="100%" height="100%">`
 - Duplicate `<defs>` across same-page symbol maps merged into one
 - Legacy `xmlns:xlink` stripped
@@ -320,24 +353,29 @@ Progressive enhancement, NOT replacement: keep the `<address>` element + dir-lin
 **Required adjacency** — map widget within the same `<section>` or `<aside>` as the address render OR within 1 viewport scroll on mobile (≤700px after the address).
 
 ### Three approved widget tiers (pick the one that fits the section's information density)
+
 1. **MapTile** — 320×320 lazy-mounted thumbnail with one pin, `aspect-ratio: 1/1`, used inline beside contact cards / in `/we-need` need-tiles / in services-page location callouts (lightweight, ≤30KB rendered)
 2. **MapBand** — full-bleed 16:9 or 21:9 banner with directions CTA overlay, used on `/contact` + service-detail pages + section dividers
 3. **MapDossier** — split-screen 50/50 with address + hours + phone on left, interactive map on right, used on `/contact` hero and any "where to find us" feature
 
 ### Component contract
+
 `<MapWidget variant="tile|band|dossier" address geo title aspectRatio>` shipped once in `src/components/map-widget.tsx`, never duplicated.
 
 Lazy-mount via IntersectionObserver — iframe injected only when section enters viewport (saves 200ms LCP); placeholder is a Sharp-rendered Maps Static API PNG OR brand-gradient SVG with pin glyph until activation. Reduced-motion: no autoplay pan, static initial frame.
 
 ### Per-page count
+
 NO MORE THAN 2 distinct map widgets per route (avoid map-soup); when 2 addresses on same page, single widget with 2 pins via `&q=` polyline encoding OR `place_id`.
 
 ### JSON-LD pairing on every page rendering an address
+
 Same-page `LocalBusiness` / `Place` / `Organization` schema with `geo: { latitude, longitude }` matching embed coords within 50m.
 
 The address itself remains a Google Maps directions link (`<a href="https://www.google.com/maps/dir/?api=1&destination=<url>">`) per "Every address" rule — the map widget is ADDITIVE.
 
 Validator (`validate-address-map-adjacency.mjs`): for every page render of an address pattern (case-insensitive grep dist HTML), assert:
+
 - (a) Within the same `<section>`/`<aside>` ancestor there exists a `<MapWidget>` OR `<iframe src*="google.com/maps/embed">` OR `<img>` with `src*="maps.googleapis.com/maps/api/staticmap">` OR `<noscript>` map fallback
 - (b) `<MapWidget>` count per route ≤2
 - (c) `LocalBusiness.geo` JSON-LD present on the page
@@ -351,9 +389,11 @@ Fail codes: `address.map_adjacency_missing` | `address.map_widget_excess` | `add
 Every site whose `_research.json` resolves a street address renders ONE full-width interactive map widget on `/contact` (mandatory) AND mirrors a smaller embed in the footer (recommended).
 
 ### Implementation
+
 MUST use Google Maps Embed API via `<iframe>` (no JS-API key required for basic embeds, free unlimited loads, no CSP `script-src` change needed) — NOT the Maps JavaScript API (key-gated, billable, heavier bundle).
 
 URL pattern:
+
 ```
 https://www.google.com/maps/embed/v1/place?key=<MAPS_EMBED_KEY>&q=<urlencoded-address>&zoom=15&maptype=roadmap
 ```
@@ -361,7 +401,9 @@ https://www.google.com/maps/embed/v1/place?key=<MAPS_EMBED_KEY>&q=<urlencoded-ad
 The `MAPS_EMBED_KEY` is set via `wrangler secret put MAPS_EMBED_KEY --env production` (Embed API free tier: unlimited loads as of 2026, billable Maps JS API counts separately).
 
 ### Component
+
 `<MapWidget address geo aspectRatio="16/9" title="Map showing <business-name>">` shipped in template, lazy-mounted via IntersectionObserver (iframe injected only when in viewport — saves 200ms LCP):
+
 - `loading="lazy"`
 - `referrerpolicy="no-referrer-when-downgrade"`
 - `allowfullscreen`
@@ -369,32 +411,42 @@ The `MAPS_EMBED_KEY` is set via `wrangler secret put MAPS_EMBED_KEY --env produc
 - Wrapped in `<figure>` with `<figcaption>` linking the address (uses `<AddressBlock>` so the address itself remains a Google Maps directions link per "Every address" rule above)
 
 `<noscript>` fallback renders Maps Static API image:
+
 ```
 https://maps.googleapis.com/maps/api/staticmap?center=<lat>,<lng>&zoom=15&size=1200x675&markers=color:red%7C<lat>,<lng>&key=<MAPS_STATIC_KEY>
 ```
 
 ### Reduced-motion
+
 Embed API auto-respects user pan/zoom intent — no extra config.
 
 ### CSP additions
+
 - For SERVED sites already permissive (`frame-src *` via `default-src *` in security_headers.ts)
 - For DASHBOARD CSP: append `frame-src https://www.google.com https://maps.google.com` if widget renders in dashboard
 
 ### JSON-LD pairing
+
 `LocalBusiness` schema on the same page MUST include `geo: { @type: "GeoCoordinates", latitude, longitude }` matching the embedded map exactly (latitude + longitude rounded to 5 decimals = ~1.1m precision) — AI search engines cross-reference structured data against visual map.
 
 ### Mapbox GL JS alternative
+
 Brand-themable alternative when palette cohesion outranks ubiquity (50k loads/month free, requires `MAPBOX_TOKEN`, supports custom dark-mode style matching site palette) — choose Mapbox when `_brand.json.theme==="dark" AND brand_consistency_priority>0.8`, else Google Maps Embed.
 
 ### Dark-theme CSS filter (Google Maps Embed only)
+
 When `_brand.json.theme === "dark"` AND Mapbox is NOT chosen, wrap `<iframe>` in `<div class="map-wrapper" data-theme="dark">` and apply:
+
 ```css
 filter: invert(90%) hue-rotate(180deg) saturate(0.5) contrast(1.1);
 ```
+
 Approximates dark-mode map without Mapbox; the invert re-inverts satellite imagery poorly so force `maptype=roadmap`.
 
 ### Custom logo marker pin
+
 When `_research.json.address_lat` + `_research.json.address_lng` are known AND `_brand.json.logo.original_icon_url` resolves HEAD-200:
+
 1. Download logo icon
 2. Sharp composite: 80×80 white circle bg, logo centered 50×50 with `fit:inside`, then append SVG downward-pointing equilateral triangle 20×20 below as pin stem (centered, matching brand accent color), save as `sites/<slug>/assets/map-marker.png`
 3. Upload to R2 at `sites/<slug>/assets/map-marker.png`
@@ -403,6 +455,7 @@ When `_research.json.address_lat` + `_research.json.address_lng` are known AND `
 Fallback to `&markers=color:red%7C<lat>,<lng>` when logo unavailable.
 
 Validator (`validate-google-maps-widget.mjs`): for every site with `_research.json.address` set, asserts:
+
 - (a) `<iframe src*="google.com/maps/embed">` OR `<div data-mapbox>` present on `/contact`
 - (b) iframe `width` resolves to ≥90vw at desktop
 - (c) JSON-LD `LocalBusiness.geo` lat/lng matches embed `q` resolved coords within 50m
@@ -415,6 +468,7 @@ Fail codes: `map.embed_missing` | `map.not_full_width` | `map.geo_mismatch` | `m
 Every page-rendered route MUST present ≥3 distinct media types — text-only pages are BUILD FAIL.
 
 ### Allowed types
+
 - Photograph (DALL-E OR real-entity)
 - Illustration/icon system
 - Video (hero OR embedded clip)
@@ -425,6 +479,7 @@ Every page-rendered route MUST present ≥3 distinct media types — text-only p
 - Generative SVG (animated brand pattern)
 
 ### Distribution
+
 - Hero — 1 media
 - Feature section — 1-2 media
 - Final CTA section — 1 media
@@ -438,6 +493,7 @@ Reference: prompt-improvements brainstorm rec #25 (2026-05-10) — text-only sit
 Every site MUST ship ≥1 hero video (per Cinematic Floor #1) AND ≥1 additional embedded video per ~1000 words of body content.
 
 ### Source order
+
 1. Source-site original videos (R2 self-hosted)
 2. Sora generation (premium tier)
 3. Coverr royalty-free
@@ -455,6 +511,7 @@ Reference: prompt-improvements brainstorm rec #26 (2026-05-10).
 Every page with ≥3 quantitative claims (%, N, $, dates, comparisons) MUST surface ≥1 data visualization rendering those claims — bar chart OR line graph OR animated counter OR sparkline OR proportional treemap OR map heatmap.
 
 ### Implementation
+
 - Chart.js (≤30KB CDN) OR vanilla SVG (zero JS) OR observablehq embed OR D3.js (premium tier)
 - Visualization MUST tie to APA-cited data per `~/.claude/rules/citations.md` — viz title cites source inline
 
@@ -509,10 +566,12 @@ Reference: prompt-improvements brainstorm rec #7 (2026-05-10) — diff-patch ite
 Every build MUST generate ≥4 Ideogram v3 assets at slice 0 (foundation) and every progressive rebuild (iteration ≥2) MUST add ≥2 NEW Ideogram assets to the brand kit OR remix existing ones — never skip the typographic layer.
 
 ### Cadence
+
 - Iteration 1 — 4-6 foundation assets
 - Iteration 2+ — 2-3 incremental adds
 
 ### Pipeline
+
 Brand extraction → `_brand.json` → Ideogram prompt template `(brand_name, palette, font_family, asset_role, dimensions, style="vector|editorial|stamp|poster")` → `ideogram.generate({ model: "v3-balanced", style_type, magic_prompt_option: "AUTO", rendering_speed: "QUALITY", color_palette, num_images: 4 })` → critique pass (GPT-4o ≥8/10) → R2 upload → log to `_ideogram_assets.json`.
 
 **Sourced fallback** — if Ideogram API quota exhausted, scan source-site Wayback/live for existing branded type/posters/banners — preserve + upscale before generating.
@@ -530,6 +589,7 @@ Slice 0 brand kit MUST include Ideogram-generated logo + wordmark + monogram tri
 - **Monogram** — initials/icon-only (favicon, app icon, social avatar, large faded BG watermark)
 
 ### Prompt template
+
 `"<brand_name> logo design, <style_directive_from_brand_research>, <palette> color palette, vector style, transparent background, professional"`
 
 Validator (`validate-logo-triad.mjs`): assert `_brand.json.logo.{full,wordmark,monogram}` all resolve 200 AND match brand palette ΔE≤5.
@@ -549,6 +609,7 @@ Validator (`validate-favicon-set.mjs`): assert all 9 files exist in `dist/` AND 
 Every route MUST ship its own Ideogram-generated OG card (1200×630) AND Twitter card (1200×675) — NEVER reuse a single site-wide card. Each card features the route's H1 in brand typography over branded background pattern + brand logo lockup.
 
 ### Prompt template per route
+
 `"social share card design, headline '<route_h1>', <brand_name> logo bottom-right, <palette>, <font_family>, 1200x630, modern editorial"`
 
 Validator (`validate-og-card-per-route.mjs`): assert `dist/og/<route-slug>.png` exists for every `RouteMetadata.path` AND `og:image` meta points to it AND image dims === 1200×630.
@@ -560,6 +621,7 @@ Reference: per-route-metadata rule + Brian directive 2026-05-11.
 Every site MUST ship 1 hero typographic poster — large brand wordmark or thesis statement rendered as editorial-poster typography for above-the-fold accent (sits behind/beside video BG OR replaces video on low-bandwidth fallback).
 
 ### Prompt template
+
 `"editorial poster design, large bold typography '<one_line_thesis>', <brand_name>, <palette>, abstract <theme_from_research> background motif, minimalist, magazine-cover style"`
 
 Validator (`validate-hero-poster.mjs`): assert `_ideogram_assets.json[].role === "hero_poster"` exists with critique ≥8/10.
@@ -573,6 +635,7 @@ Long-form pages (about, history, services, blog post >2000 words) MUST insert Id
 **Floor** — 1 plate per 3 H2s on long pages.
 
 ### Prompt template
+
 `"editorial chapter divider, large typography '<h2_text>', <brand_name> color palette, <font_family>, minimalist horizontal banner 1600x400, magazine-style section break"`
 
 Validator (`validate-chapter-plates.mjs`): assert long-form route renders ≥`ceil(h2_count/3)` plates in DOM with `<figure data-role="chapter-plate">` AND each `<img>` resolves to a unique Ideogram asset.
@@ -582,6 +645,7 @@ Validator (`validate-chapter-plates.mjs`): assert long-form route renders ≥`ce
 Every blog/journal post MUST have an Ideogram-generated editorial header image (1600×900) combining post title typography + relevant visual motif — replaces the default DALL-E stock-photo header on content-rich routes.
 
 ### Prompt template
+
 `"editorial article header, title '<post_title>', <subject_motif_from_post_body>, <palette>, <font_family>, magazine-cover composition, 16:9"`
 
 Validator (`validate-blog-headers.mjs`): assert every `_blog.json[].featured_image` derived from Ideogram OR explicitly tagged `source: photographic` with justification.
@@ -593,6 +657,7 @@ Reference: skill 12 existing rule "Every blog/article post featured image mandat
 Every site MUST ship Ideogram-generated 404 + 500 hero art — typography-first error pages that feel brand-native (NOT default-template "Page Not Found").
 
 ### Prompt templates
+
 - **404** — `"playful '404' typography in <brand> style, friendly error illustration, <palette>, <brand_name> logo small bottom"`
 - **500** — `"abstract '500' typography in <brand> style, calm error illustration, <palette>"`
 
@@ -603,12 +668,14 @@ Reference: skill 15 existing "Every site branded 404+500 error pages".
 ## Every build (***IDEOGRAM SLOT #8 — PWA SPLASH SCREENS — UNIVERSAL — BUILD-BREAKING***)
 
 Every site MUST ship Ideogram-generated PWA splash screens at iOS + Android required sizes:
+
 - **iOS** — 640x1136, 750x1334, 1242x2208, 1242x2688, 1536x2048, 1668x2388, 2048x2732
 - **Android** — 320x568, 360x640, 412x732, 480x800
 
 Each splash = monogram centered on brand-gradient BG with brand wordmark below.
 
 ### Prompt template
+
 `"PWA splash screen, <brand_name> monogram centered, <palette> gradient background, wordmark below, <dimensions>, mobile splash design"`
 
 Validator (`validate-pwa-splashes.mjs`): assert all 11 splash sizes resolve in `dist/splash/` AND manifest references them via `apple-touch-startup-image` + Workbox precache.
@@ -620,6 +687,7 @@ Reference: rules/pwa-checklist + brian-preferences PWA mandatory.
 SaaS / membership / non-profit-tier sites MUST ship Ideogram-generated tier badges (Starter/Pro/Patron/Founder/Sustainer) — embossed typographic seals NOT generic icon-pack medals.
 
 ### Prompt template per tier
+
 `"premium membership badge design, '<tier_name>' typography, embossed style, <palette>, <brand_name> mark, circular seal, gold/silver/bronze accent for tier hierarchy"`
 
 Validator (`validate-tier-badges.mjs`): assert pricing-page renders Ideogram badge per pricing tier in `_pricing.json.tiers[]`. Skipped on portfolio/local-business builds.
@@ -629,6 +697,7 @@ Validator (`validate-tier-badges.mjs`): assert pricing-page renders Ideogram bad
 Every feature/process/services section with ≥3 steps MUST render Ideogram-generated numbered chapter glyphs (`"01"`, `"02"`, `"03"`...) as section markers — bold numeral typography in brand style.
 
 ### Prompt template
+
 `"large bold numeral '<NN>' typography, editorial magazine style, <brand_name> color palette, <font_family>, single-character, transparent background, vector"`
 
 Validator (`validate-chapter-glyphs.mjs`): assert `_ideogram_assets.json[].role === "chapter_glyph"` count ≥ max(step_count, 3) across site.
@@ -640,6 +709,7 @@ Reference: skill 10 design system "Every site interactive 2-4 distinct states" �
 Every site MUST ship 1 Ideogram-generated repeating pattern tile (256×256 or 512×512) using brand monogram + secondary motif — applied as footer BG, large faded watermark, or section divider texture.
 
 ### Prompt template
+
 `"seamless repeating pattern tile, <brand_name> monogram motif, <palette>, subtle texture, geometric or organic per brand voice, 512x512 tileable"`
 
 Validator (`validate-pattern-tile.mjs`): assert `dist/assets/pattern.png` or `pattern.svg` exists AND used in CSS as `background-image: url(...)` with `background-repeat` in ≥1 route.
@@ -649,6 +719,7 @@ Validator (`validate-pattern-tile.mjs`): assert `dist/assets/pattern.png` or `pa
 Every site with quantitative trust signals (years founded, members served, projects completed, $ raised) MUST render those numerals as Ideogram-generated typography cards — NOT plain CSS-rendered numbers.
 
 ### Prompt template per stat
+
 `"giant numeral '<value>' typography card, label '<unit>' below, <brand_name> palette, editorial poster style, 800x800, magazine cover"`
 
 Validator (`validate-stat-numerals.mjs`): assert `_research.json.stats[]` items each have an Ideogram asset rendered in DOM with IntersectionObserver count-up animation (skill 11 rule).
@@ -660,6 +731,7 @@ Reference: skill 11 "Every stat block IO+rAF roll-in counter".
 Every site with testimonials/quotes/manifesto MUST render social-shareable quote cards via Ideogram — 1:1 (Instagram) + 9:16 (Stories/TikTok) + 16:9 (LinkedIn).
 
 ### Prompt template
+
 `"social media quote card, '<quote_text>' typography in <brand_font>, attribution '<author>, <role>', <palette>, <aspect>, modern editorial design"`
 
 Validator (`validate-share-quote-cards.mjs`): assert every testimonial in `_testimonials.json` has ≥2 aspect variants in `dist/share/` AND share buttons download or open-in-share-sheet the matching aspect.
@@ -671,6 +743,7 @@ Reference: skill 09 "Every testimonial complete attribution".
 Every progressive rebuild (iteration ≥1) MUST generate an Ideogram "iteration N" stamp/seal — embossed circular mark like `"Build vN · Refined 2026-05-11 · By AI + Brian"` surfaced on `/admin/build-trace` AND as Easter-egg footer watermark on hover. Acts as cumulative goody (skill 14 idea engine + progressive-rebuild loop).
 
 ### Prompt template per iteration
+
 `"vintage certification stamp, 'Build v<N>' typography, date '<iso_date>', <brand_name> monogram center, <palette>, circular seal, embossed gold/silver"`
 
 Validator (`validate-iteration-stamp.mjs`): assert `_ideogram_assets.json[].role === "iteration_stamp"` increments per `sites.iteration_count`.
@@ -682,6 +755,7 @@ Reference: `project_progressive_rebuild` memory + `project_gamification` memory.
 Every build MUST populate every page-rendered experience with multimedia from ≥5 free/optimal APIs IN PARALLEL — never single-source media.
 
 ### Concurrency floor at media phase — ≥7 API calls overlapping
+
 - Pexels
 - Pixabay
 - Google Custom Search Image API
@@ -700,6 +774,7 @@ Every build MUST populate every page-rendered experience with multimedia from �
 - Pexels Video
 
 ### Pipeline
+
 ```
 media_orchestrator.fanOut(topic, palette, license=CC-BY-or-permissive)
   → Promise.all([pexels, pixabay, googleCSE, wikimedia, archiveOrg, loc, nasa, smithsonian, met, europeana, flickrCommons, youtube, vimeo, coverr, mixkit, pexelsVideo])
@@ -719,11 +794,13 @@ Reference: Brian directive 2026-05-11 — *"populate every single experience wit
 Every build MUST query Google Custom Search JSON API with `searchType=image` + `rights=cc_publicdomain,cc_attribute,cc_sharealike,cc_noncommercial` (commercial use filter when SaaS) for every topic in `_research.json.topics[]` + every named entity (people, places, institutions, products) in `_corpus.json`.
 
 ### API
+
 ```
 https://www.googleapis.com/customsearch/v1?key=<GOOGLE_CSE_KEY>&cx=<GOOGLE_CSE_CX>&q=<topic>&searchType=image&rights=cc_attribute&imgSize=large&safe=active
 ```
 
 ### Floor
+
 - ≥10 Google CSE Image queries per build
 - ≥3 candidates per query
 - ≥1 selected per page
@@ -733,6 +810,7 @@ Pair with reverse-image lookup (Tineye-free / Google Lens via Vision API) to ver
 Validator (`validate-google-image-corpus.mjs`): assert `_media_corpus.json` contains ≥10 entries with `source: "google_cse"` AND every entry passes license verification.
 
 ### Required keys
+
 - `GOOGLE_CSE_KEY` — `https://console.cloud.google.com/apis/credentials`
 - `GOOGLE_CSE_CX` — `https://programmablesearchengine.google.com/controlpanel/all`
 
@@ -741,16 +819,19 @@ Validator (`validate-google-image-corpus.mjs`): assert `_media_corpus.json` cont
 Every build MUST produce 1 NEW NotebookLM-generated "Deep Dive" podcast episode (2-host conversation, 8-15min) per iteration AND embed ≥3 DISCOVERED relevant existing podcast episodes via Podcast Index API.
 
 Google Podcasts API deprecated 2024 — replacements:
+
 - (a) **NotebookLM API** for generation — `_research.json` + `_corpus.json` → uploaded as sources → trigger Audio Overview → poll for completion → download MP3 → R2 self-host → embed via custom audio player on `/about` + `/podcast` route
 - (b) **Podcast Index API** (`https://podcastindex.org/`, free, no key required for search) for discovery — `GET /api/1.0/search/byterm?q=<topic_or_brand>` → filter by recency + relevance → embed top 3 via iframe player
 - (c) **YouTube Data API v3** for podcast discovery on YouTube Music — `GET /search?q=<topic>+podcast&type=video&videoDuration=long`
 
 ### Pipeline
+
 Parallel fan-out at media phase → assemble `_podcasts.json[{type:"generated|discovered", source, audio_url, transcript_url, duration_s, hosts, embed_html}]` → `/podcast` route renders chronological feed + RSS feed (`/podcast/feed.xml` per RFC 5005) → submit to Apple Podcasts + Spotify on first iteration.
 
 Validator (`validate-podcast-presence.mjs`): assert `_podcasts.json.generated.length >= 1` per iteration AND `_podcasts.json.discovered.length >= 3` AND `/podcast/feed.xml` validates against PodcastIndex spec.
 
 ### Required keys
+
 - `NOTEBOOKLM_API_KEY` — Google Cloud Vertex AI
 - `YOUTUBE_API_KEY` — `https://console.cloud.google.com/apis/credentials`
 
@@ -761,14 +842,17 @@ Reference: Brian directive 2026-05-11 — *"Google Podcast API is leveraged so t
 Every site's homepage hero AND every long-form route hero MUST ship an above-the-fold video background — visitors expect cinematic motion ATF in 2026.
 
 ### Generation cascade (parallel, take-first-success)
+
 - (a) **OpenAI Sora 2** primary — `POST /v1/videos` with `prompt: "<brand_thesis_scene_description>, cinematic, 10s, 16:9, 1080p, no text"` + `duration_seconds: 10` + `aspect_ratio: "16:9"` → poll task → download MP4
 - (b) **Google Veo 3** parallel — Vertex AI `predictLongRunning` with `prompt` + `aspectRatio:"16:9"` + `durationSeconds: 8` + `personGeneration: "allow_adult"` → poll → download
 - (c) **Stock video fallback** (when generation quota/budget exhausted) — Pexels Video API `GET /videos/search?query=<theme>&orientation=landscape&size=large` OR Coverr `/api/v1/videos/search` OR Mixkit free-tier — must be CC0/permissive
 
 ### Encoding
+
 Encode to WebM (VP9) + MP4 (H.264) at 1920×1080 + mobile 854×480, total ≤4MB per video (re-encode aggressively via ffmpeg).
 
 ### Render
+
 ```html
 <video autoplay muted loop playsinline preload="metadata" poster="<ideogram_hero_poster_fallback>">
   <source type="video/webm">
@@ -781,6 +865,7 @@ Respect `prefers-reduced-motion` — render Ideogram poster instead. Lazy-load s
 Validator (`validate-atf-video.mjs`): assert homepage hero has `<video>` with valid src AND fallback poster AND total page weight ≤5MB AND `prefers-reduced-motion` gracefully degrades.
 
 ### Required keys
+
 - `OPENAI_API_KEY` — Sora
 - `GCP_VEO_KEY` or `GOOGLE_APPLICATION_CREDENTIALS` — Veo via Vertex AI
 - `PEXELS_API_KEY` — stock fallback
@@ -792,6 +877,7 @@ Reference: Brian directive 2026-05-11 — *"Sora and Google Veo should be levera
 Every iteration ≥2 MUST refresh ≥1 hero video + add ≥2 NEW Ideogram assets + expand `_media_corpus.json` by ≥10 items — never re-serve identical media across iterations.
 
 Acts as cumulative delight (skill 14 goody queue):
+
 - **Iteration 1** — baseline Sora hero
 - **Iteration 2** — Veo variant + new chapter plates
 - **Iteration 3** — Sora seasonal variant + new pattern tile + new tier badges

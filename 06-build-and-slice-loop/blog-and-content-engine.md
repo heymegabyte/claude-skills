@@ -8,17 +8,20 @@ description: "SEO-driven blog system on Cloudflare Workers: markdown-to-HTML ren
 # Blog and Content Engine
 
 ## Architecture
+
 - `/blog` → Blog index (paginated, 10 per page)
 - `/blog/[slug]` → Individual post
 - `/blog/rss.xml` → RSS feed
 - `/blog/category/[cat]` → Category archive
 
 ### Storage Options
+
 - **Static markdown** — files in `/content/blog/` compiled at deploy time
 - **D1 database** — for dynamic content with admin editing
 - **Hybrid** — markdown for seed posts, D1 for future posts
 
 ### Markdown Post Format
+
 ```markdown
 title: "How to Deploy Docker Without Kubernetes"
 slug: "deploy-docker-without-kubernetes"
@@ -32,7 +35,9 @@ Your markdown content here...
 ```
 
 ## SEO Integration (09/seo-and-keywords)
+
 Every blog post targets a longtail keyword:
+
 - **Title tag** — contains the keyword phrase
 - **H1** — matches the title (or close variation)
 - **First paragraph** — mentions the keyword naturally
@@ -42,7 +47,9 @@ Every blog post targets a longtail keyword:
 - **Image alt text** — includes keyword where natural
 
 ### Seed Posts (3-5 on First Build)
+
 Generate 3-5 posts targeting longtail keywords from `09/seo-and-keywords` research:
+
 1. "How to [solve problem] with [our product]" (tutorial)
 2. "[Product category] comparison — [us] vs alternatives" (comparison)
 3. "[Industry] guide to [relevant topic]" (guide)
@@ -50,6 +57,7 @@ Generate 3-5 posts targeting longtail keywords from `09/seo-and-keywords` resear
 5. "[Common question] answered" (FAQ-style, targets PAA)
 
 ## Post Template (Hono HTML Rendering)
+
 ```typescript
 function renderPost(post: BlogPost): string {
   return `
@@ -83,6 +91,7 @@ function renderPost(post: BlogPost): string {
 ```
 
 ## RSS Feed
+
 ```typescript
 app.get('/blog/rss.xml', async (c) => {
   const posts = await getAllPosts(c.env);
@@ -108,6 +117,7 @@ app.get('/blog/rss.xml', async (c) => {
 ```
 
 ## Reading Time
+
 ```typescript
 function calculateReadingTime(text: string): number {
   const words = text.trim().split(/\s+/).length;
@@ -116,6 +126,7 @@ function calculateReadingTime(text: string): number {
 ```
 
 ## Structured Data (per post)
+
 ```json
 {
   "@context": "https://schema.org",

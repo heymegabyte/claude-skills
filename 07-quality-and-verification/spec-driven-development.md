@@ -7,11 +7,13 @@ updated: "2026-04-23"
 # Spec-Driven Development
 
 ## The Problem
+
 AI builds the happy path and stops. Features ship incomplete. Recommendations get listed but not implemented.
 
 ## The Fix: Spec → Test → Build → Verify Loop
 
 ### Phase 1: Generate Spec (BEFORE any code)
+
 For every feature/project, generate `SPEC.md`:
 
 ```markdown
@@ -31,11 +33,13 @@ For every feature/project, generate `SPEC.md`:
 ```
 
 Each acceptance criterion MUST be:
+
 - Observable on production (not just in code)
 - Testable via Playwright against `PROD_URL`
 - Completable in under 1 minute of test execution
 
 ### Phase 2: Write Failing Tests FIRST
+
 For every acceptance criterion, write the Playwright test BEFORE implementing. Test must fail (red). Then implement until it passes (green). Then refactor.
 
 ```typescript
@@ -49,16 +53,19 @@ test('AC1: donation form accepts Stripe payment', async ({ page }) => {
 ```
 
 ### Phase 3: Build in Slices
+
 - Each acceptance criterion = one vertical slice
 - Implement → deploy → run that test → pass → next criterion
 - Never implement AC2 before AC1's test passes on production
 
 ### Phase 4: Recommendations Loop
+
 - After all ACs pass, ask: "What else can I improve?"
 - Every recommendation → new AC → new test → implement → verify
 - Loop until zero recommendations
 
 ### Phase 5: Progress Persistence
+
 Write progress to `progress.md` in project root:
 
 ```markdown
@@ -77,6 +84,7 @@ Write progress to `progress.md` in project root:
 This file survives context compaction. Any new session reads it and picks up where the last left off.
 
 ## The Ralph Loop (Autonomous Execution)
+
 For full-app builds, use the autonomous loop:
 
 1. Generate `feature-requirements.md` with ALL features as acceptance criteria
@@ -94,7 +102,9 @@ For full-app builds, use the autonomous loop:
 5. **Done when** — all ACs pass + all recommendations implemented or rejected + GPT-4o says zero issues
 
 ## Context Exhaustion Prevention
+
 When context exceeds 60%:
+
 1. Save current progress to `progress.md`
 2. Commit all work
 3. Spawn a new agent with: "Read progress.md and SPEC.md. Continue from where the last agent left off. Implement the next unchecked acceptance criterion."
@@ -102,6 +112,7 @@ When context exceeds 60%:
 This gives infinite effective context — each agent gets a fresh window but continues the same spec.
 
 ## Test Organization
+
 ```
 tests/
 ├── e2e/
@@ -121,6 +132,7 @@ tests/
 - Total test suite: should complete in under 5 minutes with parallelization
 
 ## Stagehand Integration
+
 - Use raw Playwright for predictable elements (`data-testid`, role, text)
 - Use Stagehand `act()/extract()/observe()` for:
   - Dynamic content that changes between deploys

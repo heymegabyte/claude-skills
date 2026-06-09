@@ -9,6 +9,7 @@ updated: "2026-04-23"
 ## Feedback Widget (In-App)
 
 ### HTML
+
 ```html
 <button id="feedbackBtn" class="feedback-trigger" aria-label="Give feedback">
   💬
@@ -30,6 +31,7 @@ updated: "2026-04-23"
 ```
 
 ### Backend
+
 ```typescript
 const FeedbackSchema = z.object({
   rating: z.number().min(1).max(5),
@@ -51,6 +53,7 @@ app.post('/api/feedback', async (c) => {
 ```
 
 ### D1 Schema
+
 ```sql
 CREATE TABLE feedback (
   id TEXT PRIMARY KEY,
@@ -65,6 +68,7 @@ CREATE TABLE feedback (
 ## NPS Survey (PostHog)
 
 ### Day 7 + Day 30 Surveys
+
 ```javascript
 // Trigger via PostHog surveys feature
 posthog.init('PROJECT_KEY', {
@@ -74,11 +78,13 @@ posthog.init('PROJECT_KEY', {
 ```
 
 Set up in PostHog dashboard:
+
 - **Day 7 survey** — `"How likely are you to recommend [Product]? (0-10)"`
 - **Day 30 survey** — Same question + `"What could we improve?"`
 - Target: users who signed up 7/30 days ago
 
 ### NPS Scoring
+
 - **9-10** — Promoter
 - **7-8** — Passive
 - **0-6** — Detractor
@@ -117,6 +123,7 @@ Simple table showing all feedback with approve/reject buttons. Protected by auth
 ## MCP Tools Available
 
 ### Notion MCP (`mcp__notion__*`) — for feedback storage and triage
+
 - `mcp__notion__API-post-page` — create a feedback entry in Notion database
 - `mcp__notion__API-query-data-source` — query feedback database with filters (rating, status, date)
 - `mcp__notion__API-patch-page` — update feedback status (pending → reviewed → actioned)
@@ -125,6 +132,7 @@ Simple table showing all feedback with approve/reject buttons. Protected by auth
 - `mcp__notion__API-create-a-comment` — add internal notes to feedback entries
 
 ### Notion Feedback Database Schema
+
 ```
 Database: "User Feedback"
 Properties:
@@ -139,9 +147,11 @@ Properties:
 ```
 
 ### PostHog MCP (`mcp__posthog__*`) — for feedback analytics
+
 - `mcp__posthog__authenticate` — connect to PostHog instance
 
 PostHog integration points:
+
 - Track `feedback_submitted` event with rating + page properties
 - Track `nps_response` event with score + segment (promoter/passive/detractor)
 - Track `testimonial_submitted` event
@@ -150,6 +160,7 @@ PostHog integration points:
 - Feature flag: `show_feedback_widget` — control which pages show the widget
 
 ### Playwright MCP (`mcp__playwright__*`) — for widget testing
+
 - `mcp__playwright__browser_navigate` — navigate to page with feedback widget
 - `mcp__playwright__browser_click` — open feedback modal, click stars, submit
 - `mcp__playwright__browser_take_screenshot` — screenshot widget at each state (closed, open, submitted)
@@ -158,6 +169,7 @@ PostHog integration points:
 ## Feedback Widget Implementation Details
 
 ### Angular Component (Standalone)
+
 ```typescript
 @Component({
   selector: 'app-feedback-widget',
@@ -217,6 +229,7 @@ export class FeedbackWidgetComponent {
 ## Computer Use Integration
 
 Use `mcp__computer-use__*` for feedback triage workflows:
+
 1. **Notion dashboard review** — screenshot the Notion feedback database view to see pending feedback at a glance
 2. **PostHog dashboards** — screenshot the NPS trend and rating distribution insights for weekly review
 3. **Widget visual testing** — screenshot the feedback widget at 375px and 1280px to verify it doesn't obstruct content

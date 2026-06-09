@@ -34,12 +34,14 @@ Default stack: `_kernel/standards.md#stack`. Override conditions below.
 ## Cloudflare-first decision tree
 
 ### Compute
+
 - **Workers** (default) — every HTTP-serving surface, every cron, every queue consumer
 - **Pages** — static-only marketing (rare; Workers + Assets binding usually better)
 - **Containers** — non-JS runtimes (Playwright headful, ffmpeg, Python ML), browser rendering, build orchestration
 - **Sandbox SDK** — generated/risky code execution before promotion to live runtime
 
 ### State
+
 - **D1** (default) — relational, ≤10GB per database, Sessions API for read-replicas, Time Travel 30-day PIT
 - **KV** — eventually-consistent k/v, cache, sessions, feature-flag state
 - **R2** — object storage (images, PDFs, exports, backups), lifecycle Standard→IA after 30d
@@ -48,11 +50,13 @@ Default stack: `_kernel/standards.md#stack`. Override conditions below.
 - **Vectorize** — semantic search, RAG embeddings (5M dim/index, topK 100, 10 metadata indexes)
 
 ### Async
+
 - **Queues** — best-effort delivery, 5000 msg/sec, R2 event notifications
 - **Workflows v2** — deterministic step-based, 50K concurrent, 300 creates/sec, 2M queued/workflow, `step.do` + `step.sleep` + `step.waitForEvent`
 - **Inngest** — event-driven w/ better DX/observability (where it fits)
 
 ### AI
+
 - **Workers AI** — Llama 3.3 70B FP8 free, Llama 3.1 8B FP8, Llama 4 Scout 17B vision
 - **AI Gateway** — caching + rate-limit + fallback + logging for every LLM call
 - **Vectorize** — embeddings + ANN search
@@ -70,6 +74,7 @@ Default stack: `_kernel/standards.md#stack`. Override conditions below.
 Adapters live in `libs/core/ports/`. Product code imports port, never vendor SDK directly. See `rules/cloudflare-hostable-supervisor.md`.
 
 ## Auth (default Clerk M2M JWT)
+
 - **Clerk** — M2M JWT (free, networkless verification), passkeys, OAuth, magic links
 - **Better Auth** — when Clerk pricing doesn't fit (rare)
 - Hash API keys at rest. Audit log every sensitive action.
@@ -78,12 +83,14 @@ Adapters live in `libs/core/ports/`. Product code imports port, never vendor SDK
 ## Data patterns
 
 ### D1 typed bindings
+
 ```toml
 # wrangler.jsonc
 [[d1_databases]]
 binding = "DB"
 database_name = "myapp"
 ```
+
 - `wrangler types` against `compatibility_date` + bindings (preferred over hand-maintained Env interface)
 - Drizzle v1 RQBv2 + Zod for query + validation
 - Batch via `db.batch([...])` (no transactions in D1)
@@ -91,18 +98,21 @@ database_name = "myapp"
 - Time Travel 30-day PIT: `wrangler d1 time-travel restore`
 
 ### R2 patterns
+
 - Per-extension content-type on upload
 - Lifecycle Standard → IA after 30d for backups/exports
 - R2 event notifications → Queues at 5000 msg/sec for thumbnailing/indexing
 - Versioning for asset rollback
 
 ### DO patterns
+
 - One DO per stateful entity (chat room, builder session, rate-limited user)
 - SQLite-backed by default since Apr 2025 — 10GB per DO
 - Direct stub: `env.MY_DO.getByName(name)` (replaces `idFromName` → `get` two-step)
 - Alarm misfires → idempotent handler
 
 ## Reliability
+
 - Workers CPU 10ms free / 50ms paid default (configurable 5min)
 - Wall time 30s paid
 - `ctx.waitUntil()` for async post-response work
@@ -111,6 +121,7 @@ database_name = "myapp"
 - JSRPC payload up to 32 MiB
 
 ## Cost discipline
+
 - Workers free tier: 100k requests/day. Sufficient for most solo projects.
 - Workers Paid: $5/mo + $0.30/M requests + $12.50/M CPU-ms
 - D1: 5GB free, $0.75/GB-month, $0.001/M reads, $1/M writes
@@ -120,6 +131,7 @@ database_name = "myapp"
 - Reference: solo SaaS at <$100k/mo MRR stays 10-100× cheaper than AWS-equivalent on CF
 
 ## Default config (`wrangler.jsonc`)
+
 ```jsonc
 {
   "name": "myapp",
@@ -136,6 +148,7 @@ database_name = "myapp"
 ```
 
 ## Decision template (use for every architecture call)
+
 1. Can CF primitive do this? → Use it.
 2. Does this need adapter for portability? → Adapter only if real business case.
 3. Cost projection at 10× current scale → Still affordable?

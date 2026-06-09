@@ -8,7 +8,9 @@ description: "Workers Builds (native, preferred) + GitHub Actions fallback. Auto
 # CI/CD Pipeline
 
 ## Note on Usage
+
 Brian deploys live from CLI (`npx wrangler deploy`). This pipeline exists for:
+
 - Future contributors who use PRs
 - Safety net — auto-test on push
 - Branch previews for review
@@ -17,6 +19,7 @@ Brian deploys live from CLI (`npx wrangler deploy`). This pipeline exists for:
 ## GitHub Actions Workflow
 
 ### `.github/workflows/deploy.yml`
+
 ```yaml
 name: Deploy
 on:
@@ -75,6 +78,7 @@ jobs:
 ```
 
 ## Required GitHub Secrets
+
 - **`CLOUDFLARE_API_TOKEN`** — Wrangler deploy token
 - **`CF_ZONE_ID`** — for cache purge
 - **`PROD_URL`** — `https://domain.com`
@@ -82,6 +86,7 @@ jobs:
 Set via: `gh secret set CLOUDFLARE_API_TOKEN --body "..."` or through GitHub UI.
 
 ## Branch Preview Deploys (Optional)
+
 ```yaml
   preview:
     if: github.event_name == 'pull_request'
@@ -110,6 +115,7 @@ Set via: `gh secret set CLOUDFLARE_API_TOKEN --body "..."` or through GitHub UI.
 ## MCP Tools Available
 
 ### GitHub MCP (`mcp__github-mcp__*`)
+
 - **`list_pull_requests`** — check open PRs and their CI status
 - **`pull_request_read`** — read PR details including check results
 - **`create_pull_request`** — create PRs programmatically for feature branches
@@ -120,6 +126,7 @@ Set via: `gh secret set CLOUDFLARE_API_TOKEN --body "..."` or through GitHub UI.
 - **`push_files`** — push workflow changes in a single commit
 
 ### Playwright MCP (`mcp__playwright__*`) — for E2E in CI verification
+
 - **`browser_navigate`** — navigate to preview / production URL post-deploy
 - **`browser_take_screenshot`** — screenshot pages for visual regression
 - **`browser_snapshot`** — get accessibility tree for a11y checks
@@ -127,12 +134,14 @@ Set via: `gh secret set CLOUDFLARE_API_TOKEN --body "..."` or through GitHub UI.
 - **`browser_network_requests`** — verify API calls succeed (no 4xx / 5xx)
 
 ### Cloudflare MCP — for deployment verification
+
 - **`workers_get_worker`** — verify Worker deployed successfully
 - **`workers_list`** — list all Workers and their status
 
 ## Deployment Verification Patterns
 
 ### Post-Deploy Smoke Test (run after `wrangler deploy` in CI)
+
 ```yaml
   verify:
     needs: deploy
@@ -161,6 +170,7 @@ Set via: `gh secret set CLOUDFLARE_API_TOKEN --body "..."` or through GitHub UI.
 ```
 
 ### PR Check Workflow (gate merges on quality)
+
 ```yaml
   pr-checks:
     if: github.event_name == 'pull_request'
@@ -183,6 +193,7 @@ Set via: `gh secret set CLOUDFLARE_API_TOKEN --body "..."` or through GitHub UI.
 ```
 
 ## Computer Use Integration
+
 Use `mcp__computer-use__*` for debugging CI failures visually:
 
 1. **GitHub Actions UI** — screenshot the Actions tab to see failed job steps when log parsing is insufficient
@@ -190,6 +201,7 @@ Use `mcp__computer-use__*` for debugging CI failures visually:
 3. **Cloudflare dashboard** — screenshot Workers & Pages dashboard to verify deployment status and error rates
 
 ## Acceptance Criteria
+
 1. CI runs on every push to main — GitHub Actions shows a workflow run for every main branch commit
 2. CI runs on every PR — PRs show check status (pass / fail) before merge
 3. TypeScript compilation passes — `npx tsc --noEmit` exits 0 in CI

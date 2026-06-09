@@ -8,6 +8,7 @@ description: "Full command palette (Cmd+K) like Linear/Notion for SaaS products.
 # Keyboard Shortcuts and Command Palette
 
 ## When to Include
+
 - SaaS products with 3+ pages
 - Developer tools
 - Products targeting power users
@@ -16,6 +17,7 @@ description: "Full command palette (Cmd+K) like Linear/Notion for SaaS products.
 ## Command Palette (Cmd+K)
 
 ### Focus contract (***NON-NEGOTIABLE***)
+
 - Opening the palette or AI chat via `Meta+K`/`Ctrl+K` MUST focus the text input on the same frame — caret blinking, zero extra clicks
 - Use `autofocus` on the input AND a programmatic `requestAnimationFrame(()=>input.focus({preventScroll:true}))` after the `hidden=false`/open-state flip (covers React re-render, View Transitions, and `@starting-style` enter)
 - If the modal is already open, re-pressing Cmd+K re-focuses and `input.select()`s existing text
@@ -23,6 +25,7 @@ description: "Full command palette (Cmd+K) like Linear/Notion for SaaS products.
 - Playwright test — `await page.keyboard.press('Meta+K'); await expect(page.locator('#cmdInput')).toBeFocused();` — failure = build fail
 
 ### HTML
+
 ```html
 <div id="cmdPalette" class="cmd-palette" hidden role="dialog" aria-label="Command palette">
   <div class="cmd-backdrop" onclick="closePalette()"></div>
@@ -43,6 +46,7 @@ description: "Full command palette (Cmd+K) like Linear/Notion for SaaS products.
 ```
 
 ### JavaScript
+
 ```javascript
 // Command registry
 const commands = [
@@ -113,6 +117,7 @@ function renderResults(items) {
 ```
 
 ### Styling
+
 ```css
 .cmd-palette { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: flex-start; justify-content: center; padding-top: 20vh; }
 .cmd-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
@@ -127,6 +132,7 @@ function renderResults(items) {
 ```
 
 ## Shortcut Overlay (Press ?)
+
 ```html
 <div id="shortcutOverlay" class="shortcut-overlay" hidden>
   <h3>Keyboard Shortcuts</h3>
@@ -142,6 +148,7 @@ function renderResults(items) {
 ```
 
 ## Accessibility
+
 - `role="dialog"` on palette, `role="combobox"` on input, `role="listbox"` on results
 - Arrow keys navigate, Enter selects, Escape closes
 - All shortcuts skip when user is typing in an input/textarea

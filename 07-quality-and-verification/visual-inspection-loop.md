@@ -9,18 +9,22 @@ related: completeness-verification.md (5-pass full-project), ui-completeness-swe
 # Visual Inspection Loop (Dual-Vision)
 
 ## Canonical Rule
+
 See `~/.claude/rules/visual-inspection.md` — supreme dual-vision doctrine. This skill implements that rule.
 
 ## Dual-Vision Stack
 
 ### Claude Vision (PRIMARY, FREE on Max 20x)
+
 - Sonnet 4.6 image input via `~/.claude/.credentials.json` OAuth
 - Fires per-slice + per-section + per-route + per-iteration + 6bp
 - No marginal cost
 - Subject only to Max 20x 5hr / weekly rate windows
 
 ### GPT-4o Vision (JUDGE, METERED, $0.50/build cap)
+
 Reserved for highest-value checkpoints:
+
 - Hero / ATF
 - Brand-fidelity vs source
 - Final pre-publish gate
@@ -28,6 +32,7 @@ Reserved for highest-value checkpoints:
 - Most-critical user-facing surfaces
 
 ### Consensus
+
 - Both ≥8/10 → ship
 - One <8 → fix → re-run
 - Persistent disagreement → third pass (Computer-Use screenshot + checklist)
@@ -36,10 +41,13 @@ Reserved for highest-value checkpoints:
 ## Cost-Risk Matrix (***BEFORE ANY GPT-4o CALL***)
 
 ### Claude Vision
+
 ZERO marginal cost. 6bp × N routes × every iteration — uncapped within Max 20x rate.
 
 ### GPT-4o per-build cap
+
 **$0.50 hard**. Allocation:
+
 - ~$0.10 hero / ATF final
 - ~$0.15 brand-fidelity vs source
 - ~$0.10 final pre-publish 6bp homepage
@@ -48,12 +56,14 @@ ZERO marginal cost. 6bp × N routes × every iteration — uncapped within Max 2
 Beyond cap → escalate to memory pin + ship with carryover, never silently overspend.
 
 ### Build tiers
+
 - **Cost-sensitive** (free-tier, paid-floor) — Claude Vision ONLY, GPT-4o reserved for single final pre-publish call on homepage
 - **Brand-critical** (paying client, founder portfolio, flagship SaaS) — full $0.50 GPT-4o budget + Claude Vision at every checkpoint
 
 **Decision:** code in `external_llm.ts` checks `site.pricing_tier` + `vision_budget_remaining_cents` before each GPT-4o call. Auto-degrade to Claude Vision when budget exhausted.
 
 ## Where Dual-Vision Fires
+
 - **Per-slice (skill 06)** — Claude Vision YES (2bp: 375+1280) | GPT-4o NO — trigger: after slice deploys to preview
 - **Per-section (skill 15)** — Claude Vision YES (1bp: 1280) | GPT-4o NO — trigger: after section renders
 - **Per-route 6bp (skill 15)** — Claude Vision YES (6bp full) | GPT-4o NO (unless route=homepage) — trigger: after route assembles
@@ -64,11 +74,13 @@ Beyond cap → escalate to memory pin + ship with carryover, never silently over
 - **Disagreement arbitration** — GPT-4o YES (tiebreaker) — trigger: when Claude <8 or Claude + a11y disagree
 
 ## Tier-1 → Tier-2 → Tier-3 Order (***ALWAYS THIS ORDER***)
+
 1. **Tier 1 (FREE, FAST)** — Playwright a11y tree 6bp + axe-core scan + DOM-walker contrast (computed-bg ancestry) + computed-style overflow check. Catches ~80% of issues with zero token spend. Run FIRST every time.
 2. **Tier 2 (FREE on Max 20x)** — Claude Vision on screenshots Tier 1 cannot resolve — aesthetics, brand match, hierarchy, motion presence, hero impact, "does it feel cinematic?"
 3. **Tier 3 (METERED, CAPPED)** — GPT-4o on critical checkpoints + arbitration. Reserve budget for what Tier 1+2 cannot resolve.
 
 ## Loop (3-round max, $0.50 GPT-4o cap)
+
 1. Deploy to production / staging
 2. Tier 1 — Playwright a11y tree + axe-core + DOM-walker (FREE) ALL pages 6bp
 3. Fix functional / a11y / contrast issues from step 2
@@ -82,6 +94,7 @@ Beyond cap → escalate to memory pin + ship with carryover, never silently over
 **Per round budget check:** track GPT-4o spend in cents. When `vision_budget_remaining_cents < 10` → skip GPT-4o, ship with Claude Vision verdict.
 
 ## Screenshot Capture Template (Dual-Vision)
+
 ```typescript
 const ALL_BREAKPOINTS = [
   { name: 'iPhone-SE', width: 375, height: 667 },
@@ -115,6 +128,7 @@ async function captureAllScreenshots(page: Page, pages: string[], outputDir: str
 ```
 
 ## Claude Vision Call (PRIMARY — FREE on Max 20x)
+
 Uses Anthropic Messages API with image content blocks. Auth via OAuth token (`~/.claude/.credentials.json.claudeAiOauth.accessToken`), NOT API key.
 
 ```typescript
@@ -149,6 +163,7 @@ async function claudeVisionCritique(screenshotPath: string, context: { route: st
 **Fallback:** if OAuth refresh fails OR running outside Max 20x — `claude-sonnet-4-6` via API key — log `auth_mode=api-key` to D1 audit, alert.
 
 ## GPT-4o Vision Call (JUDGE — METERED, $0.50 cap)
+
 ```typescript
 async function gpt4oVisionJudge(screenshotPath: string, context: { route: string; breakpoint: string; brand?: BrandJson; sourceScreenshot?: string }, budgetCents: number): Promise<DualVisionResult | null> {
   if (budgetCents < 10) return null; // skip, budget exhausted
@@ -178,6 +193,7 @@ async function gpt4oVisionJudge(screenshotPath: string, context: { route: string
 ```
 
 ## DualVisionResult Schema
+
 ```typescript
 interface DualVisionResult {
   score: number;                                   // 0-10 overall
@@ -200,6 +216,7 @@ interface DualVisionResult {
 ```
 
 ## Consensus & Arbitration
+
 ```typescript
 async function dualVisionGate(screenshot: string, ctx: VisionCtx, budget: BudgetState): Promise<{ pass: boolean; remediation: Issue[] }> {
   const claudeResult = await claudeVisionCritique(screenshot, ctx);
@@ -222,6 +239,7 @@ async function dualVisionGate(screenshot: string, ctx: VisionCtx, budget: Budget
 ```
 
 ## Vision Prompt Template (Dual-Vision)
+
 ```
 You are a senior visual QA engineer auditing this screenshot of route {{route}} at breakpoint {{breakpoint}} for site {{brand.name}}.
 
@@ -241,11 +259,13 @@ Return JSON: { score, cinematic_floor, latest_tech_flex, brand_fidelity, hero_im
 ```
 
 ## Dual-Strategy Coverage
+
 - **AI vision** — layout, brand, hierarchy, aesthetics, motion, cinematic feel (~57% a11y signal)
 - **axe-core + Playwright a11y tree** — ARIA, screen reader, focus, keyboard (43% a11y signal)
 - **Never vision alone for WCAG 2.2 AA** — always pair
 
 ## When Vision vs Accessibility Tree
+
 - **Does it look good?** — Claude Vision YES (free) | GPT-4o YES (judge) | a11y Tree NO
 - **Layout broken?** — Claude Vision YES (free) | GPT-4o YES (judge) | a11y Tree NO
 - **Color on-brand?** — Claude Vision YES (free) | GPT-4o YES (final) | a11y Tree NO
@@ -262,10 +282,12 @@ Return JSON: { score, cinematic_floor, latest_tech_flex, brand_fidelity, hero_im
 **Use ALL.** Tier 1 a11y tree (free, fast) → Tier 2 Claude Vision (free on Max 20x, every iter) → Tier 3 GPT-4o (metered, capped, judge).
 
 ## Auth Path
+
 - **Container / spawned-CLI Claude Vision** — Max 20x OAuth (NEVER API key — see `auth-spawned-claude.md`). Log `auth_mode` to D1 every call. API-key fallback alert.
 - **GPT-4o** — always API key (`OPENAI_API_KEY`). Log `cost_cents` per call.
 
 ## Reference Incidents
+
 - **2026-05-09 LMG brand-fidelity regression** — code review said OK, vision DIFF vs prior build caught regression. Lesson: iteration diff vision is mandatory.
 - **2026-05-10 LMG white-on-white footer** — token check passed, DOM-walker failed. Lesson: computed-DOM-walker + vision catches what static can't.
 - **2026-05-12 cost discovery** — container uses Max 20x OAuth, Claude Vision FREE. Doctrine: use it everywhere.

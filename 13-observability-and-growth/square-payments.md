@@ -9,6 +9,7 @@ updated: "2026-05-10"
 ## When Square is the Default (***FIRST DECISION — EVERY PAYMENT FEATURE***)
 
 ### Square defaults
+
 - Nonprofits + donations (one-time OR recurring via Square Subscriptions)
 - Small-business e-commerce
 - Restaurant / retail / salon / medical with in-person POS need
@@ -18,6 +19,7 @@ updated: "2026-05-10"
 - NJ/NY local-business rebuilds where Square Retail penetration is high
 
 ### Stripe overrides
+
 - SaaS subscriptions with seat-based / tiered / usage-based billing
 - Metered billing (Stripe Billing Meters API)
 - Entitlements feature gating
@@ -36,6 +38,7 @@ Hybrid is allowed: Square for donations + Stripe for SaaS subscription on the sa
 ### Nonprofit / Donation (Square default)
 
 Preset tiers:
+
 - **$10** — "Feeds a family for a day"
 - **$25** — "Covers supplies for a week"
 - **$50** — "Powers the hotline for a month"
@@ -45,6 +48,7 @@ Preset tiers:
 - **Custom** — "Choose your amount"
 
 Rules:
+
 - One-time as default frequency for small orgs (Square Subscriptions adds setup complexity)
 - Monthly recurring opt-in via Square Subscriptions API + Plans (only when client has staff to manage)
 - Impact labels mandatory — specific + concrete, never vague
@@ -75,6 +79,7 @@ await fetch('/api/donate', { method: 'POST', body: JSON.stringify({ sourceId: to
 ```
 
 Optional payment methods:
+
 - `payments.applePay(paymentRequest)`
 - `payments.cashAppPay(paymentRequest, { redirectURL })`
 - `payments.googlePay(paymentRequest)`
@@ -209,6 +214,7 @@ img-src 'self' https://*.squarecdn.com https://*.squareup.com data:
 ## Donation Page Design (givedirectly.org energy)
 
 ### Layout
+
 - Hero with cause story + impact stat counter (rAF roll-in, IntersectionObserver-gated)
 - Amount selector grid (6 presets + custom input)
 - Frequency toggle (one-time | monthly) — default one-time unless client has subscription infrastructure
@@ -220,6 +226,7 @@ img-src 'self' https://*.squarecdn.com https://*.squareup.com data:
 - Turnstile invisible widget
 
 ### Post-Donation Flow
+
 1. Success page with confetti (06/easter-eggs) + animated impact statement
 2. Receipt email via Resend: thank you + tax-deductible language + Square receipt URL + "donate again" CTA
 3. PostHog event: `donation_complete` with `{ amountCents, frequency, paymentMethod }`
@@ -229,6 +236,7 @@ img-src 'self' https://*.squarecdn.com https://*.squareup.com data:
 ## Auto-Detect Square Account
 
 When provisioning a new site, check if client has existing Square: `GET /v2/locations` returns all locations on account.
+
 - Single location → auto-use as `SQUARE_LOCATION_ID`
 - Multi-location → ask which is the receiving location
 - No Square account → prompt user to sign up at `squareup.com/signup` with `/agentskills` referral link (no affiliate, just direct)
@@ -266,6 +274,7 @@ When provisioning a new site, check if client has existing Square: `GET /v2/loca
 ## Conversion Optimization (Research-Backed)
 
 ### Donation Page Best Practices (Source: NextAfter, M+R Benchmarks 2025)
+
 - Donation page conversion rate median: 17% (NextAfter 2024). Top 10%: 30%+.
 - Suggested amount with social proof: "$25 — most common gift this month" lifts AOV 12%
 - One-time as default for new donors converts higher than monthly default (lowers commitment friction)
@@ -273,6 +282,7 @@ When provisioning a new site, check if client has existing Square: `GET /v2/loca
 - Apple Pay reduces mobile abandonment 30-40% (Source: Apple Pay merchant data)
 
 ### Checkout Optimization (Source: Baymard Institute)
+
 - Inline card form (Square Web Payments SDK) converts higher than redirect (Square Checkout)
 - Show security badges + "Powered by Square" near payment form
 - Progress indicator for multi-step donation forms (amount → details → payment)
