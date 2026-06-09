@@ -1,5 +1,51 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-48 — actionlint CI gate + codify `# shellcheck` comment collision
+
+### Closes pass-47 candidates 1 (actionlint CI gate) + 2 (codify the comment-collision pattern)
+
+- **`.github/workflows/publish.yml` § Self-lint Workflows** — NEW validate-job step right after Self-lint Shell. Runs `actionlint .github/workflows/*.yml` (3 workflow files). actionlint installed via `go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7` (Go preinstalled, version-pinned for reproducibility). Stacked on the existing Go install for shfmt — single Go install pattern across both steps.
+- **`rules/lint-doctrine.md` § Codified incidents** — new row:
+  - Pattern: `# shellcheck <word>` prose comment inside YAML `run:` block → actionlint SC1072 false-positive
+  - Codified rule: reword to `# Note: ShellCheck ...` or `# Tip: ShellCheck ...`; `# shellcheck` prefix reserved for `disable=` / `source=` directives ONLY
+  - Source: pass-47 self-test of new Self-lint Shell CI step
+
+### Tool-list coverage achieved (full user list)
+
+| Tool | CI gate | Where wired |
+|---|---|---|
+| Prettier | ✅ | publish.yml validate + sync auto-normalize |
+| markdownlint | ✅ | publish.yml validate + sync auto-normalize |
+| shellcheck | ✅ pass-47 | publish.yml validate |
+| shfmt | ✅ pass-47 | publish.yml validate |
+| yamllint | ✅ pass-41 | publish.yml validate |
+| actionlint | ✅ **this pass** | publish.yml validate |
+| ESLint / Oxlint / Knip | ⏳ no source TS/JS yet | local lefthook only |
+
+Every tool the user explicitly listed (`ESLint, Prettier, Oxlint, Knip, markdownlint, shellcheck, shfmt, actionlint, yamllint`) is now either CI-gated or deferred-with-rationale. The 3 deferred tools (ESLint/Oxlint/Knip) gate TS/JS source code; agentskills' only JS is `scripts/sha-pin-actions.mjs` + `scripts/validate-packs.mjs` (2 files) — wiring 3 linters for 2 files is over-engineering. Will wire when surface justifies.
+
+### Verification
+
+```bash
+actionlint .github/workflows/publish.yml                                       # 0 errors (locally)
+go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7 && actionlint .github/workflows/*.yml  # simulates CI
+```
+
+### What was NOT done
+
+- Pass-47 candidate 3 (JSON Schema for `_packs/*.yml`) — current `validate-packs.mjs` enforces cross-link integrity but not schema shape; deferred (needs schema design conversation)
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-49)
+
+- JSON Schema for `_packs/*.yml` (with `ajv-cli` CI step)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Consider extracting the Go-install pattern (shfmt + actionlint) into a single composite action so future Go-installed tools share the install + PATH boilerplate
+- Investigate whether `dependency-cruiser` (mentioned in `lint-doctrine.md`) deserves a CI step on the `.mjs` scripts to catch unintended cross-imports
+
+---
+
 ## 2026-06-09 — pass-47 — shellcheck + shfmt CI gate (completes user's tool list)
 
 ### Closes pass-46 candidate 1 (`shfmt -d` CI step)

@@ -51,6 +51,13 @@ jobs:
           shellcheck -x -S warning bin/*.sh bin/lib/*.sh scripts/*.sh
           shfmt -i 2 -ci -bn -d bin/*.sh bin/lib/*.sh scripts/*.sh
 
+      - name: Self-lint Workflows (actionlint, pass-48)
+        run: |
+          # Note: actionlint via Go install. Version-pinned for reproducibility.
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+          export PATH="$HOME/go/bin:$PATH"
+          actionlint .github/workflows/*.yml
+
       - name: Check doc counts
         run: |
           EXPECTED=$(grep -o '[0-9]* reference docs' README.md | grep -o '[0-9]*')

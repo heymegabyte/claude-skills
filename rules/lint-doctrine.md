@@ -146,6 +146,7 @@ The script runs as the final pre-push step (non-blocking — analysis only). Aft
 | `@megabytelabs/*` deps in package.json | `semgrep-custom/no-gitlab-megabytelabs-deps.yml` | pass-9 mainstream-only mandate |
 | `pretooluse-router.py` E501 multi-arg subprocess.run | *(not codified — cosmetic only)* | pass-4 ruff sweep |
 | 3+ helpers re-emit identical JSON `meta` boilerplate (inline `date -u +...` / `git rev-parse` / escape) | extract `bin/lib/emit-json.sh`; new helpers source it · per `rules/uniform-json-output.md` | pass-38 refactor — 2 callers = defer, 3 = lib |
+| `# shellcheck <word>` prose comment inside YAML `run:` block → actionlint SC1072 false-positive | reword to `# Note: ShellCheck ...` or `# Tip: ShellCheck ...`; `# shellcheck` prefix reserved for `disable=` / `source=` directives ONLY | pass-47 self-test of new Self-lint Shell CI step |
 
 ## Pack integrity validator
 
