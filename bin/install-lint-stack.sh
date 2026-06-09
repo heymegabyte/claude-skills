@@ -14,12 +14,21 @@
 
 set -euo pipefail
 
-PROJECT="${1:-$PWD}"
+INSTALL_DEPS=0
+ARGS=()
+for arg in "$@"; do
+  case "$arg" in
+    --install-deps) INSTALL_DEPS=1 ;;
+    *) ARGS+=("$arg") ;;
+  esac
+done
+
+PROJECT="${ARGS[0]:-$PWD}"
 [ -d "$PROJECT" ] || {
   echo "ERROR: $PROJECT not a directory" >&2
   exit 1
 }
-cd "$PROJECT"
+cd "$PROJECT" || exit 1
 
 # Resolve symlink-aware path to the skills root
 SKILLS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -94,7 +103,7 @@ fi
 
 # .lint-history/.gitignore — exclude logs + proposals from git (they're local audit only)
 mkdir -p .lint-history
-cat > .lint-history/.gitignore <<'EOF'
+cat >.lint-history/.gitignore <<'EOF'
 # Lint history is local-only audit data. Per rules/lint-doctrine.md.
 *.log
 proposals/
@@ -195,15 +204,25 @@ console.error(`  ✓ ${touched} script(s) added/updated`);
 NODE
 fi
 
-# --- 5.5. Brew-tool install hints (gitleaks, trufflehog, semgrep) -----------
+# --- 5.5. Brew-tool install (optional --install-deps) ----------------------
 emdashSection "Brew tool availability"
+MISSING=()
 for tool in gitleaks trufflehog semgrep shellcheck shfmt yamllint actionlint hadolint; do
   if command -v "$tool" >/dev/null 2>&1; then
     emdashLog "✓" "$tool installed"
   else
-    emdashLog "!" "$tool missing — brew install $tool"
+    MISSING+=("$tool")
+    emdashLog "!" "$tool missing"
   fi
 done
+if [ "${#MISSING[@]}" -gt 0 ]; then
+  if [ "$INSTALL_DEPS" = "1" ] && command -v brew >/dev/null 2>&1; then
+    emdashLog "↓" "brew install ${MISSING[*]}"
+    brew install "${MISSING[@]}" 2>&1 | tail -5 || emdashLog "!" "brew install partial — review output"
+  else
+    emdashLog "i" "rerun with --install-deps OR: brew install ${MISSING[*]}"
+  fi
+fi
 
 # --- 6. lefthook install ---------------------------------------------------
 emdashSection "Installing lefthook git hooks"

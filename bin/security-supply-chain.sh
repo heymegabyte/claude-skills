@@ -66,14 +66,38 @@ else
   SKIP=$((SKIP + 1))
 fi
 
-# --- 3. Gitleaks working-tree scan -----------------------------------------
-emdashSection "3. Gitleaks (working tree)"
+# --- 3 + 4 parallel: secret scanners ---------------------------------------
+emdashSection "3 + 4. Secret scanners (gitleaks + trufflehog) in parallel"
+GL_LOG=$(mktemp)
+TH_LOG=$(mktemp)
+GL_PID=""
+TH_PID=""
 if command -v gitleaks >/dev/null 2>&1; then
-  if gitleaks detect --redact --verbose --no-banner 2>&1 | tail -10; then
-    emdashLog "✓" "no committed secrets"
+  gitleaks detect --redact --verbose --no-banner >"$GL_LOG" 2>&1 &
+  GL_PID=$!
+fi
+if command -v trufflehog >/dev/null 2>&1; then
+  trufflehog git file://. --only-verified --fail --no-update >"$TH_LOG" 2>&1 &
+  TH_PID=$!
+fi
+GL_EXIT=0
+TH_EXIT=0
+[ -n "$GL_PID" ] && {
+  wait "$GL_PID"
+  GL_EXIT=$?
+} || GL_EXIT=-1
+[ -n "$TH_PID" ] && {
+  wait "$TH_PID"
+  TH_EXIT=$?
+} || TH_EXIT=-1
+
+if [ -n "$GL_PID" ]; then
+  if [ "$GL_EXIT" -eq 0 ]; then
+    emdashLog "✓" "gitleaks: no committed secrets"
     PASS=$((PASS + 1))
   else
-    emdashLog "✗" "secrets detected — rotate immediately per secret-provisioning.md"
+    emdashLog "✗" "gitleaks: secrets detected — rotate immediately"
+    tail -10 "$GL_LOG" | sed 's/^/    /' >&2
     FAIL=$((FAIL + 1))
   fi
 else
@@ -81,20 +105,20 @@ else
   SKIP=$((SKIP + 1))
 fi
 
-# --- 4. Trufflehog --only-verified -----------------------------------------
-emdashSection "4. Trufflehog (--only-verified)"
-if command -v trufflehog >/dev/null 2>&1; then
-  if trufflehog git file://. --only-verified --fail --no-update 2>&1 | tail -10; then
-    emdashLog "✓" "no verified live secrets"
+if [ -n "$TH_PID" ]; then
+  if [ "$TH_EXIT" -eq 0 ]; then
+    emdashLog "✓" "trufflehog: no verified live secrets"
     PASS=$((PASS + 1))
   else
-    emdashLog "✗" "live secret detected — rotate immediately"
+    emdashLog "✗" "trufflehog: live secret detected — rotate immediately"
+    tail -10 "$TH_LOG" | sed 's/^/    /' >&2
     FAIL=$((FAIL + 1))
   fi
 else
   emdashLog "·" "trufflehog not installed (brew install trufflehog) — skipped"
   SKIP=$((SKIP + 1))
 fi
+rm -f "$GL_LOG" "$TH_LOG"
 
 # --- Summary ---------------------------------------------------------------
 emdashSection "Summary"

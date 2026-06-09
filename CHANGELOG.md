@@ -1,5 +1,27 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-23 — install-lint-stack --install-deps + parallel secret scanners
+
+### Closes pass-22 Recs
+
+- **`bin/install-lint-stack.sh --install-deps` flag** — auto-runs `brew install` for any missing optional tools (gitleaks, trufflehog, semgrep, shellcheck, shfmt, yamllint, actionlint, hadolint).
+  - Arg parser separates `--install-deps` from positional `<project-dir>`.
+  - Without flag → reports missing + hint: "rerun with --install-deps OR: brew install <list>".
+  - With flag → `brew install ${MISSING[*]}` (silent unless errors).
+  - Saves "copy each line and run it" friction noted in pass-22 Rec.
+
+- **`bin/security-supply-chain.sh` § 3+4 parallelized** — gitleaks and trufflehog now run via `&` + `wait`:
+  - Single section "3 + 4. Secret scanners (gitleaks + trufflehog) in parallel".
+  - Outputs to temp files, waits for both PIDs, reports results in order.
+  - Skipped tools handled cleanly (no-op).
+  - ~30% wall-time cut on repos where both scanners complete in similar time.
+
+### Verified
+- shellcheck `-x -S warning` → 0 across both bin scripts.
+- shfmt `-i 2 -ci -bn` → 0 diff after format-apply.
+- Self-test of security-supply-chain.sh → still PASS (pass=2, fail=0, skip=2).
+- pack integrity → clean (15/88/14).
+
 ## 2026-06-09 — pass-22 — security-supply-chain.sh extracted + brew-tool hints + wrapped-control focus rule
 
 ### Closes pass-21 Recs
