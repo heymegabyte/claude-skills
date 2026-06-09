@@ -1,5 +1,78 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-76 — 3-file cluster migration: 160 → 116 hits
+
+### Closes pass-75 candidates 1 + 2 (next dense file + lighter cluster)
+
+Now that the sed migration recipe is codified + idempotent, batching 3 files in one pass.
+
+### Files migrated (all in `15-site-generation/`)
+
+| File | Hits | Lines | Stutter check |
+|---|---|---|---|
+| `build-breaking-rules.md` | 18 | 1156 | ✓ 0 stutters |
+| `quality-gates.md` | 15 | ~700 | ✓ 0 stutters |
+| `source-fidelity-loop.md` | 10 | ~500 | ✓ 0 stutters |
+
+3 files migrated in one pass. Same sed recipe as pass-75 (pre-cleaned `GPT-4o Vision` → `GPT Image 2 vision` BEFORE general `GPT-4o` substitution). Zero stutters across all 3 files — codified pattern from pass-74 holds.
+
+### Compact migration notes
+
+Switched from the verbose preface (pass-73-74-75) to a single-line blockquote:
+
+> **Model migration note (pass-76, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Pipeline gates unchanged.
+
+Rationale: by pass-76 the migration note pattern is establishd; verbose context belongs in CHANGELOG, terse marker belongs in-file. Reduces cumulative migration-note bloat across the corpus.
+
+### Detector count drop
+
+| Pattern | Pre-pass-76 | Post-pass-76 | Δ |
+|---|---|---|---|
+| GPT-4o | 117 | 87 | -30 |
+| DALL-E | 38 | 24 | -14 |
+| DALL·E | 5 | 5 | 0 |
+| TOTAL | 160 | **116** | **-44** |
+
+Largest single-pass drop in the migration arc (tied with pass-73's 44).
+
+### Migration arc trajectory updated
+
+- pass-72: 270
+- pass-73: 226 (-44)
+- pass-74: 190 (-36)
+- pass-75: 160 (-30)
+- pass-76: 116 (-44)
+
+Total migrated across 4 passes: **155 references**. Remaining: 116. At ~37/pass average, ~3 more passes to <50; surgical mop-up after.
+
+### Pass-58→76 closure-loop summary
+
+- **11 latent bugs caught + 155 references migrated** across pass-73→76
+- **6 disciplines codified**
+- **5 audit scripts** mechanized
+- Batched-multi-file migration validated (no per-file regression in pass-76)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 9/9 green
+bash bin/check-deprecated-models.sh 2>&1 | grep SUMMARY  # 116 total hits
+```
+
+### What was NOT done
+
+- 116 remaining deprecated-identifier migrations — pass-77→ iteratively
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-77)
+
+- Cluster `07-quality-and-verification/completeness-verification.md` (10) + `09-brand-and-content-system/SKILL.md` (9) + `12-media-orchestration/SKILL.md` (8) — total ~27 hits
+- Migrate `15-site-generation/build-prompts.md` (9 hits)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-75 — Migrate `12-media-orchestration/build-breaking-rules.md`: 190 → 160 hits
 
 ### Closes pass-74 candidate 1 (migrate next densest file)

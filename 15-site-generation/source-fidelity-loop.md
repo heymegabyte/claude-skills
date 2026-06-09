@@ -1,6 +1,6 @@
 ---
 name: "source-fidelity-loop"
-description: "Source-vs-rebuild visual fidelity loop. Capture source homepage, capture rebuild homepage, GPT-4o scores logo+colors+typography+hero against source, fixer regenerates on fail. Prevents brand drift on rebuilds."
+description: "Source-vs-rebuild visual fidelity loop. Capture source homepage, capture rebuild homepage, GPT Image 2 vision scores logo+colors+typography+hero against source, fixer regenerates on fail. Prevents brand drift on rebuilds."
 updated: "2026-05-10"
 ---
 
@@ -9,6 +9,8 @@ updated: "2026-05-10"
 Every site rebuild MUST visually mirror the source brand: same logo, same colors, same typography, same hero structure. "Improvement" means motion+layout+performance — NEVER substituting the brand identity.
 
 The lonemountainglobal Poppins+Hind regression and the njsk.org burgundy-loss incident both shipped as "passing" because no gate compared rebuild→source. This loop closes that gap.
+
+> **Model migration note (pass-76, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Loop structure unchanged.
 
 ## Phase 1: Capture Source Screenshot (`_source_screenshot.png`)
 
@@ -21,7 +23,7 @@ Before generation starts, Worker captures source-domain homepage. Three capture 
 **Output**:
 
 - `_source_screenshot.png` saved to build dir + R2 archive at `sites/{slug}/build-context/_source_screenshot.png` (versioned)
-- Also extract palette + fonts from screenshot via GPT-4o vision into `_brand.json` (see skill 09 brand-extraction)
+- Also extract palette + fonts from screenshot via GPT Image 2 vision into `_brand.json` (see skill 09 brand-extraction)
 - `_brand.json.fonts.heading` + `.fonts.body` + `.primary` + `.secondary` become the authority — generation prompts MUST receive them and build MUST honor them
 
 When `_source_screenshot.png` cannot be captured (no source exists, owner starting from scratch, source is private), validator no-ops with `[validate-source-fidelity] _source_screenshot.png not found — skipping (no source to compare)` exit-0. Greenfield builds skip the loop entirely; rebuilds fail-closed.
@@ -41,9 +43,9 @@ After staging deploy succeeds (Worker URL responds 200), capture rebuilt homepag
 - Re-capture on every rebuild iteration (do NOT cache — comparison must reflect latest deploy)
 - Cache key in `validate-source-fidelity.mjs` is `sha256(source_buf + rebuild_buf)`, so byte-identical rebuilds short-circuit; any visual change re-scores
 
-## Phase 3: GPT-4o Score (`validate-source-fidelity.mjs`)
+## Phase 3: GPT Image 2 vision Score (`validate-source-fidelity.mjs`)
 
-Validator sends BOTH images + brand hint (`_brand.json.fonts` + `_brand.json.primary`) to GPT-4o with this rubric:
+Validator sends BOTH images + brand hint (`_brand.json.fonts` + `_brand.json.primary`) to GPT Image 2 vision with this rubric:
 
 ```json
 {
@@ -81,7 +83,7 @@ On fail, project agent `source-fidelity-fixer` (declared in `apps/project-sites/
 
 ### `color_match<7`
 
-- Re-extract palette from `_source_screenshot.png` via GPT-4o vision (skill 09 brand-color-extraction)
+- Re-extract palette from `_source_screenshot.png` via GPT Image 2 vision (skill 09 brand-color-extraction)
 - Overwrite `_brand.json.primary`/`secondary`/`accent`
 - Regenerate `tokens.css` + Tailwind config, redeploy
 - **Common cause**: build prompt guessed "burgundy" when source was actually crimson `#A81F32` — exact hex matters, not category
@@ -95,7 +97,7 @@ On fail, project agent `source-fidelity-fixer` (declared in `apps/project-sites/
 ### `hero_structure<7`
 
 - Regenerate hero block
-- Provide GPT-4o-extracted hero spec from source (image-on-right vs image-on-left vs full-bleed-photo vs gradient-only, headline length, CTA count) to build prompt
+- Provide GPT Image 2 vision-extracted hero spec from source (image-on-right vs image-on-left vs full-bleed-photo vs gradient-only, headline length, CTA count) to build prompt
 - **Common drift**: source had photo background + dark scrim + 4-word headline; rebuild produced gradient + 12-word headline + 2 CTAs
 
 ### `overall_fidelity<8` with sub-scores all ≥7
@@ -111,7 +113,7 @@ Generate `_source_fidelity_report.html` with:
 
 - Source screenshot + latest rebuild screenshot side-by-side at 100%, 50%, 25% scales
 - Per-axis scores from each iteration (showing trajectory)
-- GPT-4o `notes` field per iteration
+- GPT Image 2 vision `notes` field per iteration
 - Raw `_brand.json` + extracted-from-source palette + extracted-from-rebuild palette
 - Suggested manual interventions (top 3)
 
@@ -120,14 +122,14 @@ Email to operator via Resend (skill 13 notifications) with subject `Source-fidel
 ## Anti-patterns (***NEVER***)
 
 - **Skipping the loop because "the rebuild looks better than the source"** — Improvement is bonus; fidelity is the contract. Owner agreed to a rebuild of THEIR brand, not your taste. Operator can manually approve a deviation post-fact, but AI never decides unilaterally.
-- **Auto-generating a logo when source logo extraction fails on first try** — Try favicon → about page → header SVG → Wayback header → R2 archive of prior crawls before falling back to Ideogram. Synthetic logos drift from original signature shape and ship as "passing" because GPT-4o is more forgiving than human owner.
+- **Auto-generating a logo when source logo extraction fails on first try** — Try favicon → about page → header SVG → Wayback header → R2 archive of prior crawls before falling back to Ideogram. Synthetic logos drift from original signature shape and ship as "passing" because GPT Image 2 vision is more forgiving than human owner.
 - **Caching `_rebuild_screenshot.png` across deploys** — Screenshot MUST be re-captured after every deploy or cache lies. Cache `_source_screenshot.png` aggressively (source rarely changes); re-capture rebuild every iteration.
 - **Treating sub-scores ≥7 as "good enough" when overall<8** — If gestalt is off, fix the gestalt — usually hero re-render with image-conditioning, not piecemeal tweaks.
 
 ## Canonical Incidents This Gate Prevents
 
-- **lonemountainglobal (2026-04)** — Source used Poppins (heading) + Hind (body) — both Google Fonts. Build prompt guessed Inter (default Tailwind stack), passed all OTHER validators because Inter loaded fine and contrast was AAA. Owner immediately spotted substitution. **Fix**: `_brand.json.fonts` extraction via GPT-4o vision; `validate-source-fidelity.mjs` flags `typography_match<7` when extracted-rebuild stack ≠ `_brand.json.fonts`.
-- **njsk.org (2026-03)** — Source brand burgundy `#7B1F2F`. Build prompt category-inferred "non-profit warm earth tones" → produced muddy maroon `#923B3B` + tan `#C4A57B`. All other gates passed. Owner reaction: "this isn't our brand at all." **Fix**: `_brand.json.primary` extracted from source pixels via GPT-4o, never inferred from category. `validate-brand-colors.mjs` (skill 09) cross-checks rendered hex against extracted hex within ΔE2000 ≤ 5; `validate-source-fidelity.mjs` catches gestalt color drift.
+- **lonemountainglobal (2026-04)** — Source used Poppins (heading) + Hind (body) — both Google Fonts. Build prompt guessed Inter (default Tailwind stack), passed all OTHER validators because Inter loaded fine and contrast was AAA. Owner immediately spotted substitution. **Fix**: `_brand.json.fonts` extraction via GPT Image 2 vision; `validate-source-fidelity.mjs` flags `typography_match<7` when extracted-rebuild stack ≠ `_brand.json.fonts`.
+- **njsk.org (2026-03)** — Source brand burgundy `#7B1F2F`. Build prompt category-inferred "non-profit warm earth tones" → produced muddy maroon `#923B3B` + tan `#C4A57B`. All other gates passed. Owner reaction: "this isn't our brand at all." **Fix**: `_brand.json.primary` extracted from source pixels via GPT Image 2 vision, never inferred from category. `validate-brand-colors.mjs` (skill 09) cross-checks rendered hex against extracted hex within ΔE2000 ≤ 5; `validate-source-fidelity.mjs` catches gestalt color drift.
 - **Generic 2025 portfolio rebuilds** — Hero "improvement" from full-bleed photo + scrim → animated gradient + lottie. Owner: "where's the photo of me?" **Fix**: hero structure score against source — if source has photographic hero, rebuild MUST keep photographic hero (skill 10 hero-system).
 
 ## Operator Override

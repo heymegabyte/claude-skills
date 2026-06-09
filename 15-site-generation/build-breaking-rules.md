@@ -14,6 +14,8 @@ compatibility:
 
 # 15 — Build-Breaking Site Generation + Rebuild Rules
 
+> **Model migration note (pass-76, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Pipeline gates unchanged.
+
 Migrated from `~/.claude/rules/always.md` 2026-05-03.
 
 ## Every site rebuild (source site exists)
@@ -52,12 +54,12 @@ Preserve slider groups with order.
 ### Augmentation
 
 - Ship `original_image_count × 1.4` minimum (`× 2.0` typical)
-- Augment via DALL-E 3 (primary), Pexels, Pixabay, Google CSE
+- Augment via GPT Image 1.5 (primary), Pexels, Pixabay, Google CSE
 - Feature linked PDFs prominently (e.g. team CVs on `/about`)
 
 ### Post-build vision pass
 
-GPT-4o vision scan vs source → classify gaps as `local-skill | universal-skill | template | one-off` → auto-edit appropriate file with dated incident citation → push template repo same prompt.
+GPT Image 2 vision scan vs source → classify gaps as `local-skill | universal-skill | template | one-off` → auto-edit appropriate file with dated incident citation → push template repo same prompt.
 
 ## Every site rebuild (full-corpus mandate)
 
@@ -113,9 +115,9 @@ Schema: `(src/poster/duration/dims/transcript-if-available)`. Consumed by templa
 ### Augmentation
 
 - Pexels Video API + YouTube Data API search by topic
-- DALL-E 3 image generation is PURPOSE-CRAFTED PER SLOT
+- GPT Image 1.5 image generation is PURPOSE-CRAFTED PER SLOT
 
-### Per-slot DALL-E prompt mandatory fields
+### Per-slot GPT Image 1.5 prompt mandatory fields
 
 1. Route+section it lives in
 2. Page topic+intent
@@ -143,16 +145,16 @@ Site generation MUST fire dual-vision at 4 checkpoints:
 1. **Per-section** — Claude Vision (FREE, Sonnet 4.6 via Max 20x OAuth) after each section renders (hero|features|testimonials|impact|footer|etc.) at 1bp (1280). Catches white-on-white, overflow, missing-image, broken grid BEFORE next section adds atop broken foundation.
 2. **Per-route** — Claude Vision at all 6 breakpoints (375/390/768/1024/1280/1920) after route assembles + mission-doctrine grade (cinematic_floor + latest_tech_flex).
 3. **Per-iteration** — Claude Vision diffs current build vs previous build (`sites.iteration_count`) screenshots. Catches "earlier LMG was better" regression class.
-4. **Final pre-publish** — GPT-4o on homepage 6bp + Claude Vision on every route 6bp. Both must hit ≥8/10 across cinematic_floor + latest_tech_flex + brand_fidelity + accessibility + hero_impact.
+4. **Final pre-publish** — GPT Image 2 vision on homepage 6bp + Claude Vision on every route 6bp. Both must hit ≥8/10 across cinematic_floor + latest_tech_flex + brand_fidelity + accessibility + hero_impact.
 
-### GPT-4o veto
+### GPT Image 2 vision veto
 
 - Homepage only
-- Brand-fidelity GPT-4o judge compares rendered ATF vs source-site screenshot — highest-ROI metered call
+- Brand-fidelity GPT Image 2 vision judge compares rendered ATF vs source-site screenshot — highest-ROI metered call
 
 ### Cost cap
 
-**$0.50 GPT-4o per build** allocation:
+**$0.50 GPT Image 2 vision per build** allocation:
 
 - ~$0.10 hero/ATF
 - ~$0.15 brand-fidelity vs source
@@ -164,7 +166,7 @@ Claude Vision marginal cost ZERO on Max 20x — use uncapped.
 ### Auth
 
 - **Claude Vision** — via `~/.claude/.credentials.json.claudeAiOauth` OAuth bearer (NEVER API key on macOS spawn — burns metered credits on flat-rate plan, see ~/.claude/rules/auth-spawned-claude.md)
-- **GPT-4o** — via `OPENAI_API_KEY`
+- **GPT Image 2 vision** — via `OPENAI_API_KEY`
 
 ### Consensus
 
@@ -414,7 +416,7 @@ Site_type MUST be overridden to `blog` REGARDLESS of the one-line prompt's impli
 
 1. **Import ALL posts** (per "Complete Blog/Content Corpus" rule)
 2. **REWRITE each post for quality improvement** — fix grammar, improve clarity, sharpen headlines (4-8 words), punch up first paragraphs (Flesch ≥60), add internal links — but NEVER alter facts/dates/quotes/sources
-3. **Re-extract ALL media from each source post** + supplement with DALL-E per-slot prompts (post-topic-specific, brand-palette-matched) + Pexels Video for hero sections
+3. **Re-extract ALL media from each source post** + supplement with GPT Image 1.5 per-slot prompts (post-topic-specific, brand-palette-matched) + Pexels Video for hero sections
 4. **Homepage becomes magazine-style blog index** (featured post hero, category filter row, 3-column grid, pagination, sidebar with top tags + search)
 5. **Every post gets**: unique title/meta/H1, 600+ words, featured image (R2-hosted), FAQPage JSON-LD, author byline, publish date, reading time, ≥3 related-posts links, share buttons, category+tag chips
 
@@ -591,7 +593,7 @@ When `_research.json.testimonials[].length >= 2` OR source site has any review/t
 - **Quoted text** in a `<blockquote>` element, punctuated with opening quote mark (decorative `::before { content: '"' }` or SVG quote icon)
 - **`<cite>` element** wrapping: person name + job title/company (MANDATORY — no anonymous testimonials unless source explicitly omits identity)
 - **Star rating** rendered as accessible SVG stars (1-5) when source has rating data
-- **Avatar**: use source photo if available → DALL-E headshot as fallback → initials monogram badge as final fallback (NEVER no avatar)
+- **Avatar**: use source photo if available → GPT Image 1.5 headshot as fallback → initials monogram badge as final fallback (NEVER no avatar)
 
 ### Layout
 
@@ -711,7 +713,7 @@ When source-site logo is reachable (`_brand.json.logo.original_url` HEAD-200s OR
 
 ### Requirements
 
-Site's primary+secondary brand colors MUST be extracted from that logo via GPT-4o vision — NEVER guessed from category/business-type/industry default.
+Site's primary+secondary brand colors MUST be extracted from that logo via GPT Image 2 vision — NEVER guessed from category/business-type/industry default.
 
 ### Required `_brand.json` shape
 
@@ -729,7 +731,7 @@ Site's primary+secondary brand colors MUST be extracted from that logo via GPT-4
 
 ### Extraction priority chain (FIRST match wins, MUST walk each before falling through)
 
-1. **GPT-4o vision** on logo PNG/SVG with prompt "extract the dominant brand colors as 6-digit hex, no descriptions, return JSON {primary,secondary,accent,reasoning}" using `imageDetail: "high"`
+1. **GPT Image 2 vision** on logo PNG/SVG with prompt "extract the dominant brand colors as 6-digit hex, no descriptions, return JSON {primary,secondary,accent,reasoning}" using `imageDetail: "high"`
 2. **DOM scrape** of source `header`/`nav` `background-color` + `<button class*="cta"|"btn-primary">` `background-color` via Playwright `getComputedStyle`
 3. **`wp-content/themes/*/theme.json` palette field** for WordPress sites
 4. **`og:image` dominant-color extraction** via vision (last resort before fallback)
@@ -738,7 +740,7 @@ Site's primary+secondary brand colors MUST be extracted from that logo via GPT-4
 ### Validator (`validate-brand-colors.mjs`)
 
 - When `_brand.json.logo.original_url` set, `color_source !== "industry_default"` (build fails)
-- When source logo is reachable, GPT-4o vision is RE-RUN at validate-time against the logo + claimed primary hex returns ΔE ≤ 30 against logo's dominant pixel cluster (CIE 2000) — primary hex must be visually present in logo
+- When source logo is reachable, GPT Image 2 vision is RE-RUN at validate-time against the logo + claimed primary hex returns ΔE ≤ 30 against logo's dominant pixel cluster (CIE 2000) — primary hex must be visually present in logo
 - `theme-color` meta tag in dist/index.html === `_brand.json.primary` exactly (case-insensitive)
 - `mask-icon color` meta tag === `_brand.json.primary` (no separate hardcoded value — single source of truth)
 - `_brand.json.confidence >= 0.7` when `color_source === "logo_vision_extraction"`
@@ -800,7 +802,7 @@ When the source-site logo contains rendered text (wordmark logos, "Lone Mountain
 
 The navbar/header background polarity MUST be driven by the logo's text-pixel luminance — NOT by site-theme aesthetic preference and NOT by overall logo dominant-pixel luminance (which can be the background, not the text).
 
-### GPT-4o vision pass on the logo MUST extract separately
+### GPT Image 2 vision pass on the logo MUST extract separately
 
 - `_brand.json.logo.text_pixel_color = "#hex"`
 - `_brand.json.logo.text_luminance = 0-1`
@@ -828,7 +830,7 @@ For every dist HTML:
 
 - Compute header `background-color` via Playwright `getComputedStyle`
 - Fetch logo `<img>` from header
-- Run GPT-4o vision `text_luminance` check against header bg
+- Run GPT Image 2 vision `text_luminance` check against header bg
 - Fail when contrast <4.5:1
 
 ## Every site rebuild (progressive iteration enhancement + dual-source scrape)
@@ -920,7 +922,7 @@ Required content for enriched sub-page:
 4. **"Read full article →" outbound link** as primary CTA to canonical external URL
 5. **≥3 internal links** to related publications on the same site
 6. **JSON-LD** — `BlogPosting` OR `ScholarlyArticle` with `citation: CreativeWork[]`
-7. **`og:image`** derived from publication abstract via DALL-E per-slot prompt (subject: research field theme, NEVER a generic stock image)
+7. **`og:image`** derived from publication abstract via GPT Image 1.5 per-slot prompt (subject: research field theme, NEVER a generic stock image)
 
 ### Policy (b) 301 REDIRECT
 
@@ -1768,7 +1770,7 @@ Every site hero (above-the-fold landing section) MUST be one of three cinematic 
 
 ### Allowed treatments
 
-**(a) Full-screen video** — autoplay+muted+playsinline+loop H.264 MP4 ≤4MB OR HLS stream, with `<source type="video/webm">` fallback, 16:9 desktop / 9:16 mobile (sourced from DALL-E Video v2 OR Sora OR HeyGen OR original site's video assets OR Pexels free 4K library)
+**(a) Full-screen video** — autoplay+muted+playsinline+loop H.264 MP4 ≤4MB OR HLS stream, with `<source type="video/webm">` fallback, 16:9 desktop / 9:16 mobile (sourced from GPT Image 1.5 Video v2 OR Sora OR HeyGen OR original site's video assets OR Pexels free 4K library)
 
 **(b) WebGL/Canvas particle field** — Three.js OR vanilla WebGL shader running brand-colored particle system at 60fps, prefers-reduced-motion → static gradient fallback, GPU memory ≤256MB
 

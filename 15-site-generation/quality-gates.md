@@ -1,6 +1,6 @@
 ---
 name: "quality-gates"
-description: "Visual inspection via GPT-4o, SEO audit, accessibility checks, 10-dimension quality scoring. Criticism registry with universal + domain-specific rules."
+description: "Visual inspection via GPT Image 2 vision, SEO audit, accessibility checks, 10-dimension quality scoring. Criticism registry with universal + domain-specific rules."
 updated: "2026-04-24"
 ---
 
@@ -10,6 +10,8 @@ updated: "2026-04-24"
 
 ### In-container `inspect.js`
 
+> **Model migration note (pass-76, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Quality gates unchanged.
+
 - Takes HTML file path → sends first 14KB to vision model
 - Persona: "senior Stripe web designer"
 - **8 scoring categories**: color contrast, typography, layout/spacing, animations, images, mobile responsiveness, brand consistency, visual polish vs generic AI look
@@ -18,20 +20,20 @@ updated: "2026-04-24"
 ### Tiered model selection
 
 - **Draft rounds (1-2)** — Workers AI Llama Vision (FREE). Catches layout breaks, missing elements, broken images, contrast failures. Sufficient for 80% of issues.
-- **Final round (homepage only)** — GPT-4o detail:low (~$0.02). Catches aesthetic nuance, brand harmony, "does it feel premium?" Only if Workers AI round scores ≥7 (no point polishing a broken layout).
+- **Final round (homepage only)** — GPT Image 2 vision detail:low (~$0.02). Catches aesthetic nuance, brand harmony, "does it feel premium?" Only if Workers AI round scores ≥7 (no point polishing a broken layout).
 
 ### In-container loop
 
 - After `npm run build`, run `node /home/cuser/inspect.js dist/index.html`
 - If score <8: fix → rebuild → re-inspect
 - Max 3 iterations
-- Workers AI for rounds 1-2, GPT-4o for final homepage check only
+- Workers AI for rounds 1-2, GPT Image 2 vision for final homepage check only
 
 ### Post-deploy inspection
 
 - Worker screenshots via `microlink.io` API
 - → Workers AI Llama Vision for all pages
-- → GPT-4o detail:low for homepage ATF only
+- → GPT Image 2 vision detail:low for homepage ATF only
 - Logs score + issues to D1 `audit_logs`
 
 ## 10-Dimension Quality Scoring
@@ -75,7 +77,7 @@ These validators run in `build_validators.ts` between R2 upload and `published` 
 | `validate-html-entities.mjs` | always.md no-html-entities-in-jsx (njsk.org 2026-05-02) | `entity.literal_in_jsx` / `entity.literal_in_dist_html` |
 | `validate-underline-hover.mjs` | always.md universal-underline-hover (njsk.org 2026-05-02) | `underline.double_render` / `underline.layer_components` / `underline.color_overrides_parent` |
 | `validate-no-empty-slots.mjs` | skill 15 media-acquisition Media-Slot-Manifest + Fail-CLOSED auto-regenerate | `slot.unfilled` / `slot.below_relevance_floor` / `slot.fallback_gradient_used` |
-| `validate-dalle-slot-fill.mjs` | skill 15 media-acquisition DALL-E-first slot-fill + per-slot prompt mandatory fields | `dalle.prompt_generic` / `dalle.missing_negative_prompt` / `dalle.missing_palette_token` / `dalle.missing_subject_specificity` |
+| `validate-dalle-slot-fill.mjs` | skill 15 media-acquisition GPT Image 1.5-first slot-fill + per-slot prompt mandatory fields | `dalle.prompt_generic` / `dalle.missing_negative_prompt` / `dalle.missing_palette_token` / `dalle.missing_subject_specificity` |
 | `validate-media-slot-manifest.mjs` | skill 15 media-acquisition Media-Slot-Manifest | `manifest.missing` / `manifest.route_uncovered` / `manifest.slot_record_incomplete` |
 | `validate-podcast-on-about.mjs` | skill 12 notebooklm-pipeline + always.md "Every site (NotebookLM artifacts)" | `podcast.missing` / `podcast.no_jsonld` / `podcast.no_transcript` / `podcast.audio_404` |
 | `validate-infographic-on-about.mjs` | skill 12 notebooklm-pipeline | `infographic.missing` / `infographic.fewer_than_three` / `infographic.caption_missing` |
@@ -142,7 +144,7 @@ Jewel routes include: `/annual-report`, `/financials`, `/planned-giving`, `/ways
 
 After all functional + structural gates pass, the orchestrator MUST run a final aesthetic critique-and-edit pass on every site:
 
-- GPT-4o (detail:high) reviews homepage + 2 highest-traffic sub-pages
+- GPT Image 2 vision (detail:high) reviews homepage + 2 highest-traffic sub-pages
 - Prompt: "Make this even more gorgeous + beautiful + intuitive + concise + creative + witty + intelligent + confident — list 8-12 concrete edits, then apply them."
 - Max 3 rounds of edit-rebuild-rescreenshot
 - Each round MUST measurably increase the visual_design + brand_consistency dimension scores by ≥0.03 OR exit early
@@ -168,11 +170,11 @@ Each entry: user-feedback symptom on a specific site → universal rule that pre
 
 ### 2026-05-02 cycle (njsk-light.projectsites.dev — 12 critiques generalized)
 
-- **Pexels stock photo on hero when source had usable hero of its own** → hero-media preference order ENFORCES original-source-hero IF quality≥7/10 wins over Pexels/DALL-E (skill 12 + always.md hero-image-preference)
+- **Pexels stock photo on hero when source had usable hero of its own** → hero-media preference order ENFORCES original-source-hero IF quality≥7/10 wins over Pexels/GPT Image 1.5 (skill 12 + always.md hero-image-preference)
 - **No impact stat-rollup section despite source surfacing 30+ years / 150K+ meals / 25k volunteers** → "Every site IMPACT/STAT ROLLUP" universal rule + `validate-stat-counter-section.mjs` (always.md + this file)
 - **Body+heading anchor links lacked underline-on-hover** → universal `.underline-hover` 51%→0 sweep canonical pattern + `validate-underline-hover.mjs` (skill 10 + always.md, pre-existing — reinforced)
 - **Modules popped into view without entrance animation** → universal in-viewport fadeIn ONCE on entry + anti-FOUC `js-reveal-active` class + `validate-reveal-foud.mjs` (skill 11 + always.md + this file, pre-existing — reinforced)
-- **Single-source DALL-E imagery vs available Pexels Video / YouTube / Google Image stack** → multi-source media generation per page + per-page-floor mandate (skill 12 + always.md "Every page (media density)" pre-existing — reinforced)
+- **Single-source GPT Image 1.5 imagery vs available Pexels Video / YouTube / Google Image stack** → multi-source media generation per page + per-page-floor mandate (skill 12 + always.md "Every page (media density)" pre-existing — reinforced)
 - **Lightbulb on /volunteer + mixed-gender adults on /women-and-children** → per-page topic-relevance vision-LLM scoring ≥8/10 + `validate-image-relevance.mjs` (skill 12 per-page-topic-relevance + always.md page-rendered image rule)
 - **Broken `/taryn-albania.jpg` style 404s** → "Every image" zero-broken-images rule + post-build crawl gate (always.md + skill 15, pre-existing — reinforced)
 - **Mega-menu "About" snapped closed when cursor traveled diagonally toward panel** → hover-bridge + Bostock 2013 triangle-aim + `validate-mega-menu-hover.mjs` (skill 10 mega-menu pattern + always.md + this file)
@@ -193,7 +195,7 @@ Each entry: user-feedback symptom on a specific site → universal rule that pre
 - **NJSK blog search input rendered as 12-character box truncating placeholder** → "Every search input MIN VISIBLE WIDTH ≥50ch" at desktop + 100% mobile + `validate-search-input-width.mjs` (always.md + this file)
 - **NYFB hero section constrained to 1200px container instead of edge-to-edge** → "Every full-width visual section FULL-VIEWPORT BREAKOUT" via `width: 100vw; margin-left: calc(50% - 50vw)` + `validate-full-bleed-sections.mjs` (always.md + this file)
 - **NYFB social row used legacy bird Twitter icon labeled "Twitter"** → "Every X reference X-NOT-TWITTER + LATEST ICON" with official X SVG path + `validate-x-not-twitter.mjs` (always.md + this file)
-- **NJSK 80% of blog posts shipped without featured image** (source had no image, no DALL-E fallback ran) → "Every blog/article post FEATURED IMAGE MANDATORY + DALL-E FALLBACK" with per-slot prompt (post topic + brand palette + photographic spec + negative prompt) + `validate-blog-featured-images.mjs` (always.md + skill 15 + this file)
+- **NJSK 80% of blog posts shipped without featured image** (source had no image, no GPT Image 1.5 fallback ran) → "Every blog/article post FEATURED IMAGE MANDATORY + GPT Image 1.5 FALLBACK" with per-slot prompt (post topic + brand palette + photographic spec + negative prompt) + `validate-blog-featured-images.mjs` (always.md + skill 15 + this file)
 - **NYFB paperboard substrate comparison table cramped to 1200px container with no horizontal scroll on mobile** → "Every comparison table / data grid FULL-BLEED LAYOUT" with sticky first column mobile pattern + `validate-comparison-table-fullbleed.mjs` (always.md + this file)
 - **NJSK rebuild dropped department contact info, Sunday hours, alternate volunteer email vs source** → "Every site rebuild SOURCE-SITE CONTACT INFO PRESERVATION" diff-gate against extracted source contact JSON + `validate-contact-preservation.mjs` (always.md + this file)
 
@@ -346,7 +348,7 @@ The megabyte-labs `/og-image.png` 404 incident (HTML referenced `.png`, R2 had `
 
 - Every site MUST ship `/og-image.png` (or `.jpg`) at exactly 1200×630, ≤100KB
 - Branded card style: dark brand background, primary color accent bar, business name in display font, tagline below, logo bottom-right
-- NO scraped or stock photo as og-image — must be generated via Satori or DALL-E with brand colors
+- NO scraped or stock photo as og-image — must be generated via Satori or GPT Image 1.5 with brand colors
 - `<meta property="og:image:width" content="1200">` + `og:image:height content="630"` mandatory
 - Twitter `summary_large_image` card mandatory
 
@@ -494,13 +496,13 @@ The criticism registry grows with every user feedback cycle.
 
 ### Canonical generalization cases (njsk-light 2026-05-02 cohort — 12 site-specific critiques → 12 universal rules + validators)
 
-- "lightbulb image on /volunteer" → "Every page-rendered image scores ≥8/10 vs per-page topic via GPT-4o vision" → `validate-image-relevance.mjs`
+- "lightbulb image on /volunteer" → "Every page-rendered image scores ≥8/10 vs per-page topic via GPT Image 2 vision" → `validate-image-relevance.mjs`
 - "no stat-rollup despite 30 years + 150K meals" → "Every site renders impact-stat section when ≥3 quantifiable stats resolve" → `validate-stat-counter-section.mjs`
 - "mega-menu snaps closed mid-traverse" → "Every desktop mega-menu has hover-bridge + Bostock 2013 triangle-aim" → `validate-mega-menu-hover.mjs`
 - "old blog URLs 404 on new site" → "Every site rebuild emits per-URL `_redirects` 301 covering original sitemap intersection" → `validate-cross-site-redirects.mjs`
 - "filter chips do nothing" → "Every interactive feature mutates DOM measurably on click — styled-but-stub UI fails build" → `validate-interactive-functionality.mjs`
 - "only 12 of 120 blog posts imported" → "Every site rebuild imports 100% of source blog/news/articles corpus — never subsample" → `validate-blog-corpus-complete.mjs`
-- "stock hero when source had its own hero" → "Hero preference order: original-source ≥7/10 > Pexels-video > Pexels-image > DALL-E per-slot > brand-gradient" → enforced inside `validate-image-relevance.mjs`
+- "stock hero when source had its own hero" → "Hero preference order: original-source ≥7/10 > Pexels-video > Pexels-image > GPT Image 1.5 per-slot > brand-gradient" → enforced inside `validate-image-relevance.mjs`
 
 **The pattern**: site-specific symptom → name the class of failure → universal rule in `~/.claude/rules/always.md` → automated validator row in `## Automated Build Gates` table → criticism-registry entry citing the original incident date+site. Future incidents that match an existing class extend (NOT duplicate) the existing rule.
 
@@ -535,7 +537,7 @@ node scripts/validate-assets.mjs dist && node scripts/validate-meta.mjs dist && 
 | Publication crawl depth | `validate-publications.mjs` (skill 15 SKILL.md "Deep crawl per page") | `_publications.json` length ≥ source index item count, every entry has paraphrased summary + outbound URL + source logo + date | exit 1 |
 | Logo transparency | `validate-logo-alpha.mjs` (Sharp corner-pixel sample) | every shipped logo PNG has alpha<255 on ≥1% of corner pixels (no white-rectangle floating logos) | exit 1 |
 | Institutional logos resolved | `validate-institutional-logos.mjs` | every name in `_research.json.affiliations[]\|publications[].source\|sponsors[]\|partners[]` has a resolved logo file in dist/ | exit 1 |
-| Grammar audit | `validate-grammar.mjs` (skill 09 grammar-audit.md GPT-4o-mini final pass) | zero grammar/spelling/typography errors flagged on every rendered page | exit 1 |
+| Grammar audit | `validate-grammar.mjs` (skill 09 grammar-audit.md GPT Image 2 vision-mini final pass) | zero grammar/spelling/typography errors flagged on every rendered page | exit 1 |
 | Brand-hex social hover | `validate-social-hex.mjs` (skill 12 social-brand-hex.md) | every social-link icon `<a>` has hover/focus/active CSS using canonical platform hex | exit 1 |
 | Outbound link HEAD-200 | `validate-outbound-links.mjs` | every external `<a href>` HEAD request with realistic UA, accept 200/206/301/302/303/307/308; FAIL on 404/410/451/5xx | exit 1 |
 | Publication tile deeplinks | `validate-publication-deeplinks.mjs` | every `[data-card="publication"]` MUST have `deeplink_url` pointing to canonical external academic source (DOI > PubMed > arXiv > journal article URL > publisher landing); NEVER internal stub | exit 1 |
@@ -547,7 +549,7 @@ node scripts/validate-assets.mjs dist && node scripts/validate-meta.mjs dist && 
 | Internal-link route enumeration | `validate-links.mjs` (njsk.org 2026-05-02) | `KNOWN_ROUTES` set auto-generated from `src/app.tsx` AST; every `<Route path="...">` becomes known route; hardcoded slug strings outside template-literal interpolation forbidden | exit 1 |
 | Click ripple only (no ring) | `validate-cursor.mjs` (Brian removed cursor-ring 2026-05-02) | desktop run asserts native cursor visible, `.cursor-ring` DOM forbidden, no `body{cursor:none}` CSS, mousedown spawns `.cursor-ripple` that animates+removes within 700ms; mobile asserts no `.cursor-ripple`; reduced-motion asserts ripple system disabled | exit 1 |
 | Image hover no-layout | `validate-image-hover.mjs` (skill 10) | trigger `:hover` on every `<img>`, FAIL if any dimension shifts by >0px; allowlist: `transform`, `filter`, `opacity`, `box-shadow` | exit 1 |
-| Image topic-relevance | `validate-image-relevance.mjs` (njsk-light 2026-05-02) | for every `<img>`, GPT-4o vision scores relevance vs per-page topic; FAIL any image scoring <8/10. Also enforces hero preference order: original-source-hero IF quality≥7/10 wins over Pexels/DALL-E | exit 1 |
+| Image topic-relevance | `validate-image-relevance.mjs` (njsk-light 2026-05-02) | for every `<img>`, GPT Image 2 vision scores relevance vs per-page topic; FAIL any image scoring <8/10. Also enforces hero preference order: original-source-hero IF quality≥7/10 wins over Pexels/GPT Image 1.5 | exit 1 |
 | Stat rollup section | `validate-stat-counter-section.mjs` (njsk-light 2026-05-02) | when `_research.json.stats[]` resolves ≥3 quantifiable items, assert `<section data-section="stats">` with ≥3 `[data-stat-counter]` children with `data-stat-end` numeric attribute, IntersectionObserver-driven roll-in | exit 1 |
 | Mega-menu hover-bridge | `validate-mega-menu-hover.mjs` (njsk-light 2026-05-02) | desktop: hover trigger → wait 100ms → panel visible → move cursor diagonally toward panel through gap → assert panel still visible after 250ms (hover-bridge active); second run: hover away → assert close within 200ms; touch: tap-to-open + tap-outside-to-close; keyboard: Enter/Space opens, Esc closes | exit 1 |
 | Cross-site redirects | `validate-cross-site-redirects.mjs` (njsk-light 2026-05-02) | when env `OLD_SITE_URL` set OR `_research.json.source_url` resolves a different host, fetch original sitemap.xml, assert every original-URL path appears in `_redirects` as `<original-path> 301 https://<new-host><new-path>` line | exit 1 |
@@ -691,7 +693,7 @@ CSP violations, JS errors, missing resource 404s — all caught here. Fix before
 
 After all other gates pass, run `recommendations-checker` agent:
 
-- GPT-4o detail:high inspects deployed homepage + 3 random sub-pages
+- GPT Image 2 vision detail:high inspects deployed homepage + 3 random sub-pages
 - Returns markdown list of every "could be improved" observation
 - Loop: implement → redeploy → re-check
 - Done when checker returns empty list
