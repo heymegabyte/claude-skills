@@ -1,5 +1,33 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-20 — sha-pin-actions: --check, --bump, + CI gate + installer wiring
+
+### Closes pass-19 Recs
+
+- **`--check` mode** — exits 1 if any unpinned `@vN` tag-refs found. CI gate use.
+  - Self-test on already-pinned workflows → exit 0 ("clean").
+  - Self-test on seeded `actions/checkout@v6` → exit 1 with file:ref report.
+- **`--bump` mode** — re-resolves `# vX` tag comments on already-pinned refs; updates SHA if drifted.
+  - Self-test on real workflows → 0 bumps (all up to date).
+  - Renovate-equivalent for the SHA hygiene that pass-18 manually established.
+- **`--dry-run`** composes with all modes for safe preview.
+
+### CI gate wired
+- `.github/workflows/publish.yml` § Validate now runs `node scripts/sha-pin-actions.mjs --check .github/workflows/*.yml`.
+- Any future workflow added with a tag-ref will fail validate → merge blocked.
+
+### Installer scripts wired
+- `bin/install-lint-stack.sh` package.json scripts += 3 new:
+  - `sha-pin` — pin any new tag refs
+  - `sha-pin:check` — CI/local audit
+  - `sha-pin:bump` — re-resolve drifted SHAs (weekly Renovate equivalent)
+
+### Verified
+- `node --check scripts/sha-pin-actions.mjs` → 0 errors.
+- All 3 self-tests PASS (--check pinned/unpinned + --bump dry-run).
+- actionlint → 0 issues.
+- pack integrity → clean (15/88/14).
+
 ## 2026-06-09 — pass-19 — sha-pin-actions auto-resolver + monitor-orchestration #10
 
 ### `scripts/sha-pin-actions.mjs` — supply-chain helper

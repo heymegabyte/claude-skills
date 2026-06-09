@@ -179,6 +179,9 @@ const want = {
   'lint:jscpd': 'jscpd',
   'precommit:audit': 'lefthook run pre-commit --all-files && lefthook run pre-push --all-files',
   'lint:improve': 'bash ~/.agentskills/bin/lint-auto-improve.sh',
+  'sha-pin': 'node ~/.agentskills/scripts/sha-pin-actions.mjs .github/workflows/*.yml',
+  'sha-pin:check': 'node ~/.agentskills/scripts/sha-pin-actions.mjs --check .github/workflows/*.yml',
+  'sha-pin:bump': 'node ~/.agentskills/scripts/sha-pin-actions.mjs --bump .github/workflows/*.yml',
 };
 let touched = 0;
 for (const [k, v] of Object.entries(want)) {

@@ -24,6 +24,9 @@ jobs:
       - name: Validate pack cross-link integrity
         run: node scripts/validate-packs.mjs
 
+      - name: Validate GitHub Actions are SHA-pinned (supply chain)
+        run: node scripts/sha-pin-actions.mjs --check .github/workflows/*.yml
+
       - name: Check doc counts
         run: |
           EXPECTED=$(grep -o '[0-9]* reference docs' README.md | grep -o '[0-9]*')
