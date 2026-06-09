@@ -1,5 +1,28 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-8 — cloudflare-rule cross-link + gitmoji-enforce extracted
+
+### Cloudflare-rule tension resolved
+- `rules/cloudflare-lock-in-is-leverage.md` += new §"Tension partner — `cloudflare-hostable-supervisor`" — clarifies the two rules compose cleanly rather than contradict.
+- Default = `lock-in-is-leverage` (no premature abstraction).
+- Adapter ports from `hostable-supervisor` only apply when an `Allowed exceptions` dependency (Neon, Upstash, third-party SaaS) is genuinely added.
+- Closes the dedupe-scan item carried since pass-3.
+
+### gitmoji-enforce extracted to standalone script
+- `templates/lint-stack/scripts/gitmoji-enforce.sh` — replaces inline `commit-msg` block in lefthook.yml.
+- Accepts 3 valid forms:
+  1. `:shortcode:` (`:sparkles:`, `:bug:`, etc.)
+  2. Unicode emoji (`✨`, `🐛`, `📝`, etc.) — `perl -CSD` UTF-8 stdin flag fixes the regex.
+  3. Auto-generated `Merge ...` / `Revert ...` bypass.
+- Helpful rejection message lists top 10 gitmoji + links to gitmoji.dev.
+- 5/5 self-tests pass: ✨ unicode · 🐛 unicode · :sparkles: shortcode · reject plain · merge bypass.
+- shellcheck `-x -S warning` → 0.
+- `templates/lint-stack/lefthook.yml` — `commit-msg` block now invokes the script (per-project override supported by replacing same path).
+
+### Verified
+- `node scripts/validate-packs.mjs` → clean (15 packs · 88 rules · 14 skill dirs).
+- All linters cumulative still clean.
+
 ## 2026-06-08 — pass-7 — installer self-test PASS + CI gate + vendor-gating lessons
 
 ### Installer self-test (on /tmp sandbox)

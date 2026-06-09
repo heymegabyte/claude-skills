@@ -53,12 +53,9 @@ commit-msg:
     commitlint:
       run: npx --no-install commitlint --edit {1}
     gitmoji-enforce:
-      run: |
-        msg=$(head -n1 "{1}")
-        if ! echo "$msg" | grep -qE '^[:][a-z_]+[:]|^[\x{1F300}-\x{1FAFF}]|^[\x{2600}-\x{26FF}]'; then
-          echo "ERROR: commit message must start with a gitmoji (e.g. ✨, :sparkles:). Use 'git cz' to compose." >&2
-          exit 1
-        fi
+      # Standalone script — see templates/lint-stack/scripts/gitmoji-enforce.sh
+      # Project may override by replacing this script at the same path.
+      run: bash ~/.agentskills/templates/lint-stack/scripts/gitmoji-enforce.sh {1}
 
 pre-push:
   parallel: true

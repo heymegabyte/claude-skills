@@ -46,3 +46,12 @@ This is heretical to every senior architect's training. It is correct for THIS s
 ## What the team-shop wisdom got right (and doesn't apply here)
 
 - "Vendor lock-in" wisdom assumes: (a) you have the headcount to migrate, (b) you'll outgrow the vendor's pricing, (c) the vendor's roadmap may diverge from yours. For a solo SaaS at <$100k/mo on CF Workers, none of those hold. CF stays 10-100× cheaper than AWS-equivalent through the lifetime of the platform.
+
+## Tension partner — `cloudflare-hostable-supervisor`
+
+These two rules look contradictory but compose cleanly:
+
+- **This rule** (`lock-in-is-leverage`) is the DEFAULT — reach for raw `env.DB` / `env.SITES_BUCKET` / `env.QUEUE.send()` first. Reject premature abstraction.
+- **`cloudflare-hostable-supervisor`** defines adapter ports (`StoragePort`, `KvPort`, `SqlPort`, `QueuePort`, `AiPort`, `VectorPort`) that apply ONLY when one of the `Allowed exceptions` above (Neon via Hyperdrive, Upstash, third-party SaaS) is genuinely needed.
+
+Resolution: never wrap a CF primitive "just in case". Only introduce an adapter port when a real Allowed-exception dependency is being added. The default never pays the abstraction tax.
