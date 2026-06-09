@@ -25,10 +25,12 @@
 set -euo pipefail
 
 AUTO_DRAFT=0
+JSON=0
 ARGS=()
 for arg in "$@"; do
   case "$arg" in
     --auto-draft) AUTO_DRAFT=1 ;;
+    --json) JSON=1 ;;
     *) ARGS+=("$arg") ;;
   esac
 done
@@ -105,6 +107,12 @@ emdashSection "Drafting proposal(s)"
 
 emdashLog "✓" "Proposal written: $PROPOSAL_FILE"
 
+# Track results for --json emit
+TOTAL_PATTERNS=$(echo "$CLUSTERED" | awk '$1 >= 3' | wc -l | tr -d ' ')
+DRAFT_EMITTED=0
+DRAFT_VALIDATED=0
+DRAFT_PATH=""
+
 # --- 3.5. Auto-draft via Claude API (opt-in) -------------------------------
 if [ "$AUTO_DRAFT" = "1" ]; then
   emdashSection "Auto-drafting semgrep rule via Claude API"
@@ -147,10 +155,13 @@ if [ "$AUTO_DRAFT" = "1" ]; then
       } >"$DRAFT_FILE" 2>/dev/null
       if [ -s "$DRAFT_FILE" ]; then
         emdashLog "✓" "Draft written ($MODEL): $DRAFT_FILE"
+        DRAFT_EMITTED=1
+        DRAFT_PATH="$DRAFT_FILE"
         # Validate the drafted YAML via semgrep --validate
         if command -v semgrep >/dev/null 2>&1; then
           if semgrep --validate --config="$DRAFT_FILE" >/dev/null 2>&1; then
             emdashLog "✓" "semgrep --validate: YAML structure valid"
+            DRAFT_VALIDATED=1
           else
             emdashLog "!" "semgrep --validate FAILED — manual review required before use"
             mv "$DRAFT_FILE" "${DRAFT_FILE}.invalid"
@@ -176,3 +187,28 @@ fi
 emdashLog "i" "Codify a rule: copy proposal to AI prompt, generate YAML, drop into:"
 emdashLog "  " "$SEMGREP_CUSTOM_DIR/<topic>.yml"
 emdashLog "i" "Cross-link in rules/lint-doctrine.md § Codified incidents"
+
+# --- JSON emit per rules/uniform-json-output.md ----------------------------
+if [ "$JSON" = "1" ]; then
+  META_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+  META_GIT_SHA=$(git -C "$PROJECT" rev-parse --short HEAD 2>/dev/null || echo "unknown")
+  # Build proposals array from CLUSTERED ≥3 hits
+  PROPOSALS_JSON="["
+  FIRST=1
+  echo "$CLUSTERED" | awk '$1 >= 3' | while read -r count pattern; do
+    [ -z "$pattern" ] && continue
+    if [ "$FIRST" = "1" ]; then FIRST=0; else PROPOSALS_JSON="${PROPOSALS_JSON},"; fi
+    PROPOSALS_JSON="${PROPOSALS_JSON}{\"pattern\":\"${pattern}\",\"count\":${count}}"
+    echo "$PROPOSALS_JSON" >/tmp/lint-auto-improve-proposals-$$
+  done
+  PROPOSALS_JSON=$(cat /tmp/lint-auto-improve-proposals-$$ 2>/dev/null || echo "[")
+  rm -f /tmp/lint-auto-improve-proposals-$$
+  PROPOSALS_JSON="${PROPOSALS_JSON}]"
+
+  printf '{"meta":{"repo":"%s","generated_at":"%s","git_sha":"%s","filter":"%s"},"proposals":%s,"summary":{"total":%d,"draft_emitted":%d,"draft_validated":%d,"draft_path":"%s","proposal_path":"%s"}}\n' \
+    "$PROJECT" "$META_TS" "$META_GIT_SHA" \
+    "$([ "$AUTO_DRAFT" = "1" ] && echo "auto-draft" || echo "default")" \
+    "$PROPOSALS_JSON" \
+    "${TOTAL_PATTERNS:-0}" "$DRAFT_EMITTED" "$DRAFT_VALIDATED" \
+    "$DRAFT_PATH" "$PROPOSAL_FILE"
+fi

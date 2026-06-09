@@ -195,7 +195,10 @@ const want = {
   'recap': 'bash ~/.agentskills/bin/session-recap.sh',
   'recap:today': 'bash ~/.agentskills/bin/session-recap.sh today',
   'recap:json': 'bash ~/.agentskills/bin/session-recap.sh today --json',
+  'recap:week': 'bash ~/.agentskills/bin/session-recap.sh 50',
+  'recap:month': 'bash ~/.agentskills/bin/session-recap.sh 200',
   'security:audit:json': 'bash ~/.agentskills/bin/security-supply-chain.sh --json',
+  'lint:improve:json': 'bash ~/.agentskills/bin/lint-auto-improve.sh --json',
 };
 let touched = 0;
 for (const [k, v] of Object.entries(want)) {

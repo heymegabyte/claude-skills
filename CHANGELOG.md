@@ -1,5 +1,49 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-37 — lint-auto-improve --json + recap aggregation scripts
+
+### Closes both pass-36 Recs (dogfooding the just-codified doctrine)
+
+- **`bin/lint-auto-improve.sh --json`** mode — emits per `rules/uniform-json-output.md`:
+  ```json
+  {
+    "meta": {
+      "repo": "<project-dir>",
+      "generated_at": "2026-06-09T09:49:02Z",
+      "git_sha": "unknown",
+      "filter": "default" | "auto-draft"
+    },
+    "proposals": [
+      {"pattern": "@typescript-eslint/no-any", "count": 4}
+    ],
+    "summary": {
+      "total": 1,
+      "draft_emitted": 0,
+      "draft_validated": 0,
+      "draft_path": "",
+      "proposal_path": ".lint-history/proposals/proposal-<ts>.md"
+    }
+  }
+  ```
+  - 3 uniform-JSON helpers now ship across the bin (security-supply-chain, session-recap, lint-auto-improve).
+  - All use identical `meta` envelope.
+- **Recap aggregation scripts** in installer:
+  - `recap:week` → last 50 entries (~1 week of high-frequency cron passes)
+  - `recap:month` → last 200 entries (~1 month)
+  - `lint:improve:json` → JSON pipe for dashboards
+
+### Bug fixed during self-test
+- Stray quote (`fi"` → `fi`) from prior edit — caught by shellcheck immediately, fixed in <30 sec.
+- Unused `TOP_PATTERN_NAME` var surfaced by shellcheck — removed cleanly.
+
+### Verified
+- `bash bin/lint-auto-improve.sh /tmp/seed --json | python3 -m json.tool` → valid JSON.
+- shellcheck `-x -S warning` → 0 across all bin scripts.
+- pack integrity → clean (15/90/14, 0 warnings, 4 ignored).
+
+### Meta lesson
+Pass-36 codified the uniform-json-output rule. Pass-37 immediately dogfoods it by adding `--json` to a third helper. The doctrine is now demonstrated by its own creator on its own session.
+
 ## 2026-06-09 — pass-36 — rules/uniform-json-output.md doctrine + recap:json wiring
 
 ### Closes both pass-35 Recs
