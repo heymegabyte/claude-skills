@@ -1,5 +1,30 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-18 — Pin all GitHub Actions to commit SHAs (supply-chain hardening)
+
+### Closes pass-17 Rec — `ai-agent-security.md` § Supply chain mandate live
+- Per the rule: "Pin GitHub Actions to a commit SHA, not a tag — tags get re-pointed."
+- All 12 action refs across both workflows now use SHA pinning with `# tag` comment for human readability:
+
+| Action | SHA | Tag |
+|--|--|--|
+| `actions/checkout` | `df4cb1c069e1874edd31b4311f1884172cec0e10` | v6 |
+| `actions/setup-node` | `a0853c24544627f65ddf259abe73b1d18a591444` | v5 |
+| `actions/setup-node` | `48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e` | v6 |
+| `actions/github-script` | `ed597411d8f924073f98dfc5c65a23a2325f34cd` | v8 |
+
+- SHAs resolved via `gh api repos/{action}/git/refs/tags/{tag} --jq '.object.sha'` (current at 2026-06-09).
+- `publish.yml` had 8 action refs (mix of `@v6`, `@v5`); `version-drift-check.yml` had 3. All bulk-replaced via `perl -pi -e`.
+
+### Why this matters per `ai-agent-security.md`
+- Tags are mutable — a `@v6` ref silently follows whoever re-tags `v6`. SHA pinning prevents supply-chain compromise via tag-re-pointing (TanStack CVE-2026-45321 attestation-bypass class).
+- Renovate/Dependabot can update SHAs with PR review per Brian's `ai-seniority` auto-merge contract.
+
+### Verified
+- `grep -nE 'uses: actions/[^@]+@v[0-9]+$' .github/workflows/*.yml` → 0 matches (no remaining tag refs).
+- actionlint → 0 issues.
+- pack integrity → clean (15/88/14).
+
 ## 2026-06-09 — pass-17 — Generalized version-drift-check + fetch-defaults cross-link
 
 ### Closes pass-16 Recs
