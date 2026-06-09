@@ -194,6 +194,8 @@ const want = {
   'security:audit': 'bash ~/.agentskills/bin/security-supply-chain.sh',
   'recap': 'bash ~/.agentskills/bin/session-recap.sh',
   'recap:today': 'bash ~/.agentskills/bin/session-recap.sh today',
+  'recap:json': 'bash ~/.agentskills/bin/session-recap.sh today --json',
+  'security:audit:json': 'bash ~/.agentskills/bin/security-supply-chain.sh --json',
 };
 let touched = 0;
 for (const [k, v] of Object.entries(want)) {

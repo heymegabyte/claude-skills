@@ -31,3 +31,4 @@ members:
   - rules/supervisor-skills-index
   - rules/todos-are-roadmap
   - rules/lint-doctrine
+  - rules/uniform-json-output

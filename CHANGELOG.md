@@ -1,5 +1,37 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-36 — rules/uniform-json-output.md doctrine + recap:json wiring
+
+### Closes both pass-35 Recs
+
+- **`rules/uniform-json-output.md`** (new) — formalizes the JSON envelope pattern that pass-26 and pass-35 organically converged on:
+  - Required `meta` block (3-tuple minimum): `repo`, `generated_at` (ISO UTC), `git_sha`
+  - Optional meta: `filter`, `skills_root`, `project`
+  - Helper-specific payload (always array of objects, never bare strings)
+  - Optional `summary` tally for discrete-status items
+  - Rules: human → stderr · JSON → stdout · validate via `python3 -m json.tool` · snake_case keys
+  - Anti-patterns: stdout pollution, mixed output streams, inconsistent meta keys
+  - Cross-references `contract-first-ai.md` + `tool-design-as-api.md` as same-discipline siblings
+- Added to `_packs/core.yml` (90 rules now).
+
+- **`bin/install-lint-stack.sh`** package.json scripts += 2 JSON helpers:
+  - `recap:json` → `bash ~/.agentskills/bin/session-recap.sh today --json`
+  - `security:audit:json` → `bash ~/.agentskills/bin/security-supply-chain.sh --json`
+- Every `/install-lint-stack`'d project now has direct JSON pipes for both helpers.
+
+### Verified
+- pack integrity → clean (15/90/14, 0 warnings, 4 ignored).
+- Both `--json` helpers parse cleanly via `python3 -m json.tool`.
+- shellcheck → 0.
+
+### Why this rule matters
+Pass-26 (security-supply-chain) and pass-35 (session-recap) organically converged on the same `{meta, payload, summary?}` shape. Codifying it as a rule means:
+1. Future helpers FOLLOW the pattern instead of inventing new shapes.
+2. PostHog/Sentry/CI dashboards have ONE parser for all agentskills-emitted JSON.
+3. Cross-linking from `contract-first-ai.md` + `tool-design-as-api.md` makes the boundary-discipline lineage visible.
+
+This is the "boil the lake" pattern from `prompt-as-training-signal.md` § Gradient extraction — the lesson belongs at the abstract rule level, not just in the helper that demonstrated it.
+
 ## 2026-06-09 — pass-35 — session-recap meta block + npm run recap installer
 
 ### Closes pass-34 Rec 1 + Next 5
