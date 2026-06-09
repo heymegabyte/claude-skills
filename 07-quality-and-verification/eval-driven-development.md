@@ -1,6 +1,6 @@
 ---
 name: "Eval-Driven Development"
-description: "LLM-as-judge pattern for automated quality evaluation. Generate output → score with Haiku → pass/fail threshold. Eval types: code quality, copy quality, design fidelity, SEO compliance. ~$0.01/eval. Vitest integration."
+description: "LLM-as-judge pattern for automated quality evaluation. Generate output → score with Haiku → pass/fail threshold. Eval types: code quality, copy quality, design fidelity, SEO compliance. ~$0.002/eval (Haiku 4.5). Vitest integration."
 updated: "2026-04-23"
 ---
 
@@ -12,7 +12,7 @@ updated: "2026-04-23"
 Generate output → Send to LLM judge (Haiku) → Score 1-10 → Pass if ≥ threshold → Fail with reasoning
 ```
 
-Cost: ~$0.01/eval with `claude-haiku-4-5`. Run hundreds of evals for pennies. Treat evals like tests — they run in CI, they block merges, they catch regressions.
+Cost: ~$0.002/eval with `claude-haiku-4-5` ($1/$5 per MTok). Run hundreds of evals for pennies. Treat evals like tests — they run in CI, they block merges, they catch regressions.
 
 ## Eval Runner
 
@@ -193,11 +193,11 @@ describe('Quality Evals', () => {
 
 ## Cost Model
 
-- Haiku: ~$0.25/MTok input, ~$1.25/MTok output
-- Typical eval: ~800 input + ~200 output tokens = ~$0.0005/eval
-- Suite of 20 evals = ~$0.01
-- Run 100×/day = ~$1/day
-- Cheaper than one hour debugging a regression
+- Haiku 4.5: $1/MTok input, $5/MTok output (verified 2026-05-28 per Anthropic pricing docs; 4× the legacy Haiku 3.5 rate this section used to quote)
+- Typical eval: ~800 input + ~200 output tokens = ~$0.0018/eval
+- Suite of 20 evals = ~$0.036
+- Run 100×/day = ~$3.60/day
+- Still cheaper than one hour debugging a regression — and prompt-caching the rubric (90% off cached input) drops the input share by ~80% at scale
 
 ## Best Practices
 

@@ -1,5 +1,61 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-60 — Haiku 4.5 pricing fix in eval-driven-development (3 references)
+
+### Closes pass-59 candidate 1 (audit remaining skill-dirs for inherited stale pricing)
+
+Pass-59 web-verified Opus 4.8 pricing. Same audit applied to the rest of the corpus this pass surfaced **stale Haiku 3.5 pricing** in `07-quality-and-verification/eval-driven-development.md` — the section was written before Haiku 4.5 (which is the canonical eval model per `model-routing.md`).
+
+### Three updates to `07-quality-and-verification/eval-driven-development.md`
+
+1. **Frontmatter description (line 3)**: `~$0.01/eval` → `~$0.002/eval (Haiku 4.5)` — the old number was based on Haiku 3.5 ($0.25/$1.25 per MTok). With Haiku 4.5 at $1/$5, an 800-input + 200-output eval costs $0.0018, rounded to $0.002.
+2. **Body intro (line 15)**: `Cost: ~$0.01/eval with claude-haiku-4-5` → `~$0.002/eval with claude-haiku-4-5 ($1/$5 per MTok)`. The pre-edit was a self-contradiction — claimed Haiku 4.5 model with Haiku 3.5 prices.
+3. **Cost Model section (lines 196-200)**: full recalculation:
+   - Old: Haiku $0.25/$1.25 · ~$0.0005/eval · suite of 20 = ~$0.01 · 100×/day = ~$1
+   - New: Haiku 4.5 $1/$5 (4× the legacy rate) · ~$0.0018/eval · suite of 20 = ~$0.036 · 100×/day = ~$3.60
+   - Added: "prompt-caching the rubric (90% off cached input) drops the input share by ~80% at scale" — practical cost-mitigation note now that the raw rate is realistic
+
+### Web-verification carry-over from pass-59
+
+Used the same Anthropic pricing verification from pass-59 (May 28, 2026):
+
+- Haiku 4.5: **$1 / $5 per MTok**
+- Sonnet 4.6: $3 / $15 per MTok
+- Opus 4.8: $5 / $25 per MTok
+
+No additional WebSearch needed — pass-59's findings cover all 3 current models.
+
+### Other pricing references audited + verified current
+
+- `15-site-generation/bolt-artifact-protocol.md:161` — Opus 4.8 $5/$25, verified in pass-59
+- `rules/model-routing.md:18` — Opus 4.8 zero-cost upgrade, verified in pass-59
+- `05-architecture-and-stack/SKILL.md:126-127` — Cloudflare Workers + D1 pricing (NOT model pricing, scope of this audit). Untouched.
+
+### Verification
+
+```bash
+npm run lint                                                            # ✓ 9/9 green
+grep -rnE '\$0\.25.*Haiku|haiku.*\$0\.0?00?5' rules/ [0-9][0-9]-*/      # 0 hits — stale Haiku 3.5 rate removed
+```
+
+### Closure-loop confirmation
+
+Pass-58→59→60 chain: pass-58 surfaced cross-rule version drift → pass-59 corrected pricing direction + extended the audit-glob discipline → pass-60 applied the corrected discipline to the OTHER stale pricing the same web verification covered. 3 latent staleness bugs caught across model-routing / bolt-artifact-protocol / eval-driven-development.
+
+### What was NOT done
+
+- Cloudflare Workers + D1 pricing audit (`05-architecture-and-stack/SKILL.md:126-127`) — out of scope; needs separate web verification cycle
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-61)
+
+- Cloudflare Workers + D1 pricing audit (separate verification pass)
+- `bin/check-pricing.sh` automation (would catch all 3 staleness bugs caught manually 58→60 in one run)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-59 — Opus 4 pricing correction (web-verified) + extend cross-rule discipline
 
 ### Closes pass-58 candidates 1 (verify Opus 4 pricing) + 2 (extend codified discipline to skill-dirs)
