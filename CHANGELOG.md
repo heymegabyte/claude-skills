@@ -1,5 +1,76 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-69 — `lint-all --json` aggregates the 4 info sections
+
+### Closes pass-68 candidate 1 (`--json` aggregation for info sections)
+
+`bin/lint-all.sh --json` previously emitted `{meta, gates[], summary}` covering only the 9 main gates. The 4 soft-info sections (pricing · agent-routing · pack-frontmatter · agent-fallback) were human-only — invisible to CI. Pass-69 extends the envelope to `{meta, gates[], info[], summary}` where each `info[]` entry embeds the sub-script's full uniform-JSON envelope as its `payload`.
+
+### New envelope shape
+
+```json
+{
+  "meta": { "repo": "...", "generated_at": "...", "git_sha": "...", "filter": "default" },
+  "gates": [ { "name": "validate-skills", "status": "pass", "details": "..." }, ... 9 entries ],
+  "info": [
+    { "name": "pricing",          "status": "clean", "payload": { /* check-pricing.sh envelope */ } },
+    { "name": "agent-routing",    "status": "clean", "payload": { /* check-agent-routing.sh envelope */ } },
+    { "name": "pack-frontmatter", "status": "clean", "payload": { /* check-pack-frontmatter.sh envelope */ } },
+    { "name": "agent-fallback",   "status": "clean", "payload": { /* check-agent-fallback.sh envelope */ } }
+  ],
+  "summary": { "pass": 9, "fail": 0, "skip": 0, "info_drift": 0, "exit": 0 }
+}
+```
+
+### CI consumption patterns now possible
+
+```bash
+# Just the main-gate summary
+npm run lint:json | jq '.summary | {pass, fail}'
+
+# Did any of the info sections drift?
+npm run lint:json | jq '.summary.info_drift'
+
+# Drill into pricing details
+npm run lint:json | jq '.info[] | select(.name=="pricing") | .payload.summary'
+
+# All pack-frontmatter drift entries (when drift > 0)
+npm run lint:json | jq '.info[] | select(.name=="pack-frontmatter") | .payload.drift'
+```
+
+### Refactor: `runInfoSection` helper
+
+Each info section now runs ONCE (`bash <script> --json`) and the result populates two parallel arrays (`INFO_NAMES`, `INFO_STATUSES`, `INFO_PAYLOADS`). Human mode reads from the cached env vars; JSON mode emits the cached payloads verbatim. Previously each info script ran TWICE in human mode (once for buffer, once for summary) — this pass deduplicates.
+
+### Backward-compat preserved
+
+- `gates[]` keys unchanged (existing `jq '.gates[]'` pipelines still work)
+- `summary.pass/fail/skip/exit` unchanged
+- NEW: `info[]` array + `summary.info_drift` counter
+- NEW envelope keys are additive — old consumers ignore them
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --json | python3 -m json.tool   # 4 top-level keys, info[] populated
+bash bin/lint-all.sh --quiet                          # 32 lines, info compressed (pass-68)
+bash bin/lint-all.sh                                  # 61 lines, full verbose
+npm run lint:json | jq '.info[].name'                 # ["pricing","agent-routing","pack-frontmatter","agent-fallback"]
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-70)
+
+- Extend `check-agent-fallback` to all tiers (pass-67 deferred)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Document the info-envelope schema in `rules/uniform-json-output.md` (nested-envelope pattern is now a thing)
+
+---
+
 ## 2026-06-09 — pass-68 — `lint-all --quiet` mode (compress 4 info sections to 1 line)
 
 ### Closes pass-67 candidate 2 (`lint-all --quiet` mode)

@@ -126,26 +126,44 @@ else
   skipGate "actionlint" "not installed (brew install actionlint OR go install github.com/rhysd/actionlint/cmd/actionlint@latest)"
 fi
 
-# Soft INFO gates (pass-63→67) — 4 audit reports. With --quiet, buffer output;
-# only emit if any gate found drift. Without --quiet, emit always.
+# Soft INFO gates (pass-63→67) — 4 audit reports.
+# Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
+# JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.
+INFO_NAMES=()
+INFO_STATUSES=()
+INFO_PAYLOADS=()
+INFO_DRIFT=0
+
+runInfoSection() {
+  local label="$1"
+  local script="$2"
+  local payload
+  payload=$(bash "$SKILLS_ROOT/$script" --json 2>/dev/null) || INFO_DRIFT=1
+  INFO_NAMES+=("$label")
+  if printf '%s' "$payload" | grep -q '"exit":0'; then
+    INFO_STATUSES+=("clean")
+  else
+    INFO_STATUSES+=("drift")
+  fi
+  INFO_PAYLOADS+=("$payload")
+}
+
+runInfoSection "pricing" "bin/check-pricing.sh"
+runInfoSection "agent-routing" "bin/check-agent-routing.sh"
+runInfoSection "pack-frontmatter" "bin/check-pack-frontmatter.sh"
+runInfoSection "agent-fallback" "bin/check-agent-fallback.sh"
+
 if [ "$JSON" = "0" ]; then
   INFO_BUF=$(mktemp)
-  INFO_DRIFT=0
-
   emitInfoSection() {
     local title="$1"
     local script="$2"
     local tail_n="$3"
     {
       printf '\n━━━ %s\n' "$title"
-      if bash "$SKILLS_ROOT/$script" 2>&1 | tail -"$tail_n"; then
-        :
-      else
-        INFO_DRIFT=1
-      fi
+      bash "$SKILLS_ROOT/$script" 2>&1 | tail -"$tail_n" || true
     } >>"$INFO_BUF"
   }
-
   emitInfoSection "ℹ pricing-staleness (info-only, doesn't gate)" \
     "bin/check-pricing.sh" 8
   emitInfoSection "ℹ agent-routing drift (info-only, doesn't gate)" \
@@ -175,6 +193,13 @@ if [ "$JSON" = "1" ]; then
   META_TS=$(emit_iso_ts)
   META_GIT_SHA=$(emit_git_sha "$SKILLS_ROOT")
   META_BLOCK=$(emit_meta_block "$SKILLS_ROOT" "$META_TS" "$META_GIT_SHA" "default")
+  # Emit `info` block with embedded sub-envelopes (pass-69)
+  INFO_JSON="["
+  for i in "${!INFO_NAMES[@]}"; do
+    [ "$i" -gt 0 ] && INFO_JSON+=","
+    INFO_JSON+="{\"name\":\"$(json_escape "${INFO_NAMES[$i]}")\",\"status\":\"${INFO_STATUSES[$i]}\",\"payload\":${INFO_PAYLOADS[$i]:-null}}"
+  done
+  INFO_JSON+="]"
   printf '{%s,"gates":[' "$META_BLOCK"
   for i in "${!GATE_NAMES[@]}"; do
     [ "$i" -gt 0 ] && printf ','
@@ -183,8 +208,8 @@ if [ "$JSON" = "1" ]; then
       "$(json_escape "${GATE_STATUSES[$i]}")" \
       "$(json_escape "${GATE_DETAILS[$i]}")"
   done
-  printf '],"summary":{"pass":%d,"fail":%d,"skip":%d,"exit":%d}}\n' \
-    "$PASS" "$FAIL" "$SKIP" "$EXIT"
+  printf '],"info":%s,"summary":{"pass":%d,"fail":%d,"skip":%d,"info_drift":%d,"exit":%d}}\n' \
+    "$INFO_JSON" "$PASS" "$FAIL" "$SKIP" "$INFO_DRIFT" "$EXIT"
 fi
 
 exit "$EXIT"
