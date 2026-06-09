@@ -73,6 +73,7 @@ Every element a user sees gets a deliberate, beautiful treatment. "Functional bu
 - **Transition** — `0.333s` on all state changes (hover/focus/active/enter)
 - **Hover affordance** — lift (`-translate-y-0.5`), glow (`shadow-md`), or tint shift
 - **Focus-visible ring** — brand-color ring ≥3:1, never the UA default outline
+- **Focus/hover on WRAPPED controls** — when an `<input>`/control sits inside a styled wrapper (search bar = icon + input + `⌘K` kbd; combobox; segmented field), the affordance must surround the **whole wrapper**, not just the inner control. Put the ring on the wrapper via **`:focus-within`** (`.wrap:focus-within { outline: 2px solid var(--accent); outline-offset: 2px }`) and **suppress the inner control's own ring** (`.wrap input:focus, :focus-visible { outline: none; box-shadow: none }`) so it isn't doubled or clipped to the bare input box. Mirror the same for hover: hover the wrapper (`.wrap:hover` / `.wrap:focus-within`), not just the input. Reference incident 2026-06-09 (projectsites /admin/apps search bar).
 - **Entrance** — fade + 16px rise on first paint (`appReveal`/`@starting-style`), staggered for groups
 - **Rounded + padded** — no flush, hard-edged framework defaults
 - **Brand tokens** — never a hardcoded hex; OKLCH brand vars per `text-contrast`
