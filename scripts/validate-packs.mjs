@@ -2,10 +2,15 @@
 /**
  * validate-packs.mjs — pack cross-link integrity gate.
  *
- * Asserts:
+ * Errors (exit 1):
  *   1. Every `rules/<slug>` reference in any _packs/*.yml resolves to rules/<slug>.md
  *   2. Every rules/<slug>.md is referenced by ≥1 pack
  *   3. Every NN-* skill reference (e.g., 01-operating-system) resolves to a dir
+ *   4. Every pack file has required `name` + `description` + `members` fields
+ *
+ * Warnings (informational, no exit code change):
+ *   - Rules referenced by ≥3 packs (multi-concern rules are intentional, but 3+
+ *     usually signals over-bundling; review whether the rule is too broad)
  *
  * Exit codes: 0 = clean, 1 = drift detected.
  * Run: node scripts/validate-packs.mjs
@@ -30,9 +35,19 @@ const ruleFiles = new Set(
 
 const referencedRules = new Set();
 const referencedSkills = new Set();
+const rulePackMap = new Map(); // rule slug → [packs it appears in]
+const REQUIRED_PACK_FIELDS = ['name:', 'description:', 'members:'];
 
 for (const pf of packFiles) {
   const content = readFileSync(join(PACKS, pf), 'utf8');
+
+  // Schema check: required fields
+  for (const field of REQUIRED_PACK_FIELDS) {
+    if (!content.includes(`\n${field}`) && !content.startsWith(field)) {
+      errors.push(`${pf}: missing required field '${field}'`);
+    }
+  }
+
   const lines = content.split(/\r?\n/);
   for (const line of lines) {
     const ruleMatch = line.match(/^\s*-\s+rules\/(\S+)/);
@@ -43,6 +58,8 @@ for (const pf of packFiles) {
       if (!ruleFiles.has(slug)) {
         errors.push(`${pf}: references missing rule '${slug}'`);
       }
+      if (!rulePackMap.has(slug)) rulePackMap.set(slug, []);
+      rulePackMap.get(slug).push(pf);
     } else if (skillMatch) {
       const skill = skillMatch[1];
       referencedSkills.add(skill);
@@ -54,11 +71,27 @@ for (const pf of packFiles) {
   }
 }
 
+// Multi-pack warning: ≥3 references suggests the rule may be too broad.
+// Per Brian's design, cross-pack references are intentional (load-bundling), so
+// only ≥3 surfaces a warning; ≥2 is allowed silently.
+const warnings = [];
+for (const [slug, packs] of rulePackMap.entries()) {
+  if (packs.length >= 3) {
+    warnings.push(`rules/${slug}.md: in ${packs.length} packs (${packs.join(', ')}) — consider whether the rule is too broad`);
+  }
+}
+
 const orphanRules = [...ruleFiles].filter((r) => !referencedRules.has(r));
 if (orphanRules.length > 0) {
   for (const r of orphanRules) {
     errors.push(`rules/${r}.md: not referenced by any pack`);
   }
+}
+
+if (warnings.length > 0) {
+  console.error(`⚠ ${warnings.length} pack warning(s):`);
+  for (const w of warnings) console.error(`  · ${w}`);
+  console.error('');
 }
 
 if (errors.length === 0) {

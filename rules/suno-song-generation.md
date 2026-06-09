@@ -1,7 +1,24 @@
 # Suno Song Generation (bZ / music.megabyte.space)
 
 Repeatable pipeline: mine the site's play stats → pick the winners → synthesize new
-songs in bZ's voice → create them on Suno. Created 2026-06-09.
+songs in bZ's voice → create them on Suno → download. Created 2026-06-09.
+
+## Canonical workflow (run EVERY time "make a Suno song" is asked)
+
+Run these concurrently where possible — kick off the cookie ask FIRST, then do 2+3 while waiting:
+
+1. **Ensure the Suno cookie is loaded** (`/tmp/suno-cookie.txt` with BOTH `__session` AND `__client`). If missing/expired, acquire it the EASIEST way — give the user this exact one-shot instruction and continue steps 2+3 while they fetch it:
+   > On suno.com (logged in) → DevTools (⌥⌘I) → **Application** → **Cookies** → `https://suno.com`. Copy the **Value** of two rows and paste them here: **`__session`** and **`__client`**. (Both are needed; `__client` is HttpOnly so it's missing from any console/"copy as cookie" paste — only the Application panel shows it.)
+   Don't block on the cookie — synthesize lyrics/styles meanwhile so the moment it lands, generation fires.
+2. **Create lyrics + Suno style prompt** grounded in the MOST POPULAR songs at music.megabyte.space (the Pipeline below: rank → mine DNA → synthesize). Claude writes both the lyrics and the style string.
+3. **Generate, then auto-download the 2nd clip.** Each Suno generation yields 2 clips; **download the SECOND one** automatically once it finishes rendering (Suno's 2nd take is the user's preferred default). See § Auto-download.
+
+### HARD RULE — lyrics must always reflect professionally on Brian + everyone he represents
+Every lyric must portray Brian Zalewski, Megabyte Labs, family, partners, and any named
+party with dignity and professionalism — nothing embarrassing, defamatory, crude, or
+reputationally risky. This stacks on the existing ethic (zero drugs, family-reverent,
+hard-but-holy). When in doubt, cut the line. A song that could embarrass any represented
+party at a pitch, a church, or a client meeting does NOT ship.
 
 ## Pipeline
 
@@ -36,6 +53,14 @@ songs in bZ's voice → create them on Suno. Created 2026-06-09.
 1. **Desktop Computer Use on the user's REAL Chrome** (per `computer-use-safety` § session-bound flows) — the logged-in page mints the anti-bot token itself. Most reliable. Drive suno.com/create → Custom → paste Lyrics/Styles/Title → Create, ×3.
 2. **Headless Playwright IF the user provides the full cookie INCLUDING `__client`** (+ `__session`, `__client_uat`). Then the SPA authenticates and the page handles the token. Reuse `/tmp/suno-browser-gen.mjs` shape (set cookies on `.suno.com`, fill by placeholder: lyrics / style / title, click last "Create").
 3. **Deliver ready-to-paste assets** — when neither auth path is available, hand the user the 3 finished songs (lyrics + style + title); they paste into Custom mode in ~3 fields each. The creative work is the bulk of the value.
+
+## Auto-download the 2nd clip
+
+After a generation finishes (poll until `clip.status === 'complete'`, ~30-90s):
+- `GET https://studio-api.prod.suno.com/api/feed/v2?page=0&page_size=20` (Bearer `__session`) → clips newest-first.
+- A single generation yields **2 clips sharing the same title**. Sort that title's clips by `created` ascending → **download index [1] (the SECOND take)** — that's the user's preferred default.
+- Download `clip.audio_url` (the rendered MP3) to disk, e.g. `~/Downloads/<title>.mp3` (or the repo's `public/audio/<id>.mp3` if shipping). The `audio_url` is public CDN — a plain `fetch` works, no auth needed.
+- READ endpoints (feed) work with `__session` Bearer alone; only generate needs the full browser session.
 
 ## Security
 

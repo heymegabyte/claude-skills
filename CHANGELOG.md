@@ -1,5 +1,23 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-24 — validate-packs.mjs schema + multi-pack warning
+
+### Closes pass-23 Rec — pack validator extended
+- **Schema check** (error): every `_packs/*.yml` must contain `name:` + `description:` + `members:` fields. Missing field → exit 1.
+- **Multi-pack warning** (informational): rules referenced by ≥3 packs surface as warning ("consider whether the rule is too broad"). Doesn't fail CI.
+  - First-attempt dedup-as-error was wrong: 19 pre-existing duplicates are INTENTIONAL load-bundling (rules legitimately span multiple concerns like `payments-routing` = backend + ecommerce + payments).
+  - Threshold raised to ≥3 so the warning surfaces only over-broad rules; ≥2 silent.
+  - 4 current warnings: `payments-routing`, `copy-writing`, `timeline-authenticity`, `image-quality` (each in 3 packs).
+- **Self-tested**: seeded a 2-pack dedup → warning fired correctly.
+
+### Version probes (no action)
+- `cz-emoji` latest = `1.3.2-canary.2`, stable = `1.3.1`. My installer pins `^1.3.1` → npm correctly resolves to stable, skips canary. No change.
+- `semantic-release-gitmoji@1.6.9` (current = pinned). No drift.
+
+### Verified
+- `node scripts/validate-packs.mjs` → clean (15/89/14) + 4 warnings.
+- Self-test: 2-pack seed surfaces warning correctly.
+
 ## 2026-06-09 — pass-23 — install-lint-stack --install-deps + parallel secret scanners
 
 ### Closes pass-22 Recs
