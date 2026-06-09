@@ -24,6 +24,7 @@
     "./profiles": "./SKILL_PROFILES.md"
   },
   "scripts": {
+    "prepare": "bash bin/install-hooks.sh",
     "lint": "bash bin/lint-all.sh",
     "lint:json": "bash bin/lint-all.sh --json",
     "lint:fix": "npx --yes markdownlint-cli2@^0.18.1 --fix '**/*.md' && npx --yes prettier@3 --config .prettierrc.json --write '**/*.{json,jsonc,yml,yaml}' && shfmt -i 2 -ci -bn -w bin/*.sh bin/lib/*.sh scripts/*.sh",

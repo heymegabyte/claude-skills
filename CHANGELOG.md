@@ -1,5 +1,49 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-52 — Pre-commit hook (mechanical enforcement) + codify 2 patterns
+
+### Root cause of pass-51 discipline violation
+
+Pass-51 codified "run `npm run lint` BEFORE commit" but shipped a commit (`6ad7d0e`) WITH a failing markdownlint gate. The hotfix went out in `f2ce347`. Initial assumption: I forgot. Actual root cause discovered this pass: **the commit pipeline `npm run lint 2>&1 | tail -3 && git commit ...` was masking the lint exit code**. `tail -3` always exits 0, so the `&&` short-circuit was evaluated against `tail`'s exit (not `npm run lint`'s). The gate was effectively bypassed by the pipeline itself.
+
+### Mechanical fixes (NEW this pass)
+
+- **`bin/install-hooks.sh`** (NEW) — creates `.git/hooks/pre-commit` running `npm run lint` as its OWN command (no pipe, no tail). Hook exits non-zero on any gate failure, blocking commit with a clear error + `--no-verify` escape hatch. Idempotent: re-running overwrites with the latest shim.
+- **`package.json` § scripts.prepare** — wired to `bash bin/install-hooks.sh`. npm runs `prepare` automatically after `npm install`, so fresh clones get the hook on first install. No manual `lefthook install` needed.
+- **`rules/lint-doctrine.md` § Codified incidents** — 2 new rows:
+  - `cmd | tail -N && next_cmd` pipeline-exit-masking (the pass-51 root cause) → use `set -o pipefail`, `${PIPESTATUS[0]}`, or separate commands; never pipe-then-tail-then-`&&`
+  - Cross-rule consistency drift (the pass-51 surface) → when a new model/version/API lands in one rule, grep the rest of the pack for older mentions in same turn
+
+### Why mechanical enforcement beats codified discipline
+
+Pass-50's codified rule said "run lint before commit." Pass-51 violated it. The violation wasn't intentional — it was a pipeline-mechanics bug that the human/LLM couldn't catch by reading the rule. Mechanical enforcement (git hook) sidesteps the discipline-vs-mechanics gap entirely: the hook BLOCKS commit when gates fail. Discipline is now a property of the toolchain, not the operator.
+
+### Verification (correct semantics this time)
+
+```bash
+# Proper exit-code check — no pipe masking
+set -o pipefail
+if npm run lint >/tmp/lint-out 2>&1; then echo OK; else cat /tmp/lint-out; exit 1; fi
+# Result: ✓ 9 pass · 0 fail · 0 skip · GATES GREEN
+ls -la .git/hooks/pre-commit  # -rwx... exists
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Pass-51 candidate (audit `ai-seniority.md` + `contract-first-ai.md` for staleness) — defer to pass-53
+- Did NOT install `lefthook` CLI — built a minimal shim instead. lefthook would add a dependency for marginal additional features (the existing `lefthook.yml` documents intent but isn't installed; the new `.git/hooks/pre-commit` is the deterministic enforcement layer)
+
+### Next candidates (pass-53)
+
+- Audit `ai-seniority.md` + `contract-first-ai.md` for Opus 4.8 awareness / staleness
+- Audit `model-routing.md` for any 4.7-only retirement-table entries needing 4.8 update
+- Wire `bin/install-hooks.sh` into the install-lint-stack downstream template
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-51 — AI rules: Opus 4.8 awareness in prompt-cache + opus-quota-fallback
 
 ### Scope shift
