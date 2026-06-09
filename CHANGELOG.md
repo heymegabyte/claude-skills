@@ -1,5 +1,32 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-26 — security-supply-chain: 5th pack check + --json mode
+
+### Closes pass-25 Rec + Next item
+
+- **5th check added** — `bin/security-supply-chain.sh` now runs `validate-packs.mjs` as check #5 when invoked inside an agentskills-shaped repo (`scripts/validate-packs.mjs` + `_packs/` both present). Skipped on regular projects.
+- **`--json` output mode** — emits structured JSON on stdout for CI dashboard consumption:
+  ```json
+  {
+    "checks": [
+      { "name": "sha-pin", "status": "pass", "details": "all action refs SHA-pinned" },
+      ...
+    ],
+    "summary": { "pass": 3, "fail": 0, "skip": 2, "exit": 0 }
+  }
+  ```
+- Human report still goes to stderr in both modes; JSON only on stdout.
+
+### Bug fixed during self-test
+- Stdout leak: `tail -3` / `tail -2` outputs from helper scripts polluted JSON output. Added `>&2` redirects so only JSON reaches stdout.
+- Self-tested: `bash security-supply-chain.sh "$PWD" --json | python3 -m json.tool` parses clean.
+
+### Verified
+- shellcheck `-x -S warning` → 0.
+- shfmt `-i 2 -ci -bn` → 0 diff.
+- Human mode: pass=3, fail=0, skip=2 on agentskills repo (check 5 now present).
+- JSON mode: valid JSON, all 5 checks reported.
+
 ## 2026-06-09 — pass-25 — .validate-packs-ignore + always-visible warning counts
 
 ### Closes pass-24 Recs
