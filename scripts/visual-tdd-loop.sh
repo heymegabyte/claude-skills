@@ -35,7 +35,7 @@ BREAKPOINTS=(
 screenshotAllBreakpoints() {
   local iter=$1
   for bp in "${BREAKPOINTS[@]}"; do
-    IFS=: read -r w h name <<< "$bp"
+    IFS=: read -r w h name <<<"$bp"
     npx playwright screenshot \
       --viewport-size="${w},${h}" \
       "$URL" \
@@ -66,14 +66,14 @@ analyzeScreenshot() {
 
 emdash_header "🔍 Visual TDD Loop" "$(gum style --foreground "${BLUE:-33}" "$URL  •  max $MAX_ITER iterations  •  ${#BREAKPOINTS[@]} breakpoints")"
 
-for ((i=1; i<=MAX_ITER; i++)); do
+for ((i = 1; i <= MAX_ITER; i++)); do
   gum style --foreground "$CYAN" --bold "━━━ Iteration $i/$MAX_ITER ━━━" >&2
 
   emdash_spin "Screenshotting at 6 breakpoints..." screenshotAllBreakpoints "$i"
 
   ALL_CLEAN=true
   for bp in "${BREAKPOINTS[@]}"; do
-    IFS=: read -r w h name <<< "$bp"
+    IFS=: read -r w h name <<<"$bp"
     SCREENSHOT="${SCREENSHOT_DIR}/iter${i}-${name}.png"
     if [ -f "$SCREENSHOT" ]; then
       RESULT=$(analyzeScreenshot "$SCREENSHOT")
@@ -103,7 +103,7 @@ except: pass
     exit 0
   fi
 
-  gum log -sl warn "Issues found. Fix and redeploy before iteration $((i+1))." >&2
+  gum log -sl warn "Issues found. Fix and redeploy before iteration $((i + 1))." >&2
 done
 
 gum style --foreground "#FF4136" --border-foreground "#FF4136" --border rounded --padding "0 2" \

@@ -6,13 +6,17 @@
 
 set -euo pipefail
 
+# shellcheck disable=SC2034  # exported as documented base path for downstream sourcers
 CHEZMOI_SECRETS="$HOME/.local/share/chezmoi/home/.chezmoitemplates/secrets"
 EMDASH_CONFIG="$HOME/.config/emdash"
 
 # Dynamic .env.local discovery — search current dir, parent, home, then CLAUDE_ENV_FILE
 ENV_LOCAL=""
 for _candidate in ".env.local" "../.env.local" "$HOME/.env.local"; do
-  [ -f "$_candidate" ] && { ENV_LOCAL="$_candidate"; break; }
+  [ -f "$_candidate" ] && {
+    ENV_LOCAL="$_candidate"
+    break
+  }
 done
 [ -z "$ENV_LOCAL" ] && [ -n "${CLAUDE_ENV_FILE:-}" ] && [ -f "$CLAUDE_ENV_FILE" ] && ENV_LOCAL="$CLAUDE_ENV_FILE"
 

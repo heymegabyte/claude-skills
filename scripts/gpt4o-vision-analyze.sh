@@ -9,7 +9,7 @@ source "$HOME/.claude/hooks/style.sh" 2>/dev/null || true
 
 IMAGE_PATH="${1:?Usage: gpt4o-vision-analyze.sh <image_path> [prompt] [detail]}"
 CUSTOM_PROMPT="${2:-}"
-DETAIL="${3:-low}"  # low=85 tokens (triage), high=85+170/tile (fine analysis)
+DETAIL="${3:-low}" # low=85 tokens (triage), high=85+170/tile (fine analysis)
 # Dynamic .env.local discovery
 for _env in ".env.local" "../.env.local" "$HOME/.env.local"; do
   if [ -f "$_env" ] && grep -q '^OPENAI_API_KEY=' "$_env" 2>/dev/null; then

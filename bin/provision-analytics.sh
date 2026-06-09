@@ -20,14 +20,15 @@ ROOT_URL="https://${DOMAIN}"
 
 # Style helpers — degrade gracefully if not loaded
 source "$HOME/.claude/hooks/style.sh" 2>/dev/null || true
-log()  { emdash_log    "$@" 2>/dev/null || echo "[analytics] $*" >&2; }
-ok()   { emdash_log    "$@" 2>/dev/null || echo "[analytics][ok] $*" >&2; }
-warn() { emdash_warn   "$@" 2>/dev/null || echo "[analytics][WARN] $*" >&2; }
-fail() { emdash_error  "$@" 2>/dev/null || echo "[analytics][ERR] $*" >&2; }
+log() { emdash_log "$@" 2>/dev/null || echo "[analytics] $*" >&2; }
+ok() { emdash_log "$@" 2>/dev/null || echo "[analytics][ok] $*" >&2; }
+warn() { emdash_warn "$@" 2>/dev/null || echo "[analytics][WARN] $*" >&2; }
+fail() { emdash_error "$@" 2>/dev/null || echo "[analytics][ERR] $*" >&2; }
 
 # Secret loader: env first, then chezmoi via get-secret
 load_secret() {
-  local name="$1"; local val
+  local name="$1"
+  local val
   val="${!name:-}"
   if [ -z "$val" ] && command -v get-secret >/dev/null 2>&1; then
     val="$(get-secret "$name" 2>/dev/null || true)"
@@ -50,15 +51,25 @@ mkdir -p "$OUT_DIR"
 # GA4 — Analytics Admin API v1beta
 # ──────────────────────────────────────────────────────────────────────
 provision_ga4() {
+  # shellcheck disable=SC2034  # stream_id reserved for future GA4 stream-create branch
   local token property_id stream_id measurement_id account_id existing
-  if ! command -v gcloud >/dev/null 2>&1; then warn "gcloud missing — skipping GA4"; return; fi
+  if ! command -v gcloud >/dev/null 2>&1; then
+    warn "gcloud missing — skipping GA4"
+    return
+  fi
   token="$(gcloud auth application-default print-access-token 2>/dev/null || true)"
-  if [ -z "$token" ]; then warn "no GCP ADC — skipping GA4 (run: gcloud auth application-default login --scopes=...analytics.edit)"; return; fi
+  if [ -z "$token" ]; then
+    warn "no GCP ADC — skipping GA4 (run: gcloud auth application-default login --scopes=...analytics.edit)"
+    return
+  fi
 
   account_id="$(curl -sf -H "Authorization: Bearer $token" \
     "https://analyticsadmin.googleapis.com/v1beta/accounts" 2>/dev/null \
     | python3 -c "import sys,json; d=json.load(sys.stdin); a=d.get('accounts',[]); print(a[0]['name'].split('/')[-1] if a else '')" 2>/dev/null || true)"
-  if [ -z "$account_id" ]; then warn "no GA4 account found — create one at https://analytics.google.com first"; return; fi
+  if [ -z "$account_id" ]; then
+    warn "no GA4 account found — create one at https://analytics.google.com first"
+    return
+  fi
 
   existing="$(curl -sf -H "Authorization: Bearer $token" \
     "https://analyticsadmin.googleapis.com/v1beta/properties?filter=parent:accounts/${account_id}" 2>/dev/null \
@@ -69,7 +80,8 @@ for p in d.get('properties',[]):
     if p.get('displayName')=='${DOMAIN}': print(p['name'].split('/')[-1]); break" 2>/dev/null || true)"
 
   if [ -n "$existing" ]; then
-    property_id="$existing"; log "GA4 property exists: properties/$property_id"
+    property_id="$existing"
+    log "GA4 property exists: properties/$property_id"
   else
     log "Creating GA4 property for $DOMAIN"
     property_id="$(curl -sf -X POST -H "Authorization: Bearer $token" -H "Content-Type: application/json" \
@@ -108,14 +120,23 @@ for s in d.get('dataStreams',[]):
 # ──────────────────────────────────────────────────────────────────────
 provision_gtm() {
   local token account_id container_id public_id existing
-  if ! command -v gcloud >/dev/null 2>&1; then warn "gcloud missing — skipping GTM"; return; fi
+  if ! command -v gcloud >/dev/null 2>&1; then
+    warn "gcloud missing — skipping GTM"
+    return
+  fi
   token="$(gcloud auth application-default print-access-token 2>/dev/null || true)"
-  if [ -z "$token" ]; then warn "no GCP ADC — skipping GTM"; return; fi
+  if [ -z "$token" ]; then
+    warn "no GCP ADC — skipping GTM"
+    return
+  fi
 
   account_id="$(curl -sf -H "Authorization: Bearer $token" \
     "https://tagmanager.googleapis.com/tagmanager/v2/accounts" 2>/dev/null \
     | python3 -c "import sys,json; a=json.load(sys.stdin).get('account',[]); print(a[0]['accountId'] if a else '')" 2>/dev/null || true)"
-  if [ -z "$account_id" ]; then warn "no GTM account — create one at https://tagmanager.google.com first"; return; fi
+  if [ -z "$account_id" ]; then
+    warn "no GTM account — create one at https://tagmanager.google.com first"
+    return
+  fi
 
   existing="$(curl -sf -H "Authorization: Bearer $token" \
     "https://tagmanager.googleapis.com/tagmanager/v2/accounts/${account_id}/containers" 2>/dev/null \
@@ -126,7 +147,8 @@ for c in d.get('container',[]):
     if c.get('name')=='${DOMAIN}': print(c['containerId']+'|'+c['publicId']); break" 2>/dev/null || true)"
 
   if [ -n "$existing" ]; then
-    container_id="${existing%|*}"; public_id="${existing#*|}"
+    container_id="${existing%|*}"
+    public_id="${existing#*|}"
     log "GTM container exists: $public_id"
   else
     log "Creating GTM container for $DOMAIN"
@@ -147,12 +169,18 @@ for c in d.get('container',[]):
 # ──────────────────────────────────────────────────────────────────────
 provision_posthog() {
   local org_id existing project_key
-  if [ -z "$POSTHOG_TOKEN" ]; then warn "POSTHOG_PERSONAL_API_KEY missing — skipping PostHog (mint at https://us.posthog.com/settings/user-api-keys)"; return; fi
+  if [ -z "$POSTHOG_TOKEN" ]; then
+    warn "POSTHOG_PERSONAL_API_KEY missing — skipping PostHog (mint at https://us.posthog.com/settings/user-api-keys)"
+    return
+  fi
 
   org_id="$(curl -sf -H "Authorization: Bearer $POSTHOG_TOKEN" \
     "${POSTHOG_HOST}/api/organizations/@current/" 2>/dev/null \
     | python3 -c "import sys,json; print(json.load(sys.stdin)['id'])" 2>/dev/null || true)"
-  if [ -z "$org_id" ]; then fail "PostHog auth failed"; return; fi
+  if [ -z "$org_id" ]; then
+    fail "PostHog auth failed"
+    return
+  fi
 
   local all_projects
   all_projects="$(curl -sf -H "Authorization: Bearer $POSTHOG_TOKEN" \
@@ -165,7 +193,8 @@ for p in d.get('results',[]):
     if p.get('name')=='${DOMAIN}': print(p.get('api_token','')); break" 2>/dev/null || true)"
 
   if [ -n "$existing" ]; then
-    project_key="$existing"; log "PostHog project exists: ${DOMAIN}"
+    project_key="$existing"
+    log "PostHog project exists: ${DOMAIN}"
   else
     log "Creating PostHog project for $DOMAIN"
     local create_resp
@@ -183,7 +212,10 @@ import sys,json
 d=json.load(sys.stdin)
 results=d.get('results',[])
 print(results[0].get('api_token','') if results else '')" 2>/dev/null || true)"
-      [ -z "$project_key" ] && { fail "PostHog: no projects available"; return; }
+      [ -z "$project_key" ] && {
+        fail "PostHog: no projects available"
+        return
+      }
       log "Reusing PostHog project — tag events with posthog.register({project:'${DOMAIN}'})"
     fi
   fi
@@ -196,7 +228,10 @@ print(results[0].get('api_token','') if results else '')" 2>/dev/null || true)"
 # ──────────────────────────────────────────────────────────────────────
 provision_sentry() {
   local slug existing dsn
-  if [ -z "$SENTRY_TOKEN" ]; then warn "SENTRY_AUTH_TOKEN missing — skipping Sentry (mint at https://sentry.io/settings/account/api/auth-tokens/)"; return; fi
+  if [ -z "$SENTRY_TOKEN" ]; then
+    warn "SENTRY_AUTH_TOKEN missing — skipping Sentry (mint at https://sentry.io/settings/account/api/auth-tokens/)"
+    return
+  fi
   slug="${PROJECT}"
 
   existing="$(curl -sf -H "Authorization: Bearer $SENTRY_TOKEN" \
@@ -204,7 +239,8 @@ provision_sentry() {
     | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['dsn']['public'] if d else '')" 2>/dev/null || true)"
 
   if [ -n "$existing" ]; then
-    dsn="$existing"; log "Sentry project exists: $slug"
+    dsn="$existing"
+    log "Sentry project exists: $slug"
   else
     log "Creating Sentry project: $slug"
     curl -sf -X POST -H "Authorization: Bearer $SENTRY_TOKEN" -H "Content-Type: application/json" \
@@ -224,12 +260,12 @@ provision_sentry() {
 # Main — provision all four, write env file, optionally push wrangler secrets
 # ──────────────────────────────────────────────────────────────────────
 OUTPUT_ENV="${OUT_DIR}/analytics.env"
-: > "$OUTPUT_ENV"
+: >"$OUTPUT_ENV"
 
-provision_ga4     >> "$OUTPUT_ENV"
-provision_gtm     >> "$OUTPUT_ENV"
-provision_posthog >> "$OUTPUT_ENV"
-provision_sentry  >> "$OUTPUT_ENV"
+provision_ga4 >>"$OUTPUT_ENV"
+provision_gtm >>"$OUTPUT_ENV"
+provision_posthog >>"$OUTPUT_ENV"
+provision_sentry >>"$OUTPUT_ENV"
 
 cat "$OUTPUT_ENV"
 
@@ -251,9 +287,9 @@ if [ -n "${LOCAL_ENV:-}" ] && [ -f "$LOCAL_ENV" ]; then
     if grep -qE "^${key}=" "$LOCAL_ENV"; then
       sed -i.bak "s|^${key}=.*|${line}|" "$LOCAL_ENV" && rm -f "${LOCAL_ENV}.bak"
     else
-      echo "$line" >> "$LOCAL_ENV"
+      echo "$line" >>"$LOCAL_ENV"
     fi
-  done < "$OUTPUT_ENV"
+  done <"$OUTPUT_ENV"
   ok ".env.local updated"
 fi
 

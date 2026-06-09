@@ -18,28 +18,53 @@ BASELINE=(CLOUDFLARE_API_KEY CLOUDFLARE_EMAIL CLOUDFLARE_ACCOUNT_ID ANTHROPIC_AP
 OBSERVABILITY=(SENTRY_DSN SENTRY_AUTH_TOKEN POSTHOG_API_KEY POSTHOG_HOST GTM_CONTAINER_ID)
 
 case "$MODE" in
-  saas)           EXTRA=(CLERK_SECRET_KEY CLERK_PUBLISHABLE_KEY STRIPE_SECRET_KEY STRIPE_PUBLISHABLE_KEY STRIPE_WEBHOOK_SECRET INNGEST_EVENT_KEY INNGEST_SIGNING_KEY NEON_DATABASE_URL) ;;
-  portfolio)      EXTRA=(PEXELS_API_KEY PIXABAY_API_KEY) ;;
+  saas) EXTRA=(CLERK_SECRET_KEY CLERK_PUBLISHABLE_KEY STRIPE_SECRET_KEY STRIPE_PUBLISHABLE_KEY STRIPE_WEBHOOK_SECRET INNGEST_EVENT_KEY INNGEST_SIGNING_KEY NEON_DATABASE_URL) ;;
+  portfolio) EXTRA=(PEXELS_API_KEY PIXABAY_API_KEY) ;;
   local-business) EXTRA=(GOOGLE_MAPS_API_KEY GOOGLE_PLACES_API_KEY) ;;
-  non-profit)     EXTRA=(STRIPE_SECRET_KEY STRIPE_PUBLISHABLE_KEY STRIPE_WEBHOOK_SECRET) ;;
-  *)              EXTRA=() ;;
+  non-profit) EXTRA=(STRIPE_SECRET_KEY STRIPE_PUBLISHABLE_KEY STRIPE_WEBHOOK_SECRET) ;;
+  *) EXTRA=() ;;
 esac
 
 REQUIRED=("${BASELINE[@]}" "${OBSERVABILITY[@]}" "${EXTRA[@]}")
 
 # Load env files (silent failures OK)
 # shellcheck source=/dev/null
-[ -f "$MASTER_ENV" ] && { set -a; source "$MASTER_ENV" 2>/dev/null; set +a; }
+[ -f "$MASTER_ENV" ] && {
+  set -a
+  source "$MASTER_ENV" 2>/dev/null
+  set +a
+}
 # shellcheck source=/dev/null
-[ -n "${CLAUDE_ENV_FILE:-}" ] && [ -f "$CLAUDE_ENV_FILE" ] && { set -a; source "$CLAUDE_ENV_FILE" 2>/dev/null; set +a; }
-[ -f "$PWD/.env.local" ] && { set -a; source "$PWD/.env.local" 2>/dev/null; set +a; }
-[ -f "$PWD/.dev.vars" ] && { set -a; source "$PWD/.dev.vars" 2>/dev/null; set +a; }
+[ -n "${CLAUDE_ENV_FILE:-}" ] && [ -f "$CLAUDE_ENV_FILE" ] && {
+  set -a
+  source "$CLAUDE_ENV_FILE" 2>/dev/null
+  set +a
+}
+[ -f "$PWD/.env.local" ] && {
+  set -a
+  source "$PWD/.env.local" 2>/dev/null
+  set +a
+}
+[ -f "$PWD/.dev.vars" ] && {
+  set -a
+  source "$PWD/.dev.vars" 2>/dev/null
+  set +a
+}
 
 resolveKey() {
   local key="$1"
-  if [ -n "${!key:-}" ]; then echo "env"; return; fi
-  if [ -f "$CHEZMOI_DIR/$key" ]; then echo "chezmoi"; return; fi
-  if command -v get-secret >/dev/null 2>&1 && get-secret "$key" >/dev/null 2>&1; then echo "get-secret"; return; fi
+  if [ -n "${!key:-}" ]; then
+    echo "env"
+    return
+  fi
+  if [ -f "$CHEZMOI_DIR/$key" ]; then
+    echo "chezmoi"
+    return
+  fi
+  if command -v get-secret >/dev/null 2>&1 && get-secret "$key" >/dev/null 2>&1; then
+    echo "get-secret"
+    return
+  fi
   echo ""
 }
 
@@ -58,7 +83,10 @@ if [ ${#MISSING[@]} -gt 0 ]; then
 fi
 
 # Build JSON arrays manually (jq not guaranteed)
-joinArr() { local IFS=,; echo "$*"; }
+joinArr() {
+  local IFS=,
+  echo "$*"
+}
 MISSING_JSON="[$(joinArr "${MISSING[@]}")]"
 PRESENT_JSON="[$(joinArr "${PRESENT[@]}")]"
 
@@ -67,6 +95,6 @@ echo "$JSON"
 
 # Append audit log
 TS=$(date -u +%FT%TZ)
-echo "{\"ts\":\"${TS}\",\"mode\":\"${MODE}\",\"ok\":${OK},\"missing_count\":${#MISSING[@]}}" >> "$LOG"
+echo "{\"ts\":\"${TS}\",\"mode\":\"${MODE}\",\"ok\":${OK},\"missing_count\":${#MISSING[@]}}" >>"$LOG"
 
 [ "$OK" = "true" ] && exit 0 || exit 1

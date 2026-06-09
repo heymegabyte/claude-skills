@@ -1,5 +1,22 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-2 — shfmt + shellcheck-clean + actionlint + yamllint
+
+### Shell scripts
+- `shfmt -i 2 -ci -bn -w` over `bin/*.sh`, `scripts/*.sh`, `15-site-generation/check-routes.sh` (6 files reformatted; expanded one-liner `{...}` blocks for readability).
+- `bin/provision-analytics.sh` + `scripts/discover-secrets.sh` — `# shellcheck disable=SC2034` annotations on intentional unused-var declarations (stream_id reserved for future branch; CHEZMOI_SECRETS exported as documented base path).
+- shellcheck `-x -S warning bin/*.sh scripts/*.sh` → **0 warnings/errors**.
+
+### Python hooks
+- `python3 -m py_compile` over all 7 `~/.claude/hooks/*.py` → all clean. (ruff not installed; skipped formatting pass.)
+
+### YAML / GitHub Actions
+- `yamllint` (relaxed: line-length/document-start/truthy disabled) over `.github/workflows/`, `action.yml`, `_packs/*.yml` → clean.
+- `actionlint .github/workflows/*.yml` → 2 minor in-script shellcheck nits in `publish.yml` (SC2001 sed-vs-parameter-expansion, SC2015 A&&B||C foot-gun) — **deferred** to careful pass-3 (CI-touching; needs context read before edit).
+
+### Residual markdownlint
+- 99 remaining violations across `rules/*.md` + `commands/*.md`, mostly MD040 (fenced-code-language) + MD060 (table-column-style) — non-autofixable, deferred.
+
 ## 2026-06-08 — Q2-2026 AI/MCP rules upgrade + lint baseline
 
 ### AI/API/MCP rule updates (vendor-doc primary sources)
