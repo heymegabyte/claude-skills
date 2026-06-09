@@ -2,18 +2,27 @@
 # session-recap.sh — summarize recent CHANGELOG.md entries for context restoration.
 #
 # Usage:
-#   bash ~/.agentskills/bin/session-recap.sh [date-or-count]
+#   bash ~/.agentskills/bin/session-recap.sh [filter] [--json]
 #
-# Examples:
-#   session-recap.sh           # last 10 entries
-#   session-recap.sh 20        # last 20 entries
-#   session-recap.sh 2026-06   # all entries from June 2026
-#   session-recap.sh today     # only today's entries (UTC date)
+# Filters:
+#   <N>           last N entries (default 10)
+#   YYYY-MM       all entries from a month (e.g. 2026-06)
+#   YYYY-MM-DD    all entries from a specific date
+#   today         today's entries only (UTC)
 #
-# Reads CHANGELOG.md (auto-detects in cwd or via $CHANGELOG env), parses entries
-# delimited by `## <date> — <pass-id> — <summary>` headings, returns matching set.
+# --json: emit `{entries:[{date,pass_id,summary,body_preview}],total}` to stdout
+# Human report goes to stderr in JSON mode.
 
 set -euo pipefail
+
+JSON=0
+ARGS=()
+for arg in "$@"; do
+  case "$arg" in
+    --json) JSON=1 ;;
+    *) ARGS+=("$arg") ;;
+  esac
+done
 
 CHANGELOG="${CHANGELOG:-CHANGELOG.md}"
 [ -f "$CHANGELOG" ] || {
@@ -21,25 +30,26 @@ CHANGELOG="${CHANGELOG:-CHANGELOG.md}"
   exit 1
 }
 
-FILTER="${1:-10}"
+FILTER="${ARGS[0]:-10}"
+TODAY_MATCH=$(date -u +%Y-%m-%d)
 
-# --- Helpers ---------------------------------------------------------------
-emdashSection() { printf "\n▸ %s\n" "$1" >&2; }
-
-# --- Parse entries ---------------------------------------------------------
+# --- Parse entries via awk ---------------------------------------------------
 # Each entry starts with `## YYYY-MM-DD — <pass-id> — <summary>`.
-# We capture the heading + the first 5 body lines for a tight summary.
-
-awk -v filter="$FILTER" -v today_match="$(date -u +%Y-%m-%d)" '
-  BEGIN { entry_count = 0; printing = 0; lines_printed = 0 }
-  /^## [0-9]{4}-[0-9]{2}-[0-9]{2} —/ {
-    # Save heading + reset
-    heading = $0
-    date = $2  # YYYY-MM-DD
-    body = ""
+awk -v filter="$FILTER" -v today_match="$TODAY_MATCH" -v json="$JSON" '
+  BEGIN {
+    entry_count = 0
     printing = 0
     lines_printed = 0
-    # Match filter
+    if (json) printf "{\"entries\":["
+  }
+  /^## [0-9]{4}-[0-9]{2}-[0-9]{2} —/ {
+    heading = $0
+    date = $2
+    # Close prior entry if open
+    if (printing && json) printf "]}"
+    printing = 0
+    lines_printed = 0
+
     match_count_mode = match(filter, /^[0-9]+$/) > 0
     match_today_mode = (filter == "today")
     match_date_prefix = (substr(date, 1, length(filter)) == filter)
@@ -53,14 +63,40 @@ awk -v filter="$FILTER" -v today_match="$(date -u +%Y-%m-%d)" '
     }
 
     if (printing) {
-      printf "\n━━━ %s\n", heading
+      n = split(heading, parts, " — ")
+      pass_id = (n >= 2) ? parts[2] : ""
+      summary = ""
+      for (i = 3; i <= n; i++) {
+        summary = summary (i == 3 ? "" : " — ") parts[i]
+      }
+      if (json) {
+        gsub(/\\/, "\\\\", summary); gsub(/"/, "\\\"", summary)
+        gsub(/\\/, "\\\\", pass_id); gsub(/"/, "\\\"", pass_id)
+        if (entry_count > 0) printf ","
+        printf "{\"date\":\"%s\",\"pass_id\":\"%s\",\"summary\":\"%s\",\"body_preview\":[", date, pass_id, summary
+      } else {
+        printf "\n━━━ %s\n", heading
+      }
       entry_count++
     }
     next
   }
   printing && lines_printed < 5 && /^[a-zA-Z*#-]/ {
-    print "  " $0
+    if (json) {
+      line = $0
+      gsub(/\\/, "\\\\", line); gsub(/"/, "\\\"", line)
+      printf "%s\"%s\"", (lines_printed > 0 ? "," : ""), line
+    } else {
+      print "  " $0
+    }
     lines_printed++
   }
-  END { printf "\n  total: %d entr%s\n", entry_count, (entry_count == 1 ? "y" : "ies") }
+  END {
+    if (json) {
+      if (printing) printf "]}"
+      printf "],\"total\":%d}\n", entry_count
+    } else {
+      printf "\n  total: %d entr%s\n", entry_count, (entry_count == 1 ? "y" : "ies")
+    }
+  }
 ' "$CHANGELOG"

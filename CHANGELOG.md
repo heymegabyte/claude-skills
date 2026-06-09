@@ -1,5 +1,26 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-34 — session-recap --json + /session-recap slash command
+
+### Closes both pass-33 Recs
+
+- **`bin/session-recap.sh --json` mode**:
+  - Emits `{entries:[{date,pass_id,summary,body_preview}],total}` to stdout.
+  - `body_preview` is array of 5 lines per entry.
+  - Composable: `bash session-recap.sh today --json | jq '.entries[] | .summary'`.
+  - Bug fixed during self-test: double-comma between entries from competing close+separator logic. Restructured awk emission to single-comma-on-new-entry only.
+- **`commands/session-recap.md`** — `/session-recap` slash command (auto-registered via sync-desktop-skills hook).
+  - Documents 4 filter modes + 2 output modes.
+  - Inline examples for both human and JSON consumption.
+
+### Verified
+- `bash bin/session-recap.sh 2 --json` → valid JSON (parsed by `python3 -m json.tool`).
+- `python3 -c "import json; ...; print(d['total'])"` → matches entries count.
+- shellcheck → 0.
+- shfmt → 0 diff.
+- pack integrity → clean.
+- `/session-recap` now visible in auto-registered skill list.
+
 ## 2026-06-09 — pass-33 — verification-loop self-application + bin/session-recap.sh
 
 ### Closes both pass-32 Recs
