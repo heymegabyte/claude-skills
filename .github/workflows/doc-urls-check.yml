@@ -1,0 +1,85 @@
+name: Doc URLs Health Check
+
+# Weekly external-URL health check across rules/*.md + skill-dir SKILL.md files.
+# On any 5xx/000 (hard failure), opens or updates a tracking issue.
+# 4xx (HEAD-rejected) is treated as "skip" by the script — not a failure.
+# Pass-55. Companion to bin/check-doc-urls.sh.
+
+on:
+  schedule:
+    - cron: "23 10 * * 1" # Mondays 10:23 UTC — staggered after version-drift-check
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Run check-doc-urls.sh --json
+        id: check
+        run: |
+          # Run script; capture JSON to artifact, never block CI on exit code
+          # (we surface failures via issue body, not via job failure).
+          bash bin/check-doc-urls.sh --json > /tmp/urls.json || true
+          echo "fail_count=$(jq -r '.summary.fail' /tmp/urls.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Build issue body from JSON
+        if: steps.check.outputs.fail_count != '0'
+        id: body
+        run: |
+          {
+            echo 'body<<EOF'
+            echo '## 🚨 Doc-URL health check found broken links'
+            echo ''
+            echo "Weekly run found $(jq -r '.summary.fail' /tmp/urls.json) URL(s) returning 5xx or DNS/network failures."
+            echo ''
+            echo '### Failed URLs'
+            echo ''
+            jq -r '.urls[] | select(.status=="fail") | "- [`\(.http_code)`] \(.url)"' /tmp/urls.json
+            echo ''
+            echo '### Stats'
+            echo ''
+            echo "- Pass: $(jq -r '.summary.pass' /tmp/urls.json)"
+            echo "- Fail: $(jq -r '.summary.fail' /tmp/urls.json)"
+            echo "- Skip (4xx, HEAD-rejected but exists): $(jq -r '.summary.skip' /tmp/urls.json)"
+            echo "- Generated: $(jq -r '.meta.generated_at' /tmp/urls.json)"
+            echo "- Git SHA: $(jq -r '.meta.git_sha' /tmp/urls.json)"
+            echo ''
+            echo '### Action'
+            echo ''
+            echo 'For each failed URL, audit the owning rule under `rules/` or `[0-9][0-9]-*/`'
+            echo 'and either update the link or remove it. Re-run locally with:'
+            echo ''
+            echo '```bash'
+            echo 'bash bin/check-doc-urls.sh'
+            echo '```'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open or update tracking issue
+        if: steps.check.outputs.fail_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="🚨 Doc URLs: $(jq -r '.summary.fail' /tmp/urls.json) broken link(s) detected"
+          # Find existing open issue with the doc-urls-check label; update or create.
+          EXISTING=$(gh issue list --label doc-urls-check --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --title "$TITLE" --body "${{ steps.body.outputs.body }}"
+            gh issue comment "$EXISTING" --body "Re-detected $(date -u +%Y-%m-%d) — fail count: $(jq -r '.summary.fail' /tmp/urls.json)"
+          else
+            gh issue create --title "$TITLE" --body "${{ steps.body.outputs.body }}" --label doc-urls-check
+          fi
+
+      - name: Upload JSON artifact
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4.6.2
+        with:
+          name: doc-urls-check-json
+          path: /tmp/urls.json
+          retention-days: 30

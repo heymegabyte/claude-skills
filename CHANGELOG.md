@@ -1,5 +1,61 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-55 — Weekly cron workflow for doc-URL health + npm aliases
+
+### Closes pass-54 candidates 1 (cron workflow) + 2 (`npm run check:urls` alias)
+
+- **NEW `.github/workflows/doc-urls-check.yml`** — weekly cron, Mondays 10:23 UTC (staggered after `version-drift-check.yml`'s 09:17). Runs `bash bin/check-doc-urls.sh --json`, jq-extracts the fail count, and:
+  - If `fail_count == 0`: silent pass (no spam)
+  - If `fail_count > 0`: opens or updates a tracking issue labeled `doc-urls-check` with a markdown body listing each failed URL + HTTP code + remediation hint
+  - Always uploads the JSON envelope as a 30-day artifact for trend analysis
+- **`workflow_dispatch`** trigger added — manual on-demand audit without waiting for Monday
+- **SHA-pinned per `ai-agent-security.md`**: `actions/checkout@df4cb1c0` · `actions/upload-artifact@330a01c4`. `node scripts/sha-pin-actions.mjs --check` clean
+- **`package.json` § scripts** — 2 new aliases:
+  - `npm run check:urls` → `bash bin/check-doc-urls.sh`
+  - `npm run check:urls:json` → `bash bin/check-doc-urls.sh --json`
+
+### Why issue-tracking instead of CI fail
+
+A 5xx today might be a docs migration in progress (e.g. Anthropic moving `/structured-outputs` to a new path). Failing CI = blocking unrelated merges for an external-service blip. Tracking issue + label = the maintainer sees + decides, doesn't block work. The script's own exit code stays accurate (non-zero on fail) for direct invocation; the workflow swallows it explicitly with `|| true` for the issue-create path.
+
+### Issue-body shape
+
+```markdown
+🚨 Doc URLs: N broken link(s) detected
+- [`502`] https://docs.example.com/some-page
+- [`000`] https://stale.example.com/missing
+### Stats
+- Pass: 14 · Fail: 2 · Skip (4xx, HEAD-rejected but exists): 17
+- Generated: 2026-06-09T10:23:00Z
+- Git SHA: fd22423
+### Action
+Re-run locally: `bash bin/check-doc-urls.sh`
+```
+
+### Verification
+
+```bash
+actionlint .github/workflows/doc-urls-check.yml         # info SC2016 only, exit 0
+node scripts/sha-pin-actions.mjs --check .github/workflows/doc-urls-check.yml  # clean
+yamllint .github/workflows/doc-urls-check.yml           # 0 errors
+npm run lint                                             # ✓ 9/9 green
+npm run check:urls                                       # ✓ alias works
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Did NOT add the new workflow as a `needs:` dep of any other workflow — intentional: it's diagnostic, not blocking
+
+### Next candidates (pass-56)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Audit `bin/check-doc-urls.sh` URL extraction against more file types (currently only `rules/*.md` + `[0-9][0-9]-*/SKILL.md`; could extend to `CONVENTIONS.md`, `_router.md`, agent files)
+- The `doc-urls-check` issue auto-close mechanism on next-week-clean-run (currently issue stays open until manually closed)
+
+---
+
 ## 2026-06-09 — pass-54 — `bin/check-doc-urls.sh` external-URL health check
 
 ### Closes pass-53 candidate 1 (docs-URL ping automation)
