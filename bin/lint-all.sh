@@ -99,7 +99,7 @@ runGate "prettier" "prettier --check JSON/YAML" \
 logHeader "7. shellcheck"
 if command -v shellcheck >/dev/null; then
   runGate "shellcheck" "shellcheck bin/ scripts/" \
-    shellcheck -x -S warning bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
+    shellcheck -x -S warning bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
 else
   skipGate "shellcheck" "not installed (brew install shellcheck)"
 fi
@@ -107,7 +107,7 @@ fi
 logHeader "8. shfmt"
 if command -v shfmt >/dev/null; then
   runGate "shfmt" "shfmt -d -i 2 -ci -bn" \
-    shfmt -i 2 -ci -bn -d bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
+    shfmt -i 2 -ci -bn -d bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
 else
   skipGate "shfmt" "not installed (brew install shfmt OR go install mvdan.cc/sh/v3/cmd/shfmt@latest)"
 fi
@@ -126,6 +126,8 @@ fi
 if [ "$JSON" = "0" ]; then
   logHeader "ℹ pricing-staleness (info-only, doesn't gate)"
   bash "$SKILLS_ROOT/bin/check-pricing.sh" 2>&1 | tail -8 >&2 || true
+  logHeader "ℹ agent-routing drift (info-only, doesn't gate)"
+  bash "$SKILLS_ROOT/bin/check-agent-routing.sh" 2>&1 | tail -6 >&2 || true
 fi
 
 EXIT=0

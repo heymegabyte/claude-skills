@@ -1,5 +1,74 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-65 — `bin/check-agent-routing.sh` mechanization (7th lib caller)
+
+### Closes pass-64 candidate 1 (`bin/check-agent-routing.sh` mechanization)
+
+NEW `bin/check-agent-routing.sh` (7th caller of `bin/lib/emit-json.sh`):
+
+- Reads every `agents/*.md` frontmatter → builds authoritative `{agent → tier}` map (current state: 5 Opus / 8 Sonnet / 5 Haiku = 18 agents)
+- Awk-parses `rules/model-routing.md § Agent routing` section to extract the CLAIMED lists per tier
+- Diffs authoritative vs claimed for each of 3 tiers (Opus / Sonnet / Haiku):
+  - **missing_from_rule** — agent file declares `model: X` but rule doesn't list it (the pass-64 bug class — `computer-use-operator` was here)
+  - **missing_from_agents** — rule lists agent X in tier Y but no `agents/X.md` declares `model: Y`
+- Exit 0 if all 3 tiers match; exit 1 on any drift
+- Human + `--json` modes per uniform-json-output doctrine
+
+### Pass-65 baseline (post pass-64 fix)
+
+```text
+▸ Checking rules/model-routing.md § Agent routing vs agents/*.md frontmatter...
+  ✓ Opus tier — rule + agents in sync (5 agents)
+  ✓ Sonnet tier — rule + agents in sync (8 agents)
+  ✓ Haiku tier — rule + agents in sync (5 agents)
+━━━ SUMMARY: 3 tier(s) clean · 0 tier(s) drifted
+✓ all 3 tiers in sync
+```
+
+### Wired into lint-all + npm aliases
+
+- `bin/lint-all.sh` — added agent-routing soft-info section AFTER pricing-staleness. Same "info-only, doesn't gate" pattern.
+- `bin/lint-all.sh` shellcheck + shfmt step lists expanded to also cover `bin/check-doc-urls.sh`, `bin/check-pricing.sh`, `bin/check-agent-routing.sh`, `bin/install-hooks.sh` (previously they weren't covered by the lint-all's own internal lint)
+- `package.json` — `npm run check:agent-routing` + `check:agent-routing:json`
+
+### Latent bug caught in-pass
+
+Expanding the lint-all `shfmt` step coverage to include `bin/install-hooks.sh` (added in pass-52 but never added to the lint-all check list) surfaced a heredoc-formatting violation: `cat > "$HOOK" << 'PRECOMMIT'` should be `cat >"$HOOK" <<'PRECOMMIT'` per `-bn` (no space around redirects). Fixed via `shfmt -w`. Same class as pass-49 "ship-gate-then-run-all" — adding new files to the gate retroactively surfaces latent issues.
+
+### Closure-loop arc summary
+
+Pass-58→65 has now:
+
+1. Caught **8 latent bugs** across 7 files (Opus 4.7→4.8, pricing direction, Opus $15/$75 → $5/$25, Haiku 3.5 → 4.5, Workers CPU-ms 625×, D1 included-tier, doc-urls-check SC2006, model-routing Sonnet list missing computer-use-operator, install-hooks shfmt heredoc)
+2. Codified **3 disciplines** in `lint-doctrine.md`
+3. Mechanized **2 audit scripts** (`check-pricing.sh`, `check-agent-routing.sh` — both 7-line additions to lint-all soft-info)
+4. Automated **1 cron** (`pricing-check.yml` weekly)
+5. Surfaced via lint-all info section on every commit
+
+`bin/lib/emit-json.sh` now has **7 callers** — 2.3× the 3-caller extraction threshold. The refactor pays for itself ongoingly.
+
+### Verification
+
+```bash
+npm run lint                                              # ✓ 9/9 green + 2 info sections
+npm run check:agent-routing                                # ✓ 3/3 tiers in sync
+npm run check:agent-routing:json | python3 -m json.tool   # valid envelope
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Did NOT add an agent-routing weekly cron — current state is in-sync; the lint-all soft-info section surfaces drift on every commit, weekly cron would be redundant. If drift appears and lint-all isn't run for a long stretch, cron makes sense.
+
+### Next candidates (pass-66)
+
+- Add `agent-routing-check.yml` weekly cron if value emerges (deferred until first drift event)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Audit `_packs/*.yml` for pack-member lists vs actual rule/skill existence (analogous to model-routing.md agent-list audit — pack lists are a similar claim-vs-reality surface)
+
+---
+
 ## 2026-06-09 — pass-64 — agents/ staleness sweep + model-routing.md Sonnet list correction
 
 ### Closes pass-63 candidate 1 (agents/*.md staleness sweep)
