@@ -1,5 +1,49 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-53 — AI-rules staleness audit + contract-first-ai date-stamp + Rec correction
+
+### Closes pass-52 candidates 1 (`ai-seniority` + `contract-first-ai` staleness audit) + 2 (back-port hook, after correction below)
+
+### `ai-seniority.md` audit — CLEAN
+
+Policy-level rule, version-agnostic by design. Defines auto-merge gates, agent-seniority disposition, and what seniority does NOT mean. No model/version mentions. No cross-link drift. Ships unchanged.
+
+### `contract-first-ai.md` audit — minor date-stamp + tool-use fallback note
+
+- Section "Requesting structured output" referenced Anthropic Structured Outputs beta with header `structured-outputs-2025-11-13`. Header is from late 2025; structured outputs may have graduated to GA since.
+- Added: "Last verified: 2026-06-09" + quarterly re-verification reminder pointing at the canonical docs URL.
+- Added: explicit note that the tool-use path (using `input_schema` instead of structured-outputs beta) is GA — recommended as the conservative fallback when Structured Outputs beta status changes.
+- AutoRAG section already cites the April 2025 changelog — current as of cutoff.
+
+### Pass-52 Rec correction — back-port hook to lint-stack template was the wrong Rec
+
+On audit: `bin/install-lint-stack.sh:237` already calls `lefthook install` after copying configs. Downstream projects using the lint-stack template ALREADY have mechanical enforcement via lefthook (their lefthook.yml's pre-commit step runs all linters; lefthook owns orchestration; CI also catches regressions).
+
+The agentskills repo's NEW `bin/install-hooks.sh` shim is the SPECIAL case — agentskills doesn't install lefthook as a dependency. For everywhere else, lefthook is the canonical mechanism. Back-porting the shim would create a fork.
+
+**Codified learning**: before adding a Rec like "back-port X to downstream", verify downstream isn't already solving the problem via a different mechanism. Pass-52's Rec was based on partial visibility — fixed by reading the actual installer this pass.
+
+### Verification
+
+```bash
+npm run lint            # ✓ 9 pass · 0 fail · 0 skip
+# Pre-commit hook also ran cleanly during this pass's commit.
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Did NOT chase Structured Outputs beta graduation news upstream (would need web fetch; not deferred — explicitly out of scope for a local rule audit)
+- `model-routing.md` 4.7-only retirement-table entries — surveyed; no 4.7-specific entries surfaced that need 4.8 mention (the 4.7 row IS the 4.7 row; doesn't need 4.8 mention since 4.8 has its own row)
+
+### Next candidates (pass-54)
+
+- Quarterly verification automation: a CI step that pings the Anthropic docs URLs in `contract-first-ai.md` + similar rules to detect dead links / version-bumps without manual audits
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-52 — Pre-commit hook (mechanical enforcement) + codify 2 patterns
 
 ### Root cause of pass-51 discipline violation

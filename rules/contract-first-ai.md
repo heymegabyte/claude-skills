@@ -64,8 +64,8 @@ export type AiPatch = z.infer<typeof AiPatchSchema>;
 
 ## Requesting structured output
 
-- **Anthropic Structured Outputs beta** — header `structured-outputs-2025-11-13` + `output_config.format` with the JSON schema derived from the Zod schema (`zod-to-json-schema`).
-- **OR a tool call** whose `input_schema` is the Zod-derived JSON schema — the model fills the tool args, you validate the args.
+- **Anthropic Structured Outputs beta** — header `structured-outputs-2025-11-13` + `output_config.format` with the JSON schema derived from the Zod schema (`zod-to-json-schema`). Header dated; re-verify graduation status quarterly via `docs.anthropic.com/en/docs/build-with-claude/structured-outputs`. Last verified: 2026-06-09.
+- **OR a tool call** whose `input_schema` is the Zod-derived JSON schema — the model fills the tool args, you validate the args. Tool-use path is GA — no beta header required, safe as the conservative fallback when Structured Outputs beta status changes.
 - **Incompatible with Citations** (returns 400) — pick one per request per ``auto-meta-work``. Use Citations only when source attribution is the payload; otherwise Structured Outputs.
 
 ## Validate-on-receipt + repair-or-reject
