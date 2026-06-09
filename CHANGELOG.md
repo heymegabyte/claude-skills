@@ -1,5 +1,25 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-13 — 3 codified semgrep rules + .lint-history/.gitignore
+
+### Loop closes the cycle: lessons from this session → codified rules
+Demonstrating the auto-improve loop output by codifying 3 real patterns surfaced during passes 9 + 12:
+
+- **`semgrep-custom/bash-set-u-unicode-var.yml`** — catches `$VAR×` unicode-attached variables that fail under `set -u`. Pattern: `\$[A-Za-z_][A-Za-z0-9_]*[×✓✗∙·⇒→•★]`. Surfaced by pass-12 self-test on `lint-auto-improve.sh`.
+- **`semgrep-custom/bash-printf-leading-dash.yml`** — catches `printf '- ...'` where the format starts with `-` (parses as flag → "invalid option"). Surfaced same pass.
+- **`semgrep-custom/no-gitlab-megabytelabs-deps.yml`** — JSON rule catches `@megabytelabs/*`, `@megabyte/*`, `@HeyMegabyte/*` in `package.json` dependencies. Per pass-9 mainstream-only mandate (Brian's redirect).
+
+### Installer extended
+- `bin/install-lint-stack.sh` now copies `templates/lint-stack/semgrep-custom/*.yml` → `.semgrep/custom/` so `semgrep --config=./.semgrep` picks up all codified rules.
+- Installer drops `.lint-history/.gitignore` excluding `*.log` + `proposals/` — lint audit data is local-only, never tracked.
+
+### Doctrine
+- `rules/lint-doctrine.md` § Codified incidents now uses a real table mapping pattern → semgrep file → source pass. Stops being "seed" placeholder.
+
+### Verified
+- shellcheck → 0 warnings.
+- pack integrity → clean (15/88/14).
+
 ## 2026-06-08 — pass-12 — lint-auto-improve VERIFIED end-to-end + /improve-lint command
 
 ### Self-test PASSED on seeded `.lint-history/`

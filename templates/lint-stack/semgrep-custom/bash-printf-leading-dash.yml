@@ -1,0 +1,19 @@
+# Codified from pass-12 — `printf '- ...'` parses leading `-` as a flag char,
+# fails with "invalid option". Use `printf -- 'format' args` when format starts
+# with a dash (markdown bullets, CLI flag examples, etc.).
+# See: rules/lint-doctrine.md § Codified incidents
+rules:
+  - id: bash-printf-leading-dash-no-separator
+    patterns:
+      - pattern-regex: '\bprintf\s+[''"][-]'
+      - pattern-not-regex: '\bprintf\s+--\s'
+    paths:
+      include:
+        - "**/*.sh"
+        - "**/*.bash"
+    message: |
+      `printf 'format-string'` where format-string starts with `-` parses as
+      a flag. Insert `--` separator before the format: `printf -- '-...'`.
+      Common with markdown bullets like `printf '- **%s** ...'`.
+    severity: WARNING
+    languages: [bash]

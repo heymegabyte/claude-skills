@@ -129,7 +129,12 @@ The script runs as the final pre-push step (non-blocking — analysis only). Aft
 
 ## Codified incidents (append as patterns surface)
 
-- *(seed)* — `pretooluse-router.py` E501 at line 36 (multi-arg subprocess.run) → consider per-line `# noqa: E501` annotation or 120-col project budget (cosmetic; not yet codified).
+| Pattern | Codified rule | Source |
+|--|--|--|
+| `$VAR×` unicode-attached → set -u failure | `semgrep-custom/bash-set-u-unicode-var.yml` | pass-12 self-test on `lint-auto-improve.sh` |
+| `printf '- ...'` leading `-` parsed as flag | `semgrep-custom/bash-printf-leading-dash.yml` | pass-12 self-test on `lint-auto-improve.sh` |
+| `@megabytelabs/*` deps in package.json | `semgrep-custom/no-gitlab-megabytelabs-deps.yml` | pass-9 mainstream-only mandate |
+| `pretooluse-router.py` E501 multi-arg subprocess.run | *(not codified — cosmetic only)* | pass-4 ruff sweep |
 
 ## Pack integrity validator
 

@@ -85,6 +85,22 @@ mkdir -p .semgrep
 cp "$STACK_SRC/.semgrep/baseline.yml" ".semgrep/baseline.yml"
 emdashLog "✓" ".semgrep/baseline.yml"
 
+# Codified semgrep rules — copy alongside baseline so semgrep --config=./.semgrep picks up all
+if [ -d "$STACK_SRC/semgrep-custom" ]; then
+  mkdir -p .semgrep/custom
+  cp "$STACK_SRC/semgrep-custom"/*.yml .semgrep/custom/ 2>/dev/null || true
+  emdashLog "✓" ".semgrep/custom/ ($(ls "$STACK_SRC/semgrep-custom" 2>/dev/null | wc -l | tr -d ' ') codified rules)"
+fi
+
+# .lint-history/.gitignore — exclude logs + proposals from git (they're local audit only)
+mkdir -p .lint-history
+cat > .lint-history/.gitignore <<'EOF'
+# Lint history is local-only audit data. Per rules/lint-doctrine.md.
+*.log
+proposals/
+EOF
+emdashLog "✓" ".lint-history/.gitignore"
+
 if [ "$HAS_DOCKER" = "1" ]; then
   copyIfMissingOrUpdate "$STACK_SRC/.hadolint.yaml" ".hadolint.yaml"
 fi

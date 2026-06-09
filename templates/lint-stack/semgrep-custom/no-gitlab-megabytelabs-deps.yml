@@ -1,0 +1,25 @@
+# Codified from pass-9 — per Brian: GitLab @megabytelabs / @HeyMegabyte configs
+# are INSPIRATION ONLY. Project dependencies must be latest mainstream npm
+# packages (eslint-config-prettier, prettier-plugin-packagejson, semantic-release-
+# gitmoji, etc.) — never the private GitLab ones.
+# See: rules/lint-doctrine.md § Package philosophy
+rules:
+  - id: no-gitlab-megabytelabs-deps
+    pattern-regex: '"(@megabytelabs|@megabyte|@HeyMegabyte)/[\w-]+"\s*:\s*"[^"]*"'
+    paths:
+      include:
+        - "**/package.json"
+      exclude:
+        - "**/node_modules/**"
+    message: |
+      Per `rules/lint-doctrine.md` § Package philosophy: GitLab @megabytelabs /
+      @HeyMegabyte / @megabyte packages are INSPIRATION only. Use mainstream
+      npm equivalents:
+        - @megabytelabs/eslint-config → eslint + typescript-eslint + plugins
+        - prettier-config-sexy-mode → inline .prettierrc.cjs (Brian-voice)
+        - stylelint-config-so-pretty → stylelint-config-{standard,recommended,clean-order}
+        - conventional-changelog-emoji-config → conventional-changelog-gitmoji-config
+        - @megabytelabs/semantic-release-config → semantic-release-gitmoji
+        - git-cz-emoji → cz-emoji@^1.3.1
+    severity: ERROR
+    languages: [json]

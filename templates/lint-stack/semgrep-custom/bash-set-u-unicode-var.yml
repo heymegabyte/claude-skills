@@ -1,0 +1,19 @@
+# Codified from pass-12 — bash $VAR× unicode-attached var triggers set -u failure.
+# When a non-ASCII char follows `$VAR` without a delimiter, bash includes it in
+# the variable name → "VAR×: unbound variable". Always wrap with ${VAR} when
+# adjacent to non-ASCII, math, or punctuation that could parse as part of the name.
+# See: rules/lint-doctrine.md § Codified incidents (pass-12 fix in lint-auto-improve.sh)
+rules:
+  - id: bash-set-u-unicode-var-boundary
+    patterns:
+      - pattern-regex: '\$[A-Za-z_][A-Za-z0-9_]*[×✓✗∙·⇒→•★]'
+    paths:
+      include:
+        - "**/*.sh"
+        - "**/*.bash"
+    message: |
+      `$VAR` directly followed by a non-ASCII glyph parses the glyph as part
+      of the variable name under `set -u`. Wrap with `${VAR}` to delimit.
+      Example: `$count×` → `${count}x` or `${count}×`.
+    severity: ERROR
+    languages: [bash]
