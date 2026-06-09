@@ -22,4 +22,5 @@ rules:
         - @megabytelabs/semantic-release-config → semantic-release-gitmoji
         - git-cz-emoji → cz-emoji@^1.3.1
     severity: ERROR
-    languages: [json]
+    # `generic` so pattern-regex scans any text file; `paths.include` limits to package.json
+    languages: [generic]

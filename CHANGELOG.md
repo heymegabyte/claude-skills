@@ -1,5 +1,26 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-14 — 3 codified semgrep rules VERIFIED to fire
+
+### Self-test with semgrep CLI
+- brew installed `semgrep@1.165.0`.
+- Seeded sandboxes with intentional bad + clean variants for each codified rule.
+- **All 3 rules fire correctly on bad inputs + ignore clean inputs:**
+
+| Rule | Bad input → caught | Clean input → ignored |
+|--|--|--|
+| `bash-set-u-unicode-var.yml` | `$count×` + `$total⇒$result` → 2 findings ✓ | `${count}x` + `${total}=${result}` → 0 ✓ |
+| `bash-printf-leading-dash.yml` | `printf '- **item**...'` + `printf "-flag"` → 2 ✓ | `printf -- '-...'` + non-dash → 0 ✓ |
+| `no-gitlab-megabytelabs-deps.yml` | `@megabytelabs/eslint-config` + `@HeyMegabyte/...` → 2 ✓ | `eslint` + `prettier` → 0 ✓ |
+
+### Bug fixed during self-test
+- `no-gitlab-megabytelabs-deps.yml` — `languages: [json]` blocked pattern-regex from scanning. Switched to `languages: [generic]` (pattern-regex doesn't need language parsing; `paths.include` already gates to `**/package.json`).
+
+### Verified
+- All 3 semgrep rules fire end-to-end.
+- shellcheck → 0 warnings.
+- pack integrity → clean (15/88/14).
+
 ## 2026-06-08 — pass-13 — 3 codified semgrep rules + .lint-history/.gitignore
 
 ### Loop closes the cycle: lessons from this session → codified rules
