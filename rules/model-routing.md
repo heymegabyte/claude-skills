@@ -64,7 +64,7 @@ paths:
 ## Agent routing
 
 - **Opus** — architect, completeness-checker, security-reviewer, visual-qa, meta-orchestrator (each has `model_fallback: claude-sonnet-4-6` + `effort_fallback: high` per ``opus-quota-fallback``)
-- **Sonnet** — code-simplifier, deploy-verifier, test-writer, dependency-auditor, migration-agent, performance-profiler, incident-responder
+- **Sonnet** — code-simplifier, computer-use-operator, deploy-verifier, dependency-auditor, incident-responder, migration-agent, performance-profiler, test-writer
 - **Haiku** — seo-auditor, content-writer, accessibility-auditor, cost-estimator, changelog-generator
 
 ## Quota-aware routing

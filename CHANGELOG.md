@@ -1,5 +1,88 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-64 — agents/ staleness sweep + model-routing.md Sonnet list correction
+
+### Closes pass-63 candidate 1 (agents/*.md staleness sweep)
+
+### agents/ audit — overall HEALTHY
+
+All 18 agents use **model aliases** (`opus`, `sonnet`, `haiku`) NOT pinned version numbers. This is the best-practice — when a new Claude flagship ships, agents auto-pick up the new model without per-agent updates. Pass-58's cross-rule discipline doesn't apply to agents/ because there are no version strings to drift.
+
+**Opus-quota-fallback compliance**: all 5 Opus-pinned agents (architect, completeness-checker, security-reviewer, visual-qa, meta-orchestrator) correctly declare `model: opus` + `model_fallback: claude-sonnet-4-6` + `effort: xhigh` + `effort_fallback: high` per `rules/opus-quota-fallback.md` § Agent frontmatter convention. ✓
+
+**No pricing references** in `agents/*.md`. ✓
+
+### Real find — cross-doc drift in `rules/model-routing.md:67`
+
+`model-routing.md § Agent routing` listed 7 Sonnet agents:
+
+```text
+Sonnet — code-simplifier, deploy-verifier, test-writer, dependency-auditor, migration-agent, performance-profiler, incident-responder
+```
+
+Actual `agents/*.md` Sonnet agents (`grep -l "model: sonnet" agents/*.md`):
+
+```text
+code-simplifier, computer-use-operator, deploy-verifier, dependency-auditor, incident-responder, migration-agent, performance-profiler, test-writer
+```
+
+**`computer-use-operator` was missing from the rule's list** despite `agents/computer-use-operator.md` declaring `model: sonnet`. This is the same class of bug as pass-58's Opus 4.7→4.8 drift — doc claim vs reality divergence — but in a different surface: agent-routing-claim vs agent-frontmatter reality.
+
+### Fix to `rules/model-routing.md:67`
+
+Sorted alphabetically while adding the missing agent (cleaner for future audits):
+
+```diff
+-- **Sonnet** — code-simplifier, deploy-verifier, test-writer, dependency-auditor, migration-agent, performance-profiler, incident-responder
+++ **Sonnet** — code-simplifier, computer-use-operator, deploy-verifier, dependency-auditor, incident-responder, migration-agent, performance-profiler, test-writer
+```
+
+### Verification (3 sets of lists now in sync)
+
+```bash
+# All 3 model→agent lists in rules/model-routing.md match agents/*.md frontmatter
+diff <(grep -lE "model: sonnet" agents/*.md | xargs -n1 basename | sed 's/\.md$//' | sort) \
+     <(grep -oE 'code-simplifier|computer-use-operator|deploy-verifier|...' rules/model-routing.md | sort -u)
+# → no output (in sync)
+npm run lint  # ✓ 9/9 green
+```
+
+### What this surfaces about audit coverage
+
+Pass-58→63 caught version-drift + pricing-drift across rules/ + skill-dirs. Pass-64 surfaced a NEW class: **agent-routing-list drift** — where the rule mentions specific agent names that must match `agents/*.md` reality. The `bin/check-pricing.sh` style automation could be extended to also validate "rule X mentions agent Y" claims:
+
+- Extract every `<agent-name>` mention from `rules/model-routing.md § Agent routing` lists
+- Compare to `grep -l "model: <tier>" agents/*.md` reality
+- Report any mismatch
+
+Logged as a pass-65 candidate.
+
+### Closure-loop confirmation
+
+The pass-58→64 audit arc has now caught **7 latent bugs** across 6 files:
+
+1. Opus 4.7→4.8 cross-rule drift (14 mentions, pass-58)
+2. Opus pricing direction wrong-guess (pass-59)
+3. Bolt $15/$75 → $5/$25 (pass-59)
+4. Haiku 3.5 → 4.5 in eval-driven-development (pass-60)
+5. Workers CPU-ms 625× off + D1 included-tier missing (pass-61)
+6. doc-urls-check.yml SC2006 latent (pass-63)
+7. **model-routing.md Sonnet list missing computer-use-operator (this pass)**
+
+Every previous audit-class also got mechanized. The agent-routing class is the next candidate for mechanization.
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-65)
+
+- `bin/check-agent-routing.sh` — mechanize the agent-routing-list audit
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-63 — Weekly pricing cron + soft-info gate + SC2006 backfill
 
 ### Closes pass-62 candidates 1 (weekly cron) + 2 (soft-info gate in lint-all)
