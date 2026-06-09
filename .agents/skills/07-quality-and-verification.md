@@ -46,21 +46,27 @@ L5: Post-Deploy (08). L4: Visual (screenshots+AI). L3: E2E (Playwright v1.59+). 
 Every code change: L1-L3. Every deploy: L4-L5.
 
 ### Playwright AI Agents (v1.59.1+)
+
 Planner: explores app, designs test plans from natural language. Generator: creates executable test code. Healer: auto-fixes broken tests. Pattern: static specs for stable tests, AI agents for flaky/new. Run agents only on failed tests in second pass (70% token savings).
 
 ### Playwright v1.59.1 New APIs
+
 `page.screencast({ path })` — video recording with action annotations and real-time frame capture (video receipts for CI). `browser.bind()` — connect to running browser instances. `page.consoleMessages()`/`page.pageErrors()`/`page.requests()` — snapshot-in-time accessors (no event listeners needed). `await using` async disposables for auto-cleanup. Trace CLI for agent-driven test analysis.
 
 ### MCP-Based Testing
+
 Playwright MCP operates on accessibility tree, not screenshots. Returns structured snapshots: role hierarchy, names, states. Target "Role: button, Name: Checkout" — 10x more stable than CSS selectors. AOM-reasoning > DOM-scraping.
 
 ### Multi-Agent Testing Pattern
+
 Functional agent: happy path clicks. Security agent: XSS probing, auth bypass. Accessibility agent: WCAG 2.2 compliance. Performance agent: CWV measurement. Run all four in parallel per deploy.
 
 ### Self-Healing Loop
+
 Test fails→read full error→classify (code/test/env/flaky)→fix root cause→re-run→loop max 5. NEVER .skip/.only/.fixme()/comment assertions/increase timeouts. After fix: full suite.
 
 ### Zero Console Errors
+
 ```typescript
 const errors: string[] = [];
 page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
@@ -68,18 +74,23 @@ expect(errors).toEqual([]);
 ```
 
 ### Zero Recommendations Gate
+
 After all tests pass: "How improve?" If ANY recommendation→implement+retest. Done when AI has zero suggestions.
 
 ## L1: Static
+
 TypeScript (tsc --noEmit), ESLint flat config, Prettier. Fix all. Suppress lines only with comment.
 
 ## L2: Unit/Integration (Vitest)
+
 100% on new functions. Happy+error+edge+auth paths. Don't test: framework internals, 3rd-party, CSS, simple getters.
 
 ## L3: E2E (Playwright v1.59+)
+
 Homepage-first. No sleeps (waitFor, toBeVisible, waitForResponse). Stable selectors: data-testid→role→text→Stagehand AI fallback. Parallel-safe, deterministic, production URLs. 6bp: 375/390/768/1024/1280/1920.
 
 ## L4: Visual
+
 Percy AI Visual Review Agent (3x review reduction, 40% false positive filtering, OCR text-shift elimination). Chromatic for component-level (Storybook+Playwright). pixelmatch for local CI. See visual-inspection-loop.md + completeness-verification.md.
 
 ## 8-Check Quality Gate
@@ -96,18 +107,23 @@ Percy AI Visual Review Agent (3x review reduction, 40% false positive filtering,
 | 8 | Web Property | Manifest, shortcuts, 4+ JSON-LD, cross-site links |
 
 ## WCAG & ADA Landscape
+
 WCAG 2.2 AA = baseline (9 new SC: focus-not-obscured, target-size-minimum 24px, accessible-auth, consistent-help, redundant-entry, dragging-movements, focus-appearance 2px/3:1). ADA Title II: large entities April 2027, smaller April 2028. WCAG 3.0 working draft (174 requirements, est. 2028-2030, no A/AA/AAA — assertions+scoring). axe-core v4.11.3 covers WCAG 2.0/2.1/2.2 at A/AA/AAA.
 
 ## GitHub Integration
+
 PR checks: `gh pr checks`→`gh run view --log-failed`→diagnose→fix→push→verify.
 
 ## CWV Targets
+
 LCP <2.5s (4-phase: TTFB→resource delay→load duration→render delay). INP <200ms (3-phase: input delay→processing→presentation). CLS <0.1 (explicit dimensions, aspect-ratio, font-display). 47% of sites pass all three. See performance-optimization.md.
 
 ## Quick Check (small fixes)
+
 tsc --noEmit, relevant E2E, visual 1280+375, no console errors, deploy+purge+verify 200.
 
 ## Test Shortcuts
+
 New page: adapted homepage test. New form: 8-point matrix. New API: valid 200, invalid 400, missing 404. Visual: screenshot at 6bp. Auth: unauth 401, wrong 403, valid 200.
 
 Shared values (breakpoints, CSP): CONVENTIONS.md.

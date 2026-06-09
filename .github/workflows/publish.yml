@@ -35,12 +35,9 @@ jobs:
             lefthook.yml \
             .github/workflows/*.yml
 
-      - name: Self-lint Markdown (rules/ + skill-dirs + top-level, pass-43/44)
+      - name: Self-lint Markdown (whole-repo, pass-43/44/45)
         run: |
-          npx --yes markdownlint-cli2@^0.18.1 \
-            "rules/*.md" \
-            "[0-9][0-9]-*/**/*.md" \
-            "*.md"
+          npx --yes markdownlint-cli2@^0.18.1 "**/*.md"
 
       - name: Check doc counts
         run: |
@@ -400,6 +397,10 @@ jobs:
               cp "${dir}SKILL.md" ".agents/skills/${DIRNAME}.md"
             fi
           done
+
+      - name: Normalize generated markdown (pass-45 — prevents drift on next CI run)
+        run: |
+          npx --yes markdownlint-cli2@^0.18.1 --fix "**/*.md" || true
 
       - name: Commit cross-platform files
         run: |

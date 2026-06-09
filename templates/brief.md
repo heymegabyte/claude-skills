@@ -43,6 +43,7 @@
 
 **Revenue:** [subscription | donation | one-time | free]
 **Pricing:**
+
 - Free tier: [what's included]
 - Paid tier: $[X]/month — [what upgrades]
 

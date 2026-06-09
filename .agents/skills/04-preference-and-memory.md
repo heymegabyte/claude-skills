@@ -15,6 +15,7 @@ submodules:
 ---
 
 ## Submodules
+
 | File | Description |
 |------|-------------|
 | wisdom-and-human-psychology.md | Timeless principles from behavioral psychology, philosophy, and self-help classics applied to product building. Ethical persuasion only. |
@@ -26,17 +27,21 @@ submodules:
 ## Voice of the Customer (VoC)
 
 Captures exact language, frustrations, ambitions, standards:
+
 - What they consider weak/shallow/slow/ugly/incomplete/unacceptable
 - What they consider elite/complete/beautiful/fast/worth shipping
 - Repeated phrases signaling deep preferences, emotional intensity markers
 
 ### VoC Model Structure
+
 Desired Outcome → Dissatisfaction Signals (exact quotes) → Aspiration Signals (praise/standards) → Implications for: Product, UX, Copy, Architecture, Completeness, Speed, Refinement
 
 ### VoC Rules
+
 Capture exact language when specific; infer implications but label them | Never fabricate; distinguish literal from inferred | Update on: priority changes, corrections, redefined "done", strong emphasis, ***PROCESS THIS***
 
 ### VoC Storage
+
 Global: `~/.claude/projects/-Users-apple-emdash-projects-megabyte-space/memory/voc_global.md` | Project: `PROJECT_BRIEF.md` VoC section or `VOC.md`
 
 ## Preference Taxonomy
@@ -79,6 +84,7 @@ Don't capture: one-time debug decisions, derivable tech details, temporary worka
 **Storage:** `~/.claude/projects/<project>/memory/` — `<project>` derived from git repo; all worktrees share one directory. Custom: `autoMemoryDirectory` setting (allowed in policy/local/user settings; NOT project settings).
 
 **Memory types:**
+
 - `user` — global across all projects: `~/.claude/agent-memory/<name>/`
 - `project` — scoped to repo: `.claude/agent-memory/<name>/`
 - `local` — machine-local: `.claude/agent-memory-local/<name>/`
@@ -86,6 +92,7 @@ Don't capture: one-time debug decisions, derivable tech details, temporary worka
 - `reference` — factual data, API docs, architecture decisions
 
 **Directory structure:**
+
 ```
 ~/.claude/projects/<project>/memory/
 ├── MEMORY.md          # Index — loaded every session (first 200 lines or 25KB)
@@ -101,11 +108,13 @@ Don't capture: one-time debug decisions, derivable tech details, temporary worka
 **Toggle:** `/memory` command | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` | Requires v2.1.59+.
 
 ### Subagent Memory Scopes
+
 ```yaml
 memory: user     # ~/.claude/agent-memory/<name>/
 memory: project  # .claude/agent-memory/<name>/
 memory: local    # .claude/agent-memory-local/<name>/
 ```
+
 First 200 lines or 25KB of each subagent's MEMORY.md loaded at startup. Read/Write/Edit tools auto-enabled when memory is active.
 
 ## Memory File Format
@@ -117,6 +126,7 @@ First 200 lines or 25KB of each subagent's MEMORY.md loaded at startup. Read/Wri
 ```
 
 **Topic file types and paths:**
+
 - `user_*.md` — Brian's profile, career, community work (personal/universal)
 - `feedback_*.md` — corrections, patterns observed (auto-captured every prompt)
 - `tech_preferences_confirmed.md` — always/never list with mention counts
@@ -125,6 +135,7 @@ First 200 lines or 25KB of each subagent's MEMORY.md loaded at startup. Read/Wri
 - `reference_*.md` — Omi wearable config, external tools, factual reference
 
 **Topic files frontmatter:**
+
 ```yaml
 ---
 name: "topic-name"
@@ -136,6 +147,7 @@ type: preferences|patterns|mistakes|voc|reference|feedback|project
 **MEMORY.md index rules:** Every file gets exactly ONE entry. Entry format: `- [Title](filename.md) — what's inside (≤12 words)`. No sections, no hierarchy — flat list only. Session start: scan index, identify relevant files, load on demand.
 
 **MEMORY.md template sections:**
+
 ```
 ## Confirmed Preferences
 ## Patterns That Worked

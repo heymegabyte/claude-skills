@@ -22,6 +22,7 @@ YYYY-MM-DD
 We need to [describe the problem or requirement]. The current state is [describe current situation].
 
 Key constraints:
+
 - [Constraint 1 — e.g., "Must work on Cloudflare Workers (V8 isolate, no Node.js APIs)"]
 - [Constraint 2 — e.g., "Budget is $0/month for infrastructure"]
 - [Constraint 3 — e.g., "Must support 10K concurrent users"]

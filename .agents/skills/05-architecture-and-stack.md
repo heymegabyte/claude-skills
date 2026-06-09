@@ -82,6 +82,7 @@ submodules:
 Key reasoning: Hono over NestJS (native CF Workers, 12KB). Angular over React (Brian's background, signals stable). Neon over Supabase (multi-DB, lower cost). Drizzle over Prisma (5KB vs 40KB, edge-native, passed Prisma in downloads). ESLint over Biome (angular-eslint, typescript-eslint, massive plugin library).
 
 ## CF-Only Assumption (***DEFAULT***)
+
 Every feature MUST try CF-native first. Never reach for external services when CF has an equivalent. Template: megabytespace/saas-starter has stubs for all CF primitives.
 AI→Workers AI (not OpenAI). Cache→KV/Cache API (not Redis). DB→D1 (not Postgres). Storage→R2 (not S3). Queue→CF Queues (not SQS). Realtime→DO+WebSocket (not Pusher). Schedule→Cron Triggers (not external cron). Search→AI Search+Vectorize (not Algolia). Email→CF Email Service (not SES). Feature flags→Flagship (not LaunchDarkly). Sandbox→CF Sandboxes (not Docker). Only escape to external when CF primitive insufficient (complex joins→Neon, specific model→OpenAI/Anthropic via AI Gateway).
 
@@ -106,6 +107,7 @@ AI→Workers AI (not OpenAI). Cache→KV/Cache API (not Redis). DB→D1 (not Pos
 **AI Agent Service:** Worker(Hono) → Agents SDK(Project Think) + Agent Memory + Dynamic Workers + Browser Run + AI Search + DO(stateful sessions)
 
 ### Service Boundaries
+
 Start monolith. Split when: different scaling needs, different deploy cadence, Worker size exceeded (10MB compressed paid), isolation required. Angular frontend = separate Worker. Webhook handlers = separate. Cron = shared via scheduled handler. Service bindings for zero-cost Worker-to-Worker RPC.
 
 ## Auth: Clerk

@@ -39,12 +39,15 @@ One-line prompts→production-ready products with elite UX, multimedia, bold des
 ## Autonomy Rules
 
 ### Do Without Asking
+
 Choose stack defaults|add SEO+analytics+legal+structured data|compress images|deploy to CF|run tests|generate logos/favicons/previews (Ideogram, GPT Image)|add a11y (WCAG 2.2 AA, axe-core)|instrument PostHog/Sentry/GA4|research+implement better approaches|fix bugs during verification|update skills/memory/CLAUDE.md|connect all MCPs|integrate Slack/Discord webhooks|generate AI content (alt text, translations, meta)|add multimedia (Sora, GPT Image, Pexels/Pixabay)|scan shared API pool (05/shared-api-pool) and auto-integrate|ToolSearch bulk-load deferred tools before planning (`query:"computer-use", max_results:30`)
 
 ### Ask Before Doing
+
 Architecture forks changing product shape|paid services not in default stack|brand changes for existing brands|legal/billing/security model changes|deleting user data or production resources
 
 ### Never Do Autonomously
+
 Deploy for analysis-only tasks|mutate global skills without explicit request|embed secrets in skill files|override stricter rules with looser ones|force-push|skip tests|ship placeholder content|load ToolSearch tools one-by-one (always bulk-load)
 
 ## Prompt Pipeline (EVERY PROMPT)
@@ -52,14 +55,17 @@ Deploy for analysis-only tasks|mutate global skills without explicit request|emb
 Parse→extract value→update memory/skills/docs→SPEC.md if new feature→failing Playwright tests per AC (PROD_URL)→implement slice-by-slice (AC1→AC2→ACN)→deploy+purge→E2E 6 breakpoints→screenshot→AI vision critique→fix→redeploy (max 3 rounds)→DONE when all tests pass+AI vision zero issues+prod verified. No screenshot=not verified. See autonomous-orchestrator submodule for full Ralph Loop.
 
 ### Value Extraction (EVERY prompt, even non-code)
+
 Corrections→memory|"always/never"→rules|tech→prefs|design→skill 10|requirement→SPEC+test|silence→confirmed|3x repeat→promote to skill. Route: universal→~/.claude/|project→./.claude/ (path-scoped `paths:` frontmatter). Config: managed>user>project>local. Project CLAUDE.md>global. New projects auto-scaffold: .claude/settings.json+CLAUDE.md+.claude/rules/+SPEC.md+E2E tests.
 
 Write at same compression density as existing files. Before writing ANY skill/rule: read 5 lines of target, match that exact style. Rules=pipe-delimited one-liners. Skills=dense fragments with →| abbreviations. NEVER verbose tables, bullet lists, prose wrappers, or full sentences where fragments work.
 
 ### Completion Gates
+
 Deployed+E2E pass+AI vision≥8/10+axe-core 0+Yoast GREEN+zero console errors+zero placeholders
 
 ### Assumption Protocol
+
 1. Infer from context (domain, project type, code)→proceed
 2. Use defaults (CONVENTIONS.md, SKILL_PROFILES.md)→proceed
 3. Ask casually with default→"Going with X. Let me know if wrong."
@@ -82,6 +88,7 @@ Worktree isolation: each parallel agent gets isolated git worktree via `git work
 SubagentStop hooks: stop hook at `~/.claude/hooks/` auto-commits+pushes skill/memory changes to heymegabyte/claude-skills after every session. Triggers on session end with uncommitted changes.
 
 ## Model IDs (Current)
+
 claude-opus-4-6 (architecture/security/planning/visual-qa)|claude-sonnet-4-6 (implementation/debugging/testing/deployment)|claude-haiku-4-5-20251001 (formatting/changelog/content/simple review). Never use opus for single-file edits or formatting. Never use haiku for architecture or complex logic.
 
 ## Emphasis Signals
@@ -115,9 +122,11 @@ Post-task: Skill 08's post-deploy verification is MANDATORY for any deployed sit
 After every prompt: What worked? What was slow? What was missing? What was wrong? What did user correct? What new pattern? If skill advice was wrong/outdated→flag it. If it caused a problem→fix immediately. After every 5th prompt: micro-audit skill activation vs availability, verify CLAUDE.md/MEMORY.md consistency. Maintain `## Pending Skill Updates` in MEMORY.md: `[YYYY-MM-DD] Skill##: description — priority`. Batch-apply on request or when >20 items.
 
 ### CLAUDE.md/MEMORY.md Auto-Enhancement
+
 After session: update "Current State". After correction: save feedback. After new API: update shared-api-pool. After new pattern: save with confidence level.
 
 ### Guard Rails
+
 Never modify >3 skill files per prompt without user awareness|never change conflict resolution|never weaken quality gates|never remove safety checks|announce modifications in end-of-prompt report
 
 ## Self-Improving System (ALWAYS ACTIVE)

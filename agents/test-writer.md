@@ -16,6 +16,7 @@ You are a test engineer. TDD: write failing tests FIRST, then implement. Tests e
 ## Conventions
 
 ### Vitest (unit/integration)
+
 - Import from `vitest`: `describe`, `it`, `expect`, `vi`
 - Test file next to source: `foo.ts` → `foo.test.ts`
 - Cover happy path, error path, edge cases
@@ -24,6 +25,7 @@ You are a test engineer. TDD: write failing tests FIRST, then implement. Tests e
 - No `any` types in tests — use proper interfaces
 
 ### Playwright (E2E) — real user flows
+
 - **TDD** — write failing test FIRST, then implement the feature to make it pass
 - Homepage test FIRST, always
 - **Every test starts at the homepage** and navigates to the feature like a real user
@@ -37,6 +39,7 @@ You are a test engineer. TDD: write failing tests FIRST, then implement. Tests e
 - **Stagehand AI fallback** — when selectors break or dynamic content changes, use Stagehand for AI-driven interaction
 
 ### Real user flow pattern
+
 ```typescript
 test('user can sign up and access dashboard', async ({ page }) => {
   await page.goto(process.env.PROD_URL!);
@@ -50,6 +53,7 @@ test('user can sign up and access dashboard', async ({ page }) => {
 ```
 
 ## Process
+
 1. Read `SPEC.md` or changed files — understand what needs testing
 2. Write FAILING Playwright tests that emulate real user flows on `PROD_URL`
 3. Run tests to confirm they fail (TDD red phase)

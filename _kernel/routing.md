@@ -3,6 +3,7 @@
 How to load the IDEAL set of skills/rules for each task without overloading the preamble.
 
 ## 1. Embedding-Based Semantic Routing (Tier-S — recommended)
+
 - Precompute a 1536-dim OpenAI/Cohere embedding for every skill's `description` + `when_to_use` + first 200 lines of body
 - Store in Vectorize / local SQLite
 - On each prompt, embed the user prompt → ANN top-K (K=5-8) most similar skills load full content
@@ -12,6 +13,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 - **Implementation** — `~/.claude/hooks/UserPromptSubmit` shells out to `~/.claude/bin/route-skills.py` which returns the manifest
 
 ## 2. Project-Fingerprint Auto-Detection
+
 - On SessionStart, inspect cwd: `package.json` + `wrangler.toml` + framework imports + folder structure + git remote
 - Generate `_project-fingerprint.json` = `{stack: "react-vite" | "angular-nx" | "hono-only" | "python-fastapi", concerns: ["payments", "auth", "billing"], scale: "solo" | "team"}`
 - Load only matching skill set (Angular project → skip React-only rules; nonprofit project → skip SaaS-billing skills)
@@ -19,6 +21,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 - **Implementation** — `~/.claude/hooks/session-start-fingerprint.py` writes fingerprint; `~/.claude/CLAUDE.md` conditionally `@`-imports based on it via templating
 
 ## 3. Phrase-Trigger Lazy Load
+
 - Each rule frontmatter declares `triggers: ["rebuild X.com", "make a website", "audit 100 ideas"]`
 - Harness scans prompt for phrase patterns FIRST; matched skills load
 - Skills not matched stay at stub-level (name + description only, ~30 tokens vs ~5000)
@@ -26,6 +29,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 - **Implementation** — settings.json gains `skills.triggerMode: "lazy"`; harness watches for `frontmatter.triggers[]` matches
 
 ## 4. Tiered Priority + Token Budget
+
 - Every skill declares `priority: 1-5` in frontmatter (1 = always load, 5 = rarely)
 - Orchestrator allocates ~40k tokens to preamble; fills by priority ascending
 - Tier-1: `01-operating-system`, `brian-preferences`, `always`, `verification-loop` (~10k)
@@ -37,6 +41,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 - **Implementation** — `frontmatter.priority` field + harness budget check at SessionStart
 
 ## 5. Hierarchical Skill Packs
+
 - Group related skills into packs (`website-build-pack`, `saas-pack`, `local-business-pack`, `nonprofit-pack`)
 - Each pack declares its `members` + a single `pack-summary.md`
 - Loading one pack loads the whole graph deterministically
@@ -45,6 +50,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 - **Implementation** — `_packs/website-build.yml` lists members; skill resolver expands at load time
 
 ## 6. Per-Tool Skill Activation
+
 - When prompt triggers Playwright tool use → load testing-specific skills (`e2e-tdd-organization`, `e2e-visual-inspection`, `07-quality-and-verification`)
 - When triggers WebFetch → load research skills (`03-planning-and-research`, `competitor-research`)
 - When triggers Bash on `wrangler` → load CF skills (`05-architecture-and-stack`, `cloudflare-hostable-supervisor`)
@@ -52,6 +58,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 - **Implementation** — `~/.claude/hooks/PreToolUse` triggers conditional skill load
 
 ## 7. Shared Kernel Reference Layer (this just shipped)
+
 - Common standards (WCAG, OWASP, CWV, breakpoints, asset budgets, brand tokens, banned-word list) live ONCE in `_kernel/standards.md`
 - Other files cite by anchor: `per _kernel/standards.md#wcag22`
 - Eliminates 40+ duplicate definitions across mesh
@@ -59,6 +66,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 - **Status** — shipped this turn; need to migrate remaining files to citations
 
 ## 8. Skill Stubs + On-Demand WebFetch Expand
+
 - Replace each skill's content w/ 100-word stub + canonical URL (`https://github.com/heymegabyte/claude-skills/blob/main/SKILL.md`)
 - When orchestrator needs full content, fetches via WebFetch (cached 1hr in KV)
 - Cuts ~80% of preamble; adds 1-2s latency on first use
@@ -67,6 +75,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 - **Implementation** — harness frontmatter flag `stub: true` + WebFetch on call
 
 ## 9. Conversation-Aware Skill Caching
+
 - After first turn, model identifies which skills it actually used (via tool log + content references)
 - Persist to `~/.claude/sessions/<id>/active-skills.json`
 - Subsequent turns load only that subset (+ tier-1 always)
@@ -75,6 +84,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 - **Implementation** — `~/.claude/hooks/Stop` updates cache; SessionStart reads it
 
 ## 10. Embedding-Compressed Skill Storage
+
 - Beyond top-K loading, store skill BODIES as embedding sequences instead of raw text
 - Retrieval = decoding the top-K most-similar chunks
 - Like RAG but the corpus IS the skill mesh
@@ -101,6 +111,7 @@ How to load the IDEAL set of skills/rules for each task without overloading the 
 | 10. Embedding storage | 20+ | 75% but complex | Very high | RESEARCH |
 
 ## Quick win combo
+
 **Ideas 2 + 3 + 7 together (~6 hours work) → ~60% token reduction with zero quality loss.**
 
 That brings the ~133k preamble to ~50k, well under any subagent input limit. Subagent fan-out works again.

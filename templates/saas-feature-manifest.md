@@ -4,6 +4,7 @@ Every SaaS built with Emdash must ship with ALL of these. This is the SPEC.md te
 Check each item as acceptance criteria. Each unchecked item = a failing test = not done.
 
 ## 1. Authentication (Clerk)
+
 - [ ] Email + password signup/login
 - [ ] Google Sign-In (one-click)
 - [ ] Magic email link (passwordless)
@@ -16,6 +17,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Role-based access (user, admin, superadmin)
 
 ## 2. Billing (Stripe)
+
 - [ ] Free tier (no credit card required)
 - [ ] Pro tier ($50/mo — adjustable)
 - [ ] Stripe Checkout (hosted, PCI compliant)
@@ -32,6 +34,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Annual billing option (2 months free)
 
 ## 3. Landing Page
+
 - [ ] Hero section (4-8 word headline, 100-160 char description, primary CTA)
 - [ ] Feature grid (3-6 features with icons, headlines, descriptions)
 - [ ] Pricing table (free vs pro, feature comparison, toggle monthly/annual)
@@ -44,6 +47,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Mobile-responsive at all 6 breakpoints
 
 ## 4. Dashboard (authenticated)
+
 - [ ] Overview cards (key metrics — usage, plan status, recent activity)
 - [ ] Activity feed (last 10 actions with timestamps)
 - [ ] Quick actions (primary workflows accessible in 1 click)
@@ -56,6 +60,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Dark theme (default, matches brand)
 
 ## 5. API (Hono RPC)
+
 - [ ] RESTful CRUD endpoints for core resources
 - [ ] Hono RPC mode with type-safe client (hc<AppType>)
 - [ ] @hono/zod-validator on ALL request bodies
@@ -71,6 +76,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Request/response logging (structured JSON)
 
 ## 6. Database (Drizzle + D1/Neon)
+
 - [ ] Schema-first design with Drizzle ORM
 - [ ] Auto-generated migrations
 - [ ] Seed data script for development
@@ -81,6 +87,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Connection pooling (Neon) or binding (D1)
 
 ## 7. Onboarding
+
 - [ ] Welcome modal on first login (value proposition, 3 steps)
 - [ ] Guided tour with tooltips (3-5 key features)
 - [ ] Progress checklist (sidebar, tracks completion %)
@@ -90,6 +97,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Skip option (never force, but encourage)
 
 ## 8. Email (Resend)
+
 - [ ] Welcome email (on signup)
 - [ ] Email verification (magic link)
 - [ ] Password reset email
@@ -102,6 +110,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] From: hey@[domain] (verified domain)
 
 ## 9. Notifications
+
 - [ ] In-app notification bell with unread count badge
 - [ ] Notification preferences per user (email, push, in-app)
 - [ ] Real-time updates (WebSocket or polling)
@@ -112,6 +121,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Notification history page
 
 ## 10. Admin Panel (/admin)
+
 - [ ] User management (list, search, view, suspend, delete)
 - [ ] Feedback/testimonial moderation queue
 - [ ] Revenue dashboard (MRR, churn, ARPU, growth chart)
@@ -124,6 +134,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Protected by admin role check
 
 ## 11. SEO & Content
+
 - [ ] Per-page keyphrase research (holy-grail + 2 longtail)
 - [ ] Title 50-60 chars (keyphrase at start)
 - [ ] Meta description 120-156 chars
@@ -139,6 +150,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Yoast GREEN on all checks
 
 ## 12. Accessibility (WCAG AA)
+
 - [ ] axe-core: 0 violations
 - [ ] Lighthouse Accessibility >= 95
 - [ ] Skip-to-content link
@@ -152,6 +164,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Screen reader tested (heading hierarchy, form labels, button text)
 
 ## 13. Performance
+
 - [ ] Lighthouse Performance >= 75 (>=90 preferred)
 - [ ] LCP < 2.5s, CLS < 0.1, INP < 200ms
 - [ ] JS bundle < 200KB compressed
@@ -162,6 +175,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Preconnect to critical origins
 
 ## 14. Security
+
 - [ ] CSP headers (script-src, style-src, img-src, connect-src, frame-src)
 - [ ] HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy
 - [ ] Zod validation on ALL external input at boundaries
@@ -176,6 +190,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] CSRF protection on state-changing endpoints
 
 ## 15. PWA & Web Manifest
+
 - [ ] manifest.json with screenshots (wide + narrow), shortcuts (96px icons)
 - [ ] display_override, edge_side_panel
 - [ ] Service worker (offline page)
@@ -184,6 +199,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] humans.txt, security.txt, opensearch.xml, browserconfig.xml
 
 ## 16. Internationalization
+
 - [ ] English + Spanish minimum
 - [ ] Language selector in navbar/footer
 - [ ] AI-translated content at deploy time
@@ -192,6 +208,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] RTL support detection
 
 ## 17. Search (Cloudflare AI Search)
+
 - [ ] Cmd+K command palette (Linear/Notion style)
 - [ ] Keyboard shortcut overlay (press ? for help)
 - [ ] Full-text search across user data
@@ -203,6 +220,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Search analytics (top queries, zero-result queries → feed to content team)
 
 ## 18. Error Handling
+
 - [ ] Custom 404 page (branded, helpful navigation)
 - [ ] Custom 500 page (branded, "Something broke on our end")
 - [ ] Custom 503 page (maintenance mode)
@@ -213,6 +231,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Graceful degradation (third-party script fails → fallback)
 
 ## 19. Analytics & Observability
+
 - [ ] GA4 via GTM (14-step automation)
 - [ ] PostHog (product analytics, session recording, feature flags)
 - [ ] Sentry (error tracking, performance monitoring)
@@ -222,6 +241,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Health endpoint monitored by UptimeRobot or Better Stack
 
 ## 20. Social & Marketing
+
 - [ ] OG tags on every page (title, description, image, type, URL)
 - [ ] Twitter Card meta tags
 - [ ] Social share buttons on blog posts
@@ -230,6 +250,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Changelog page (/changelog, auto-generated from commits)
 
 ## 21. Legal & Compliance
+
 - [ ] Privacy Policy page (GDPR/CCPA compliant)
 - [ ] Terms of Service page
 - [ ] Cookie policy (if applicable — PostHog self-hosted = no cookies)
@@ -239,6 +260,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] PCI compliance via Stripe Checkout (never handle raw cards)
 
 ## 22. Developer Experience
+
 - [ ] CLAUDE.md in project root (project-specific context)
 - [ ] README.md (install.doctor template, shields.io badges, dividers)
 - [ ] TypeScript strict mode
@@ -251,17 +273,20 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Conventional commits
 
 ## 23. Easter Egg
+
 - [ ] At least one hidden delight (via URL parameter)
 - [ ] Canvas-based, full-screen, dismissible
 - [ ] Contextually appropriate and genuinely fun
 
 ## 24. AI Integration
+
 - [ ] AI chat widget (Workers AI + Vectorize RAG, trained on site content)
 - [ ] AI-generated content (alt text, translations, meta descriptions)
 - [ ] AI-powered search (semantic, not just keyword)
 - [ ] Copilot features for power users (CopilotKit integration if applicable)
 
 ## 25. Backup & Recovery
+
 - [ ] D1 database exports (scheduled, to R2)
 - [ ] Configuration backup (wrangler.toml, secrets list)
 - [ ] Restore script that rebuilds from backup
@@ -269,6 +294,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Data retention policy
 
 ## 26. Workflow Orchestration (Inngest)
+
 - [ ] Inngest SDK integrated with Hono on CF Workers (`@inngest/sdk` cloudflare export)
 - [ ] Durable step functions for multi-step workflows (each step survives timeouts)
 - [ ] Onboarding sequence (welcome email → day 3 tip → day 7 NPS → day 14 upgrade prompt)
@@ -280,6 +306,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Inngest dashboard for monitoring workflows (or admin panel integration)
 
 ## 27. Competitive Intelligence (Firecrawl)
+
 - [ ] Auto-scrape 3-5 competitors before building (via firecrawl.megabyte.space)
 - [ ] Extract: features, pricing tiers, design patterns, copy tone, tech stack
 - [ ] Comparison table generated in SPEC.md
@@ -288,6 +315,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Feature gap analysis (what competitors have that we don't)
 
 ## 28. Testing & QA (Stagehand + Playwright)
+
 - [ ] Raw Playwright selectors for all predictable elements (data-testid, role, text)
 - [ ] Stagehand act()/extract()/observe() as fallback for dynamic content
 - [ ] Stagehand observe() runs AFTER Playwright tests: autonomous QA discovery (finds bugs not explicitly tested)
@@ -301,6 +329,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] Form test matrix: valid/invalid/empty/XSS/SQL injection/boundary values/file upload/timeout
 
 ## 29. Pre-Build Research Phase
+
 - [ ] Domain name → infer product type, target users, business model
 - [ ] Web search: 3-5 competitors identified and scraped (skill 03 + Firecrawl)
 - [ ] Keyphrase research: holy-grail keyword + 2 longtail per page
@@ -310,6 +339,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] progress.md initialized with all ACs unchecked
 
 ## 30. Autonomous Build Loop
+
 - [ ] Ralph Loop: pick next AC → failing test → implement → deploy → verify → mark done
 - [ ] Context >60%: save progress.md → commit → spawn fresh agent to continue
 - [ ] After each slice: deploy immediately (don't batch)

@@ -47,9 +47,11 @@ Every increment: visible, testable, end-to-end value. No horizontal layers, stub
 **Sequence:** Slice 1 = homepage (real content, real images, deployed). Then core features. Then polish.
 
 ### Strategic Priorities
+
 Every slice advances: end-user value, conversion psychology (04/wisdom), brand quality.
 
 ### AI-Enriched
+
 Every slice: "can AI make this better?" Static images→AI-generated. Manual text→AI meta/alt/translations. Basic search→semantic. No support→AI chat. No video→AI hero video (Sora).
 
 ## Anti-Placeholder Rules (***MANDATORY***)
@@ -61,22 +63,28 @@ Every slice: "can AI make this better?" Static images→AI-generated. Manual tex
 ## Implementation Patterns
 
 ### New Project (<5 min)
+
 0-1m: infer type, load profile. 1-2m: wrangler.jsonc+Hono. 2-3m: homepage+content+meta+JSON-LD. 3-4m: CSS+favicon. 4-5m: deploy+purge+verify.
 Parallel: media agent (logo, hero) + content agent (keywords, copy).
 
 ### Feature Slice
+
 E2E test first→data layer (Drizzle)→API (Hono+Zod)→UI→wire→test→fix until green→deploy+verify.
 
 ### Hono v4.12.12+ Patterns (pin >=4.12.12 for 5 CVE fixes: path traversal, cookie bypass, IP restriction bypass)
+
 Inline handlers (type inference). Factory pattern: `createFactory()` from `hono/factory` for reusable middleware. Method chaining for RPC: `const app = new Hono().get(...).post(...)`. Export `AppType` for `hc<AppType>()`. `app.route('/path', subApp)` for splitting. `@hono/zod-validator` all bodies. Never destructure `c` (breaks ctx). Use `c.executionCtx.waitUntil()` for background work. Stream responses with `c.stream()` or `c.streamText()`.
 
 ### Angular 21 Patterns
+
 Standalone-only (no NgModules). Signals: `signal()`, `computed()`, `effect()` (all stable). `linkedSignal()` for derived state with bidirectional binding. `resource()` / `HttpResource` for signal-based async data. `viewChild()`, `contentChildren()` signal queries (stable). `input()` signal inputs (stable). Zoneless change detection (default for new projects v21). `@if`/`@for` control flow (not `*ngIf`/`*ngFor`). `inject()` over constructor injection. `providedIn:'root'` for tree-shakeable services. PrimeNG with design tokens. OnPush change detection on all components. **Signal Forms** (experimental): model-first declarative forms. **Angular MCP Server** (stable): tools `find_examples`, `get_best_practices`, `list_projects`, `ai_tutor`. **Vitest** default test runner (replaces Karma). **Angular ARIA** package for a11y.
 
 ### Drizzle v1.0 + D1
+
 `sqliteTable` schema definitions. RQBv2 for relational queries. `$inferSelect`/`$inferInsert` for type derivation. Zod integration: `createInsertSchema`/`createSelectSchema`. D1: no `BEGIN` transactions (use batch API). Prepared statements for repeated queries. snake_case DB columns, camelCase TS vars. Node.js compat polyfill in wrangler.jsonc. Foreign key constraints order matters in migrations.
 
 ### Workers Best Practices
+
 Never destructure `ctx`—always `c.env.DB`, `c.env.KV`. `c.executionCtx.waitUntil()` for non-blocking work. Stream large responses. `GET /health` → `{status,version,timestamp}`. Error envelope: `{error,code?,details?}`. KV rate-limit public endpoints. Turnstile all forms.
 
 ## CSS Architecture (2026)
@@ -95,11 +103,13 @@ TypeScript strict: `noUncheckedIndexedAccess`, `noImplicitReturns`, `noFallthrou
 Copy: infer from product/domain, benefit-oriented, social proof, clear CTAs. Images: imagegen/Sora hero, Pexels/Pixabay stock, Ideogram logos, WebP/AVIF compressed. Structured data: Organization, WebSite, WebPage, FAQPage, Product, SoftwareApplication, BreadcrumbList (4+ per page).
 
 ## Strict TDD (***MANDATORY***)
+
 Spec (Given/When/Then)→failing E2E (Red)→minimum impl (Green)→refactor→FCE scan→visual verify→deploy.
 Self-healing: read error→diagnose→fix→re-run→loop max 5. NEVER .skip.
 Self-verify: "A user can [action] which [result] because [impl]." Vague=incomplete.
 
 ## Per-Slice Checklist
+
 ```
 [ ] End-to-end working, E2E passes, real content/images
 [ ] Responsive (1280+375px), accessible, performant (<2.5s LCP)
@@ -111,6 +121,7 @@ Self-verify: "A user can [action] which [result] because [impl]." Vague=incomple
 ```
 
 ## Per-Project Checklist
+
 ```
 [ ] All features, homepage polished, all nav works, all forms submit
 [ ] Images optimized (WebP/AVIF), JSON-LD (4+), OG images, analytics, error tracking
@@ -120,7 +131,9 @@ Self-verify: "A user can [action] which [result] because [impl]." Vague=incomple
 ```
 
 ## Completeness Guarantee
+
 Before done: data layer, API, UI, tests, SEO, analytics, error handling, mobile, docs all complete.
 
 ## Reuse Index
+
 Check ~/emdash-projects/*/src/ before building. Contact form, Stripe checkout, Clerk middleware, error pages, analytics, CSP, security headers all reusable. Copy+adapt > write from scratch.

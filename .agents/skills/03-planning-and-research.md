@@ -23,11 +23,13 @@ submodules:
 # 03 — Planning and Research
 
 ## Research Through Three Goals
+
 1. End-user value: what do users need? What frustrates them about existing solutions?
 2. Business psychology: what conversion patterns work? What pricing anchors exist?
 3. Brand positioning: how does this differentiate vs. the competitive field?
 
 ### Aggressive API/Service Discovery
+
 During planning, scan: MCP servers (05/mcp-and-cloud-integrations), API keys (05/shared-api-pool), Coolify services, AI APIs (OpenAI, Workers AI, Ideogram), communication APIs (Slack, Discord), automation hooks (Zapier, n8n, Inngest).
 
 ## Research Protocol
@@ -58,6 +60,7 @@ Goal → Approach (2-3 sentences) → Vertical Slices → Parallel Workstreams �
 ```
 
 ### Decomposition Rules
+
 - Vertical slices delivering visible, testable value (never horizontal layers)
 - Smallest correct slice working end-to-end
 - Dependencies explicit, parallel opportunities marked
@@ -81,6 +84,7 @@ Output: chosen + why, rejected + why, migration path, performance expectations, 
 ## GEO: AI Search Optimization Research
 
 AI search (ChatGPT, Perplexity, Google AI Overviews) surfaces content differently from traditional SEO. Research checklist for any content page:
+
 - JSON-LD structured data present? (LLM accuracy jumps 16% → 54% with structured data)
 - Schema types: Organization, WebSite, SoftwareApplication, FAQPage, HowTo, BreadcrumbList
 - Content structured for extraction: question–answer pairs, numbered steps, comparative tables
@@ -92,6 +96,7 @@ AI search (ChatGPT, Perplexity, Google AI Overviews) surfaces content differentl
 ## Programmatic SEO Research Methodology
 
 Identify seed terms with high variation potential → build template library → populate from DB/API → monitor indexing via GSC. Research phase tasks:
+
 1. Keyword gap analysis: competitors' top organic pages via Ahrefs/Semrush
 2. Template patterns: `{App} + {Tool} Integration`, `{App} vs {Competitor}`, `{App} for {Industry}`, `How to {Action}`, `{Task} template`
 3. Volume triage: 80% automated pages at 100-1K search volume, 20% cornerstone content at 1K+

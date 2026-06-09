@@ -1,5 +1,49 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-45 — whole-repo `**/*.md` CI gate + sync-cross-platform auto-normalize
+
+### Closes pass-44 candidates 1 (.claude-plugin sweep) + 2 (widen CI to `**/*.md`)
+
+- **`.claude-plugin/**/*.md`** — confirmed empty (0 files in `.claude-plugin/`). No sweep needed.
+- **Whole-repo `**/*.md` sweep** — `markdownlint-cli2 --fix "**/*.md"` touched 58 additional files (CI-generated cross-platform mirrors: `.cursor/rules/`, `.windsurf/rules/`, `.amazonq/rules/`, `.augment/rules/`, `.aiassistant/rules/`, `.kilo/rules/`, `.roo/rules/`, `.continue/rules/`, `.junie/`, `.devin/`, `.openhands/microagents/`, `.agents/skills/*.md`, `.github/copilot-instructions.md`, etc.). 397 line additions, 0 functional changes. Final: 342 files lint-clean.
+- **`.github/workflows/publish.yml` § Self-lint Markdown** — widened CI glob from 3-pattern union to single `**/*.md`. CI now gates every markdown file in the repo (262 from prior 3 globs + 58 generated mirrors + 22 others). 0 errors at HEAD.
+- **`.github/workflows/publish.yml` § Normalize generated markdown** — NEW step in `sync-cross-platform` job AFTER all `cat > ... << EOF` generation steps, BEFORE the commit step. Runs `npx markdownlint-cli2 --fix "**/*.md" || true`. Auto-normalizes every regeneration so the `validate` job's strict gate doesn't trip on stale mirror generation. Solves the drift loop: validator catches it → generator re-writes it dirty → next push trips validator. Now generator self-cleans before commit.
+
+### Why this is the final markdown gate
+
+`**/*.md` is the broadest possible glob. The existing `.markdownlintignore` excludes `node_modules/`, `**/_archived/`, `**/backups/`, etc. Combined: every author-editable markdown file in the repo is linted. Whole-surface coverage achieved in 3 passes (43 → 44 → 45) via deliberate scope expansion at each step.
+
+### Drift-loop fix explained
+
+Without the new `Normalize generated markdown` step, the publish.yml flow was:
+1. push → `validate` job runs `markdownlint **/*.md` (gates fail because mirrors are dirty from previous gen)
+2. → never reaches `sync-cross-platform` job (needs `validate`)
+
+With the new step:
+1. push → `validate` passes (current files clean)
+2. → `sync-cross-platform` regenerates mirrors → `markdownlint --fix` cleans them in-place → commits clean files
+3. → next push: `validate` sees clean files → passes
+
+### Verification
+
+```bash
+actionlint .github/workflows/publish.yml                                  # 0 errors
+npx markdownlint-cli2@^0.18.1 "**/*.md"                                   # 0 errors (342 files)
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated on Brian opt-in / 3-Python-caller threshold
+
+### Next candidates (pass-46)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Consider adding `prettier --check "**/*.{json,jsonc,yml,yaml}"` to CI (parallels markdownlint, catches JSON formatting drift the way yamllint catches YAML)
+- Consider extending the same `--fix` auto-normalize pattern to generated `.json` files in sync-cross-platform
+
+---
+
 ## 2026-06-09 — pass-44 — top-level + CHANGELOG markdownlint sweep + CI glob extension
 
 ### Closes pass-43 candidates 1 (CHANGELOG sweep) + 2 (top-level glob extension)
