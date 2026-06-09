@@ -1,5 +1,34 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-28 — Opus-quota fallback + semgrep --validate in auto-draft
+
+### Closes both pass-27 Recs
+
+- **Opus-quota fallback** per `rules/opus-quota-fallback.md`:
+  - `bin/lint-auto-improve.sh --auto-draft` now reads `~/.claude/.opus-disabled` flag file + `$CLAUDE_OPUS_DISABLED` env.
+  - On quota-red signal → falls back to `claude-sonnet-4-6`.
+  - Surfaces the fallback in the run output: "Opus quota signal active → falling back to claude-sonnet-4-6".
+  - No more 100% Opus hardcode.
+- **`semgrep --validate` on AI-drafted YAML**:
+  - After Claude returns a draft, runs `semgrep --validate --config=$DRAFT_FILE`.
+  - Valid YAML → keeps `.lint-history/proposals/draft-<ts>.yml`, logs "YAML structure valid".
+  - Invalid YAML → renames to `.invalid` and logs the failure.
+  - semgrep not installed → skips validation with hint.
+  - Closes the silent-malformed-YAML footgun.
+
+### Verified semgrep --validate exit codes
+- Valid YAML → exit 0 (logged: "Configuration is valid").
+- Invalid YAML → exit 5 (logged: parse error). My `if/then` correctly catches both.
+
+### Self-test
+- `bash bin/lint-auto-improve.sh /tmp/seed --auto-draft` with no key + opus-disabled flag → clean skip with helpful message.
+- Test would need a live `ANTHROPIC_API_KEY` to verify the actual draft + validate path, but the model-pick branch + skip branch both surface correctly.
+
+### Verified
+- shellcheck `-x -S warning` → 0.
+- shfmt → 0 diff.
+- pack integrity → clean (15/89/14, 0 warnings, 4 ignored).
+
 ## 2026-06-09 — pass-27 — JSON meta block + lint-auto-improve --auto-draft
 
 ### Closes pass-26 Rec + Next item

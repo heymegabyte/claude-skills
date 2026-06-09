@@ -113,11 +113,19 @@ if [ "$AUTO_DRAFT" = "1" ]; then
   elif ! command -v curl >/dev/null 2>&1; then
     emdashLog "!" "curl not available — skipping auto-draft"
   else
+    # Pick model per opus-quota-fallback.md — Opus default, Sonnet fallback on quota
+    MODEL="claude-opus-4-7"
+    if [ -f "$HOME/.claude/.opus-disabled" ] || [ "${CLAUDE_OPUS_DISABLED:-}" = "true" ]; then
+      MODEL="claude-sonnet-4-6"
+      emdashLog "i" "Opus quota signal active → falling back to $MODEL"
+    fi
+
     TOP_RULE=$(echo "$CLUSTERED" | awk 'NR==1{print $NF}')
     DRAFT_FILE="$PROPOSAL_DIR/draft-$TS.yml"
     PROMPT="Draft a semgrep YAML rule that catches '$TOP_RULE' violations. Use languages: [generic] for cross-file patterns or specific language otherwise. Include a 'paths.include' filter and a clear 'message' citing the owning rule in ~/.agentskills/rules/. Output ONLY the YAML, no preamble."
     # shellcheck disable=SC2016
-    BODY=$(printf '{"model":"claude-opus-4-7","max_tokens":1024,"messages":[{"role":"user","content":"%s"}]}' "$(echo "$PROMPT" | sed 's/"/\\"/g')")
+    BODY=$(printf '{"model":"%s","max_tokens":1024,"messages":[{"role":"user","content":"%s"}]}' \
+      "$MODEL" "$(echo "$PROMPT" | sed 's/"/\\"/g')")
     RESPONSE=$(curl -sf https://api.anthropic.com/v1/messages \
       -H "x-api-key: $ANTHROPIC_API_KEY" \
       -H "anthropic-version: 2023-06-01" \
@@ -128,7 +136,19 @@ if [ "$AUTO_DRAFT" = "1" ]; then
     else
       echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['content'][0]['text'])" >"$DRAFT_FILE" 2>/dev/null
       if [ -s "$DRAFT_FILE" ]; then
-        emdashLog "✓" "Draft written: $DRAFT_FILE"
+        emdashLog "✓" "Draft written ($MODEL): $DRAFT_FILE"
+        # Validate the drafted YAML via semgrep --validate
+        if command -v semgrep >/dev/null 2>&1; then
+          if semgrep --validate --config="$DRAFT_FILE" >/dev/null 2>&1; then
+            emdashLog "✓" "semgrep --validate: YAML structure valid"
+          else
+            emdashLog "!" "semgrep --validate FAILED — manual review required before use"
+            mv "$DRAFT_FILE" "${DRAFT_FILE}.invalid"
+            emdashLog "i" "Renamed to ${DRAFT_FILE}.invalid"
+          fi
+        else
+          emdashLog "i" "semgrep not installed — skipped validation (brew install semgrep)"
+        fi
         emdashLog "i" "Review + move to: $SEMGREP_CUSTOM_DIR/<topic>.yml"
       else
         emdashLog "!" "Empty draft — Claude response parse failed"
