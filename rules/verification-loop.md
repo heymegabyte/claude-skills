@@ -125,3 +125,11 @@ Every clickable / form field / nav link / API endpoint / modal / keyboard shortc
   4. Screenshot artifacts uploaded to R2
 - No feature without ≥1 test
 - No bug fix without ≥1 regression test
+
+## Self-application — when this rule is N/A
+
+- **agentskills repo (this repo)** — no deployed app surface; rules + scripts + workflows ship via `git push` to GitHub + npm publish. Deploy+prod-E2E gate is REPLACED with: `validate-packs.mjs` + `sha-pin-actions.mjs --check` + actionlint + ruff + shellcheck/shfmt + markdownlint + semgrep on every push per `lefthook.yml` + `publish.yml` CI. The lint-stack pyramid IS the verification loop for skill-shaped repos.
+- **CLI tools without a webapp surface** — same logic: replace E2E-against-prod with unit tests + integration tests + manual smoke at the CLI level.
+- **Library packages (`@scope/lib`)** — replace prod-E2E with `npm run test` matrix against supported Node versions + downstream consumer integration tests.
+
+For any repo with a real deployed surface (Cloudflare Worker, Pages, Vercel, etc.), the deploy+prod-E2E mandate applies as written above. No exceptions for "internal-only" or "low-traffic" — the mandate is about deploy hygiene, not user volume.

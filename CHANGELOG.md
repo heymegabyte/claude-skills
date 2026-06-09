@@ -1,5 +1,31 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-33 — verification-loop self-application + bin/session-recap.sh
+
+### Closes both pass-32 Recs
+
+- **`rules/verification-loop.md` § Self-application** (new) — documents when the deploy+prod-E2E mandate is N/A and what replaces it:
+  - **Skill repos (agentskills)** → lint-pyramid + pack validator + sha-pin-check + actionlint IS the verification loop.
+  - **CLI tools** → unit + integration + manual CLI smoke.
+  - **Library packages** → npm test matrix + downstream consumer tests.
+  - For any repo with deployed surface → mandate applies as written.
+  - Cites this repo as the canonical example.
+- **`bin/session-recap.sh`** (new) — context-restoration helper:
+  - `session-recap.sh` → last 10 entries
+  - `session-recap.sh 20` → last 20 entries
+  - `session-recap.sh 2026-06` → all June 2026 entries
+  - `session-recap.sh today` → today's entries only (UTC)
+  - Parses CHANGELOG.md heading shape `## YYYY-MM-DD — pass-N — summary`.
+  - Awk-based, no JSON parsing, fast.
+  - shellcheck clean.
+
+### Verified
+- `bash bin/session-recap.sh 3` → returns last 3 entries with heading + 5-line summary each.
+- `bash bin/session-recap.sh today` → returns 17 entries (correct for today's pass-16 through pass-32).
+- shellcheck `-x -S warning` → 0.
+- shfmt → 0 diff.
+- pack integrity → clean.
+
 ## 2026-06-09 — pass-32 — ruff: all 7 remaining errors fixed
 
 ### Closes pass-31 Next 1 — Python lint pyramid clean
