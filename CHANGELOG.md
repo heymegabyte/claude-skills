@@ -1,5 +1,21 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-4 — _packs cross-link integrity 100% + ruff F-rules clean
+
+### _packs/ cross-link audit + repair
+- `_packs/ai.yml` — drop dangling `ai-permanence` ref (it's a CLAUDE.md inline section, not a standalone rule); replace with `ai-agent-security` (the actual orphan that belongs here).
+- `_packs/core.yml` — add 7 orphans: `delegate-when-saturated`, `god-tier-engineering`, `naming-no-transient-prefixes`, `package-preference-registry`, `solo-rituals-eliminated`, `supervisor-skills-index`, `todos-are-roadmap`.
+- `_packs/backend.yml` — add `feature-module-architecture`, `collaboration-sync-supervisor`.
+- `_packs/content.yml` — add `forms-editors-content-supervisor`.
+- `_packs/infra.yml` — add `email-deliverability`.
+- **Result**: every rule file is now in ≥1 pack; no pack references a missing rule. Verified: `comm -23 <(packs) <(rules)` + `comm -23 <(rules) <(packs)` both empty.
+
+### Python hooks (ruff)
+- brew installed `ruff` (Q2-2026 latest).
+- `ruff check --fix --select F` over `~/.claude/hooks/*.py` → 2 F401 unused-import fixes applied (local, ~/.claude not git-tracked; covered by tar backup from pass-1).
+- ruff F-rules across all 7 hooks: **0 errors**.
+- E501 line-too-long left (cosmetic; 88-col limit too tight for hook constants).
+
 ## 2026-06-08 — pass-3 — full-lint-clean: markdownlint 0 errors + actionlint 0 issues
 
 ### Markdownlint config tightened (silence false-positives)

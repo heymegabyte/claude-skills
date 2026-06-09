@@ -17,3 +17,5 @@ members:
   - rules/secret-provisioning
   - rules/secret-auto-provisioning
   - rules/payments-routing
+  - rules/feature-module-architecture
+  - rules/collaboration-sync-supervisor

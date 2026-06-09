@@ -8,7 +8,7 @@ members:
   - rules/event-sourced-build-progress
   - rules/ai-agent-supervisor
   - rules/ai-seniority
-  - rules/ai-permanence
+  - rules/ai-agent-security
   - rules/model-routing
   - rules/prompt-cache
   - rules/opus-quota-fallback

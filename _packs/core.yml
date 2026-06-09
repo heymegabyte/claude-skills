@@ -23,3 +23,10 @@ members:
   - rules/proactive-improvements
   - rules/auto-integrate-recs
   - rules/context-spillover
+  - rules/delegate-when-saturated
+  - rules/god-tier-engineering
+  - rules/naming-no-transient-prefixes
+  - rules/package-preference-registry
+  - rules/solo-rituals-eliminated
+  - rules/supervisor-skills-index
+  - rules/todos-are-roadmap

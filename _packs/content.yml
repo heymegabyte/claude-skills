@@ -6,3 +6,4 @@ members:
   - rules/citations
   - rules/timeline-authenticity
   - rules/image-quality
+  - rules/forms-editors-content-supervisor
