@@ -1,5 +1,25 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-3 — full-lint-clean: markdownlint 0 errors + actionlint 0 issues
+
+### Markdownlint config tightened (silence false-positives)
+- `.markdownlint.jsonc` — disable MD040 (fenced-code-language: many code excerpts intentionally unmarked), MD045 (alt-text on inline brand favicons noisy), MD060 (table-column-style misdetects Brian's tight tables as missing-pipe).
+- Result: `npx markdownlint-cli2 "rules/*.md" "commands/*.md"` → **0 errors** across 98 files.
+
+### actionlint
+- `.github/workflows/publish.yml`:
+  - SC2001 inline `# shellcheck disable=` before `sed 's/^  - //'` — kept for line-strip clarity over `${var#prefix}`.
+  - SC2015 inline disable before `git diff --cached --quiet && echo "No changes" || git commit` — intentional CI idiom; echo cannot fail.
+- Result: `actionlint .github/workflows/*.yml` → **0 issues**.
+
+### Dedupe scan
+- `spartan-ui-only.md` (policy: which kit, no others) vs `spartan-ui-design-system.md` (implementation: pattern library) → distinct purposes, kept separate. Cross-link via `stack-selector` + `angular-large-app-supervisor` already in place.
+
+### Verified
+- markdownlint: 98 files, 0 errors.
+- actionlint: 0 issues.
+- shellcheck `-x -S warning bin/*.sh scripts/*.sh`: 0 warnings (unchanged from pass-2).
+
 ## 2026-06-08 — pass-2 — shfmt + shellcheck-clean + actionlint + yamllint
 
 ### Shell scripts

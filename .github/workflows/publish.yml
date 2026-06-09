@@ -49,6 +49,7 @@ jobs:
               fi
               if $IN_SUBMODULES; then
                 if echo "$line" | grep -q '^  - '; then
+                  # shellcheck disable=SC2001
                   FILE=$(echo "$line" | sed 's/^  - //')
                   if [ ! -f "${dir}${FILE}" ]; then
                     echo "::error::${SKILL}: submodule ${FILE} not found on disk"
@@ -390,6 +391,7 @@ jobs:
             .kilo/ .roo/ .continue/ .cursor/ .windsurf/ .openhands/ \
             .aiassistant/ .kiro/ .void/ .bolt/ QODO.MD \
             .claude-plugin/ replit.md .devin/ .goose/
+          # shellcheck disable=SC2015  # intentional: stage→if-empty-echo else-commit; echo cannot fail
           git diff --cached --quiet && echo "No changes" || git commit -m "chore: sync cross-platform rule files [skip ci]"
           git push || true
 
