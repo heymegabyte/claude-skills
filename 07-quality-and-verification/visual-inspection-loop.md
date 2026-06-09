@@ -2,11 +2,13 @@
 name: "Visual Inspection Loop"
 version: "3.0.0"
 updated: "2026-05-12"
-description: "Dual-vision protocol: Claude Vision (Sonnet 4.6 via Max 20x OAuth, FREE primary, fires everywhere) + GPT-4o Vision (METERED judge/arbiter, $0.50/build cap, hero/ATF + brand-fidelity + final pre-publish gate + disagreement arbitration). Screenshot → Tier 1 a11y tree+axe-core FREE → Tier 2 Claude Vision FREE → Tier 3 GPT-4o METERED. Three-round max."
+description: "Dual-vision protocol: Claude Vision (Sonnet 4.6 via Max 20x OAuth, FREE primary, fires everywhere) + GPT Image 2 vision (METERED judge/arbiter, $0.50/build cap, hero/ATF + brand-fidelity + final pre-publish gate + disagreement arbitration). Screenshot → Tier 1 a11y tree+axe-core FREE → Tier 2 Claude Vision FREE → Tier 3 GPT Image 2 vision METERED. Three-round max."
 related: completeness-verification.md (5-pass full-project), ui-completeness-sweep.md (pre-done placeholder detection), ~/.claude/rules/visual-inspection.md (canonical rule), ~/.claude/rules/auth-spawned-claude.md (Max 20x OAuth)
 ---
 
 # Visual Inspection Loop (Dual-Vision)
+
+> **Model migration note (pass-74, 2026-06-09)**: References to `GPT-4o Vision` migrated to **GPT Image 2 vision** (current OpenAI multimodal flagship). Per `platform.openai.com/docs/deprecations`: GPT-4o retired 2026-02-13. Dual-vision protocol (Claude primary + OpenAI judge) unchanged — only API endpoint names updated. Cost cap ($0.50/build) was computed against legacy GPT-4o pricing; re-verify against current `gpt-image-2` rates.
 
 ## Canonical Rule
 
@@ -21,7 +23,7 @@ See `~/.claude/rules/visual-inspection.md` — supreme dual-vision doctrine. Thi
 - No marginal cost
 - Subject only to Max 20x 5hr / weekly rate windows
 
-### GPT-4o Vision (JUDGE, METERED, $0.50/build cap)
+### GPT Image 2 vision (JUDGE, METERED, $0.50/build cap)
 
 Reserved for highest-value checkpoints:
 
@@ -38,13 +40,13 @@ Reserved for highest-value checkpoints:
 - Persistent disagreement → third pass (Computer-Use screenshot + checklist)
 - Never override <8 with self-judgment
 
-## Cost-Risk Matrix (***BEFORE ANY GPT-4o CALL***)
+## Cost-Risk Matrix (***BEFORE ANY GPT Image 2 vision CALL***)
 
 ### Claude Vision
 
 ZERO marginal cost. 6bp × N routes × every iteration — uncapped within Max 20x rate.
 
-### GPT-4o per-build cap
+### GPT Image 2 vision per-build cap
 
 **$0.50 hard**. Allocation:
 
@@ -57,29 +59,29 @@ Beyond cap → escalate to memory pin + ship with carryover, never silently over
 
 ### Build tiers
 
-- **Cost-sensitive** (free-tier, paid-floor) — Claude Vision ONLY, GPT-4o reserved for single final pre-publish call on homepage
-- **Brand-critical** (paying client, founder portfolio, flagship SaaS) — full $0.50 GPT-4o budget + Claude Vision at every checkpoint
+- **Cost-sensitive** (free-tier, paid-floor) — Claude Vision ONLY, GPT Image 2 vision reserved for single final pre-publish call on homepage
+- **Brand-critical** (paying client, founder portfolio, flagship SaaS) — full $0.50 GPT Image 2 vision budget + Claude Vision at every checkpoint
 
-**Decision:** code in `external_llm.ts` checks `site.pricing_tier` + `vision_budget_remaining_cents` before each GPT-4o call. Auto-degrade to Claude Vision when budget exhausted.
+**Decision:** code in `external_llm.ts` checks `site.pricing_tier` + `vision_budget_remaining_cents` before each GPT Image 2 vision call. Auto-degrade to Claude Vision when budget exhausted.
 
 ## Where Dual-Vision Fires
 
-- **Per-slice (skill 06)** — Claude Vision YES (2bp: 375+1280) | GPT-4o NO — trigger: after slice deploys to preview
-- **Per-section (skill 15)** — Claude Vision YES (1bp: 1280) | GPT-4o NO — trigger: after section renders
-- **Per-route 6bp (skill 15)** — Claude Vision YES (6bp full) | GPT-4o NO (unless route=homepage) — trigger: after route assembles
-- **Iteration diff (skill 15)** — Claude Vision YES (compare prev + current screenshots) | GPT-4o NO — trigger: progressive rebuild loop
-- **Brand-fidelity vs source** — Claude Vision YES (auxiliary) | GPT-4o YES (primary judge) — trigger: once per build, hero/ATF
-- **Hero / ATF final** — Claude Vision YES | GPT-4o YES (judge) — trigger: pre-publish gate
-- **Final pre-publish homepage 6bp** — Claude Vision YES (every route) | GPT-4o YES (homepage only) — trigger: last gate before mark-published
-- **Disagreement arbitration** — GPT-4o YES (tiebreaker) — trigger: when Claude <8 or Claude + a11y disagree
+- **Per-slice (skill 06)** — Claude Vision YES (2bp: 375+1280) | GPT Image 2 vision NO — trigger: after slice deploys to preview
+- **Per-section (skill 15)** — Claude Vision YES (1bp: 1280) | GPT Image 2 vision NO — trigger: after section renders
+- **Per-route 6bp (skill 15)** — Claude Vision YES (6bp full) | GPT Image 2 vision NO (unless route=homepage) — trigger: after route assembles
+- **Iteration diff (skill 15)** — Claude Vision YES (compare prev + current screenshots) | GPT Image 2 vision NO — trigger: progressive rebuild loop
+- **Brand-fidelity vs source** — Claude Vision YES (auxiliary) | GPT Image 2 vision YES (primary judge) — trigger: once per build, hero/ATF
+- **Hero / ATF final** — Claude Vision YES | GPT Image 2 vision YES (judge) — trigger: pre-publish gate
+- **Final pre-publish homepage 6bp** — Claude Vision YES (every route) | GPT Image 2 vision YES (homepage only) — trigger: last gate before mark-published
+- **Disagreement arbitration** — GPT Image 2 vision YES (tiebreaker) — trigger: when Claude <8 or Claude + a11y disagree
 
 ## Tier-1 → Tier-2 → Tier-3 Order (***ALWAYS THIS ORDER***)
 
 1. **Tier 1 (FREE, FAST)** — Playwright a11y tree 6bp + axe-core scan + DOM-walker contrast (computed-bg ancestry) + computed-style overflow check. Catches ~80% of issues with zero token spend. Run FIRST every time.
 2. **Tier 2 (FREE on Max 20x)** — Claude Vision on screenshots Tier 1 cannot resolve — aesthetics, brand match, hierarchy, motion presence, hero impact, "does it feel cinematic?"
-3. **Tier 3 (METERED, CAPPED)** — GPT-4o on critical checkpoints + arbitration. Reserve budget for what Tier 1+2 cannot resolve.
+3. **Tier 3 (METERED, CAPPED)** — GPT Image 2 vision on critical checkpoints + arbitration. Reserve budget for what Tier 1+2 cannot resolve.
 
-## Loop (3-round max, $0.50 GPT-4o cap)
+## Loop (3-round max, $0.50 GPT Image 2 vision cap)
 
 1. Deploy to production / staging
 2. Tier 1 — Playwright a11y tree + axe-core + DOM-walker (FREE) ALL pages 6bp
@@ -88,10 +90,10 @@ Beyond cap → escalate to memory pin + ship with carryover, never silently over
 5. Fix issues scoring <8 from Claude Vision
 6. Re-deploy + purge
 7. Round 2: repeat Tier 1 → Tier 2 to verify fixes
-8. Round 3 (if still <8): Tier 3 — GPT-4o arbiter on remaining surfaces + final pre-publish call
+8. Round 3 (if still <8): Tier 3 — GPT Image 2 vision arbiter on remaining surfaces + final pre-publish call
 9. After round 3: report carryover to `_iteration_log.json`, ship (progressive rebuild catches next iteration)
 
-**Per round budget check:** track GPT-4o spend in cents. When `vision_budget_remaining_cents < 10` → skip GPT-4o, ship with Claude Vision verdict.
+**Per round budget check:** track GPT Image 2 vision spend in cents. When `vision_budget_remaining_cents < 10` → skip GPT Image 2 vision, ship with Claude Vision verdict.
 
 ## Screenshot Capture Template (Dual-Vision)
 
@@ -106,9 +108,9 @@ const ALL_BREAKPOINTS = [
 ];
 // Claude Vision (FREE) — every breakpoint
 const CLAUDE_VISION_BREAKPOINTS = ALL_BREAKPOINTS;
-// GPT-4o (METERED) — homepage only at final gate
+// GPT Image 2 vision (METERED) — homepage only at final gate
 const GPT4O_BREAKPOINTS = ALL_BREAKPOINTS;
-// GPT-4o brand-fidelity — single ATF screenshot
+// GPT Image 2 vision brand-fidelity — single ATF screenshot
 const BRAND_FIDELITY_BP = [{ name: 'ATF', width: 1280, height: 720 }];
 
 async function captureAllScreenshots(page: Page, pages: string[], outputDir: string) {
@@ -162,7 +164,7 @@ async function claudeVisionCritique(screenshotPath: string, context: { route: st
 
 **Fallback:** if OAuth refresh fails OR running outside Max 20x — `claude-sonnet-4-6` via API key — log `auth_mode=api-key` to D1 audit, alert.
 
-## GPT-4o Vision Call (JUDGE — METERED, $0.50 cap)
+## GPT Image 2 vision Call (JUDGE — METERED, $0.50 cap)
 
 ```typescript
 async function gpt4oVisionJudge(screenshotPath: string, context: { route: string; breakpoint: string; brand?: BrandJson; sourceScreenshot?: string }, budgetCents: number): Promise<DualVisionResult | null> {
@@ -224,7 +226,7 @@ async function dualVisionGate(screenshot: string, ctx: VisionCtx, budget: Budget
   if (claudeResult.score >= 8 && ctx.tier !== 'final-gate' && ctx.tier !== 'brand-fidelity' && ctx.tier !== 'hero-atf') {
     return { pass: true, remediation: [] };
   }
-  // Critical checkpoint OR Claude flagged issues → invoke GPT-4o judge
+  // Critical checkpoint OR Claude flagged issues → invoke GPT Image 2 vision judge
   const gpt4oResult = budget.remainingCents >= 10 ? await gpt4oVisionJudge(screenshot, ctx, budget.remainingCents) : null;
   if (!gpt4oResult) {
     return { pass: claudeResult.score >= 8, remediation: claudeResult.issues.filter(i => i.severity !== 'minor') };
@@ -266,25 +268,25 @@ Return JSON: { score, cinematic_floor, latest_tech_flex, brand_fidelity, hero_im
 
 ## When Vision vs Accessibility Tree
 
-- **Does it look good?** — Claude Vision YES (free) | GPT-4o YES (judge) | a11y Tree NO
-- **Layout broken?** — Claude Vision YES (free) | GPT-4o YES (judge) | a11y Tree NO
-- **Color on-brand?** — Claude Vision YES (free) | GPT-4o YES (final) | a11y Tree NO
-- **Brand-fidelity vs source?** — Claude Vision YES (auxiliary) | GPT-4o YES (primary) | a11y Tree NO
-- **Hero ATF impact?** — Claude Vision YES (every iter) | GPT-4o YES (final) | a11y Tree NO
-- **Visual hierarchy?** — Claude Vision YES (every iter) | GPT-4o YES (final) | a11y Tree NO
-- **Cinematic floor (motion)?** — Claude Vision YES (every iter) | GPT-4o YES (final) | a11y Tree NO
-- **Latest tech flex?** — Claude Vision YES (every iter) | GPT-4o YES (final) | a11y Tree NO
-- **Button works?** — Claude Vision NO | GPT-4o NO | a11y Tree YES (Stagehand)
-- **Screen reader usable?** — Claude Vision NO | GPT-4o NO | a11y Tree YES (axe-core)
-- **Form submits?** — Claude Vision NO | GPT-4o NO | a11y Tree YES (Stagehand)
-- **Apple-approved aesthetics?** — Claude Vision YES (free, gate) | GPT-4o YES (final judge) | a11y Tree NO
+- **Does it look good?** — Claude Vision YES (free) | GPT Image 2 vision YES (judge) | a11y Tree NO
+- **Layout broken?** — Claude Vision YES (free) | GPT Image 2 vision YES (judge) | a11y Tree NO
+- **Color on-brand?** — Claude Vision YES (free) | GPT Image 2 vision YES (final) | a11y Tree NO
+- **Brand-fidelity vs source?** — Claude Vision YES (auxiliary) | GPT Image 2 vision YES (primary) | a11y Tree NO
+- **Hero ATF impact?** — Claude Vision YES (every iter) | GPT Image 2 vision YES (final) | a11y Tree NO
+- **Visual hierarchy?** — Claude Vision YES (every iter) | GPT Image 2 vision YES (final) | a11y Tree NO
+- **Cinematic floor (motion)?** — Claude Vision YES (every iter) | GPT Image 2 vision YES (final) | a11y Tree NO
+- **Latest tech flex?** — Claude Vision YES (every iter) | GPT Image 2 vision YES (final) | a11y Tree NO
+- **Button works?** — Claude Vision NO | GPT Image 2 vision NO | a11y Tree YES (Stagehand)
+- **Screen reader usable?** — Claude Vision NO | GPT Image 2 vision NO | a11y Tree YES (axe-core)
+- **Form submits?** — Claude Vision NO | GPT Image 2 vision NO | a11y Tree YES (Stagehand)
+- **Apple-approved aesthetics?** — Claude Vision YES (free, gate) | GPT Image 2 vision YES (final judge) | a11y Tree NO
 
-**Use ALL.** Tier 1 a11y tree (free, fast) → Tier 2 Claude Vision (free on Max 20x, every iter) → Tier 3 GPT-4o (metered, capped, judge).
+**Use ALL.** Tier 1 a11y tree (free, fast) → Tier 2 Claude Vision (free on Max 20x, every iter) → Tier 3 GPT Image 2 vision (metered, capped, judge).
 
 ## Auth Path
 
 - **Container / spawned-CLI Claude Vision** — Max 20x OAuth (NEVER API key — see `auth-spawned-claude.md`). Log `auth_mode` to D1 every call. API-key fallback alert.
-- **GPT-4o** — always API key (`OPENAI_API_KEY`). Log `cost_cents` per call.
+- **GPT Image 2 vision** — always API key (`OPENAI_API_KEY`). Log `cost_cents` per call.
 
 ## Reference Incidents
 

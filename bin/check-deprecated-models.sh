@@ -66,7 +66,7 @@ for entry in "${DENYLIST[@]}"; do
       SKILL_PROFILES.md \
       README.md \
       2>/dev/null \
-      | grep -viE 'retired|deprecat|removed.*api|sunset|replaced.*by|legacy|formerly|previous(ly)?' \
+      | grep -viE 'retired|deprecat|removed.*api|sunset|replaced.*by|legacy|formerly|previous(ly)?|migrat(e|ed|ion)' \
       | grep -v ':# ' \
       | grep -vE ':[0-9]+:- `[^ `]+`$' \
       || true

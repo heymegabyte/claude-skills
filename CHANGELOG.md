@@ -1,5 +1,80 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-74 — Migrate `visual-inspection-loop.md` + codify 2 patterns: 226 → 190 hits
+
+### Closes pass-73 candidates 1 (migrate visual-inspection-loop) + 2 (codify sed-then-Edit)
+
+### Bulk sed migration of `07-quality-and-verification/visual-inspection-loop.md`
+
+293-line file, 37 deprecated-model hits. Applied same sed migration pattern as pass-73:
+
+- `GPT-4o` → `GPT Image 2 vision` (3 instances of "GPT-4o Vision" → "GPT Image 2 vision Vision" stutter caught in-pass + fixed)
+- DALL-E variants → GPT Image 1.5 / gpt-image-1.5
+- Added migration blockquote preface (5th GPT-4o mention — filtered by detector via new `migrat*` filter)
+
+### Two codified incidents added to `rules/lint-doctrine.md`
+
+**Row 1: `sed -i` modifies a file outside the Read-tracking layer.**
+
+> When `sed -i` precedes `Edit` on the same file, always `Read` the file once first to refresh the tracker. Same for `awk -i inplace`, `perl -pi -e`, any in-place rewrite. Bulk-rewrite tools bypass the harness; the Read is what re-syncs.
+
+Source: pass-73 sed-migrated `media-acquisition.md` then tried to Edit-add a migration preface; first Edit failed. Pass-74 caught it again with the double-Vision cleanup.
+
+**Row 2: Substring substitution creates awkward stutter.**
+
+> After bulk substring substitution, grep for stutter patterns: `<replacement> <next-likely-suffix>` AND tail tokens of the original alongside the new. Either pre-clean the source (`s/GPT-4o Vision/GPT-4o/g` first) or post-clean (`s/<new> <stutter>/<new>/g`).
+
+Source: pass-74 sed produced "GPT Image 2 vision Vision" in 3 places. Caught + fixed with a follow-up sed pass.
+
+### Detector filter improvement
+
+`bin/check-deprecated-models.sh` filter extended to also exclude lines containing `migrat(e|ed|ion)`. Migration notes that self-mention the deprecated identifier (explanation prose) now correctly self-document without tripping the detector.
+
+```diff
+-grep -viE 'retired|deprecat|removed.*api|sunset|replaced.*by|legacy|formerly|previous(ly)?'
++grep -viE 'retired|deprecat|removed.*api|sunset|replaced.*by|legacy|formerly|previous(ly)?|migrat(e|ed|ion)'
+```
+
+Effect: pass-73's media-acquisition.md migration note (which contained "References to `DALL-E 3` / `DALL-E` migrated to GPT Image 1.5") is now correctly filtered. Without this fix, every migrated file would add 1-2 spurious hits via its own migration note.
+
+### Detector count drop
+
+| Pattern | Pre-pass-74 | Post-pass-74 | Δ |
+|---|---|---|---|
+| GPT-4o | 165 | 129 | -36 |
+| DALL-E | 56 | 56 | 0 |
+| DALL·E | 5 | 5 | 0 |
+| TOTAL | 226 | **190** | **-36** |
+
+The -36 figure combines: -37 from sed migration of visual-inspection-loop.md, +1 from new migration note's "GPT-4o" mention (would have added 5+ without the `migrat*` filter improvement).
+
+### Pass-58→74 closure-loop summary
+
+- **11 latent bugs caught + 81 references migrated** across pass-73 + pass-74
+- **6 disciplines codified** in `lint-doctrine.md` (added: sed-then-Edit, sed-stutter)
+- **5 audit scripts** mechanized
+- `bin/lib/emit-json.sh` lib: 10 callers
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                        # ✓ 9/9 green
+bash bin/check-deprecated-models.sh 2>&1 | grep SUMMARY  # 190 total hits
+```
+
+### What was NOT done
+
+- 190 remaining deprecated-identifier migrations — pass-75→ iteratively
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-75)
+
+- Migrate next dense file: `12-media-orchestration/build-breaking-rules.md` (30 hits)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-73 — Migrate densest file (`media-acquisition.md`): 270 → 226 hits
 
 ### Closes pass-72 candidate 1 (drive count down, start with densest file)
