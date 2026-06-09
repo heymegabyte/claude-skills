@@ -131,6 +131,28 @@ Surface w/ deeplinked URLs + reason. Never autopilot.
 - `STRIPE_CONNECT_CLIENT_ID` — Connect platform enablement (brand review)
 - `APPLE_DEVELOPER_*` — Apple Dev Program ($99/yr + review)
 - `GOOGLE_PLAY_*` — Google Play Console ($25 + review)
+- `CHECKR_API_KEY` — **sales-gated**. Direct-signup accounts get NO self-serve API key (no "Create API Key" button anywhere in dashboard). Request via `https://checkr.com/contact-us` → Sales → 1-3 business day credentialing call → Developers tab unlocks. Self-serve alternatives if shipping now: `PERSONA_API_KEY` (`https://withpersona.com`) or `ONFIDO_API_TOKEN` (`https://onfido.com`) — both grant sandbox keys at signup.
+
+## Vendor-onboarding gating reality
+
+Some vendors LOOK self-serve but gate API access behind a sales call. Symptom: logged in, dashboard shows no "API Keys" / "Developer Settings" / "Create Key" button anywhere. Don't keep searching — it's not hidden, it's gated.
+
+| Vendor | Self-serve API? | Alt if blocked |
+|--|--|--|
+| Stripe | ✅ instant | n/a |
+| Twilio | ✅ instant | n/a |
+| Resend | ✅ instant | n/a |
+| Anthropic | ✅ instant | n/a |
+| OpenAI | ✅ instant | n/a |
+| Cloudflare | ✅ instant | n/a |
+| Checkr | ❌ sales call | Persona, Onfido |
+| Plaid | ⚠️ tier-gated (Sandbox=instant, Development=approval, Production=approval) | — |
+| Trustpilot | ❌ paid only | reviews.io |
+| Mailchimp | ✅ instant (Marketing API) | — |
+| Stripe Connect | ⚠️ brand review for platform | — |
+| Apple Developer | ❌ $99/yr + manual review | — |
+
+Update this list as each vendor's reality surfaces (per `prompt-as-training-signal` §6).
 
 ## Security model
 

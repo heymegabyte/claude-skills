@@ -21,6 +21,9 @@ jobs:
       - name: Validate skills
         run: bash scripts/validate-skills.sh
 
+      - name: Validate pack cross-link integrity
+        run: node scripts/validate-packs.mjs
+
       - name: Check doc counts
         run: |
           EXPECTED=$(grep -o '[0-9]* reference docs' README.md | grep -o '[0-9]*')

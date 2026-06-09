@@ -1,5 +1,28 @@
 # Skills System Changelog
 
+## 2026-06-08 — pass-7 — installer self-test PASS + CI gate + vendor-gating lessons
+
+### Installer self-test (on /tmp sandbox)
+- Seeded minimal Node + GH Actions + Shell sandbox project.
+- Ran `bash bin/install-lint-stack.sh /tmp/lint-stack-test-XXXX`:
+  - ✓ Stack detection: Node + Actions + Shell
+  - ✓ Copied 12 templates: lefthook.yml, .editorconfig, .markdownlint.jsonc, .yamllint.yml, jscpd.json, .semgrep/baseline.yml, .czrc, commitlint.config.cjs, release.config.cjs, .prettierrc.cjs, .stylelintrc.cjs, eslint.config.mjs
+  - ✓ Wired 8 package.json scripts (lint/lint:fix/format/commit/release/lint:semgrep/lint:knip/lint:jscpd)
+  - ⚠ npm install deferred (no-network in sandbox test) — graceful fallback verified
+  - ✓ Idempotent backup + cleanup
+
+### CI gate added (publish.yml)
+- New step "Validate pack cross-link integrity" runs `node scripts/validate-packs.mjs`.
+- Drift now blocks merge — every new rule must land in ≥1 pack; every pack-ref must resolve.
+
+### Vendor-API-onboarding gotchas captured (per prompt-as-training-signal §6)
+- `rules/secret-auto-provisioning.md` Tier 4 += `CHECKR_API_KEY` (sales-gated, no self-serve button, 1-3d credentialing call).
+- New §"Vendor-onboarding gating reality" table catalogs self-serve vs gated APIs:
+  - Self-serve: Stripe, Twilio, Resend, Anthropic, OpenAI, Cloudflare, Mailchimp.
+  - Gated: Checkr (sales), Trustpilot (paid), Apple Developer ($99 + review), Stripe Connect (brand review).
+  - Tiered: Plaid (sandbox instant, dev/prod approval).
+- Surfaced as: "if dashboard shows no API Keys section anywhere, it's not hidden, it's gated".
+
 ## 2026-06-08 — pass-6 — lint-stack verified + 3 config shells + pack validator
 
 ### npm publish status verified (npm view)
