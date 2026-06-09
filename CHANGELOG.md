@@ -1,5 +1,69 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-68 — `lint-all --quiet` mode (compress 4 info sections to 1 line)
+
+### Closes pass-67 candidate 2 (`lint-all --quiet` mode)
+
+The 4-info-section output (pricing · agent-routing · pack-frontmatter · agent-fallback) was approaching saturation — each clean pre-commit run printed ~40 lines of "✓ all clean" reassurance. Adding `--quiet` mode compresses the info section to a 1-line summary when ALL clean, and expands to full detail when ANY drift.
+
+### Mechanics
+
+`bin/lint-all.sh` accepts new `--quiet` flag:
+
+- Without `--quiet`: prints all 4 info sections (current behavior, used by `npm run lint`)
+- With `--quiet`: buffers info-section output. If `INFO_DRIFT=0` (all 4 clean), prints a 1-line summary. If any drift, prints full output (so the drift is never hidden).
+
+The buffer-then-emit approach means quiet mode NEVER hides actual issues — only routine "everything clean" reassurance.
+
+### Pre-commit hook updated to use `--quiet`
+
+`bin/install-hooks.sh` rewrites `.git/hooks/pre-commit` to call `bash bin/lint-all.sh --quiet` instead of `npm run lint --silent`. Same gate enforcement, less noise on every commit. To re-install on existing checkouts: `bash bin/install-hooks.sh`.
+
+### Output comparison (clean state)
+
+```text
+# Verbose (npm run lint or bash bin/lint-all.sh):
+━━━ 9 gates output ··· then 4 detailed info sections ···
+SUMMARY: 9 pass · 0 fail · 0 skip
+✓ lint-all CLEAN — ready to push
+(61 lines)
+
+# Quiet (pre-commit hook):
+━━━ 9 gates output ···
+━━━ ℹ 4 audit sections clean (pricing · agent-routing · pack-frontmatter · agent-fallback) — use `npm run lint` for full output
+SUMMARY: 9 pass · 0 fail · 0 skip
+✓ lint-all CLEAN — ready to push
+(32 lines)
+```
+
+### Saturation pattern codification
+
+The 4-info-section saturation that triggered this pass is a general lint-stack growth pattern: adding info gates is cheap (each takes ~5 LOC in lint-all + ~120 LOC in a new bin script) but each new gate adds ~6-8 lines to the pre-commit output. At ~6-8 info gates, the pre-commit output becomes unscannable. Per pass-67's Rec, `--quiet` solves this through compression-on-clean.
+
+**Codified addition**: when adding a new info gate to lint-all, ensure it works with both verbose AND quiet modes. The `emitInfoSection` helper this pass introduced handles both paths automatically.
+
+### Verification
+
+```bash
+bash bin/lint-all.sh                    # verbose · 61 lines · all info sections shown
+bash bin/lint-all.sh --quiet            # quiet · 32 lines · info sections compressed to 1 line
+npm run lint                             # uses verbose mode (devs want detail on manual runs)
+git commit                               # uses --quiet via .git/hooks/pre-commit (auto-installed)
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-69)
+
+- Add `--json` aggregation across the 4 info sections (currently `--json` only covers the 9 main gates)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Extend `check-agent-fallback.sh` to all tiers (pass-67 Rec deferred)
+
+---
+
 ## 2026-06-09 — pass-67 — `bin/check-agent-fallback.sh` (9th lib caller)
 
 ### Closing pass-66 queue all gated; building new audit surface

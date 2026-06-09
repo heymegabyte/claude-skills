@@ -3,18 +3,24 @@
 # Per rules/lint-doctrine.md + rules/uniform-json-output.md.
 #
 # Usage:
-#   bash ~/.agentskills/bin/lint-all.sh [--json]
+#   bash ~/.agentskills/bin/lint-all.sh [--json] [--quiet]
 #
 # Each gate runs sequentially; exit code = number of failed gates. With --json,
 # emits {meta, gates:[{name,status,details}], summary:{pass,fail,skip,exit}}.
 # Human report → stderr, JSON → stdout (per uniform-json-output § Rules).
+#
+# --quiet: run the soft-info audit sections silently. If ANY info section finds
+# drift, print all info section output. If all clean, suppress info chatter.
+# Pre-commit hook uses --quiet to keep routine commits scannable.
 
 set -uo pipefail
 
 JSON=0
+QUIET=0
 for arg in "$@"; do
   case "$arg" in
     --json) JSON=1 ;;
+    --quiet) QUIET=1 ;;
   esac
 done
 
@@ -120,18 +126,41 @@ else
   skipGate "actionlint" "not installed (brew install actionlint OR go install github.com/rhysd/actionlint/cmd/actionlint@latest)"
 fi
 
-# Soft INFO gate (pass-63) — pricing-staleness report. Always succeeds at the
-# lint-all level; output is informational. Stale references should be tracked
-# via .github/workflows/pricing-check.yml's weekly cron, not block commits.
+# Soft INFO gates (pass-63→67) — 4 audit reports. With --quiet, buffer output;
+# only emit if any gate found drift. Without --quiet, emit always.
 if [ "$JSON" = "0" ]; then
-  logHeader "ℹ pricing-staleness (info-only, doesn't gate)"
-  bash "$SKILLS_ROOT/bin/check-pricing.sh" 2>&1 | tail -8 >&2 || true
-  logHeader "ℹ agent-routing drift (info-only, doesn't gate)"
-  bash "$SKILLS_ROOT/bin/check-agent-routing.sh" 2>&1 | tail -6 >&2 || true
-  logHeader "ℹ pack-frontmatter drift (info-only, doesn't gate)"
-  bash "$SKILLS_ROOT/bin/check-pack-frontmatter.sh" 2>&1 | tail -5 >&2 || true
-  logHeader "ℹ Opus agent fallback compliance (info-only, doesn't gate)"
-  bash "$SKILLS_ROOT/bin/check-agent-fallback.sh" 2>&1 | tail -4 >&2 || true
+  INFO_BUF=$(mktemp)
+  INFO_DRIFT=0
+
+  emitInfoSection() {
+    local title="$1"
+    local script="$2"
+    local tail_n="$3"
+    {
+      printf '\n━━━ %s\n' "$title"
+      if bash "$SKILLS_ROOT/$script" 2>&1 | tail -"$tail_n"; then
+        :
+      else
+        INFO_DRIFT=1
+      fi
+    } >>"$INFO_BUF"
+  }
+
+  emitInfoSection "ℹ pricing-staleness (info-only, doesn't gate)" \
+    "bin/check-pricing.sh" 8
+  emitInfoSection "ℹ agent-routing drift (info-only, doesn't gate)" \
+    "bin/check-agent-routing.sh" 6
+  emitInfoSection "ℹ pack-frontmatter drift (info-only, doesn't gate)" \
+    "bin/check-pack-frontmatter.sh" 5
+  emitInfoSection "ℹ Opus agent fallback compliance (info-only, doesn't gate)" \
+    "bin/check-agent-fallback.sh" 4
+
+  if [ "$QUIET" = "1" ] && [ "$INFO_DRIFT" = "0" ]; then
+    printf '\n━━━ ℹ 4 audit sections clean (pricing · agent-routing · pack-frontmatter · agent-fallback) — use `npm run lint` for full output\n' >&2
+  else
+    cat "$INFO_BUF" >&2
+  fi
+  rm -f "$INFO_BUF"
 fi
 
 EXIT=0
