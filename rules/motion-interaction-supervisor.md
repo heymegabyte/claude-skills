@@ -1,3 +1,14 @@
+---
+name: "motion-interaction-supervisor"
+priority: 3
+pack: "design"
+triggers:
+  - "motion"
+  - "animation"
+paths:
+  - "*"
+---
+
 # Motion + Interaction Supervisor
 
 Motion serves clarity and perceived speed, never spectacle. `prefers-reduced-motion` is always honored. Right tool per job. The motion arm of the supervisor system.

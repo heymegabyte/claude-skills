@@ -1,3 +1,16 @@
+---
+name: "model-routing"
+priority: 2
+pack: "ai"
+triggers:
+  - "opus"
+  - "sonnet"
+  - "haiku"
+  - "claude model"
+paths:
+  - "*"
+---
+
 # Model Routing
 
 ## Opus 4.7 (`claude-opus-4-7`)

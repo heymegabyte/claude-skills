@@ -1,3 +1,17 @@
+---
+name: "supreme-polish"
+priority: 3
+pack: "polish"
+triggers:
+  - "polish"
+  - "100 ideas"
+  - "audit"
+  - "pixel perfect"
+  - "meta perfect"
+paths:
+  - "*"
+---
+
 # Supreme Polish + 100-Ideas Audit
 
 ## Trigger

@@ -1,3 +1,12 @@
+---
+name: "monitor-orchestration"
+priority: 1
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Monitor Orchestration + One-Prompt Completion
 
 Every multi-faceted user prompt MUST be treated as a single project to be completed in this turn — never split across follow-up prompts. The main thread acts as **Monitor**: decompose the brief, fan out parallel sub-agents for independent work, sequence dependent work, fold results back, verify, ship. Follow-up prompts on the same project signal a shortcoming in the prior turn; every such signal updates this rule set so the gap does not repeat.

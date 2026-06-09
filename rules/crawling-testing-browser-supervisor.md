@@ -1,3 +1,15 @@
+---
+name: "crawling-testing-browser-supervisor"
+priority: 3
+pack: "research"
+triggers:
+  - "crawl"
+  - "playwright"
+  - "scrape"
+paths:
+  - "*"
+---
+
 # Crawling + Testing + Browser Supervisor
 
 Vitest for units, Playwright for E2E + browser automation, Crawlee for OSS crawl/import pipelines. License-gated tools (Firecrawl, browser-use) only after review. The testing/automation-browser arm of the supervisor system.

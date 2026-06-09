@@ -1,3 +1,15 @@
+---
+name: "citations"
+priority: 3
+pack: "content"
+triggers:
+  - "cite"
+  - "citation"
+  - "apa"
+paths:
+  - "org:website_build"
+---
+
 # Citations & Sources
 
 ## Mandate (tiered by surface)

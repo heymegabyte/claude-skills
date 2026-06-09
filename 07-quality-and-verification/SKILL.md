@@ -14,6 +14,15 @@ submodules:
   - ai-vision-qa.md
   - multi-agent-testing.md
   - visual-regression.md
+priority: 2
+pack: "testing"
+triggers:
+  - "test"
+  - "verify"
+  - "qa"
+  - "lighthouse"
+paths:
+  - "*"
 ---
 
 # 07 — Quality and Verification

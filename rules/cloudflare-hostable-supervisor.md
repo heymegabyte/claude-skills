@@ -1,3 +1,13 @@
+---
+name: "cloudflare-hostable-supervisor"
+priority: 2
+pack: "backend"
+triggers:
+  - "cloudflare"
+paths:
+  - "concern:cloudflare-workers"
+---
+
 # Cloudflare-Hostable Supervisor
 
 Prefer systems that run on Cloudflare (Workers/Pages/D1/R2/KV/DO/Queues/Workflows/Vectorize/AI Gateway/Sandbox) without painting the product into a corner. Cloudflare-first is the default; every non-Cloudflare dependency hides behind an adapter so local dev stays reproducible and a swap never rewrites product code.

@@ -1,3 +1,12 @@
+---
+name: "code-style"
+priority: 2
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Code Style
 
 ## TypeScript (Google TS Style)

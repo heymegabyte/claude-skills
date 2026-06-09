@@ -1,3 +1,15 @@
+---
+name: "package-preference-registry"
+priority: 3
+pack: "core"
+triggers:
+  - "package"
+  - "library"
+  - "dep"
+paths:
+  - "*"
+---
+
 # Package Preference Registry
 
 The canonical list of PREFERRED packages + the decision discipline. **Listing ≠ installing.** A package enters the codebase ONLY when a real business requirement perfectly fits it. Every dependency must have a reason. Avoid bloat, demos-as-features, duplicate architectures, shallow integrations.

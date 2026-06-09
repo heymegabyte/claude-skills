@@ -1,3 +1,12 @@
+---
+name: "ai-agent-security"
+priority: 3
+pack: "misc"
+triggers: []
+paths:
+  - "*"
+---
+
 # AI Agent Security
 
 Every surface that consumes untrusted content through a model — AI chat panels, generated sites, RAG, tool-calling agents, MCP clients — is an attack surface. The model is a confused deputy by default: text it reads can become instructions it follows. Treat every model boundary as hostile-input territory, the same way `zod-everywhere` treats every data boundary. This is the AI-specific arm of `auth-permissions-security-supervisor`.

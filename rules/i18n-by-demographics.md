@@ -1,3 +1,17 @@
+---
+name: "i18n-by-demographics"
+priority: 3
+pack: "website-build"
+triggers:
+  - "spanish"
+  - "portuguese"
+  - "i18n"
+  - "translate"
+  - "locale"
+paths:
+  - "org:website_build"
+---
+
 # i18n by Community Demographics
 
 ## Rule

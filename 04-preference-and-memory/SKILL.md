@@ -10,6 +10,14 @@ license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
+priority: 2
+pack: "core"
+triggers:
+  - "remember"
+  - "memory"
+  - "preference"
+paths:
+  - "*"
 ---
 
 # 04 — Preference and Memory

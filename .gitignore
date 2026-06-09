@@ -7,3 +7,5 @@ node_modules/
 .claude/worktrees/
 .claude/progress.md
 .claude/scheduled_tasks.lock
+*.pyc
+__pycache__/

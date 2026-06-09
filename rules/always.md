@@ -1,3 +1,12 @@
+---
+name: "always"
+priority: 1
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Always
 
 > Numeric stats + first-load animation → `cinematic-ui-patterns.md` (`<app-rolling-counter>` + `appReveal` mandatory on every projectsites.dev surface).

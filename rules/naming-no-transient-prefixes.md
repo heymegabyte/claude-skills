@@ -1,3 +1,14 @@
+---
+name: "naming-no-transient-prefixes"
+priority: 3
+pack: "core"
+triggers:
+  - "wave"
+  - "rename"
+paths:
+  - "*"
+---
+
 # Naming — No Transient Prefixes
 
 Names describe WHAT a thing is, never WHEN it was built. Wave / sprint / phase /

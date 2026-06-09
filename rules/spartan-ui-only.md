@@ -1,3 +1,14 @@
+---
+name: "spartan-ui-only"
+priority: 2
+pack: "angular"
+triggers:
+  - "spartan"
+  - "angular"
+paths:
+  - "stack:angular-nx"
+---
+
 # Spartan UI Only for Angular
 
 When Angular is the chosen frontend per `angular-nx-monorepo`, **Spartan UI** is

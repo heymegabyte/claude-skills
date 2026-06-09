@@ -1,3 +1,14 @@
+---
+name: "evals"
+priority: 3
+pack: "ai"
+triggers:
+  - "eval"
+  - "regression"
+paths:
+  - "concern:ai-features"
+---
+
 # Evals
 
 AI is foundational to many product surfaces — and like every other foundational layer, it gets first-class quality tracking. AI-heavy behavior MUST have eval cases, structured rubrics, schema-validated results, and regression tracking. Code tests prove the plumbing works; evals prove the AI layer's quality holds across model + prompt + context changes. Evals are to AI what unit tests are to logic + Lighthouse is to perf — standard quality discipline applied to a load-bearing layer.

@@ -1,3 +1,12 @@
+---
+name: "auto-meta-work"
+priority: 2
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Auto Meta-Work
 
 ## Default behavior on every code prompt

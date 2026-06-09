@@ -1,3 +1,12 @@
+---
+name: "extra-mile"
+priority: 2
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Extra Mile
 
 ## Mandate

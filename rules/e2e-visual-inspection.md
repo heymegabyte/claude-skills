@@ -1,3 +1,15 @@
+---
+name: "e2e-visual-inspection"
+priority: 2
+pack: "testing"
+triggers:
+  - "visual"
+  - "screenshot"
+  - "ai vision"
+paths:
+  - "concern:e2e-testing"
+---
+
 # E2E Visual Inspection
 
 Every Playwright run randomly captures a sample of in-test screenshots and diffs them against committed baselines. Every never-before-seen route or component gets a mandatory AI-vision pass on first render. Tests that look correct but render broken are the silent killer — this rule kills them.

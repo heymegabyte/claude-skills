@@ -1,3 +1,12 @@
+---
+name: "solo-builder-doctrine"
+priority: 1
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Solo Builder Doctrine
 
 A one-person-plus-AI shop operates by different physics than a team shop. Corporate ritual exists to scale decision-making across humans; this stack has one human (Brian) + AI agents with senior-level capability. Most "best practices" are coordination overhead for problems that don't exist here. Cull them.

@@ -1,3 +1,17 @@
+---
+name: "database-data-supervisor"
+priority: 3
+pack: "backend"
+triggers:
+  - "database"
+  - "schema"
+  - "migration"
+  - "d1"
+  - "neon"
+paths:
+  - "concern:d1-database"
+---
+
 # Database + Data Supervisor
 
 Cloudflare-hostable data access first (D1/KV/R2/DO), Neon/Upstash behind adapters when CF can't meet the need. Every boundary validated, every table tenant-isolated, every change migrated. The data arm of the supervisor system.

@@ -1,3 +1,13 @@
+---
+name: "feature-module-architecture"
+priority: 2
+pack: "core"
+triggers:
+  - "feature module"
+paths:
+  - "*"
+---
+
 # Feature Module Architecture
 
 Every meaningful new product capability lands as a **feature module**. A scattered service file, a loose route handler, or a bare UI component without a flag is drift — and drift is a merge-blocker.

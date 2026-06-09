@@ -1,3 +1,12 @@
+---
+name: "solo-rituals-eliminated"
+priority: 2
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Solo Rituals Eliminated
 
 A pile of "best practices" exist to scale decision-making across teams of humans. They're not safety mechanisms; they're coordination overhead. For a solo + AI shop, they're tax with no return. This rule names them and kills them explicitly so future agents don't reflex-defer to ritual when shipping.

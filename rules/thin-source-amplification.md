@@ -1,3 +1,15 @@
+---
+name: "thin-source-amplification"
+priority: 3
+pack: "website-build"
+triggers:
+  - "thin"
+  - "no content"
+  - "stub"
+paths:
+  - "org:website_build"
+---
+
 # Thin-Source Content Amplification
 
 When source is informationally bare (4 pages, no blog/team/testimonials/press), manufacture useful, honest, search-worthy content from public data + industry knowledge + community context — without fabricating testimonials, employees, or customer quotes.

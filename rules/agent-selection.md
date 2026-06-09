@@ -1,3 +1,15 @@
+---
+name: "agent-selection"
+priority: 2
+pack: "core"
+triggers:
+  - "agent"
+  - "specialist"
+  - "spawn"
+paths:
+  - "*"
+---
+
 # Agent Selection & Diversity
 
 Every parallel fan-out assigns each work unit to the most-specialized agent. Never default to generic `general-purpose`. Generic-worker overuse causes weak specialization, duplicated effort, shallow reviews — killed at decomposition AND final-review gate.

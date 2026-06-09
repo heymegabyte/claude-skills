@@ -1,3 +1,17 @@
+---
+name: "website-build-doctrine"
+priority: 3
+pack: "website-build"
+triggers:
+  - "build website"
+  - "make a website"
+  - "build site"
+  - "rebuild"
+  - "make site"
+paths:
+  - "org:website_build"
+---
+
 # Website Build Doctrine
 
 Fires before, during, after every site build/rebuild. Anchors the rule + skill mesh.

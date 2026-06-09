@@ -1,0 +1,7 @@
+name: media
+description: Image/video/audio generation + optimization
+members:
+  - 12-media-orchestration
+  - rules/image-quality
+  - rules/timeline-authenticity
+  - rules/media-file-document-supervisor

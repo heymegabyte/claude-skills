@@ -1,3 +1,16 @@
+---
+name: "cinematic-ui-patterns"
+priority: 3
+pack: "design"
+triggers:
+  - "cinematic"
+  - "rolling counter"
+  - "stat"
+  - "appReveal"
+paths:
+  - "*"
+---
+
 # Cinematic UI Patterns
 
 ## Standing rule

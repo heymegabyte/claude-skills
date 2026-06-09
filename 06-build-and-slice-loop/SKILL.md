@@ -14,6 +14,14 @@ submodules:
   - vertical-slice.md
   - file-organization.md
   - anti-placeholder.md
+priority: 2
+pack: "core"
+triggers:
+  - "build feature"
+  - "implement"
+  - "slice"
+paths:
+  - "*"
 ---
 
 # 06 — Build and Slice Loop

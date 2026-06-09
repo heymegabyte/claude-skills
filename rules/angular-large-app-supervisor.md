@@ -1,3 +1,13 @@
+---
+name: "angular-large-app-supervisor"
+priority: 2
+pack: "angular"
+triggers:
+  - "angular"
+paths:
+  - "stack:angular-nx"
+---
+
 # Angular Large-App Supervisor
 
 The architecture doctrine for large, long-lived Angular apps (dashboards · SaaS · admin · PWA · multi-tenant · workflow systems · website factories · AI consoles · anything that may exceed 200k LOC). Fires whenever `stack-selector` picks Angular. ProjectSites.dev admin is governed by this.

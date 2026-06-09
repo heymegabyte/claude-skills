@@ -1,3 +1,17 @@
+---
+name: "frontend-stack"
+priority: 2
+pack: "frontend"
+triggers:
+  - "frontend"
+  - "react"
+  - "angular"
+  - "ui"
+paths:
+  - "stack:react-vite"
+  - "stack:angular-nx"
+---
+
 # Frontend Stack
 
 Never write hand-rolled HTML files for any user-facing surface.

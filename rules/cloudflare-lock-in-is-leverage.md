@@ -1,3 +1,14 @@
+---
+name: "cloudflare-lock-in-is-leverage"
+priority: 2
+pack: "backend"
+triggers:
+  - "cloudflare"
+  - "workers"
+paths:
+  - "concern:cloudflare-workers"
+---
+
 # Cloudflare Lock-In Is Leverage
 
 "Avoid vendor lock-in" is wisdom written for teams that have ten engineers and three years to migrate. The solo + AI shop has one builder and zero appetite for refactor projects that produce no customer value. Deep Cloudflare lock-in saves more wall-time than migration optionality ever pays back — every single time. The lock-in IS the leverage.

@@ -1,3 +1,15 @@
+---
+name: "media-file-document-supervisor"
+priority: 3
+pack: "backend"
+triggers:
+  - "upload"
+  - "pdf"
+  - "image upload"
+paths:
+  - "*"
+---
+
 # Media + File + Document Supervisor
 
 Uploads are validated, size-capped, type-restricted, compressed, and tenant-safe. OCR output is untrusted. The media arm of the supervisor system.

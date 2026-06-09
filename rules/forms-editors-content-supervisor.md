@@ -1,3 +1,16 @@
+---
+name: "forms-editors-content-supervisor"
+priority: 3
+pack: "backend"
+triggers:
+  - "form"
+  - "editor"
+  - "monaco"
+  - "tiptap"
+paths:
+  - "*"
+---
+
 # Forms + Editors + Content Supervisor
 
 Schema-driven forms and migratable, versioned editor state. Reactive Forms + NGX Formly for input; Monaco/Shiki/Lexical/GrapesJS for editing; every saved state is Zod-validated JSON, never an opaque blob. The forms/editors arm of the supervisor system.

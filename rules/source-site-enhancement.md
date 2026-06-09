@@ -1,3 +1,17 @@
+---
+name: "source-site-enhancement"
+priority: 3
+pack: "website-build"
+triggers:
+  - "rebuild"
+  - "optimize"
+  - "enhance"
+  - "modernize"
+  - "clone site"
+paths:
+  - "org:website_build"
+---
+
 # Source-Site Enhancement
 
 Fires on every `re(build|make|do)|rebuild|optimi[sz]ed?|enhanced?|upgraded?|modern(ize|ized)?|better version|clone|mirror|recreate` + domain prompt. Bare-domain prompts when domain resolves 200 = enhancement mode (never homepage-only).

@@ -10,6 +10,14 @@ license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
+priority: 3
+pack: "core"
+triggers:
+  - "what else"
+  - "ideas"
+  - "co-founder"
+paths:
+  - "*"
 ---
 
 # 14 — Independent Idea Engine

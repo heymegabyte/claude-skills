@@ -1,3 +1,14 @@
+---
+name: "opus-quota-fallback"
+priority: 2
+pack: "core"
+triggers:
+  - "quota"
+  - "fallback"
+paths:
+  - "*"
+---
+
 # Opus Quota Fallback
 
 When Opus weekly quota is exhausted or unreachable, the main thread MUST silently fall back to Sonnet without dropping work. No `/model` re-toggle needed each turn. No agent spawn failures left dangling. Brian keeps shipping; quality dips slightly, throughput stays.

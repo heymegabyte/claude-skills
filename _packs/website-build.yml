@@ -1,0 +1,22 @@
+name: website-build
+description: One-line "build/rebuild X.com" prompts. Phase -1 → Phase 8 doctrine.
+members:
+  - 16-cinematic-website-prime-directive
+  - 15-site-generation
+  - 02-goal-and-brief
+  - 09-brand-and-content-system
+  - 10-experience-and-design-system
+  - 11-motion-and-interaction-system
+  - 12-media-orchestration
+  - 14-independent-idea-engine
+  - rules/website-build-doctrine
+  - rules/competitor-research
+  - rules/source-site-enhancement
+  - rules/thin-source-amplification
+  - rules/i18n-by-demographics
+  - rules/citations
+  - rules/copy-writing
+  - rules/timeline-authenticity
+  - rules/image-quality
+  - rules/logo-contrast
+  - rules/supreme-polish

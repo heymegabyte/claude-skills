@@ -1,3 +1,14 @@
+---
+name: "sandbox-execution"
+priority: 3
+pack: "ai"
+triggers:
+  - "sandbox"
+  - "untrusted code"
+paths:
+  - "concern:ai-features"
+---
+
 # Sandbox Execution
 
 AI is foundational to how code is authored on this platform. That's exactly why AI-authored builds get the same standard CI/CD discipline every other build artifact gets: built, tested, previewed, validated in an isolated sandbox BEFORE promotion to the real app runtime. This is normal pipeline hygiene — not skepticism — applied to a high-volume artifact source.

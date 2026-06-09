@@ -1,3 +1,12 @@
+---
+name: "main-only-branch"
+priority: 1
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Main-Only Branch
 
 `main` (or `master`) is committed to always. Always. Period. No long-lived dev branches, no release branches, no `develop` branch, no feature branches that live longer than a single agent session. Worktrees handle isolation when parallel work needs it. The commit IS the unit of progress; `main` IS the source of truth.

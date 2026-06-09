@@ -22,6 +22,16 @@ submodules:
   - incident-remediation.md
   - geo-ai-search.md
   - local-conversions.md
+priority: 2
+pack: "backend"
+triggers:
+  - "posthog"
+  - "sentry"
+  - "analytics"
+  - "stripe"
+  - "growth"
+paths:
+  - "*"
 ---
 
 # 13 — Observability and Growth

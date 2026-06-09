@@ -1,3 +1,12 @@
+---
+name: "supervisor-skills-index"
+priority: 4
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Supervisor Skills Index
 
 Brian's permanent supervisor knowledge system (2026-05-29). Entry point for every large-app build. Status: ✅ authored full · ◐ captured here (expand to full doc in a later wave) · ↪ substantially covered by an existing rule.

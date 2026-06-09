@@ -1,3 +1,12 @@
+---
+name: "context-spillover"
+priority: 2
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Context Spillover
 
 Every time you open a file, read a directory, or load a feature into working context, you've paid the cognitive cost of understanding that surface. Don't leave that context on the table. Before closing the file, scan it AND its siblings for adjacent gaps in: aesthetics, documentation, test coverage. Fix the small ones inline. Surface the big ones in the same turn's report.

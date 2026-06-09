@@ -1,0 +1,9 @@
+name: polish
+description: 100-ideas audit + supreme polish + extra-mile
+members:
+  - rules/supreme-polish
+  - rules/proactive-improvements
+  - rules/extra-mile
+  - rules/auto-integrate-recs
+  - rules/context-spillover
+  - 14-independent-idea-engine

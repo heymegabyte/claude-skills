@@ -16,6 +16,14 @@ submodules:
   - micro-interactions.md
   - reduced-motion.md
   - build-breaking-rules.md
+priority: 3
+pack: "design"
+triggers:
+  - "motion"
+  - "animation"
+  - "transition"
+paths:
+  - "concern:public_facing"
 ---
 
 # 11 — Motion and Interaction System

@@ -1,3 +1,15 @@
+---
+name: "angular-nx-monorepo"
+priority: 2
+pack: "angular"
+triggers:
+  - "angular"
+  - "nx"
+  - "monorepo"
+paths:
+  - "stack:angular-nx"
+---
+
 # Angular + Nx Monorepo
 
 When Angular is chosen (`frontend-stack.md`), build inside **Nx monorepo running Angular 21** with **Angular CLI MCP**. Standalone components only. Signals only. No NgModules. No Angular Material. No PrimeNG default. Tailwind v4 + Angular CDK + Spartan UI.

@@ -1,3 +1,13 @@
+---
+name: "ai-agent-supervisor"
+priority: 3
+pack: "ai"
+triggers:
+  - "agent supervisor"
+paths:
+  - "concern:ai-features"
+---
+
 # AI + Agent Supervisor
 
 AI is foundational to the platform per `ai-permanence` — never a bolt-on, never optional-as-in-second-class. AND every AI output is Zod-validated, every AI feature ships a deterministic fallback, every AI action is logged/traced. The two are not in tension: validation + fallback are boundary hygiene applied to a load-bearing layer, exactly like typing an HTTP response. The AI arm of the supervisor system.

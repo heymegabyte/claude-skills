@@ -1,3 +1,14 @@
+---
+name: "stack-selector"
+priority: 2
+pack: "core"
+triggers:
+  - "react or angular"
+  - "what stack"
+paths:
+  - "*"
+---
+
 # Stack Selector
 
 The single most expensive mistake is the wrong framework for the job. Choose deliberately, up front, by SIZE + LIFESPAN of the product — not by familiarity or novelty.

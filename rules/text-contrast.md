@@ -1,3 +1,15 @@
+---
+name: "text-contrast"
+priority: 2
+pack: "design"
+triggers:
+  - "contrast"
+  - "wcag"
+  - "color"
+paths:
+  - "*"
+---
+
 # Text Contrast on Backgrounds
 
 ## Core rule

@@ -22,6 +22,15 @@ submodules:
   - social-brand-hex.md
   - notebooklm-pipeline.md
   - build-breaking-rules.md
+priority: 3
+pack: "media"
+triggers:
+  - "image gen"
+  - "dalle"
+  - "media"
+  - "og image"
+paths:
+  - "org:website_build"
 ---
 
 # 12 — Media Orchestration

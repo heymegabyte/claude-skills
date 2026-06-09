@@ -1,3 +1,13 @@
+---
+name: "drift-detection"
+priority: 2
+pack: "core"
+triggers:
+  - "drift"
+paths:
+  - "*"
+---
+
 # Architecture Drift Detection
 
 Architecture drift is the gap between how the system is SUPPOSED to be structured and how it actually is. Drift is fixed IMMEDIATELY, in the same turn it surfaces — never deferred to a follow-up PR. A scattered route, an unflagged feature, an untyped AI output: all drift, all merge-blockers.

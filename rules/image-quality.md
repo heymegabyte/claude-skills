@@ -1,3 +1,15 @@
+---
+name: "image-quality"
+priority: 3
+pack: "media"
+triggers:
+  - "image"
+  - "photo"
+  - "hero image"
+paths:
+  - "org:website_build"
+---
+
 # Image Sourcing + Generation Quality
 
 ## Mandate

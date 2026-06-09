@@ -1,3 +1,15 @@
+---
+name: "quality-metrics"
+priority: 2
+pack: "testing"
+triggers:
+  - "lighthouse"
+  - "perf"
+  - "quality"
+paths:
+  - "*"
+---
+
 # Quality Thresholds
 
 ## Readability

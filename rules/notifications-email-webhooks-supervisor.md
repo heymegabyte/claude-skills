@@ -1,3 +1,16 @@
+---
+name: "notifications-email-webhooks-supervisor"
+priority: 3
+pack: "backend"
+triggers:
+  - "novu"
+  - "notification"
+  - "webhook"
+  - "email"
+paths:
+  - "*"
+---
+
 # Notifications + Email + Webhooks Supervisor
 
 Novu is THE notification backbone for every emdash app — not a bolt-on, not a single toast call. Wherever a user should be informed of something — a build finished, a deploy failed, a domain went live, a payment succeeded, a teammate invited them, an AI job completed, a quota neared — it flows through Novu. This is permanent doctrine: every current AND future app integrates Novu **fully** (inbox + center + preferences + multi-channel) from the first notification surface. Webhooks flow through Svix (managed, signed, tracked). Every notification is tenant-aware, actionable, and enriched.

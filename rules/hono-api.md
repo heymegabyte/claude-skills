@@ -1,3 +1,15 @@
+---
+name: "hono-api"
+priority: 2
+pack: "backend"
+triggers:
+  - "hono"
+  - "worker api"
+paths:
+  - "concern:hono-stack"
+  - "concern:cloudflare-workers"
+---
+
 # Hono API Rules
 
 ## Core patterns

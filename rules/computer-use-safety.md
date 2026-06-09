@@ -1,3 +1,15 @@
+---
+name: "computer-use-safety"
+priority: 2
+pack: "core"
+triggers:
+  - "computer use"
+  - "desktop control"
+  - "screen"
+paths:
+  - "*"
+---
+
 # Computer Use
 
 ## Efficiency priority (pick fastest path — ALL tiers fully authorized)

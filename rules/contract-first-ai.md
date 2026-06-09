@@ -1,3 +1,15 @@
+---
+name: "contract-first-ai"
+priority: 2
+pack: "ai"
+triggers:
+  - "ai output"
+  - "structured output"
+  - "tool use"
+paths:
+  - "concern:ai-features"
+---
+
 # Contract-First AI
 
 AI is foundational to the platform — that's exactly why its outputs deserve first-class typing. Every AI output MUST be structured, schema-bound, Zod-validated, and converted to a typed domain object BEFORE the app touches it. This is the same boundary discipline applied to every other input (env, webhook, queue, form) per `zod-everywhere` — AI is a first-class data source, treated like one. The contract — not the prose — is the interface.

@@ -1,3 +1,14 @@
+---
+name: "feature-flags"
+priority: 2
+pack: "core"
+triggers:
+  - "feature flag"
+  - "rollout"
+paths:
+  - "*"
+---
+
 # Feature Flags
 
 Every feature beyond a trivial one-file edit ships behind a flag. Default: `enabled=0, rollout_percent=0, stage='experimental'`. Admin promotes through stages + dials rollout % from `/admin/feature-flags`. Nothing ships permanently-on at launch.

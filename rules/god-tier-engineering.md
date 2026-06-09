@@ -1,3 +1,12 @@
+---
+name: "god-tier-engineering"
+priority: 3
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # God-Tier Engineering Patterns
 
 Every iteration ships ≥1 move a senior would call "right call." Code that works = floor. Code that makes next iteration faster, next bug rarer, next handoff cleaner = goal.

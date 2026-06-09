@@ -1,3 +1,17 @@
+---
+name: "visualization-maps-diagrams-supervisor"
+priority: 3
+pack: "design"
+triggers:
+  - "chart"
+  - "echarts"
+  - "mermaid"
+  - "map"
+  - "graph"
+paths:
+  - "*"
+---
+
 # Visualization + Maps + Diagrams Supervisor
 
 Charts exist to help users make decisions, never to decorate. Right tool per job: ECharts/Unovis for dashboards, @visx for custom, Cytoscape for graphs, MapLibre for geography, Mermaid/Excalidraw for diagrams. The visualization arm of the supervisor system.

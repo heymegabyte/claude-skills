@@ -1,3 +1,12 @@
+---
+name: "proactive-improvements"
+priority: 2
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Proactive Improvements
 
 At nearly every step of any prompt — when an adequate-context AI agent (Opus 4.7 or Sonnet 4.6) sees the surrounding code, the current change, and the user's broader intent — it MUST pause and ask: *"Is there an improvement, upgrade, polish, feature addition, refactor, accessibility fix, performance tweak, copy polish, or safety net that would obviously make this surface better, even if it sits outside the literal scope of the prompt?"*

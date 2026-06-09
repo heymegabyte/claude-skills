@@ -1,3 +1,17 @@
+---
+name: "ecommerce-stack"
+priority: 3
+pack: "ecommerce"
+triggers:
+  - "ecommerce"
+  - "shop"
+  - "cart"
+  - "checkout"
+  - "medusa"
+paths:
+  - "concern:ecommerce"
+---
+
 # E-commerce Stack
 
 ## Mandate

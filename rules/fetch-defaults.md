@@ -1,3 +1,16 @@
+---
+name: "fetch-defaults"
+priority: 3
+pack: "research"
+triggers:
+  - "scrape"
+  - "web fetch"
+  - "curl"
+  - "user agent"
+paths:
+  - "*"
+---
+
 # Fetch Defaults
 
 ## Mandate

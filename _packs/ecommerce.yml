@@ -1,0 +1,6 @@
+name: ecommerce
+description: Medusa.js headless commerce
+members:
+  - rules/ecommerce-stack
+  - rules/payments-routing
+  - 13-observability-and-growth

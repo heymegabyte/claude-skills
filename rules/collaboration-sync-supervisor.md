@@ -1,3 +1,16 @@
+---
+name: "collaboration-sync-supervisor"
+priority: 4
+pack: "backend"
+triggers:
+  - "yjs"
+  - "automerge"
+  - "collab"
+  - "multiplayer"
+paths:
+  - "*"
+---
+
 # Collaboration + Sync Supervisor
 
 Collaboration is added ONLY when realtime, multiplayer, offline, or conflict-safe editing is actually required — never speculatively. When it is needed, state is versioned, validated, and recoverable. The collaboration arm of the supervisor system.

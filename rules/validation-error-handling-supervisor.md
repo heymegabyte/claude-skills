@@ -1,3 +1,14 @@
+---
+name: "validation-error-handling-supervisor"
+priority: 3
+pack: "backend"
+triggers:
+  - "validation"
+  - "error handler"
+paths:
+  - "*"
+---
+
 # Validation + Error-Handling Supervisor
 
 Zod is the source of truth at every runtime boundary; errors are typed, human-readable on the surface, and developer-detailed in the logs. This is the validation arm of the supervisor knowledge system — the application of `zod-everywhere` + `contract-first-ai` to the dashboard revamp.

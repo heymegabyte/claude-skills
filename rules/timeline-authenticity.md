@@ -1,3 +1,15 @@
+---
+name: "timeline-authenticity"
+priority: 3
+pack: "website-build"
+triggers:
+  - "timeline"
+  - "history"
+  - "founder"
+paths:
+  - "org:website_build"
+---
+
 # Timeline Photo Authenticity
 
 ## Mandate

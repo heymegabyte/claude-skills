@@ -1,3 +1,14 @@
+---
+name: "tool-design-as-api"
+priority: 3
+pack: "ai"
+triggers:
+  - "tool"
+  - "mcp"
+paths:
+  - "*"
+---
+
 # Tool Design as API
 
 Every tool the AI builds or wields — a script, a generator, an automation entrypoint, an MCP tool — is a real API. It MUST be narrow, typed, Zod-validated on BOTH input and output, documented, tested, safe-by-default, and hard-to-misuse. A loose `runAnything(cmd)` mega-tool is the failure mode this rule kills.

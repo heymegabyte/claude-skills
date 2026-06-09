@@ -1,3 +1,16 @@
+---
+name: "workflow-automation-supervisor"
+priority: 3
+pack: "backend"
+triggers:
+  - "workflow"
+  - "inngest"
+  - "queue"
+  - "cron"
+paths:
+  - "concern:cloudflare-workers"
+---
+
 # Workflow + Automation Supervisor
 
 Durable, long-running, and scheduled work runs as typed workflows with status, retries, idempotency, logs, trace IDs, and a user-facing progress + admin debug surface. The automation arm of the supervisor system.

@@ -1,3 +1,12 @@
+---
+name: "verification-loop"
+priority: 1
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Verification Loop
 
 ## Deploy + Prod-E2E mandate (EVERY ADD/FIX)

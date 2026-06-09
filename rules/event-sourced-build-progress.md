@@ -1,3 +1,14 @@
+---
+name: "event-sourced-build-progress"
+priority: 3
+pack: "ai"
+triggers:
+  - "build event"
+  - "stream"
+paths:
+  - "concern:ai-features"
+---
+
 # Event-Sourced Build Progress
 
 AI build progress MUST emit durable, typed, replayable events. Dashboards then show progress, generated components, tests, previews, failures, and publish status clearly — without polling, without log-scraping, without guessing. The event stream IS the source of truth for a build's state.

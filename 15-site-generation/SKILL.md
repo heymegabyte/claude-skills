@@ -26,6 +26,14 @@ submodules:
   - page-set-expansion.md
   - source-fidelity-loop.md
   - squarespace-full-crawl.mjs
+priority: 3
+pack: "website-build"
+triggers:
+  - "site generation"
+  - "bolt artifact"
+  - "boltArtifact"
+paths:
+  - "org:website_build"
 ---
 
 # 15 — Site Generation

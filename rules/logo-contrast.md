@@ -1,3 +1,13 @@
+---
+name: "logo-contrast"
+priority: 3
+pack: "design"
+triggers:
+  - "logo"
+paths:
+  - "org:website_build"
+---
+
 # Logo + Icon Contrast
 
 ## Core rule

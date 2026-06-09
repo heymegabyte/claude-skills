@@ -1,3 +1,16 @@
+---
+name: "copy-writing"
+priority: 2
+pack: "content"
+triggers:
+  - "copy"
+  - "headline"
+  - "cta"
+  - "anti-slop"
+paths:
+  - "*"
+---
+
 # Copy Rules
 
 ## Voice

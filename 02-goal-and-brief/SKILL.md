@@ -13,6 +13,14 @@ compatibility:
 submodules:
   - org-type-inference.md
   - project-brief-template.md
+priority: 2
+pack: "core"
+triggers:
+  - "new project"
+  - "project brief"
+  - "goals"
+paths:
+  - "*"
 ---
 
 # 02 — Goal and Brief

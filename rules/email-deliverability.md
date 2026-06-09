@@ -1,3 +1,12 @@
+---
+name: "email-deliverability"
+priority: 3
+pack: "misc"
+triggers: []
+paths:
+  - "*"
+---
+
 # Email Deliverability
 
 Email that bounces is a feature that silently doesn't work. Since Feb 2024 (Google + Yahoo) and May 2025 (Microsoft), any domain sending bulk mail to Gmail/Yahoo/Outlook MUST authenticate and offer one-click unsubscribe or messages get **rejected at SMTP** — not spam-foldered, bounced. A broken signup confirmation, receipt, or digest is invisible until a user reports it. This gate is non-negotiable on every project that sends mail (Resend / Listmonk / SendGrid).

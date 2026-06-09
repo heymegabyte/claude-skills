@@ -1,0 +1,9 @@
+name: angular
+description: Angular 21 + Nx + Spartan UI + RxJS-first
+members:
+  - rules/angular-nx-monorepo
+  - rules/rxjs-first-angular
+  - rules/angular-large-app-supervisor
+  - rules/spartan-ui-only
+  - rules/spartan-ui-design-system
+  - rules/frontend-stack

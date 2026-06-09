@@ -1,3 +1,14 @@
+---
+name: "zod-everywhere"
+priority: 2
+pack: "backend"
+triggers:
+  - "zod"
+  - "validation"
+paths:
+  - "*"
+---
+
 # Zod Everywhere
 
 Zod is the single source of truth at EVERY runtime boundary. Types are inferred from schemas via `z.infer` — never hand-maintained alongside a schema where they can silently drift. If data crosses a boundary, a Zod schema guards it.

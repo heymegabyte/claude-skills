@@ -1,0 +1,7 @@
+name: infra
+description: Secrets + auth + deploy infrastructure
+members:
+  - rules/secret-provisioning
+  - rules/secret-auto-provisioning
+  - 08-deploy-and-runtime-verification
+  - rules/computer-use-safety

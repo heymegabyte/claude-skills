@@ -1,3 +1,13 @@
+---
+name: "todos-are-roadmap"
+priority: 2
+pack: "core"
+triggers:
+  - "todo"
+paths:
+  - "*"
+---
+
 # TODOs Are Roadmap
 
 `TODO` / `FIXME` / `XXX` comments in source are **allowed** and often the right choice. A `TODO.md` at the repo root is a **legitimate lightweight roadmap**, not anti-pattern. The "ban TODOs" puritanism is a corporate-team artifact (someone's gonna grep `TODO` and shame you); for solo + AI it just pushes the same intention into invisible head-space, where it ages worse.

@@ -1,3 +1,16 @@
+---
+name: "error-recovery"
+priority: 2
+pack: "core"
+triggers:
+  - "error"
+  - "exception"
+  - "rollback"
+  - "deploy fail"
+paths:
+  - "*"
+---
+
 # Error Recovery
 
 ## Failure classification

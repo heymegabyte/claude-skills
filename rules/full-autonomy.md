@@ -1,3 +1,12 @@
+---
+name: "full-autonomy"
+priority: 1
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Full Autonomy
 
 ## Core grant

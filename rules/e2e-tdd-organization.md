@@ -1,3 +1,16 @@
+---
+name: "e2e-tdd-organization"
+priority: 2
+pack: "testing"
+triggers:
+  - "test"
+  - "e2e"
+  - "playwright"
+  - "tdd"
+paths:
+  - "concern:e2e-testing"
+---
+
 # E2E TDD Organization
 
 Every clickable element / form field / nav link / API endpoint / modal / keyboard shortcut / error / empty / loading state has ≥1 Playwright E2E that runs against PROD and goes RED before any implementation.

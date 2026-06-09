@@ -1,3 +1,15 @@
+---
+name: "parallel-subagent-economy"
+priority: 2
+pack: "core"
+triggers:
+  - "subagent"
+  - "parallel"
+  - "fan out"
+paths:
+  - "*"
+---
+
 # Parallel Subagent Economy
 
 Primary rule: **fan out whenever doing so saves ≥5 min wall-clock over serial**, provided units genuinely independent. Sonnet specialists often *cheaper* than one Opus thread — time saved is the deciding factor.

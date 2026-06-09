@@ -1,3 +1,15 @@
+---
+name: "gorgeous-by-default"
+priority: 2
+pack: "design"
+triggers:
+  - "pill"
+  - "0.333s"
+  - "gorgeous"
+paths:
+  - "*"
+---
+
 # Gorgeous By Default
 
 Nothing ships plain. Every element a user can see gets a deliberate, beautiful, animated treatment — never the framework default, never raw text where a designed component belongs. Two non-negotiable halves: (1) **enumerable values render as pills, never comma-joined text**, and (2) **every interactive + decorative element is gorgeous, animated, and transitions at `0.333s`**.

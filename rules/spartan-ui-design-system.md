@@ -1,3 +1,13 @@
+---
+name: "spartan-ui-design-system"
+priority: 2
+pack: "angular"
+triggers:
+  - "spartan ui"
+paths:
+  - "stack:angular-nx"
+---
+
 # Spartan UI Design System
 
 Spartan UI (shadcn-for-Angular) is THE complete dashboard foundation for every Angular surface. OSS, owns-the-code (components copied in, not black-boxed), Tailwind-composed, Angular CDK + Floating UI under the hood. No PrimeNG/Material/other kits. Per `stack-selector` + `angular-large-app-supervisor`.

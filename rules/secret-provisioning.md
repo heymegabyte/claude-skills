@@ -1,3 +1,15 @@
+---
+name: "secret-provisioning"
+priority: 2
+pack: "infra"
+triggers:
+  - "secret"
+  - "env var"
+  - "api key"
+paths:
+  - "concern:cloudflare-workers"
+---
+
 # Secret Provisioning
 
 ## Core mandate

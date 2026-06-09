@@ -1,3 +1,17 @@
+---
+name: "payments-routing"
+priority: 2
+pack: "payments"
+triggers:
+  - "stripe"
+  - "square"
+  - "payment"
+  - "billing"
+  - "checkout"
+paths:
+  - "concern:stripe-billing"
+---
+
 # Payments Routing
 
 ## Core rule — decision tree, not absolutism

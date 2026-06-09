@@ -1,3 +1,12 @@
+---
+name: "auto-integrate-recs"
+priority: 2
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Auto-Integrate Recommendations
 
 ## Mandate

@@ -10,6 +10,14 @@ license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
+priority: 2
+pack: "core"
+triggers:
+  - "research"
+  - "plan"
+  - "competitor"
+paths:
+  - "*"
 ---
 
 # 03 — Planning and Research

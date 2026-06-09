@@ -1,3 +1,16 @@
+---
+name: "auth-permissions-security-supervisor"
+priority: 3
+pack: "backend"
+triggers:
+  - "auth"
+  - "permission"
+  - "rbac"
+  - "tenant"
+paths:
+  - "concern:auth"
+---
+
 # Auth + Permissions + Security Supervisor
 
 Permissions are enforced server-side, always. Client-only checks are UX, never security. Tenant isolation, audit trails, hashed keys, verified webhooks, rate limits. The security arm of the supervisor system — companion to the project-level multi-tenant isolation discipline.

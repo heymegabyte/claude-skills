@@ -1,3 +1,15 @@
+---
+name: "competitor-research"
+priority: 3
+pack: "website-build"
+triggers:
+  - "competitor"
+  - "benchmark"
+  - "rebuild"
+paths:
+  - "org:website_build"
+---
+
 # Competitor Research
 
 Build starts BEFORE the brand brief. Identify top 5-10 sites the audience compares us to, score on 100-pt rubric, iterate until OUR site outscores EVERY competitor on EVERY dim by ≥15%. Without this gate we ship a guess.

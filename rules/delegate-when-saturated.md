@@ -1,3 +1,14 @@
+---
+name: "delegate-when-saturated"
+priority: 2
+pack: "core"
+triggers:
+  - "saturated"
+  - "context full"
+paths:
+  - "*"
+---
+
 # Delegate When Saturated
 
 When the orchestrator (main thread) is deep in a long session AND the remaining work is

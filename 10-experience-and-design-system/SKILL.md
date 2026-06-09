@@ -14,6 +14,15 @@ submodules:
   - design-tokens.md
   - build-breaking-rules.md
   - cinematic-doctrine.md
+priority: 3
+pack: "design"
+triggers:
+  - "design"
+  - "ui"
+  - "components"
+  - "theme"
+paths:
+  - "concern:public_facing"
 ---
 
 # 10 — Experience and Design System

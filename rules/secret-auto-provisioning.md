@@ -1,3 +1,15 @@
+---
+name: "secret-auto-provisioning"
+priority: 3
+pack: "infra"
+triggers:
+  - "provision"
+  - "mint token"
+  - "stripe webhook secret"
+paths:
+  - "concern:cloudflare-workers"
+---
+
 # Secret Auto-Provisioning
 
 Companion to `secret-provisioning.md`. That rule pushes existing secrets; this rule acquires new ones via generation, API-mint, Computer Use, or manual flow. Every "set this secret" Rec = failure.

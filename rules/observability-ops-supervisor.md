@@ -1,3 +1,15 @@
+---
+name: "observability-ops-supervisor"
+priority: 3
+pack: "backend"
+triggers:
+  - "observability"
+  - "logging"
+  - "tracing"
+paths:
+  - "*"
+---
+
 # Observability + Ops Supervisor
 
 Major user actions emit telemetry; frontend errors and backend logs are captured and correlated by request/trace/workflow/AI IDs. Analytics stays optional so local dev is reproducible. The observability arm of the supervisor system.

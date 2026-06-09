@@ -1,0 +1,8 @@
+name: testing
+description: Playwright E2E + Vitest + AI vision QA
+members:
+  - 07-quality-and-verification
+  - rules/e2e-tdd-organization
+  - rules/e2e-visual-inspection
+  - rules/verification-loop
+  - rules/quality-metrics

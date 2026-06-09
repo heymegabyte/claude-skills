@@ -2,9 +2,18 @@
 name: "cinematic-website-prime-directive"
 description: "One-line-prompt → cinematic, gorgeous, functional, well-tested, deployed website. Pre-hydrated SPA + full PWA kit + JSON-LD rich snippets + third-party integrations. React 19+Vite default (Angular optional). 100 concrete improvements grouped into 10 categories that EVERY single-prompt site build must satisfy before being marked done. Trigger whenever the user says 'make a website for X', 'build a site for X', 'rebuild X.com', or any equivalent one-liner."
 when_to_use: "Any one-line website prompt: 'Make a website for X', 'Build a site for Y', 'Rebuild Z.com', or equivalent. Trumps generic 06-build-and-slice-loop."
-paths: ["**/*"]
 effort: "xhigh"
 model: "inherit"
+priority: 3
+pack: "website-build"
+triggers:
+  - "make a website"
+  - "build a site"
+  - "rebuild"
+  - "make site for"
+  - "build site for"
+paths:
+  - "org:website_build"
 ---
 
 # Cinematic Website Prime Directive

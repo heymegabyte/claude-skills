@@ -15,6 +15,16 @@ submodules:
   - data-patterns.md
   - reliability.md
   - auth-patterns.md
+priority: 2
+pack: "backend"
+triggers:
+  - "architecture"
+  - "stack"
+  - "cloudflare"
+  - "d1"
+  - "workers"
+paths:
+  - "concern:cloudflare-workers"
 ---
 
 # 05 — Architecture and Stack

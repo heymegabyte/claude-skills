@@ -1,3 +1,12 @@
+---
+name: "autonomous-engineering"
+priority: 1
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Autonomous Engineering
 
 Work autonomously by default. For normal engineering — instructions, docs, templates, schemas, features, tests, refactors, sandbox/preview builds, AgentSkill edits — inspect, decide, implement, verify, repair, document, and report WITHOUT asking. Reserve human approval for the short list of huge/irreversible/customer-impacting actions below. This rule is the keystone the autonomous-AI-dev OS hangs on; the pattern rules (`contract-first-ai`, `zod-everywhere`, `tool-design-as-api`, `evals`, `drift-detection`, `sandbox-execution`, `event-sourced-build-progress`) are how the work gets done safely.

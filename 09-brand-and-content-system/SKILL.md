@@ -18,6 +18,15 @@ submodules:
   - per-route-metadata.md
   - grammar-audit.md
   - build-breaking-rules.md
+priority: 3
+pack: "content"
+triggers:
+  - "brand"
+  - "content"
+  - "copy"
+paths:
+  - "org:website_build"
+  - "concern:public_facing"
 ---
 
 # 09 — Brand and Content System

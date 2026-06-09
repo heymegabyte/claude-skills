@@ -1,3 +1,12 @@
+---
+name: "brian-preferences"
+priority: 1
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Brian's Preferences
 
 ## Communication

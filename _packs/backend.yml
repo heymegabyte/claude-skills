@@ -1,0 +1,19 @@
+name: backend
+description: CF Workers + Hono + D1 + Drizzle + Zod backend
+members:
+  - 05-architecture-and-stack
+  - 08-deploy-and-runtime-verification
+  - 13-observability-and-growth
+  - rules/cloudflare-lock-in-is-leverage
+  - rules/cloudflare-hostable-supervisor
+  - rules/hono-api
+  - rules/zod-everywhere
+  - rules/database-data-supervisor
+  - rules/auth-permissions-security-supervisor
+  - rules/validation-error-handling-supervisor
+  - rules/workflow-automation-supervisor
+  - rules/notifications-email-webhooks-supervisor
+  - rules/observability-ops-supervisor
+  - rules/secret-provisioning
+  - rules/secret-auto-provisioning
+  - rules/payments-routing

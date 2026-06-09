@@ -1,0 +1,11 @@
+name: frontend
+description: React 19 + Vite OR Angular 21 + Nx frontend
+members:
+  - 10-experience-and-design-system
+  - 11-motion-and-interaction-system
+  - rules/frontend-stack
+  - rules/stack-selector
+  - rules/cinematic-ui-patterns
+  - rules/gorgeous-by-default
+  - rules/text-contrast
+  - rules/copy-writing

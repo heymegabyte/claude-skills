@@ -1,3 +1,15 @@
+---
+name: "rxjs-first-angular"
+priority: 2
+pack: "angular"
+triggers:
+  - "angular"
+  - "rxjs"
+  - "observable"
+paths:
+  - "stack:angular-nx"
+---
+
 # RxJS-First Angular
 
 Every backend interaction in Angular is an **RxJS observable stream**, never a one-shot promise. Polling is the floor; SSE/WebSockets are the ceiling. Signals only bridge at the template boundary via `toSignal()`. `firstValueFrom()` defeats the contract.

@@ -1,3 +1,14 @@
+---
+name: "prompt-cache"
+priority: 2
+pack: "ai"
+triggers:
+  - "cache"
+  - "preamble"
+paths:
+  - "*"
+---
+
 # Prompt Cache Optimization
 
 ## Skill load order (deterministic)

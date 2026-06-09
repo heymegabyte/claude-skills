@@ -1,0 +1,14 @@
+name: ai
+description: AI features — contract-first, evals, agents, sandbox
+members:
+  - rules/contract-first-ai
+  - rules/evals
+  - rules/sandbox-execution
+  - rules/tool-design-as-api
+  - rules/event-sourced-build-progress
+  - rules/ai-agent-supervisor
+  - rules/ai-seniority
+  - rules/ai-permanence
+  - rules/model-routing
+  - rules/prompt-cache
+  - rules/opus-quota-fallback

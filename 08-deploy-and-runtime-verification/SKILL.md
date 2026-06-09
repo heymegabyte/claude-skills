@@ -15,6 +15,14 @@ submodules:
   - d1-backups.md
   - rollback.md
   - github-config.md
+priority: 2
+pack: "core"
+triggers:
+  - "deploy"
+  - "wrangler deploy"
+  - "rollback"
+paths:
+  - "concern:cloudflare-workers"
 ---
 
 # 08 — Deploy and Runtime Verification

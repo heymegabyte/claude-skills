@@ -1,0 +1,11 @@
+name: design
+description: Cinematic visual + motion + WCAG 2.2 AA
+members:
+  - 10-experience-and-design-system
+  - 11-motion-and-interaction-system
+  - rules/text-contrast
+  - rules/logo-contrast
+  - rules/cinematic-ui-patterns
+  - rules/gorgeous-by-default
+  - rules/motion-interaction-supervisor
+  - rules/visualization-maps-diagrams-supervisor

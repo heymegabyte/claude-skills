@@ -1,3 +1,12 @@
+---
+name: "prompt-as-training-signal"
+priority: 1
+pack: "core"
+triggers: []
+paths:
+  - "*"
+---
+
 # Prompt as Training Signal
 
 Every user prompt is a training signal. Most are also evidence that the previous turn under-delivered. Treat the prompt as data, extract the wisdom from it, and fold that wisdom back into the durable layer (skills, rules, prefs, memory) IN THE SAME TURN before doing the requested work.
