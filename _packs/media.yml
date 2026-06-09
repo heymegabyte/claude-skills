@@ -5,3 +5,4 @@ members:
   - rules/image-quality
   - rules/timeline-authenticity
   - rules/media-file-document-supervisor
+  - rules/suno-song-generation
