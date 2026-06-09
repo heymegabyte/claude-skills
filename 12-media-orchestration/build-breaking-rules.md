@@ -1,6 +1,6 @@
 ---
 name: "12 build-breaking media+orchestration rules"
-description: "Universal media gates: Media Slot Manifest + DALL-E primary slot-fill + fail-CLOSED auto-regenerate, NotebookLM artifacts (podcast + infographic + explainer video), page-rendered image topic-relevance ≥8/10, blog featured image mandatory + DALL-E fallback, migrated source-site asset R2 self-hosting, page media density (video + multi-source generation), full-width Google Maps Embed widget for physical addresses. 2026-05-11 EXTEND: 14 Ideogram leverage slots (logo triad + favicon set + per-route OG cards + hero typographic poster + chapter plates + editorial blog headers + branded 404/500 + PWA splashes + tier badges + chapter glyphs + pattern tile + stat numerals + share quote cards + iteration stamp), 16-source parallel multimedia fan-out (Pexels+Pixabay+Google CSE Image+Wikimedia+Internet Archive+LoC+NASA+Smithsonian+The Met+Europeana+Flickr Commons+YouTube+Vimeo+Coverr+Mixkit+Pexels Video), Google Custom Search Image API license-filtered, NotebookLM-generated + Podcast Index discovered podcast feeds (Google Podcasts API retired 2024), ATF hero video via Sora + Veo dual cascade with stock fallback, progressive media refresh per iteration, credits/colophon route. Migrated verbatim from rules/always.md 2026-05-03; extended per Brian directive 2026-05-11."
+description: "Universal media gates: Media Slot Manifest + GPT Image 1.5 primary slot-fill + fail-CLOSED auto-regenerate, NotebookLM artifacts (podcast + infographic + explainer video), page-rendered image topic-relevance ≥8/10, blog featured image mandatory + GPT Image 1.5 fallback, migrated source-site asset R2 self-hosting, page media density (video + multi-source generation), full-width Google Maps Embed widget for physical addresses. 2026-05-11 EXTEND: 14 Ideogram leverage slots (logo triad + favicon set + per-route OG cards + hero typographic poster + chapter plates + editorial blog headers + branded 404/500 + PWA splashes + tier badges + chapter glyphs + pattern tile + stat numerals + share quote cards + iteration stamp), 16-source parallel multimedia fan-out (Pexels+Pixabay+Google CSE Image+Wikimedia+Internet Archive+LoC+NASA+Smithsonian+The Met+Europeana+Flickr Commons+YouTube+Vimeo+Coverr+Mixkit+Pexels Video), Google Custom Search Image API license-filtered, NotebookLM-generated + Podcast Index discovered podcast feeds (Google Podcasts API retired 2024), ATF hero video via Sora + Veo dual cascade with stock fallback, progressive media refresh per iteration, credits/colophon route. Migrated verbatim from rules/always.md 2026-05-03; extended per Brian directive 2026-05-11."
 metadata:
   version: "1.0.0"
   updated: "2026-05-03"
@@ -13,6 +13,8 @@ compatibility:
 ---
 
 # 12 — Build-Breaking Media + Orchestration Rules
+
+> **Model migration note (pass-75, 2026-06-09)**: References to `DALL-E 3` / `DALL-E` migrated to **GPT Image 1.5** (current OpenAI image-gen flagship); `GPT-4o` vision migrated to **GPT Image 2 vision** (current OpenAI multimodal flagship). Per `platform.openai.com/docs/deprecations`: DALL-E 2/3 removed from API 2026-05-12; GPT-4o retired 2026-02-13. 14-Ideogram leverage slot manifest, 16-source parallel multimedia fan-out, and topic-relevance ≥8/10 gates all unchanged — only API endpoint names updated. Cost ranges in this doc were computed against legacy DALL-E + GPT-4o pricing; re-verify against current GPT Image 1.5 / GPT Image 2 rates.
 
 Migrated from `~/.claude/rules/always.md` 2026-05-03.
 
@@ -28,7 +30,7 @@ Phase 0 step 1 enumerates EVERY image slot on EVERY route into `_media_slots.jso
  relevance_floor, filled_by, filled_url, filled_score, regen_attempts}
 ```
 
-### Per-slot DALL-E prompt — 6 mandatory fields
+### Per-slot GPT Image 1.5 prompt — 6 mandatory fields
 
 Drafted at this stage (single batched gpt-4o call ~$0.05/site) MUST encode:
 
@@ -42,21 +44,21 @@ Drafted at this stage (single batched gpt-4o call ~$0.05/site) MUST encode:
 ### Source-chain order
 
 1. Real-entity sources (Places/uploads/scrape)
-2. DALL-E
+2. GPT Image 1.5
 3. Pexels
 4. Coverr
 5. Flux
 6. Brand-gradient
 
-DALL-E elevated to PRIMARY slot-fill engine after real-entity exhaustion (Brian: *"DALL-E can literally create the ultra-realistic perfect photo for any given photo spot, so rely on that fact"*). Stock APIs run as parallel speed-pass fallback (instant return if DALL-E hangs >15s) but DALL-E output preferred at curation.
+GPT Image 1.5 elevated to PRIMARY slot-fill engine after real-entity exhaustion (Brian: *"GPT Image 1.5 can literally create the ultra-realistic perfect photo for any given photo spot, so rely on that fact"*). Stock APIs run as parallel speed-pass fallback (instant return if GPT Image 1.5 hangs >15s) but GPT Image 1.5 output preferred at curation.
 
 ### Acceptance
 
-Every slot MUST end the build with `filled_url != null AND filled_score >= relevance_floor` (default 8/10 GPT-4o vision).
+Every slot MUST end the build with `filled_url != null AND filled_score >= relevance_floor` (default 8/10 GPT Image 2 vision).
 
 ### Failure handling
 
-Failure (Pexels empty, NSFW flag, broken scrape, vision below floor) → REFINED-prompt regen via DALL-E (gpt-4o synthesizes refined prompt from `(original_prompt, vision_critique, relevance_floor)`), max 5 attempts × $0.08/img = $0.40/slot worst case. After exhaustion: log to `_unfillable_slots.json`, ship with brand-gradient floor (prevents 404), build marked `published_with_warnings`, dashboard surfaces slot for manual replacement.
+Failure (Pexels empty, NSFW flag, broken scrape, vision below floor) → REFINED-prompt regen via GPT Image 1.5 (gpt-4o synthesizes refined prompt from `(original_prompt, vision_critique, relevance_floor)`), max 5 attempts × $0.08/img = $0.40/slot worst case. After exhaustion: log to `_unfillable_slots.json`, ship with brand-gradient floor (prevents 404), build marked `published_with_warnings`, dashboard surfaces slot for manual replacement.
 
 NEVER silent skip, NEVER substitute brand-gradient unless 5 regen attempts exhausted.
 
@@ -64,9 +66,9 @@ NEVER silent skip, NEVER substitute brand-gradient unless 5 regen attempts exhau
 
 - `validate-media-slot-manifest.mjs` — every route enumerated, every slot record complete
 - `validate-no-empty-slots.mjs` — no `_unfillable_slots.json` entries on clean build, no slot below relevance_floor, no fallback-gradient unless exhaustion logged
-- `validate-dalle-slot-fill.mjs` — every DALL-E prompt has all 6 mandatory fields
+- `validate-dalle-slot-fill.mjs` — every GPT Image 1.5 prompt has all 6 mandatory fields
 
-Daily DALL-E spend tracked in `_dalle_daily.json` against `OPENAI_DAILY_BUDGET` env (default $50) — exhaustion triggers Flux fallback for remainder of day.
+Daily GPT Image 1.5 spend tracked in `_dalle_daily.json` against `OPENAI_DAILY_BUDGET` env (default $50) — exhaustion triggers Flux fallback for remainder of day.
 
 Reference: lone-mountain-global-3 + njsk-light + many shipped with empty slots, off-topic generic stock, generic "create a hero image" prompts. This rule replaces the entire fetch-and-hope pattern with a deterministic enumerate-then-fill-then-verify pipeline.
 
@@ -93,7 +95,7 @@ Phase 0 step 2 enumerates `_notebooklm.json` manifest (mirrors Media Slot Manife
 
 ### Acceptance
 
-Every artifact MUST end the build with `filled_url != null AND filled_score >= 8/10` (GPT-4o vision for cover art, gpt-4o-mini topical-relevance for transcript) OR exhausted-with-warning state — same fail-CLOSED auto-regenerate pattern as Media Slot Manifest, max 3 attempts per artifact.
+Every artifact MUST end the build with `filled_url != null AND filled_score >= 8/10` (GPT Image 2 vision for cover art, gpt-4o-mini topical-relevance for transcript) OR exhausted-with-warning state — same fail-CLOSED auto-regenerate pattern as Media Slot Manifest, max 3 attempts per artifact.
 
 ### Source brief construction
 
@@ -118,7 +120,7 @@ Pipeline spec: `~/.agentskills/12-media-orchestration/notebooklm-pipeline.md`. A
 
 ## Every page-rendered image (***TOPIC-RELEVANCE GATE — UNIVERSAL — BUILD-BREAKING — vision-LLM scored***)
 
-Every `<img>` rendered on a route MUST score ≥8/10 on per-page semantic relevance via GPT-4o vision.
+Every `<img>` rendered on a route MUST score ≥8/10 on per-page semantic relevance via GPT Image 2 vision.
 
 ### Scoring prompt names
 
@@ -133,12 +135,12 @@ Lightbulb on `/volunteer` = fail. Mixed-gender adults on `women-and-children-ser
 1. Original-source-hero IF quality ≥7/10 (NEVER lucky-stock instead — Brian's njsk-light hero critique 2026-05-02)
 2. Pexels-video-loop matching topic
 3. Pexels-image scoring ≥8
-4. DALL-E per-slot prompt naming page topic + brand palette + subject specificity
+4. GPT Image 1.5 per-slot prompt naming page topic + brand palette + subject specificity
 5. Brand-gradient fallback
 
-Validator (`validate-image-relevance.mjs`): post-build, GPT-4o scores `(page_topic, image_description) → relevance 0-10` for every image on every route; FAIL any score <8.
+Validator (`validate-image-relevance.mjs`): post-build, GPT Image 2 vision scores `(page_topic, image_description) → relevance 0-10` for every image on every route; FAIL any score <8.
 
-## Every blog/article post (***FEATURED IMAGE MANDATORY + DALL-E FALLBACK — UNIVERSAL — BUILD-BREAKING — extends "Every page-rendered image"***)
+## Every blog/article post (***FEATURED IMAGE MANDATORY + GPT Image 1.5 FALLBACK — UNIVERSAL — BUILD-BREAKING — extends "Every page-rendered image"***)
 
 Every blog/news/article/journal/case-study post MUST have a valid featured image (hero + OG card + listing thumbnail).
 
@@ -150,7 +152,7 @@ Every blog/news/article/journal/case-study post MUST have a valid featured image
 4. Source post `twitter:image` meta
 5. Pexels search by post title keywords (≥3 stop-word-filtered nouns)
 6. Pixabay search same keywords
-7. DALL-E 3 generation with per-slot prompt naming:
+7. GPT Image 1.5 generation with per-slot prompt naming:
    - (a) post topic + 3 most-relevant nouns from title
    - (b) brand palette inline hex
    - (c) 16:9 aspect for hero / 1.91:1 for OG / 4:3 for listing thumbnail
@@ -197,15 +199,15 @@ Validator (`validate-no-cdn-hotlinks.mjs`): grep dist/ HTML for hostnames matchi
 Every page receives at minimum:
 
 1. ALL original media from corresponding source URL (images, videos, PDFs preserved)
-2. 1-2 supplemental DALL-E / GPT-Image purpose-crafted originals (per-slot prompts per skill 12)
+2. 1-2 supplemental GPT Image 1.5 / GPT-Image purpose-crafted originals (per-slot prompts per skill 12)
 3. ≥1 Pexels Video API result for hero/module background (favor video over static for hero slots — `<video autoplay muted loop playsinline poster>`)
 4. Google Image Search top-3 HIGHLY-relevant images filtered by topic match score (vision-LLM rates relevance 0-10, threshold ≥8)
 
-Hero background preference order: original-source-hero-image → Pexels-video-loop → Pexels-image → DALL-E-generated → solid-brand-gradient. Never ship a hero with no media.
+Hero background preference order: original-source-hero-image → Pexels-video-loop → Pexels-image → GPT Image 1.5-generated → solid-brand-gradient. Never ship a hero with no media.
 
 ## Every image (***BUSINESS-TYPE SEMANTIC MISMATCH — FAIL CLOSED — extends topic-relevance gate — BUILD-BREAKING***)
 
-GPT-4o topic-relevance ≥8/10 is necessary but NOT sufficient. A second binary check MUST run:
+GPT Image 2 vision topic-relevance ≥8/10 is necessary but NOT sufficient. A second binary check MUST run:
 
 > Is this image physically compatible with what a `<business_type>` business would show?
 
@@ -221,11 +223,11 @@ Answer YES or NO: Is this image showing something that belongs on a website for 
 
 Any NO → regen with prompt refinement explicitly naming the category and physically appropriate subject.
 
-Build gate (`validate-business-type-image-match.mjs`): every `[data-slot]` image runs a second GPT-4o-mini call (cheaper, faster) classifying YES/NO category fit — any NO in final build output = fail with slot ID, image URL, and rejection reason logged.
+Build gate (`validate-business-type-image-match.mjs`): every `[data-slot]` image runs a second GPT Image 2 vision-mini call (cheaper, faster) classifying YES/NO category fit — any NO in final build output = fail with slot ID, image URL, and rejection reason logged.
 
 ## Every site rebuild with known source domain (***PRIMARY DOMAIN MEDIA EXTRACTION MANDATORY — BEFORE ANY AI GENERATION***)
 
-Before invoking DALL-E or any stock API, crawler MUST fully extract ALL media from the source business domain (not only the pages scraped, but every image/video/PDF linked or embedded across the full site).
+Before invoking GPT Image 1.5 or any stock API, crawler MUST fully extract ALL media from the source business domain (not only the pages scraped, but every image/video/PDF linked or embedded across the full site).
 
 For `megabyte.space → megabytespace`, for `installdoctor.com → installdoctor`, for `nyfoldingbox.com → nyfoldingbox` — the primary domain is the single richest source of on-brand, topic-correct, legally-sound imagery.
 
@@ -235,7 +237,7 @@ For `megabyte.space → megabytespace`, for `installdoctor.com → installdoctor
 2. Extract every `<img src>`, `<picture>`, `<video poster>`, `<source src>`, CSS `background-image` URL, `og:image`, JSON `image` fields
 3. Filter: keep ≥200×200px, ≥10KB, non-icon/sprite/tracking-pixel
 4. Download + R2 self-host (never hotlink per existing CDN-hotlink rule)
-5. Run every extracted image through GPT-4o topic-relevance + business-type-match gate
+5. Run every extracted image through GPT Image 2 vision topic-relevance + business-type-match gate
 6. Target: `source_image_count × 1.5` minimum total images in build (extracted + AI-generated supplements)
 
 NEVER start AI image generation until step (5) exhausted. `_media_slots.json` MUST show `filled_by: "source_extract"` for every slot filled by real extraction before `filled_by: "dalle"` or `filled_by: "pexels"` slots get used.
@@ -250,7 +252,7 @@ Every person/staff/team member photo MUST be:
 - (b) Consistent style across ALL team members (same background tone, same crop framing, same shadow/border treatment) — never a mix of office photos + LinkedIn headshots + casual outdoor shots in the same grid
 - (c) Resolution ≥400×400px source, served at 200×200 minimum rendered size
 - (d) When source site has real headshots: download, AI-crop to 1:1 square (Sharp `gravity: 'face'` or `sharp().resize(600,600,{fit:'cover', position:'face'})`), upload to R2
-- (e) When source site has NO headshot for a team member: DALL-E generates a professional headshot matching the person's name/gender inference from research — prompt pattern: `"Professional headshot of [gender]-presenting person in [industry-appropriate attire], neutral gray background, soft studio lighting, 1:1 square crop, photorealistic, Hasselblad quality, no text, no watermarks"` — NEVER ship a team card without a photo
+- (e) When source site has NO headshot for a team member: GPT Image 1.5 generates a professional headshot matching the person's name/gender inference from research — prompt pattern: `"Professional headshot of [gender]-presenting person in [industry-appropriate attire], neutral gray background, soft studio lighting, 1:1 square crop, photorealistic, Hasselblad quality, no text, no watermarks"` — NEVER ship a team card without a photo
 - (f) Face detection required — if Sharp face-detect returns 0 faces, reject the image and regenerate
 
 Validator (`validate-team-headshots.mjs`): for every `[data-card-type=person]` element, assert `<img>` exists with natural aspect ratio between 0.9 and 1.1 AND rendered bounding-rect is square within 5%.
@@ -469,7 +471,7 @@ Every page-rendered route MUST present ≥3 distinct media types — text-only p
 
 ### Allowed types
 
-- Photograph (DALL-E OR real-entity)
+- Photograph (GPT Image 1.5 OR real-entity)
 - Illustration/icon system
 - Video (hero OR embedded clip)
 - Audio (podcast OR voiceover OR ambient OR sound effect)
@@ -531,7 +533,7 @@ Reference: prompt-improvements brainstorm rec #28 (2026-05-10) + Mission Doctrin
 
 ## Every site (***PRE-RENDER MEDIA #1 — MEDIA FETCH PARALLEL WITH RESEARCH — UNIVERSAL — BUILD-BREAKING***)
 
-Build orchestrator MUST kick off media-fetch tasks (logo extraction, source-site asset crawl, Pexels/Pixabay search, DALL-E prompt drafting) in parallel with research phase — NOT sequentially after research completes.
+Build orchestrator MUST kick off media-fetch tasks (logo extraction, source-site asset crawl, Pexels/Pixabay search, GPT Image 1.5 prompt drafting) in parallel with research phase — NOT sequentially after research completes.
 
 **Reason** — media calls are network-bound + idempotent; running them concurrently with LLM-bound research saves ~3-5 min wall-clock per build.
 
@@ -541,23 +543,23 @@ Validator (`validate-parallel-media-fetch.mjs`): parse build trace timestamps, a
 
 Reference: prompt-improvements brainstorm rec #5 (2026-05-10) — pre-render parallelism collapses build time.
 
-## Every site (***PRE-RENDER MEDIA #2 — DALL-E BATCH SUBMISSION — UNIVERSAL — BUILD-BREAKING***)
+## Every site (***PRE-RENDER MEDIA #2 — GPT Image 1.5 BATCH SUBMISSION — UNIVERSAL — BUILD-BREAKING***)
 
-DALL-E slot fill MUST batch-submit all prompts in a single concurrent burst (`Promise.all([...slots].map(generateDALLE))`) with concurrency limit of 10 (OpenAI rate limit) — NEVER sequential one-at-a-time.
+GPT Image 1.5 slot fill MUST batch-submit all prompts in a single concurrent burst (`Promise.all([...slots].map(generateDALLE))`) with concurrency limit of 10 (OpenAI rate limit) — NEVER sequential one-at-a-time.
 
 Total time = max(slot generation time) ≈ 12-18s vs sum (5min+) sequential. Per-slot timeout 20s with retry-once on transient failure.
 
-Validator (`validate-dalle-batch.mjs`): parse build trace, assert all DALL-E API calls have overlapping `started_at` windows + max concurrent ≥5 + total DALL-E phase duration ≤30s for ≤20 slots.
+Validator (`validate-dalle-batch.mjs`): parse build trace, assert all GPT Image 1.5 API calls have overlapping `started_at` windows + max concurrent ≥5 + total GPT Image 1.5 phase duration ≤30s for ≤20 slots.
 
 Reference: prompt-improvements brainstorm rec #6 (2026-05-10).
 
 ## Every site (***PRE-RENDER MEDIA #3 — MEDIA SLOT MANIFEST CACHED BY URL HASH — UNIVERSAL — BUILD-BREAKING — iter ≥2 incremental***)
 
-On rebuild at `iteration_count >= 2`, build orchestrator MUST hash source-site media URL list (`sha256(sorted(source_images[]))`) and compare against `_media_slots.json[previous].source_hash`. If match: skip source-image re-download + reuse prior DALL-E generations whose source-data lineage hash matches.
+On rebuild at `iteration_count >= 2`, build orchestrator MUST hash source-site media URL list (`sha256(sorted(source_images[]))`) and compare against `_media_slots.json[previous].source_hash`. If match: skip source-image re-download + reuse prior GPT Image 1.5 generations whose source-data lineage hash matches.
 
 Only regenerate slots whose source data CHANGED OR whose vision-relevance score was below floor in prior iteration OR whose goody-queue entry mutates them.
 
-Validator (`validate-media-cache-reuse.mjs`): when `iteration_count >= 2`, assert `_media_slots.json[current].slots_reused_count > 50%` of total slots AND build's DALL-E API call count is ≤ `slots_regenerated_count`.
+Validator (`validate-media-cache-reuse.mjs`): when `iteration_count >= 2`, assert `_media_slots.json[current].slots_reused_count > 50%` of total slots AND build's GPT Image 1.5 API call count is ≤ `slots_regenerated_count`.
 
 Reference: prompt-improvements brainstorm rec #7 (2026-05-10) — diff-patch iteration applied to media phase cuts cost ~$0.30 → $0.05 per rebuild.
 
@@ -572,7 +574,7 @@ Every build MUST generate ≥4 Ideogram v3 assets at slice 0 (foundation) and ev
 
 ### Pipeline
 
-Brand extraction → `_brand.json` → Ideogram prompt template `(brand_name, palette, font_family, asset_role, dimensions, style="vector|editorial|stamp|poster")` → `ideogram.generate({ model: "v3-balanced", style_type, magic_prompt_option: "AUTO", rendering_speed: "QUALITY", color_palette, num_images: 4 })` → critique pass (GPT-4o ≥8/10) → R2 upload → log to `_ideogram_assets.json`.
+Brand extraction → `_brand.json` → Ideogram prompt template `(brand_name, palette, font_family, asset_role, dimensions, style="vector|editorial|stamp|poster")` → `ideogram.generate({ model: "v3-balanced", style_type, magic_prompt_option: "AUTO", rendering_speed: "QUALITY", color_palette, num_images: 4 })` → critique pass (GPT Image 2 vision ≥8/10) → R2 upload → log to `_ideogram_assets.json`.
 
 **Sourced fallback** — if Ideogram API quota exhausted, scan source-site Wayback/live for existing branded type/posters/banners — preserve + upscale before generating.
 
@@ -594,7 +596,7 @@ Slice 0 brand kit MUST include Ideogram-generated logo + wordmark + monogram tri
 
 Validator (`validate-logo-triad.mjs`): assert `_brand.json.logo.{full,wordmark,monogram}` all resolve 200 AND match brand palette ΔE≤5.
 
-Reference: Brian directive 2026-05-11 — Ideogram nails typography rendering where DALL-E/Midjourney fail.
+Reference: Brian directive 2026-05-11 — Ideogram nails typography rendering where GPT Image 1.5/Midjourney fail.
 
 ## Every build (***IDEOGRAM SLOT #2 — FAVICON-SET GENERATOR FROM MONOGRAM — UNIVERSAL — BUILD-BREAKING***)
 
@@ -642,7 +644,7 @@ Validator (`validate-chapter-plates.mjs`): assert long-form route renders ≥`ce
 
 ## Every build (***IDEOGRAM SLOT #6 — EDITORIAL BLOG POST HEADERS — UNIVERSAL — BUILD-BREAKING***)
 
-Every blog/journal post MUST have an Ideogram-generated editorial header image (1600×900) combining post title typography + relevant visual motif — replaces the default DALL-E stock-photo header on content-rich routes.
+Every blog/journal post MUST have an Ideogram-generated editorial header image (1600×900) combining post title typography + relevant visual motif — replaces the default GPT Image 1.5 stock-photo header on content-rich routes.
 
 ### Prompt template
 
@@ -780,7 +782,7 @@ media_orchestrator.fanOut(topic, palette, license=CC-BY-or-permissive)
   → Promise.all([pexels, pixabay, googleCSE, wikimedia, archiveOrg, loc, nasa, smithsonian, met, europeana, flickrCommons, youtube, vimeo, coverr, mixkit, pexelsVideo])
   → dedupe by pHash
   → license-filter (CC-BY+/CC0/public-domain only)
-  → relevance score via GPT-4o vision (≥7/10)
+  → relevance score via GPT Image 2 vision (≥7/10)
   → R2 self-host
   → emit `_media_corpus.json[{source, license, attribution, r2_url, relevance_score, license_url}]`
 ```

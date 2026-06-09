@@ -1,5 +1,84 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-75 — Migrate `12-media-orchestration/build-breaking-rules.md`: 190 → 160 hits
+
+### Closes pass-74 candidate 1 (migrate next densest file)
+
+### Migration applied pass-74's codified patterns
+
+Pre-cleaning `GPT-4o Vision` → `GPT Image 2 vision` BEFORE the general `GPT-4o` → `GPT Image 2 vision` substitution prevented the stutter caught in pass-74. Single-pass sed; no follow-up cleanup needed:
+
+```bash
+sed -i.tmp \
+  -e 's/DALL-E 3/GPT Image 1.5/g' \
+  -e 's/DALL·E 3/GPT Image 1.5/g' \
+  -e 's/DALL-E/GPT Image 1.5/g' \
+  -e 's/DALL·E/GPT Image 1.5/g' \
+  -e 's/dall-e-3/gpt-image-1.5/g' \
+  -e 's/dall-e-2/gpt-image-2/g' \
+  -e 's/GPT-4o Vision/GPT Image 2 vision/g' \    # pre-clean stutter
+  -e 's/GPT-4o vision/GPT Image 2 vision/g' \    # pre-clean stutter
+  -e 's/GPT-4o/GPT Image 2 vision/g' \
+  12-media-orchestration/build-breaking-rules.md
+```
+
+Grep for stutter post-migration: 0 hits. Codified pattern from pass-74 paid off.
+
+### Migration note added per pass-73 template
+
+Standard blockquote preface with:
+
+- Substitution summary
+- Citation to `platform.openai.com/docs/deprecations`
+- Confirmation that structural rules (14-Ideogram slot manifest, 16-source parallel fan-out, ≥8/10 topic-relevance gate) are unchanged
+- Note that legacy cost ranges need re-verification against current rates
+
+### Detector count drop
+
+| Pattern | Pre-pass-75 | Post-pass-75 | Δ |
+|---|---|---|---|
+| GPT-4o | 129 | 117 | -12 |
+| DALL-E | 56 | 38 | -18 |
+| DALL·E | 5 | 5 | 0 |
+| TOTAL | 190 | **160** | **-30** |
+
+### Pass-58→75 closure-loop summary
+
+- **11 latent bugs caught + 111 references migrated** across pass-73→75 (44 + 37 + 30)
+- **6 disciplines codified**
+- **5 audit scripts** mechanized
+- `bin/lib/emit-json.sh` lib: 10 callers
+
+### Migration arc trajectory
+
+- pass-72: 270 (detector ships)
+- pass-73: 226 (-44, media-acquisition)
+- pass-74: 190 (-36, visual-inspection-loop, also -1 from filter improvement)
+- pass-75: 160 (-30, 12-build-breaking-rules)
+
+Average drop per migration pass: ~37 hits. At this pace, 4-5 more passes drives count to <50, then surgical mop-up of low-density files. The detector becomes a zero-gate when count hits 0.
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 9/9 green
+bash bin/check-deprecated-models.sh 2>&1 | grep SUMMARY  # 160 total hits
+```
+
+### What was NOT done
+
+- 160 remaining deprecated-identifier migrations — pass-76→ iteratively
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-76)
+
+- Migrate next dense file: `15-site-generation/build-breaking-rules.md` (18 hits)
+- Migrate clusters of lighter files: `15-site-generation/quality-gates.md` (16) + `15-site-generation/source-fidelity-loop.md` (10)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-74 — Migrate `visual-inspection-loop.md` + codify 2 patterns: 226 → 190 hits
 
 ### Closes pass-73 candidates 1 (migrate visual-inspection-loop) + 2 (codify sed-then-Edit)
