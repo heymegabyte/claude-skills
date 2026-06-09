@@ -1,5 +1,69 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-70 — Document nested-envelope pattern in `uniform-json-output.md`
+
+### Closes pass-69 candidate 1 (document composed-envelope pattern)
+
+NEW `rules/uniform-json-output.md` § Composed envelopes — codifies the nested-sub-envelope pattern that `bin/lint-all.sh --json` introduced in pass-69. Future orchestrators that aggregate sub-script outputs now have a doctrine to follow.
+
+### Codified rules for composed envelopes
+
+1. **Sub-envelope is verbatim** — capture `bash <sub-script> --json` as a string, embed via `"payload":<sub-json>`. Don't re-marshal. Same `meta` block lives at both levels; consumers pick which timestamp matters.
+2. **Status field is parent-derived** — parent classifies each sub-envelope into `clean`/`drift`/`fail` by inspecting sub-payload's `summary.exit`. Consumers branch on coarse field without re-parsing full payload.
+3. **Summary aggregates** — parent's `summary` MUST include a count (`info_drift`) so consumers filter on parent alone (`jq '.summary.info_drift > 0'`).
+4. **No nesting beyond depth 2** — orchestrator → sub-scripts. Sub-scripts don't re-orchestrate. If 3 levels needed, refactor to flatten.
+
+### `jq` recipes added to the rule
+
+```bash
+# Did any sub-envelope drift?
+... | jq '.summary.info_drift'
+
+# Drill into one sub-envelope's payload
+... | jq '.info[] | select(.name=="pack-frontmatter") | .payload.drift'
+
+# Treat parent + sub-envelopes as a single flat array of status entries
+... | jq '[.gates[], (.info[] | {name, status})]'
+```
+
+### Reference impl cross-link
+
+`bin/lint-all.sh` cited as the first composed-envelope emitter (since pass-69). Reference for future orchestrators.
+
+### Why codifying matters
+
+Pass-58→69 demonstrated that audit scripts following the uniform-JSON doctrine compose cleanly. Without a codified composition pattern, the next orchestrator (e.g. a CI summary aggregator that runs multiple `lint-all` instances across forks) would invent its own nesting convention. Now the pattern is one paragraph + one example.
+
+### Closure-loop arc pass-58→70 summary
+
+- **9 latent bugs caught** across 8 files
+- **4 disciplines codified** in `lint-doctrine.md` (cross-rule consistency, two-claims-contradict, one-search-many-fixes, pipeline-exit-masking) PLUS now composed envelopes in `uniform-json-output.md`
+- **4 audit scripts mechanized** (check-pricing, check-agent-routing, check-pack-frontmatter, check-agent-fallback)
+- **1 cron automated** (pricing-check weekly)
+- **2 lint-all modes** (`--json` aggregated, `--quiet` compressed)
+- `bin/lib/emit-json.sh` lib: **9 callers** (3× extraction threshold)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                    # ✓ 9/9 green + info compressed
+npx markdownlint-cli2@^0.18.1 rules/uniform-json-output.md   # 0 errors
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Pass-67 candidate (extend `check-agent-fallback` to all tiers) — still deferred
+
+### Next candidates (pass-71)
+
+- Extend `check-agent-fallback` to all tiers (pass-67 deferred)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Audit `09-brand-and-content-system` / `10-experience-and-design-system` for content drift (untouched in the pass-58→70 arc)
+
+---
+
 ## 2026-06-09 — pass-69 — `lint-all --json` aggregates the 4 info sections
 
 ### Closes pass-68 candidate 1 (`--json` aggregation for info sections)

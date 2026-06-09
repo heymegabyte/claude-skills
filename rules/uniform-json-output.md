@@ -89,6 +89,50 @@ Every `--json`-emitting helper in `~/.agentskills/bin/` SHOULD produce the same 
 - ❌ Inconsistent meta keys across helpers (e.g., `created_at` vs `generated_at`). Pick one — `generated_at` per this rule.
 - ❌ Missing `--json` flag on a helper that prints structured output anyway.
 
+## Composed envelopes (nested sub-envelopes, since pass-69)
+
+When one helper orchestrates other helpers (`bin/lint-all.sh` runs 9 main gates AND 4 soft-info audit scripts), aggregate the sub-envelopes into a `info[]` array on the parent envelope. Each entry embeds the sub-script's FULL uniform-JSON envelope as its `payload`:
+
+```json
+{
+  "meta": { ... },
+  "gates": [ /* parent's own gate results */ ],
+  "info": [
+    {
+      "name": "pricing",
+      "status": "clean" | "drift",
+      "payload": { "meta": {...}, "refs": [...], "summary": {...} }
+    },
+    ...
+  ],
+  "summary": { "pass": N, "fail": N, "skip": N, "info_drift": N, "exit": 0 }
+}
+```
+
+### Rules for composed envelopes
+
+- **Sub-envelope is verbatim**: don't re-marshal the sub-script's JSON. Capture `bash <sub-script> --json` output as a string, embed it raw via `"payload":<sub-json>`. Same `meta` block lives at both levels; consumers can choose which timestamp matters.
+- **Status field is parent-derived**: parent classifies each sub-envelope into a coarse `status` (`clean` / `drift` / `fail`) by inspecting sub-payload's `summary.exit`. Consumers can branch on the coarse field without re-parsing the full payload.
+- **Summary aggregates**: parent's `summary` MUST surface a count for sub-envelope drift (`info_drift`) so consumers can filter on parent alone (`jq '.summary.info_drift > 0'`).
+- **No nesting beyond depth 2**: orchestrator → sub-scripts. Sub-scripts don't re-orchestrate. If you need 3 levels, refactor to flatten.
+
+### `jq` recipes for composed envelopes
+
+```bash
+# Did any sub-envelope drift?
+... | jq '.summary.info_drift'
+
+# Drill into one sub-envelope's payload
+... | jq '.info[] | select(.name=="pack-frontmatter") | .payload.drift'
+
+# Treat parent + sub-envelopes as a single flat array of status entries
+... | jq '[.gates[], (.info[] | {name, status})]'
+```
+
+### Source
+
+- `bin/lint-all.sh` (since pass-69) — first composed-envelope emitter. Reference implementation.
+
 ## Shared library (consume in new helpers)
 
 `bin/lib/emit-json.sh` (since pass-38) is the sourceable lib every uniform-JSON helper imports. A new helper drops from ~12 lines of boilerplate to 3:
