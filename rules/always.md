@@ -48,7 +48,7 @@ paths:
 
 ### Optional
 
-- `llms.txt` — <0.3% adoption, no major LLM crawler requests it. DX-only for Cursor/Claude Code, **not a build gate**
+- `llms.txt` — <0.3% adoption, no major LLM crawler requests it. DX-only for Cursor/Claude Code, **not a build gate** — BUT Lighthouse's `agentic-browsing` category (Chrome DevTools 2026) now SCORES it: a missing/invalid `llms.txt` (no H1, no links) drops the category (seen 67→100 on music.megabyte.space 2026-06-10). For AI-native / catalog sites, ship a proper data-driven one (llmstxt.org: H1 + summary + linked sections, generated from data so it never drifts) — cheap win + on-theme. Verify by re-running `lighthouse_audit` (chrome-devtools MCP), not by guessing.
 
 ### Asset rules
 
