@@ -1,5 +1,78 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-87 — Second ladder application: skill-pack-claim detector + 6 surgical fixes
+
+### Closes pass-86 candidate 1 (apply ladder to new class)
+
+Second application of the codified maturity ladder. Full Steps 1-3 (Detect + Surface + Migrate) — first instance where the new detector caught REAL drift on day one.
+
+### NEW `bin/check-skill-pack-claim.sh` (12th caller of `bin/lib/emit-json.sh`)
+
+Parallels `check-pack-frontmatter.sh` but for skill-dir SKILL.md files. Every `[0-9][0-9]-*/SKILL.md` frontmatter `pack:` declaration must match an actual `_packs/<name>.yml` file AND the pack file must list the skill-dir.
+
+### 6 surgical drift fixes (Step 3 — Migrate)
+
+The detector caught 6 real claim-vs-reality drifts on first run:
+
+| Skill | Claimed | Actual | Fix |
+|---|---|---|---|
+| `02-goal-and-brief` | `core` | `website-build` | frontmatter → `website-build` |
+| `03-planning-and-research` | `core` | `research` | frontmatter → `research` |
+| `04-preference-and-memory` | `core` | NONE | added to `_packs/core.yml` |
+| `06-build-and-slice-loop` | `core` | NONE | added to `_packs/core.yml` |
+| `08-deploy-and-runtime-verification` | `core` | `backend` + `infra` | frontmatter → `backend` |
+| `14-independent-idea-engine` | `core` | `polish` + `website-build` | frontmatter → `polish` |
+
+Pattern: 3 skills had frontmatter declaring "core" but were never added to core.yml; 3 skills had `pack: "core"` but were listed elsewhere. All 6 resolved by aligning frontmatter to actual pack membership (or adding to core.yml when frontmatter intent was clear).
+
+### Significance — first non-trivial migration via the ladder
+
+Pass-86 used the ladder for a 16/16-clean class (Migrate skipped). Pass-87 uses the ladder for a REAL drift class (6 fixes needed). This is the ladder's first end-to-end demonstration: Detect → Surface → Migrate → 0 drift baseline ready for the stability clock.
+
+### Wired into lint-all (Step 2 — Surface)
+
+- `bin/lint-all.sh` — added as 3rd soft-info section
+- Quiet-mode summary: "3 audit sections clean (pricing · skill-required-fields · skill-pack-claim)"
+- shellcheck + shfmt coverage extended
+- `package.json` — `npm run check:skill-pack-claim` + `:json` aliases
+
+### Detector edge case — multi-pack membership
+
+5 of the 6 drift cases had the skill listed in MULTIPLE packs. The frontmatter `pack:` claim picks PRIMARY. For multi-pack cases, the detector flags any mismatch between PRIMARY claim and ANY actual pack membership. Resolution heuristic: align frontmatter to the most-semantically-fitting of the existing memberships.
+
+### Ladder steps 4-6 deferred per the doctrine
+
+- **Step 4 (Codify)**: no specific in-arc failure mode — the drift surface was simple claim-vs-reality
+- **Step 5 (Promote)**: starts pass-87 stability clock. Earliest possible promotion: pass-102.
+- **Step 6 (Regression protection)**: automatic via pre-commit hook once promoted.
+
+### Closure-loop arc pass-58→87 — final tally
+
+- **12 latent bugs caught + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter fixes + 6 skill-frontmatter fixes + 1 output bug**
+- **13-gate main lint suite** (unchanged) + **3 audit scripts** in info section
+- **9 disciplines codified** in lint-doctrine + composed-envelope + maturity-ladder
+- `bin/lib/emit-json.sh` lib: **12 callers** (4× extraction threshold)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                                         # ✓ 13 pass · 0 fail · 0 skip · 3 info clean
+bash bin/check-skill-pack-claim.sh                                    # ✓ 16/16 in sync (was 10/16)
+bash bin/check-skill-pack-claim.sh --json | python3 -m json.tool      # valid envelope
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-88)
+
+- Audit yet another new class (e.g. `check-skill-submodule-existence.sh` — `submodules:` frontmatter must point to existing files; already partly enforced by `validate-skills.sh` but worth a dedicated `bin/` script for `npm run`-able usage)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-86 — First application of the maturity ladder: skill-required-fields detector
 
 ### Closes pass-85 candidate 1 (apply ladder to new class)

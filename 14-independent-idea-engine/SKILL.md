@@ -11,7 +11,7 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 priority: 3
-pack: "core"
+pack: "polish"
 triggers:
   - "what else"
   - "ideas"

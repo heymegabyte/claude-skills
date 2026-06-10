@@ -2,6 +2,8 @@ name: core
 description: Always-loaded essentials. Tier-1 priority. ~12k tokens.
 members:
   - 01-operating-system
+  - 04-preference-and-memory
+  - 06-build-and-slice-loop
   - rules/brian-preferences
   - rules/always
   - rules/full-autonomy

@@ -14,7 +14,7 @@ submodules:
   - org-type-inference.md
   - project-brief-template.md
 priority: 2
-pack: "core"
+pack: "website-build"
 triggers:
   - "new project"
   - "project brief"

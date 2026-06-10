@@ -11,7 +11,7 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 priority: 2
-pack: "core"
+pack: "research"
 triggers:
   - "research"
   - "plan"

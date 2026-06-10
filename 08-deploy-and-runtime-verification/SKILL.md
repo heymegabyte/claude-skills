@@ -16,7 +16,7 @@ submodules:
   - rollback.md
   - github-config.md
 priority: 2
-pack: "core"
+pack: "backend"
 triggers:
   - "deploy"
   - "wrangler deploy"
