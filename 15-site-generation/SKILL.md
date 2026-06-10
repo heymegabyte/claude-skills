@@ -12,20 +12,21 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - research-pipeline.md
-  - media-acquisition.md
-  - build-prompts.md
-  - quality-gates.md
-  - domain-features.md
-  - template-system.md
-  - local-seo.md
   - bolt-artifact-protocol.md
-  - blog-import.mjs
-  - validate-assets.mjs
   - build-breaking-rules.md
+  - build-prompts.md
+  - domain-features.md
+  - homepage-block-library.md
+  - local-seo.md
+  - media-acquisition.md
+  - non-technical-owner-onboarding.md
   - page-set-expansion.md
+  - quality-gates.md
+  - research-pipeline.md
+  - small-business-mode.md
   - source-fidelity-loop.md
-  - squarespace-full-crawl.mjs
+  - template-improvements-100.md
+  - template-system.md
 priority: 3
 pack: "website-build"
 triggers:

@@ -11,13 +11,14 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - email-templates.md
-  - social-automation.md
-  - seo-and-keywords.md
-  - documentation-and-codebase-hygiene.md
-  - per-route-metadata.md
-  - grammar-audit.md
+  - ai-search-geo.md
   - build-breaking-rules.md
+  - documentation-and-codebase-hygiene.md
+  - email-templates.md
+  - grammar-audit.md
+  - per-route-metadata.md
+  - seo-and-keywords.md
+  - social-automation.md
 priority: 3
 pack: "content"
 triggers:

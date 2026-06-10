@@ -11,8 +11,6 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - org-type-inference.md
-  - project-brief-template.md
 priority: 2
 pack: "website-build"
 triggers:

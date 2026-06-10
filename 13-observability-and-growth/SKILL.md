@@ -11,17 +11,15 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - posthog.md
-  - ga4-gtm.md
-  - sentry.md
-  - stripe-billing.md
+  - analytics-configuration.md
+  - conversion-optimization.md
+  - email-marketing-and-listmonk.md
+  - feature-flags-and-experiments.md
+  - sentry-alert-rules.md
   - square-payments.md
-  - listmonk.md
-  - plg-framework.md
-  - programmatic-seo.md
-  - incident-remediation.md
-  - geo-ai-search.md
-  - local-conversions.md
+  - stripe-billing.md
+  - user-feedback-collection.md
+  - workers-tracing-otlp.md
 priority: 2
 pack: "backend"
 triggers:

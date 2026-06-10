@@ -1,5 +1,102 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-89 — Migrate 28 submodules + CI status realization
+
+### Closes pass-88 candidates 1 (migrate) + 2 (investigate CI gap)
+
+### MAJOR FINDING — CI has been failing for weeks
+
+`gh run list --limit 5` revealed **all 5 recent runs failed**:
+
+```text
+{"conclusion":"failure","name":"Validate & Publish Skills"} × 5
+```
+
+Pass-66, pass-72, pass-82, pass-87, pass-88 — every commit since at least pass-66 has been failing CI on the `Check SKILL.md submodule alignment` step. **Local pre-commit hook (pass-52) caught nothing because the gate wasn't part of lint-all**. I've been pushing while CI has been red.
+
+The "publish.yml gap" pass-88 surfaced was not a gap — it was a long-standing failure I'd been ignoring. The local-hook mechanical enforcement (pass-52) only covers lint-all; CI runs independently and I wasn't checking.
+
+### Systemic lesson
+
+`bash bin/install-hooks.sh` → `.git/hooks/pre-commit` → `bash bin/lint-all.sh --quiet` is half of mechanical enforcement. **The other half is checking CI status after push.** Pass-88's `check-skill-submodules.sh` becoming a lint-all info section finally surfaced this locally. Closure-loop graduated:
+
+```text
+local-only mechanical enforcement → catches local-gates only
+                                  → CI failures invisible without manual check
+                                  → blind spot
+
+resolution: add new gates to lint-all when CI gates exist that local doesn't replicate
+```
+
+### Migration via Python sweep
+
+Wrote a Python helper that for each SKILL.md:
+
+1. Parses frontmatter
+2. Finds `submodules:` block
+3. Detects mismatch between declared list and actual `*.md` files in dir
+4. If mismatch: regenerates the `submodules:` list from actual files (lexicographic order)
+
+11 SKILL.md files rewritten:
+
+| Skill | Declared | Actual | Δ |
+|---|---|---|---|
+| 02-goal-and-brief | 2 | 0 | -2 (no submodules; dir has only SKILL.md) |
+| 05-architecture-and-stack | 4 | 13 | +9 (frontmatter under-listed) |
+| 06-build-and-slice-loop | 3 | 27 | +24 (frontmatter under-listed) |
+| 07-quality-and-verification | 3 | 26 | +23 (frontmatter under-listed) |
+| 08-deploy-and-runtime-verification | 4 | 11 | +7 |
+| 09-brand-and-content-system | 7 | 8 | +1 |
+| 10-experience-and-design-system | 3 | 3 | 0 (names changed only) |
+| 11-motion-and-interaction-system | 5 | 1 | -4 (over-listed) |
+| 12-media-orchestration | 10 | 11 | +1 |
+| 13-observability-and-growth | 11 | 9 | -2 |
+| 15-site-generation | 14 | 15 | +1 |
+
+Total submodules declared: 66 → **124**. Many skills had radically under-listed frontmatter (06, 07, 05). Now `submodules:` is the authoritative list.
+
+### Detector confirms: 0 drift
+
+```text
+▸ Checking SKILL.md submodules: declarations exist as files in skill dir...
+  Skills scanned: 16 · Total submodules declared: 124
+━━━ SUMMARY: 124 submodules · 0 missing
+✓ all SKILL.md submodule declarations resolve to existing files
+```
+
+### Closure-loop arc pass-58→89 — final tally
+
+- **12 latent bugs + 1 long-standing CI failure caught + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule fixes + 1 output bug + 1 f-string bug**
+- **13-gate main lint suite** + **4 audit scripts** in info section
+- **9 disciplines codified** in lint-doctrine + composed-envelope + maturity-ladder
+- `bin/lib/emit-json.sh` lib: 13 callers
+
+### Recommendations from this pass
+
+1. **CI status check** should be part of post-push verification (manual `gh run list --limit 1`)
+2. The publish.yml step that finally caught this needs a corresponding lint-all gate or the `check-skill-submodules.sh` info section needs eventual promotion per the maturity ladder
+3. Future deferred "investigate CI gap" candidates should be done sooner — this one had been masking failures for 23+ passes
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 13 pass + 4 info sections clean
+bash bin/check-skill-submodules.sh                     # ✓ 124 submodules · 0 missing
+gh run list --limit 1                                   # check after push to confirm green
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-90)
+
+- Push + verify CI goes green (the actual proof this pass works)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-88 — Third ladder application: `check-skill-submodules.sh` (surfaces 28 drift)
 
 ### Closes pass-87 candidate 1 (apply ladder to new class)

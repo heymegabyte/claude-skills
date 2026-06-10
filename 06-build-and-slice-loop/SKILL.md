@@ -11,9 +11,33 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - vertical-slice.md
-  - file-organization.md
-  - anti-placeholder.md
+  - admin-dashboard.md
+  - ai-chat-widget.md
+  - blog-and-content-engine.md
+  - build-breaking-rules.md
+  - chat-native-dashboard.md
+  - contact-forms-and-endpoints.md
+  - copilot-and-ai-features.md
+  - custom-error-pages.md
+  - data-tables.md
+  - domain-provisioning.md
+  - easter-eggs.md
+  - empty-states-and-loading.md
+  - file-uploads-and-storage.md
+  - internationalization.md
+  - keyboard-shortcuts-and-command-palette.md
+  - microcopy-library.md
+  - notification-center.md
+  - notification-system.md
+  - onboarding-and-first-run.md
+  - pre-digested-builds.md
+  - pwa-kit.md
+  - realtime-and-websockets.md
+  - rich-text-editor.md
+  - site-search.md
+  - stripe-first-donations.md
+  - web-manifest-system.md
+  - webhook-system.md
 priority: 2
 pack: "core"
 triggers:

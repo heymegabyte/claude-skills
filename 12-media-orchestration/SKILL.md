@@ -12,16 +12,17 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - media-prompts.md
+  - 30-ideogram-methods.md
+  - build-breaking-rules.md
   - compression-pipeline.md
-  - og-image-generation.md
   - image-optimization.md
-  - technical-diagramming.md
   - image-profiling.md
   - lightbox-classifier.md
-  - social-brand-hex.md
+  - media-prompts.md
   - notebooklm-pipeline.md
-  - build-breaking-rules.md
+  - og-image-generation.md
+  - social-brand-hex.md
+  - technical-diagramming.md
 priority: 3
 pack: "media"
 triggers:

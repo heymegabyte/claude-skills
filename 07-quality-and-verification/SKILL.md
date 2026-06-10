@@ -11,9 +11,32 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - ai-vision-qa.md
-  - multi-agent-testing.md
+  - accessibility-gate.md
+  - adversarial-testing.md
+  - agentic-security.md
+  - audio-video-sync.md
+  - build-breaking-rules.md
+  - chrome-and-browser-workflows.md
+  - completeness-verification.md
+  - computer-use-automation.md
+  - contract-testing.md
+  - e2e-accumulation.md
+  - eval-driven-development.md
+  - evidence-collection.md
+  - performance-optimization.md
+  - picovoice-eagle-biometric.md
+  - security-hardening.md
+  - semgrep-codebase-rules.md
+  - slop-detection.md
+  - spec-driven-development.md
+  - stagehand-ai-fallback.md
+  - stagehand-ai-testing.md
+  - tdd-verification.md
+  - testing-matrices.md
+  - ui-completeness-sweep.md
+  - visual-inspection-loop.md
   - visual-regression.md
+  - wcag-2-2-2026.md
 priority: 2
 pack: "testing"
 triggers:

@@ -11,10 +11,19 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - cloudflare-primitives.md
-  - data-patterns.md
-  - reliability.md
-  - auth-patterns.md
+  - ai-technology-integration.md
+  - api-design-and-documentation.md
+  - auth-and-session-management.md
+  - background-jobs-and-workflows.md
+  - cf-2026-updates.md
+  - cf-auto-provision.md
+  - coolify-docker-proxmox.md
+  - drizzle-orm-and-migrations.md
+  - enterprise-multi-tenancy.md
+  - heartbeat-polling.md
+  - mcp-and-cloud-integrations.md
+  - openapi-generation.md
+  - shared-api-pool.md
 priority: 2
 pack: "backend"
 triggers:

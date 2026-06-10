@@ -11,9 +11,9 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - design-tokens.md
   - build-breaking-rules.md
   - cinematic-doctrine.md
+  - design-tokens.md
 priority: 3
 pack: "design"
 triggers:

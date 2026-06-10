@@ -11,10 +11,17 @@ compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - workers-builds.md
-  - d1-backups.md
-  - rollback.md
-  - github-config.md
+  - backup-and-disaster-recovery.md
+  - changelog-and-releases.md
+  - ci-cd-pipeline.md
+  - critical-css.md
+  - font-subsetting.md
+  - gh-fix-ci.md
+  - launch-day-sequence.md
+  - pipeline-health-check.md
+  - r2-lifecycle.md
+  - service-worker.md
+  - uptime-and-health.md
 priority: 2
 pack: "backend"
 triggers:
