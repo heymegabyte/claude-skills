@@ -1,5 +1,77 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-94 — Compression audit + cross-link the rule trinity
+
+### Closes pass-93 candidate "compression opportunities" — outcome: no compression, but cross-links refreshed
+
+### Compression audit findings
+
+Surveyed the closure-loop arc rules + always.md for duplication:
+
+- `rules/lint-doctrine.md` (175 lines), `audit-arc-maturity-ladder.md` (78), `uniform-json-output.md` (160) — content distinct, cross-references thoughtful (6/3/2 mentions of each other)
+- Duplicate-line scan across the trinity: structural only (code fences, frontmatter delimiters, `## See`, etc.)
+- `rules/always.md` (213 lines) — dense supreme-policy content, no bloat
+- `lint-doctrine.md § Codified incidents` — 15 distinct rows, no merger opportunities
+
+**Conclusion**: rules are mature post-arc. No compression target. The iterative refinement across 36+ passes (58→93) self-compressed.
+
+### Stale cross-link counts refreshed
+
+`audit-arc-maturity-ladder.md § See` had `bin/lib/emit-json.sh — shared lib (10+ callers)` and `bin/lint-all.sh — 13-gate suite`. Updated to reflect current state:
+
+- emit-json.sh: **15 callers** (5× pass-38 extraction threshold)
+- lint-all.sh: **15-gate suite + 3-info-section + quiet mode**
+- lint-doctrine.md: 10 disciplines as of pass-93
+- Added `bin/check-ci-status.sh` to See list (closes the local-only mechanical-enforcement blind spot)
+
+### Closed the cross-link loop bidirectionally
+
+`rules/lint-doctrine.md § See` had no reference to `audit-arc-maturity-ladder.md` or `uniform-json-output.md` despite being the operational dictionary for the maturity-ladder workflow. Added 2 cross-references at the top of the See list:
+
+```text
+- audit-arc-maturity-ladder.md — 6-step ladder + CI-mirroring short-path doctrine that turns codified incidents (this rule) into mechanical enforcement (bin/lint-all.sh gates)
+- uniform-json-output.md — uniform-JSON shape used by every bin/check-<class>.sh helper that surfaces an incident
+```
+
+The 3 rules now form an explicit trinity:
+
+- **`uniform-json-output.md`** = output shape
+- **`lint-doctrine.md`** = incident dictionary
+- **`audit-arc-maturity-ladder.md`** = workflow for graduating incidents to gates
+
+Each cross-links the other two.
+
+### System health snapshot (pass-94)
+
+- **15 lib callers** in `bin/lib/emit-json.sh`: agent-routing · deprecated-models · doc-urls · pricing · skill-pack-claim · agent-fallback · skill-submodules · ci-status · lint-auto-improve · security-supply-chain · skill-required-fields · doc-counts · pack-frontmatter · lint-all · session-recap
+- **15-gate main suite** + 3 info sections
+- **10 disciplines codified** in `lint-doctrine.md § Codified incidents`
+- **Maturity ladder doctrine** with 4 paths (short-path · tracking · informational · standard)
+
+### Closure-loop arc pass-58→94 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures unmasked + fixed + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output bugs**
+- **15-gate suite + 3 info sections** + 1 post-push verifier
+- **10 disciplines codified + maturity-ladder fully cross-linked**
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+gh run list --limit 1 -q '.[0].conclusion'             # success (post-push)
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-95)
+
+- Both queue items remain explicitly gated → natural pause point
+- The closure-loop arc has reached an asymptote — most surfaces are 0-drift, gates are mechanical, doctrines are codified and cross-linked
+
+---
+
 ## 2026-06-10 — pass-93 — Cron workflow audit + codify CI-mirroring short-path in the ladder
 
 ### Closes pass-92 candidate 1 (cron workflow audit)

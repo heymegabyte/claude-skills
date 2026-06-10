@@ -71,8 +71,9 @@ The short-path is for CI gates that BLOCK validate-job runs, not advisory ones.
 
 ## See
 
-- `bin/lib/emit-json.sh` — shared lib (10+ callers)
+- `bin/lib/emit-json.sh` — shared lib (15 callers as of pass-94, 5× the pass-38 extraction threshold)
 - `rules/uniform-json-output.md` § Composed envelopes — JSON shape for soft-info section
-- `rules/lint-doctrine.md` § Codified incidents — codified failure modes from each arc
-- `bin/lint-all.sh` — reference impl of 13-gate suite + info section + quiet mode
+- `rules/lint-doctrine.md` § Codified incidents — codified failure modes from each arc (10 disciplines as of pass-93)
+- `bin/lint-all.sh` — reference impl of 15-gate suite + 3-info-section + quiet mode
 - `bin/install-hooks.sh` — pre-commit hook installer (regression protection layer)
+- `bin/check-ci-status.sh` — post-push CI verifier (closes the local-only mechanical-enforcement blind spot)

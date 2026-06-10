@@ -169,6 +169,8 @@ Asserts: every pack-referenced rule exists, every rule is in ≥1 pack, every NN
 
 ## See
 
+- `audit-arc-maturity-ladder.md` — 6-step ladder + CI-mirroring short-path doctrine that turns codified incidents (this rule) into mechanical enforcement (`bin/lint-all.sh` gates)
+- `uniform-json-output.md` — uniform-JSON shape used by every `bin/check-<class>.sh` helper that surfaces an incident
 - `code-style.md` — TS/Python/Bash baseline (this rule operationalizes it)
 - `ai-agent-security.md` — Gitleaks/TruffleHog secret-scan tier
 - `prompt-as-training-signal.md` §6 — self-improvement protocol
