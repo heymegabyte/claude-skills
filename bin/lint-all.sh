@@ -105,7 +105,7 @@ runGate "prettier" "prettier --check JSON/YAML" \
 logHeader "7. shellcheck"
 if command -v shellcheck >/dev/null; then
   runGate "shellcheck" "shellcheck bin/ scripts/" \
-    shellcheck -x -S warning bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/check-deprecated-models.sh bin/check-skill-required-fields.sh bin/check-skill-pack-claim.sh bin/check-skill-submodules.sh bin/check-ci-status.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
+    shellcheck -x -S warning bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/check-deprecated-models.sh bin/check-skill-required-fields.sh bin/check-skill-pack-claim.sh bin/check-skill-submodules.sh bin/check-ci-status.sh bin/check-doc-counts.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
 else
   skipGate "shellcheck" "not installed (brew install shellcheck)"
 fi
@@ -113,7 +113,7 @@ fi
 logHeader "8. shfmt"
 if command -v shfmt >/dev/null; then
   runGate "shfmt" "shfmt -d -i 2 -ci -bn" \
-    shfmt -i 2 -ci -bn -d bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/check-deprecated-models.sh bin/check-skill-required-fields.sh bin/check-skill-pack-claim.sh bin/check-skill-submodules.sh bin/check-ci-status.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
+    shfmt -i 2 -ci -bn -d bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/check-deprecated-models.sh bin/check-skill-required-fields.sh bin/check-skill-pack-claim.sh bin/check-skill-submodules.sh bin/check-ci-status.sh bin/check-doc-counts.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
 else
   skipGate "shfmt" "not installed (brew install shfmt OR go install mvdan.cc/sh/v3/cmd/shfmt@latest)"
 fi
@@ -155,6 +155,14 @@ runGate "agent-routing" "check-agent-routing" \
 logHeader "13. agent-fallback"
 runGate "agent-fallback" "check-agent-fallback" \
   bash "$SKILLS_ROOT/bin/check-agent-fallback.sh"
+
+# Hard gate 14 (pass-91) — doc-counts. publish.yml "Check doc counts" step
+# was discovered pass-89 to have been failing 23+ passes because no local
+# gate mirrored it. Immediate-promote per the CI-failure-surface-must-be-
+# local-mirrored discipline (codified pass-90).
+logHeader "14. doc-counts"
+runGate "doc-counts" "check-doc-counts" \
+  bash "$SKILLS_ROOT/bin/check-doc-counts.sh"
 
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
