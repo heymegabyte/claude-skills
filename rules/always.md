@@ -37,6 +37,7 @@ paths:
   - **Allow (search/retrieval — keeps you cited in ChatGPT/Perplexity/AI Overviews)**: `OAI-SearchBot`, `Claude-SearchBot`, `Claude-User`, `PerplexityBot`
   - **Disallow (training-only — opt out of model training)**: `GPTBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `CCBot`, `Bytespider`
   - Explicit `Allow`/`Disallow` per UA — never default
+  - **Cloudflare gotcha**: the CF "AI Audit / Managed robots.txt" feature EDGE-INJECTS a `# BEGIN Cloudflare Managed content` block ABOVE your origin robots.txt (sets `ai-train=no` + `Disallow: /` for training bots). If your origin robots.txt ALLOWS those same bots, you ship contradictory duplicate `User-agent` groups → undefined crawler behavior + possible drop from AI answers. Reconcile the origin file to AGREE with the managed block (disallow training, allow search/retrieval) — or disable the managed feature in the dashboard. Always `curl` the LIVE robots.txt (not just the repo file) to catch the injected block. Reference incident: music.megabyte.space 2026-06-10.
 - `humans.txt`
 - `sitemap.xml` (every `<url>` has `<lastmod>`)
 - `browserconfig.xml`
