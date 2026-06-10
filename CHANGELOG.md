@@ -1,5 +1,91 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-82 — Promote `check-deprecated-models.sh` to **hard CI gate #10**
+
+### Closes pass-81 candidate 1 (mechanical enforcement at zero)
+
+The migration arc completed pass-81 with 0 deprecated-model hits. Pass-82 graduates the detector from soft-info to a **blocking** gate. Same maturity ladder demonstrated by pass-52's pre-commit hook + pass-43→48's CI gate adds.
+
+### `bin/lint-all.sh` changes
+
+- **NEW gate #10: `deprecated-models`** — placed AFTER actionlint, BEFORE the soft-info section. Uses the standard `runGate` helper.
+- **Removed** `runInfoSection "deprecated-models"` call (was the soft-info caller)
+- **Removed** `emitInfoSection "ℹ deprecated model identifiers..."` block
+- **Quiet-mode summary updated**: "4 audit sections clean" (was "5")
+- 9-gate suite → **10-gate suite**
+
+### Mechanical enforcement contract
+
+The pre-commit hook (installed pass-52 via `bin/install-hooks.sh`) calls `bash bin/lint-all.sh --quiet`. Any commit that introduces a deprecated identifier now blocks at:
+
+```text
+━━━ 10. deprecated-models
+  ✗ check-deprecated-models
+[...detector output listing the hit...]
+━━━ SUMMARY: 9 pass · 1 fail · 0 skip
+✗ lint-all FAILED — fix above gates before push
+```
+
+Same UX as any other gate failure. The toolchain enforces the discipline; the developer can't accidentally introduce a deprecated identifier.
+
+### Test verification
+
+```bash
+# Baseline: 0 hits, 10 gates pass
+bash bin/lint-all.sh --quiet  # ✓ 10 pass · 0 fail · 0 skip · CLEAN
+
+# Injection test: add a line containing "GPT-4o"
+echo "test GPT-4o reference" > 09-brand-and-content-system/test-injection.md
+bash bin/check-deprecated-models.sh  # ✗ 1 hit, exit 1
+rm 09-brand-and-content-system/test-injection.md
+
+# Confirm cleanup: 0 hits, gate green again
+bash bin/check-deprecated-models.sh  # ✓ 0 hits, exit 0
+```
+
+### Maturity ladder demonstrated
+
+The 11-pass arc that produced this gate follows the production-tested pattern for any future deprecation cycle:
+
+1. **Detect** (pass-72): build a script with denylist + filter
+2. **Surface** (pass-72): add as soft-info section, visibility every commit
+3. **Migrate** (pass-73→80): drive count to zero via sed + Read+Edit + filter refinement
+4. **Codify** (pass-74/78): capture migration patterns as codified incidents
+5. **Promote** (pass-82): move from soft-info to hard gate
+6. **Regression protection**: any future commit reintroducing the pattern blocks at pre-commit
+
+When the next deprecation lands (e.g. Sonnet 4.6 → Sonnet 5, GPT Image 1.5 → 2.0, Workers AI model rotation), the recipe is: append to denylist → run script → migrate → keep gate.
+
+### Closure-loop arc pass-58→82 — final tally
+
+- **12 latent bugs caught + 256 references migrated + 14 intentional refs preserved**
+- **10-gate main lint suite** (was 9-gate)
+- **4 audit scripts** still in info section (pricing · agent-routing · pack-frontmatter · agent-fallback) — those could each follow the same promotion path when their counts hit zero stability
+- **7 disciplines codified** in lint-doctrine
+- `bin/lib/emit-json.sh` lib: **10 callers** (3.3× extraction threshold)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                                         # ✓ 10 pass · 0 fail · 0 skip
+bash bin/lint-all.sh --json | jq '.summary'                          # {pass:10, fail:0, skip:0, info_drift:0, exit:0}
+shellcheck -x -S warning bin/lint-all.sh                              # clean
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Promote `check-pricing.sh` / `check-agent-routing.sh` / etc. from info to hard gate — those need their own stability proofs (90+ day clean run)
+
+### Next candidates (pass-83)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Consider promoting `check-pack-frontmatter.sh` to hard gate (currently 83 rules · 0 drift, stable since pass-66)
+- Consider promoting `check-agent-routing.sh` to hard gate (3 tiers in sync since pass-64)
+
+---
+
 ## 2026-06-09 — pass-81 — **MIGRATION ARC COMPLETE: 15 → 0 hits**
 
 ### Closes pass-80 candidate 1 (surgical mop-up to zero)

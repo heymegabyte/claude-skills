@@ -126,6 +126,13 @@ else
   skipGate "actionlint" "not installed (brew install actionlint OR go install github.com/rhysd/actionlint/cmd/actionlint@latest)"
 fi
 
+# Hard gate 10 (pass-82 promotion) — deprecated-models was soft-info pass-72→81
+# during the migration arc; arc completed at 0 hits pass-81; now graduated to a
+# blocking gate. Any new commit introducing a retired identifier blocks here.
+logHeader "10. deprecated-models"
+runGate "deprecated-models" "check-deprecated-models" \
+  bash "$SKILLS_ROOT/bin/check-deprecated-models.sh"
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.
@@ -152,7 +159,6 @@ runInfoSection "pricing" "bin/check-pricing.sh"
 runInfoSection "agent-routing" "bin/check-agent-routing.sh"
 runInfoSection "pack-frontmatter" "bin/check-pack-frontmatter.sh"
 runInfoSection "agent-fallback" "bin/check-agent-fallback.sh"
-runInfoSection "deprecated-models" "bin/check-deprecated-models.sh"
 
 if [ "$JSON" = "0" ]; then
   INFO_BUF=$(mktemp)
@@ -173,11 +179,9 @@ if [ "$JSON" = "0" ]; then
     "bin/check-pack-frontmatter.sh" 5
   emitInfoSection "ℹ Opus agent fallback compliance (info-only, doesn't gate)" \
     "bin/check-agent-fallback.sh" 4
-  emitInfoSection "ℹ deprecated model identifiers (info-only, migration tracker)" \
-    "bin/check-deprecated-models.sh" 4
 
   if [ "$QUIET" = "1" ] && [ "$INFO_DRIFT" = "0" ]; then
-    printf '\n━━━ ℹ 5 audit sections clean (pricing · agent-routing · pack-frontmatter · agent-fallback · deprecated-models) — use `npm run lint` for full output\n' >&2
+    printf '\n━━━ ℹ 4 audit sections clean (pricing · agent-routing · pack-frontmatter · agent-fallback) — use `npm run lint` for full output\n' >&2
   else
     cat "$INFO_BUF" >&2
   fi
