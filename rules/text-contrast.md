@@ -148,6 +148,12 @@ Define `--text-bg-light` + apply via `.text-bg--light` for future light surface 
 - Footer credits
 - Every JSON-LD-rendered factual answer block
 
+## Decorative oversized numerals (recurring offender — never trust the large-text exemption)
+
+- Big "ghost" numerals — index counters (`01`–`12`), step numbers, stat-block digits, eyebrow tallies — are THE recurring contrast miss. A pale brand tint (e.g. a `*-300`/`*-400` token) reads elegant but lands ~1.9–2.6:1 on a light surface and fails WCAG 1.4.3.
+- **Size them to the NORMAL-text 4.5:1 bar, not the large-text 3:1 exemption.** axe's large-vs-normal classification flips across device-pixel-ratios right at the ~36px-bold (`text-4xl font-black`) boundary, so a token that only clears 3:1 passes at some breakpoints and fails at others (seen at 390 + 768 while 375/1024/1280/1920 passed). Pick a token ≥4.5:1 (on this palette `maroon-700`+) and the flake disappears.
+- Reference incidents (njsk.org): pass-4 trust-strip glyph, pass-5 planned-giving step numbers, pass-8 `/ways-to-give` path numerals — all the same `maroon-300 → maroon-700` remedy.
+
 ## Never
 
 - Ship `color: var(--accent)` for non-trivially-sized text on dark surface without `--ink-accent`
