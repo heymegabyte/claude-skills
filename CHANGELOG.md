@@ -1,5 +1,82 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-93 — Cron workflow audit + codify CI-mirroring short-path in the ladder
+
+### Closes pass-92 candidate 1 (cron workflow audit)
+
+### Audit of remaining workflows
+
+| Workflow | Type | Local-mirror needed? |
+|---|---|---|
+| `publish.yml` validate job | Hard gate | ✓ All 11 steps mirrored after pass-91/92 |
+| `version-drift-check.yml` | Tracking (Monday cron, probes Chrome / wrangler / Anthropic SDK / Node LTS, opens issues) | ❌ tracking-class |
+| `doc-urls-check.yml` | Tracking (weekly cron, opens issues on dead links) | ❌ already has local script for ad-hoc |
+| `pricing-check.yml` | Tracking (weekly cron, opens issues on stale pricing) | ❌ already in info section |
+| `supply-chain-pr-comment.yml` | PR informational (posts comment, doesn't block merge) | ❌ informational |
+
+**Conclusion**: no new gates to add. All workflows properly classified. The codified discipline (pass-91) catches what needs mirroring; this audit confirms nothing else does.
+
+### Codified the CI-mirroring short-path in `rules/audit-arc-maturity-ladder.md`
+
+The pass-91/92 immediate-promote pattern was documented in CHANGELOG entries but not in the ladder doctrine itself. Pass-93 codifies it as a named section:
+
+> ## Short-path: CI-mirroring promotions skip the stability period
+>
+> When a gate already exists in CI but has no local mirror in `bin/lint-all.sh`, the local mirror graduates IMMEDIATELY upon being built. No 90-day stability period applies.
+
+The new section documents:
+
+- **Why the short-path is safe** (4 reasons: CI production-tested, mirror = same logic, drift typically already 0, stability period filters fresh-detector false positives, none of which apply)
+- **Reference impls** (pass-91 doc-counts, pass-92 skill-submodules)
+- **When the short-path does NOT apply**:
+  - Tracking-class CI gates (cron-driven external probes) → stay tracking-class
+  - PR-only informational gates (PR comments, doesn't block merge) → no local mirror needed
+
+### Doctrine completeness
+
+The ladder doctrine now codifies:
+
+1. The standard 6-step ladder (pass-85)
+2. When each step is the right move (pass-85)
+3. Anti-patterns (pass-85)
+4. **NEW**: CI-mirroring short-path with reference impls (this pass)
+
+Future maintainers have a complete decision tree:
+
+```text
+Is there a CI gate without local mirror?
+├─ Yes, validate-job blocking → short-path: immediate-promote
+├─ Yes, tracking-class → stay tracking-class
+└─ Yes, PR informational → no local mirror
+Or building a fresh detector?
+└─ Standard 6-step ladder (Detect → Surface → Migrate → Codify → Promote → Regression)
+```
+
+### Closure-loop arc pass-58→93 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures unmasked + fixed + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output bugs**
+- **15-gate main lint suite** + 3 info sections
+- **10 disciplines codified** + maturity-ladder fully fleshed out
+- `bin/lib/emit-json.sh` lib: 15 callers
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+gh run list --limit 1 -q '.[0].conclusion'             # success
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-94)
+
+- Both remaining queue items are explicitly gated → natural pause point
+- Could audit individual rule files for compression / merge opportunities (the user's standing "compress prompts" mandate)
+
+---
+
 ## 2026-06-10 — pass-92 — Promote `check-skill-submodules` to gate #15 (CI-mirror short-path)
 
 ### Closes pass-91 candidate 2 (promote skill-submodules to hard gate)

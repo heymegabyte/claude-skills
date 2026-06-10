@@ -33,6 +33,29 @@ Pattern for graduating a class of bug (drift, deprecation, missing field) from "
 - **Promote** when: 0 hits AND stable for ≥90 days OR ≥15 passes. Earlier promotion risks blocking commits during normal drift surface.
 - **Regression protect** when: gate is promoted. Automatic — the pre-commit hook is already wired (pass-52).
 
+## Short-path: CI-mirroring promotions skip the stability period
+
+When a gate already exists in CI (e.g. `publish.yml` validate job) but has no local mirror in `bin/lint-all.sh`, the local mirror graduates IMMEDIATELY upon being built. No 90-day stability period applies.
+
+### Why the short-path is safe
+
+1. The CI gate has been production-tested on every push for the workflow's lifetime — false-positive surface already proven
+2. The local detector is a deliberate mirror of the same logic — same risk profile as the CI gate
+3. The drift surface is typically already 0 (because the CI gate has been enforcing it)
+4. Stability period exists to filter false-positive-prone fresh detectors; CI-mirroring gates aren't fresh
+
+### Reference impls (production)
+
+- **pass-91**: `bin/check-doc-counts.sh` immediately promoted to gate #14. Source: publish.yml "Check doc counts" step (failing 23+ passes before pass-89 unmasked it)
+- **pass-92**: `bin/check-skill-submodules.sh` immediately promoted to gate #15. Source: publish.yml "Check SKILL.md submodule alignment" step (same blind-spot incident)
+
+### When the short-path does NOT apply
+
+- The CI step is **tracking-class** (cron-driven external probe, opens-issue-on-drift) — those stay tracking-class locally. Examples: `version-drift-check.yml` (probes external library versions), `doc-urls-check.yml` (external URLs), `pricing-check.yml` (dated content staleness).
+- The CI step is **PR-only informational** (posts a comment, doesn't block merge) — those don't need local mirroring. Example: `supply-chain-pr-comment.yml` (gitleaks + trufflehog scan results as PR comment).
+
+The short-path is for CI gates that BLOCK validate-job runs, not advisory ones.
+
 ## Anti-patterns
 
 - **Skip step 2** (going Detect → Migrate without surfacing) — invisible to maintainers + future-you. The info section is the breadcrumb.
