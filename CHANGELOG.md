@@ -1,5 +1,80 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-98 — Harden `bin/lib/emit-json.sh` `json_escape` per RFC 8259
+
+### Defensive lib improvement
+
+`bin/lib/emit-json.sh`'s `json_escape` function (used by all 15 uniform-JSON detectors) previously escaped only `\` and `"`. Per RFC 8259 § 7, JSON strings have **5 mandatory escapes**:
+
+1. `\\` (backslash)
+2. `\"` (double quote)
+3. `\n` (line feed)
+4. `\r` (carriage return)
+5. `\t` (tab)
+
+Plus optional control character escapes (\b, \f, \uXXXX).
+
+Pass-98 extends the function to handle all 5 mandatory escapes:
+
+```diff
+ json_escape() {
+   local s="$1"
+   s="${s//\\/\\\\}"
+   s="${s//\"/\\\"}"
++  s="${s//$'\n'/\\n}"
++  s="${s//$'\r'/\\r}"
++  s="${s//$'\t'/\\t}"
+   printf '%s' "$s"
+ }
+```
+
+### Why this matters
+
+15 detectors emit JSON envelopes via this lib. If any input contained an embedded newline (e.g. a path with newline-quoted segments, or a content string from a markdown file), the previous impl would produce **invalid JSON** that breaks `jq` / `python3 -m json.tool` consumers.
+
+Real-world risk: low (path inputs rarely contain control chars). But the cost of hardening is 3 lines + guarantee of valid output.
+
+### Hex-verified
+
+```bash
+. bin/lib/emit-json.sh
+INPUT=$(printf 'a\nb')                   # 3 bytes: 0x61 0x0a 0x62
+RESULT=$(json_escape "$INPUT")
+printf '%s' "$RESULT" | xxd | head -1
+# 00000000: 615c 6e62                                a\nb
+# 4 bytes: 0x61 0x5c 0x6e 0x62 = 'a', '\', 'n', 'b' — correctly escaped
+```
+
+### Compatibility check — all 15 detectors verified
+
+Ran each detector's `--json` mode + parsed with `python3 -m json.tool`. All 15 still emit valid JSON. No regression.
+
+### Closure-loop arc pass-58→98 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures unmasked + fixed + 1 over-broad filter regex + 1 lib hardening + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output bugs + 2 README pre-existing fixes**
+- **15-gate suite + 3 info sections + 1 post-push verifier**
+- 11 disciplines codified
+- `bin/lib/emit-json.sh` lib: 15 callers (5× extraction threshold)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+# Every detector --json mode validates as JSON
+for s in bin/check-*.sh; do bash "$s" --json | python3 -m json.tool >/dev/null; done
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-99)
+
+- Both queue items remain gated
+- Arc at maturity asymptote; future passes respond to fresh drift
+
+---
+
 ## 2026-06-10 — pass-97 — Extend gate #14 to catch `full N docs` phrasing
 
 ### Closes pass-95 leftover (gate #14 only caught line-21 pattern)

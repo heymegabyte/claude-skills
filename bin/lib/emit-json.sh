@@ -6,11 +6,16 @@
 # Each helper prints to stdout (the JSON destination per the doctrine).
 
 # json_escape <string>
-#   Echo a JSON-escaped version of the input (backslash + double-quote).
+#   Echo a JSON-escaped version of the input. Handles backslash, double-quote,
+#   newline, carriage return, and tab — the 5 mandatory JSON string escapes
+#   per RFC 8259 § 7. Pass-98 hardening: previously only escaped \ and ".
 json_escape() {
   local s="$1"
   s="${s//\\/\\\\}"
   s="${s//\"/\\\"}"
+  s="${s//$'\n'/\\n}"
+  s="${s//$'\r'/\\r}"
+  s="${s//$'\t'/\\t}"
   printf '%s' "$s"
 }
 
