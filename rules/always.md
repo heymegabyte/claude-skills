@@ -18,6 +18,7 @@ paths:
 - Meta desc 120-156 chars
 - One H1 in HTML shell (prerender)
 - Canonical
+- **`<head>` MUST be delivered server-side per-route, NEVER client-only.** On a SPA (React/Vite) served by a CF Worker, a client `PageHead`/Helmet that sets `<title>`/`<meta>`/`canonical` after hydration is INVISIBLE to Googlebot, ChatGPT, Perplexity, and social scrapers — they read the raw shell. If non-prerendered routes fall back to one `index.html`, every route ships the HOMEPAGE title + `canonical=/`, collapsing the whole site to one indexable URL. Fix: a Worker `HTMLRewriter` pass keyed on `getMeta(pathname)` rewriting title/desc/og/twitter/canonical/`<html lang>` for EVERY route (base + locale, one source of truth). Gate it with a RAW-HTTP spec (`request.get`, no JS) asserting the server shell — a post-hydration DOM check passes even when the shell is wrong. Reference incident: njsk.org pass-10 (site-wide `canonical=/` on all 32 routes).
 - JSON-LD per page only when accurate. WebPage is floor; add Organization/BreadcrumbList/FAQPage/Person/Product/Service ONLY when describing real entities. Never pad.
 - FAQPage only when real Q&A exists. Don't fabricate.
 - OG 1200×630 ≤100KB **branded card** (NOT scraped photo)
