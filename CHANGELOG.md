@@ -1,5 +1,96 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-88 — Third ladder application: `check-skill-submodules.sh` (surfaces 28 drift)
+
+### Closes pass-87 candidate 1 (apply ladder to new class)
+
+Third application of the codified maturity ladder. Steps 1 + 2 (Detect + Surface) ONLY this pass — Step 3 (Migrate) deferred to pass-89 due to drift scope.
+
+### NEW `bin/check-skill-submodules.sh` (13th caller of `bin/lib/emit-json.sh`)
+
+Verifies each `[0-9][0-9]-*/SKILL.md` frontmatter `submodules:` list points to files that actually exist in the skill dir.
+
+Parallels `publish.yml`'s "Check SKILL.md submodule alignment" step but as a uniform-JSON bin script for local pre-commit visibility. Python heavy-lifts the frontmatter parsing.
+
+### Bug caught in-pass
+
+First draft used `print(f"  ✗ {x[\"skill\"]}/...")` — inside the single-quoted heredoc, `\"` is literal backslash-quote, not just quote → `SyntaxError: unexpected character after line continuation`. Fixed by unpacking the dict via local variables BEFORE the f-string (`skill = x["skill"]; print(f"  ✗ {skill}/...")`).
+
+**Codifiable**: when using f-strings inside `python3 -c '...'` heredocs, never embed `\"`-escaped dict accesses. Unpack to local vars first.
+
+### Significant drift surfaced — 28 missing submodules
+
+```text
+▸ Checking SKILL.md submodules: declarations exist as files in skill dir...
+  Skills scanned: 16 · Total submodules declared: 66
+  ... [28 missing submodule lines] ...
+━━━ SUMMARY: 66 submodules · 28 missing
+✗ SKILL.md submodule drift detected
+```
+
+Distribution by skill-dir:
+
+- `13-observability-and-growth`: 9 missing (declared `posthog.md`, `ga4-gtm.md`, etc.; actual files are `analytics-configuration.md`, `conversion-optimization.md`, etc. — refactored without frontmatter update)
+- `08-deploy-and-runtime-verification`: 4 missing
+- `05-architecture-and-stack`: 4 missing
+- `11-motion-and-interaction-system`: 4 missing
+- `06-build-and-slice-loop`: 3 missing
+- `02-goal-and-brief`: 2 missing
+- `07-quality-and-verification`: 2 missing
+
+### Why publish.yml's CI step didn't catch this
+
+The CI workflow has an existing "Check SKILL.md submodule alignment" step that should fail on these. Either (a) it's been silently skipped, (b) it's been failing for a long time and unnoticed, or (c) its iteration logic differs from this detector's. Worth investigating in a future pass — but the local visibility this detector adds means the local developer sees the drift on every commit regardless.
+
+### Ladder discipline applied — DEFER migration
+
+Per `audit-arc-maturity-ladder.md` § When each step is the right move:
+
+> Migrate when: count > 0 AND scope is bounded.
+
+28 submodules across 7 skill-dirs is bounded but non-trivial. Pass-89 will scope the migration: per skill-dir, either (a) update SKILL.md frontmatter to match actual files, or (b) create the missing submodules where the intent was clearly to author them.
+
+### Wired into lint-all (Step 2 — Surface)
+
+- `bin/lint-all.sh` — added as 4th soft-info section
+- Quiet-mode summary: "4 audit sections clean (pricing · skill-required-fields · skill-pack-claim · skill-submodules)" — but `INFO_DRIFT=1` this pass means the quiet branch doesn't apply; full info-section output shows
+- shellcheck + shfmt coverage extended
+- `package.json` — `npm run check:skill-submodules` + `:json` aliases
+
+### Behavior on current state
+
+Main 13 gates still pass → commit proceeds. Info section reports 28 drift → developer sees it on every commit. Same pattern as pass-72 deprecated-models (270 hits surfaced; migrated over 9 passes).
+
+### Closure-loop arc pass-58→88 — final tally
+
+- **12 latent bugs caught + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter fixes + 6 skill-frontmatter fixes + 28 submodules surfaced + 1 output bug + 1 f-string bug**
+- **13-gate main lint suite** + **4 audit scripts** in info section
+- **9 disciplines codified** in lint-doctrine + composed-envelope + maturity-ladder
+- `bin/lib/emit-json.sh` lib: **13 callers** (4.3× extraction threshold)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                                         # ✓ 13 main pass + info drift visible
+bash bin/check-skill-submodules.sh                                    # 66 · 28 missing
+bash bin/check-skill-submodules.sh --json | python3 -m json.tool      # valid envelope (28 drift entries)
+```
+
+### What was NOT done
+
+- Migrate the 28 submodule drift cases — pass-89 (focused scope)
+- Investigate why publish.yml's CI step missed this — pass-89 or later
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-89)
+
+- Migrate 28 submodule drift cases (per skill-dir: update frontmatter to match files OR create missing files)
+- Investigate publish.yml's submodule-alignment step (why didn't it catch this?)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-87 — Second ladder application: skill-pack-claim detector + 6 surgical fixes
 
 ### Closes pass-86 candidate 1 (apply ladder to new class)

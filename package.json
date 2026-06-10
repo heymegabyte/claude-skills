@@ -43,6 +43,8 @@
     "check:skill-required-fields:json": "bash bin/check-skill-required-fields.sh --json",
     "check:skill-pack-claim": "bash bin/check-skill-pack-claim.sh",
     "check:skill-pack-claim:json": "bash bin/check-skill-pack-claim.sh --json",
+    "check:skill-submodules": "bash bin/check-skill-submodules.sh",
+    "check:skill-submodules:json": "bash bin/check-skill-submodules.sh --json",
     "lint:fix": "npx --yes markdownlint-cli2@^0.18.1 --fix '**/*.md' && npx --yes prettier@3 --config .prettierrc.json --write '**/*.{json,jsonc,yml,yaml}' && shfmt -i 2 -ci -bn -w bin/*.sh bin/lib/*.sh scripts/*.sh",
     "validate": "bash scripts/validate-skills.sh && node scripts/validate-packs.mjs",
     "validate:packs": "node scripts/validate-packs.mjs",
