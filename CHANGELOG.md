@@ -1,5 +1,72 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-85 — Codify the audit-arc maturity ladder doctrine
+
+### Pivoted from pass-84's info-section refactor
+
+Pass-84 left only 1 audit script in the info section (`pricing`), making the info-section machinery seem over-engineered. But removing it would (a) lose the JSON `info[]` block + `info_drift` counter, (b) weaken pass-69's composed-envelope doctrine that's now production-referenced, and (c) require re-adding the machinery the next time a new detector class needs surfacing.
+
+Pivoted: **codify the closure-loop maturity ladder as a doctrine** instead. The pattern has been production-tested across 3 arcs and deserves a permanent home.
+
+### NEW `rules/audit-arc-maturity-ladder.md`
+
+Codifies the 6-step ladder:
+
+1. **Detect** — write `bin/check-<class>.sh` with denylist / claim-vs-reality diff / required-field scan
+2. **Surface** — add as soft-info section in `bin/lint-all.sh` (visibility, no gating)
+3. **Migrate** — drive count to zero via sed + Read-before-Edit + filter refinements
+4. **Codify** — write a row in `rules/lint-doctrine.md § Codified incidents` for any in-arc failure mode
+5. **Promote** — when stable at zero for ≥90 days OR ≥15 passes, graduate to a hard `runGate` call
+6. **Regression protection** — pre-commit hook now blocks any commit reintroducing the pattern
+
+Also documents:
+
+- **When each step is the right move** (decision rules per step)
+- **Anti-patterns**: skip-step-2 (no breadcrumb), skip-step-4 (re-discovery), promote-before-stability (false-blocks), treat-tracking-as-migratable (e.g. external URLs)
+- **Reference impls** (3 production arcs):
+  - **Lint stack arc** (pass-43→52): codify discipline → pre-commit hook. 8+ bugs caught.
+  - **Audit pattern arc** (pass-58→64): 4 detectors. 9 bugs caught.
+  - **Migration + promotion arc** (pass-72→84): deprecated-models 270→0. 12+ bugs caught. 4 promotions.
+
+### `_packs/core.yml` updated
+
+New rule added to core pack membership. Without this, `validate-packs.mjs` + `check-pack-frontmatter.sh` both fail — exactly as designed. Caught by the pre-commit hook on first attempt, demonstrating mechanical enforcement still working.
+
+### Codifying-the-pattern-itself maturity
+
+The doctrine codifies what the closure-loop has demonstrated. Future detectors don't need to rediscover the maturity steps; they consult this rule + follow the 6-step path.
+
+The pattern of meta-codification — "we proved the pattern via 3 arcs; now we name the pattern" — is itself a meta-discipline worth noting. When a workflow shape is production-validated by ≥3 independent instances, it becomes a doctrine candidate. Below 3, defer (premature codification = wrong abstraction).
+
+### Closure-loop arc pass-58→85 — final tally
+
+- **12 latent bugs caught + 256 references migrated + 14 intentional refs preserved + 8 frontmatter fixes + 1 output bug**
+- **13-gate main lint suite** (started 9 at pass-43→48; +4 promotions across pass-82/83/84)
+- **1 audit script** in info section (pricing — info-only by design)
+- **8 disciplines codified** in `lint-doctrine.md` + composed-envelope codified in `uniform-json-output.md` + **NEW: audit-arc maturity ladder** in `audit-arc-maturity-ladder.md`
+- `bin/lib/emit-json.sh` lib: 10 callers
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 13 pass · 0 fail · 0 skip
+node scripts/validate-packs.mjs                        # ✓ pack-integrity clean (new rule in core)
+bash bin/check-pack-frontmatter.sh                     # ✓ 90 rules · 0 drift (was 89)
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Refactor info-section machinery — deliberately preserved (composed-envelope doctrine + future-detector readiness)
+
+### Next candidates (pass-86)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Audit a new candidate class for the maturity ladder (e.g. `check-skill-frontmatter.sh` parallel to pack-frontmatter, but for skill-dir SKILL.md frontmatter)
+
+---
+
 ## 2026-06-09 — pass-84 — Fix pack-frontmatter regex + promote 2 more to gates #12/#13
 
 ### Closes pass-83 candidates 1 (regex fix) + 2 (promote agent-routing + agent-fallback)

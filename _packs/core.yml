@@ -32,3 +32,4 @@ members:
   - rules/todos-are-roadmap
   - rules/lint-doctrine
   - rules/uniform-json-output
+  - rules/audit-arc-maturity-ladder
