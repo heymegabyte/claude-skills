@@ -18,7 +18,7 @@
 <br/>
 
 <div align="center">
-  <code>15 categories</code> · <code>119 reference docs</code> · <code>19 agents</code> · <code>12 templates</code><br/>
+  <code>16 categories</code> · <code>135 reference docs</code> · <code>19 agents</code> · <code>12 templates</code><br/>
   <a href="https://claude.megabyte.space"><strong>🌐 Showcase Website</strong></a>
 </div>
 
