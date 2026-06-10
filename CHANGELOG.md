@@ -1,5 +1,78 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-99 — Real bug found: script called retired `gpt-4o` API endpoint
+
+### Audit scope: `scripts/` directory (gate #10 doesn't scan it)
+
+Pass-71→81's deprecated-models arc focused on `rules/*.md` + `[0-9][0-9]-*/**/*.md` + `agents/*.md` + top-level `*.md`. Gate #10 (`bin/check-deprecated-models.sh`) inherited the same scope. **`scripts/` was never in the path list.**
+
+Pass-99 audit found `scripts/gpt4o-vision-analyze.sh` would FAIL at runtime: its API call hits `https://api.openai.com/v1/chat/completions` with `"model": "gpt-4o"`. GPT-4o was retired **2026-02-13** per `platform.openai.com/docs/deprecations`. The script has been silently broken for 4 months.
+
+### Two surgical fixes
+
+1. **API model identifier** (line 65): `"gpt-4o"` → `"gpt-image-2"` (current OpenAI vision-capable flagship per the pass-71 doctrine)
+2. **Header comments** (lines 1-5): rewrote to explain the legacy filename + canonical replacement + cross-link to `rules/e2e-visual-inspection.md`
+
+```diff
+-# Analyze a screenshot with GPT-4o Vision — deterministic structured output
++# Analyze a screenshot with OpenAI multimodal vision — deterministic structured output.
++# Filename predates the 2026-02-13 GPT-4o retirement (see platform.openai.com/docs/deprecations).
++# Now uses gpt-image-2 per the current vision-capable OpenAI flagship; if a newer multimodal
++# model ships, update the "model" field below (no other changes needed).
++# Per rules/e2e-visual-inspection.md the project default is Claude Sonnet 4.6; this script is
++# the OpenAI fallback path. Keeping the legacy filename to avoid breaking inbound references.
+```
+
+Filename `scripts/gpt4o-vision-analyze.sh` retained (renaming would break inbound references in templates + README references).
+
+### Why this matters
+
+A runtime-failing script that pretends to work is worse than a clearly-missing one. Visual TDD loops + `validate-logo-contrast.mjs` references this script per `09-brand-and-content-system/SKILL.md`. Any call would have hit OpenAI's deprecation error response since 2026-02-13.
+
+### Gate #10 widening — deferred to pass-100
+
+The natural fix is to extend `bin/check-deprecated-models.sh` to also scan `scripts/*.sh`. But scripts often contain comments that intentionally reference legacy identifiers (just like rules/lint-doctrine.md does). The filter logic would need careful tuning to skip comment-only lines while catching actual API calls.
+
+Punted to pass-100 for focused work.
+
+### Closure-loop arc pass-58→99 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures + 1 over-broad filter + 1 lib hardening + 1 runtime-failing script + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output bugs + 2 README pre-existing fixes**
+- **15-gate suite + 3 info sections + 1 post-push verifier**
+- 11 disciplines codified
+- `bin/lib/emit-json.sh` lib: 15 callers
+
+### Pattern observation
+
+Pass-99 makes the **third class of detector miss** found in this arc:
+
+1. **Pass-89**: CI gates not mirrored locally → 23 passes of silent CI failure
+2. **Pass-96**: Over-broad filter regex → false-negatives in gate output
+3. **Pass-99**: Scope path-list incomplete → runtime-failing script
+
+Each was a different failure mode. The closure-loop discipline + periodic sweeps surface them progressively.
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+grep '"gpt-4o"' scripts/                              # 0 matches
+shellcheck -x -S warning scripts/gpt4o-vision-analyze.sh  # clean
+```
+
+### What was NOT done
+
+- Extend gate #10 to scan `scripts/*.sh` — pass-100 candidate
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-100)
+
+- Extend gate #10 scope to `scripts/*.sh` (catch this class on next regression)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-10 — pass-98 — Harden `bin/lib/emit-json.sh` `json_escape` per RFC 8259
 
 ### Defensive lib improvement

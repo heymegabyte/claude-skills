@@ -1,8 +1,13 @@
 #!/bin/bash
-# Analyze a screenshot with GPT-4o Vision — deterministic structured output
+# Analyze a screenshot with OpenAI multimodal vision — deterministic structured output.
+# Filename predates the 2026-02-13 GPT-4o retirement (see platform.openai.com/docs/deprecations).
+# Now uses gpt-image-2 per the current vision-capable OpenAI flagship; if a newer multimodal
+# model ships, update the "model" field below (no other changes needed).
+# Per rules/e2e-visual-inspection.md the project default is Claude Sonnet 4.6; this script is
+# the OpenAI fallback path. Keeping the legacy filename to avoid breaking inbound references.
 # Usage: ./gpt4o-vision-analyze.sh <image_path> [prompt] [detail:low|high]
-# Returns JSON analysis with evidence-grounded findings
-# Research-backed: temperature:0, json_object format, evidence fields, text-before-image
+# Returns JSON analysis with evidence-grounded findings.
+# Research-backed: temperature:0, json_object format, evidence fields, text-before-image.
 
 set -euo pipefail
 source "$HOME/.claude/hooks/style.sh" 2>/dev/null || true
@@ -57,7 +62,7 @@ RESPONSE=$(curl -s "https://api.openai.com/v1/chat/completions" \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d "{
-    \"model\": \"gpt-4o\",
+    \"model\": \"gpt-image-2\",
     \"temperature\": 0,
     \"max_tokens\": 2000,
     \"response_format\": {\"type\": \"json_object\"},
