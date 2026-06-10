@@ -50,6 +50,7 @@
     "check:ci:json": "bash bin/check-ci-status.sh --json",
     "check:doc-counts": "bash bin/check-doc-counts.sh",
     "check:doc-counts:json": "bash bin/check-doc-counts.sh --json",
+    "health": "bash bin/lint-all.sh && bash bin/check-ci-status.sh",
     "lint:fix": "npx --yes markdownlint-cli2@^0.18.1 --fix '**/*.md' && npx --yes prettier@3 --config .prettierrc.json --write '**/*.{json,jsonc,yml,yaml}' && shfmt -i 2 -ci -bn -w bin/*.sh bin/lib/*.sh scripts/*.sh",
     "validate": "bash scripts/validate-skills.sh && node scripts/validate-packs.mjs",
     "validate:packs": "node scripts/validate-packs.mjs",

@@ -1,5 +1,35 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-102 — `npm run health` ops alias for single-command system snapshot
+
+### Closes pass-100/101 milestone cluster with an ops-ergonomic surface
+
+Pass-100 declared the arc at maturity. Pass-101 mechanically applied the codified scope-completeness discipline. Pass-102 surfaces system health as a single npm script — `npm run health` runs `lint-all` (15 gates + 3 info sections) then `check-ci-status` (live workflow snapshot). Mirrors what manual pass-end verification does, but typed once instead of two commands.
+
+### Change
+
+- `package.json` adds `"health": "bash bin/lint-all.sh && bash bin/check-ci-status.sh"`.
+
+### Verified
+
+- `npm run health` exits 0 with both green: `15 pass · 0 fail · 0 skip` + `✓ CI green @ d96c82c`.
+
+### System snapshot at asymptote
+
+- 91 `rules/*.md` · 16 SKILL.md · 152 docs in skill dirs · 18 agents · 12 `check-*.sh` detectors · 15 `_packs/*.yml` · 15 `emit-json.sh` callers.
+- 15-gate lint suite + 3 info sections + post-push CI verifier + weekly URL/pricing cron + 12 codified disciplines.
+
+### Why this counts as value-add at the asymptote
+
+Per pass-100 milestone doctrine: small mechanical applications continue to add value at the maturity asymptote without requiring new infrastructure. `npm run health` is ops-surface ergonomics — one command answers "is the system clean right now?" instead of two. Compounds for future Brian + future Claude.
+
+### Recs
+
+- The arc remains at asymptote. Future passes respond to fresh drift, not synthetic work.
+- Gated queue items (SessionStart hook, Python `emit-json` parity) still gated on explicit Brian opt-in / 3-Python-caller threshold.
+
+---
+
 ## 2026-06-10 — pass-101 — Apply scope-completeness discipline to 2 more detectors
 
 ### Closes pass-100 codified discipline application
