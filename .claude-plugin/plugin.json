@@ -1,7 +1,7 @@
 {
   "name": "claude-skills",
   "description": "16-category autonomous product-building OS with 18 agents for 32+ AI coding tools. One-line prompts to production on Cloudflare Workers. 100+ reference docs, 32 platform variants, output styles, monitors.",
-  "version": "7.3.0",
+  "version": "7.2.1",
   "author": {
     "name": "Brian Zalewski",
     "url": "https://megabyte.space"

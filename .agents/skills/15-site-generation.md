@@ -1,213 +1,254 @@
 ---
 name: "site-generation"
-description: "End-to-end AI website generation pipeline. Single Claude Code prompt builds complete Vite+React+Tailwind sites from business data. Pre-research via APIs, media acquisition, brand extraction, visual inspection via GPT-4o, R2 upload, D1 status updates. Supports all business types: SaaS, portfolio, non-profit, restaurant, salon, medical, legal, retail, tech."
+description: "End-to-end AI website generation pipeline. Claude Opus 4.8 emits Bolt-style <boltArtifact> envelopes (multi-file, plan-first) that customize Vite+React+Tailwind templates from pre-researched business data. Pre-research via APIs, media acquisition, brand extraction, visual inspection via GPT Image 2 vision, R2 upload (per-file content-type by extension), D1 status updates. Supports all business types: SaaS, portfolio, non-profit, restaurant, salon, medical, legal, retail, tech."
 metadata:
-  version: "1.0.0"
-  updated: "2026-04-24"
+  version: "2.0.0"
+  updated: "2026-04-30"
   effort: "xhigh"
-  model: "opus"
+  model: "claude-opus-4-8"
   context: "fork"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - research-pipeline.md
-  - media-acquisition.md
+  - bolt-artifact-protocol.md
+  - build-breaking-rules.md
   - build-prompts.md
-  - quality-gates.md
   - domain-features.md
-  - template-system.md
+  - homepage-block-library.md
   - local-seo.md
+  - media-acquisition.md
+  - non-technical-owner-onboarding.md
+  - page-set-expansion.md
+  - quality-gates.md
+  - research-pipeline.md
+  - small-business-mode.md
+  - source-fidelity-loop.md
+  - template-improvements-100.md
+  - template-system.md
+priority: 3
+pack: "website-build"
+triggers:
+  - "site generation"
+  - "bolt artifact"
+  - "boltArtifact"
+paths:
+  - "org:website_build"
 ---
 
-# 15 -- Site Generation
+# 15 — Site Generation
 
-Submodules: research-pipeline.md (API-driven business research, scraping, enrichment), media-acquisition.md (image/video/logo sourcing from 12+ APIs), build-prompts.md (master prompt + enhancement phases), quality-gates.md (tiered visual inspection, SEO audit, accessibility), domain-features.md (category-specific features for 18+ business types), template-system.md (Vite+React+Tailwind+shadcn/ui starter, customization patterns), local-seo.md (citation building, GBP sync, review generation, trust badges, local conversion tracking).
+> **Model migration note (pass-78, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Generation pipeline unchanged.
 
-## Dual-Template Architecture (***TWO REPOS — NEVER CONFUSE***)
+## Submodules
 
-| Template | Repo | Use Case | Stack |
-|----------|------|----------|-------|
-| **Local Business** | `megabytespace/template.projectsites.dev` | Restaurant, salon, medical, legal, fitness, contractor, retail, etc. | Vite+React+Tailwind+shadcn/ui, 15 local components, CSS var brand slots, conversion tracking |
-| **SaaS** | `megabytespace/saas-starter` | SaaS products, APIs, dev tools, platforms | Hono+D1+Clerk+Stripe+Inngest+Resend on CF Workers, ESLint+Prettier |
+- **research-pipeline** — API-driven business research, scraping, enrichment
+- **media-acquisition** — image / video / logo sourcing across 17 engines (Flux 1.1 Pro Ultra, Ideogram 3.0, Recraft V3, GPT Image 1.5, Sora) — Pexels-first / AI-fallback, pHash dedup
+- **build-prompts** — master prompt + enhancement phases
+- **quality-gates** — Lighthouse CI v0.15+, axe-core / playwright v4.11+ WCAG 2.2 AA, source-parity diff, 3-tier visual regression, console-error gate, Recommendations Loop
+- **domain-features** — category-specific for 18+ business types
+- **template-system** — Vite + React + Tailwind + shadcn/ui starter
+- **local-seo** — citation building, GBP sync, review generation, trust badges, local conversion tracking
+- **bolt-artifact-protocol** — `<boltArtifact>` XML envelope spec — ordered file/shell actions, PLAN.md-first, runtime parser + executor, ~$6/site at 80K output tokens
+- **blog-import.mjs** — RSS-first crawl + Squarespace JSON fallback → strip CMS residue → GPT Image 2 vision-mini typed-block restructure → pHash dedup → `src/data/blog-posts.ts`
+- **validate-assets.mjs** — post-build R2 / dist gate — 13 mandatory files + every img / link / script / source ref resolves OR matches allowlist
 
-**Template selection logic:** Container entrypoint checks `_form_data.json.category`. If category ∈ {restaurant,cafe,salon,spa,medical,dental,legal,fitness,automotive,construction,photography,real_estate,education,financial,retail,pet_services,wedding,church,nonprofit,government} → clone `template.projectsites.dev`. If category ∈ {saas,api,platform,devtool,marketplace} → clone `saas-starter`. Unknown → default to local business.
+## Dual-Template Architecture (TWO REPOS — NEVER CONFUSE)
 
-**Auto-sync workflow (***EVERY PROMPT***):** After ANY change to skills 05-15, evaluate: "Does this improve the template?" If yes → push to the appropriate template repo in the same prompt. Changes to: design patterns/components/CSS → `template.projectsites.dev` | API patterns/auth/billing/middleware → `saas-starter` | both → push to both. Template repos must always reflect current best practices from skills.
+### Local Business
+
+- Repo: `megabytespace/template.projectsites.dev`
+- Use: Restaurant, salon, medical, legal, fitness, contractor, retail, etc.
+- Stack: Vite + React + Tailwind + shadcn/ui, 15 local components, CSS var brand slots
+
+### SaaS
+
+- Repo: `megabytespace/saas-starter`
+- Use: SaaS products, APIs, dev tools, platforms
+- Stack: Hono + D1 + Clerk + Stripe + Inngest + Resend on CF Workers
+
+### Selection
+
+Container entrypoint checks `_form_data.json.category`:
+
+- `restaurant|cafe|salon|spa|medical|dental|legal|fitness|automotive|construction|photography|real_estate|education|financial|retail|pet_services|wedding|church|nonprofit|government` → `template.projectsites.dev`
+- `saas|api|platform|devtool|marketplace` → `saas-starter`
+- Unknown → local business
+
+### Auto-sync
+
+After ANY change to skills 05-15, evaluate: "Does this improve template?" If yes → push to appropriate template repo same prompt.
+
+- Design / components / CSS → `template.projectsites.dev`
+- API / auth / billing / middleware → `saas-starter`
+- Both → push to both
 
 ## Philosophy
 
-A perfect website CANNOT be created with a single LLM call. It requires a Principal SE-level prompt that orchestrates research→build→inspect→fix loops. The system front-loads ALL research and assets BEFORE Claude Code touches code, then gives it one comprehensive prompt with everything pre-digested. Claude Code starts from a pre-installed template and customizes it — never generates from scratch.
+A perfect website CANNOT be created with single LLM call. Requires Principal SE-level prompt orchestrating research → build → inspect → fix loops. System front-loads ALL research and assets BEFORE Claude Code touches code, then gives one comprehensive prompt with everything pre-digested. Starts from pre-installed template and customizes — never generates from scratch.
 
-**Quality bar:** Stripe/Linear/Vercel-level polish. Every site must be so good the business owner prefers it over their original. We don't copy — we take any website and make it dramatically better. Information-dense sites get condensed into gorgeous, well-organized modern designs with MORE useful information in FEWER, better-designed pages.
+### Generation protocol (Bolt-style `<boltArtifact>` envelope — see `bolt-artifact-protocol.md`)
 
-## Pipeline Overview
+Model emits ONE XML envelope w/ ordered `<boltAction type="file" filePath="…">` and `<boltAction type="shell">` actions.
+
+- First action ALWAYS `PLAN.md` (route tree, design-token diff, media count, file count, validators) — auditable post-build
+- Replaces legacy single-inline-HTML output (Llama 3.1 70B → 16K-token monolith)
+- Runtime parser (`artifact_parser.ts`) validates first-action-is-PLAN.md + required-files + `npm…build` shell action; failures re-prompt (max 2 retries)
+- Executor (`artifact_executor.ts`) modes:
+  - `r2-files` — uploads each servable file to `sites/{slug}/{version}/{path}` w/ content-type by extension
+  - `container` — `git clone template → npm install → vite build → upload dist/` inside CF Containers
+- `container` when artifact emits source code (default); `r2-files` when emitting pre-built static
+
+### Quality bar
+
+Stripe / Linear / Vercel-level polish. Site must be so good owner prefers over original. We don't copy — we take any website and make dramatically better. Information-dense sites condensed into gorgeous modern designs w/ MORE useful info in FEWER, better-designed pages.
+
+## Pipeline
 
 ```
-Phase 0: Pre-Research (Worker, no Claude Code)
-  → Google Places, website scraping, social verification, brand extraction, media discovery
-  → Output: _research.json, _scraped_content.json, _assets/ folder with all images
+Phase 0: Pre-Research + Media Acquisition (ALL BUILD MODES)
+  → Google Places, scraping, social verification, brand extraction, media discovery
+  → Download ALL images from original
+  → Stock photos via Pexels/Pixabay
+  → AI originals via GPT Image 1.5 / Stability AI
+  → YouTube/Pexels video embeds
+  → Output: _research.json, _scraped_content.json, _assets/
+  → HARD GATE: <10 images = build NOT complete
 
-Phase 1: Single Claude Code Prompt (Container)
-  → Reads all _ prefixed context files
+Phase 1: Claude Opus 4.8 Bolt-Artifact Emission (Worker OR Container)
+  → Reads all _ context files
+  → Emits ONE <boltArtifact> envelope w/ ordered <boltAction>
+  → First action ALWAYS PLAN.md
   → Customizes pre-installed Vite+React+Tailwind+shadcn/ui template
-  → Builds 4-8 page site with real content, real images, real brand
-  → Runs npm run build → node inspect.js → fixes issues → rebuilds
-  → Uploads all files to R2 via bundled upload script
+  → Builds 1:N-page site MATCHING source sitemap (every URL recreated, max 1000)
+  → Clean URL slugs (never copy CMS garbage like -1 suffixes)
+  → Runtime parser validates first-action-PLAN.md + REQUIRED_FILES + build shell action; failures re-prompt (max 2 retries)
 
 Phase 2: Post-Build Verification (Worker)
-  → Screenshot via microlink.io → GPT-4o vision scoring
+  → Screenshot via microlink.io → GPT Image 2 vision scoring
   → D1 status update → email notification
 ```
 
-## Single-Prompt Architecture
+CRITICAL — In manual / prompt-based builds (no container), Phase 0 runs INLINE as first step. Agent MUST:
 
-The container receives ONE prompt that encompasses all build phases. The prompt references `~/.agentskills/15-site-generation/` for methodology. Context files written to the build directory before Claude Code runs:
+1. WebFetch original site pages + extract all image URLs
+2. curl / download images to `public/`
+3. Search for stock photos + download
+4. Generate AI images if API keys available
 
-`_research.json`→business profile+hours+phone+address+reviews+geo (Google Places+Workers AI) | `_brand.json`→colors+fonts+personality+logo URL+color_source (brand extraction) | `_citations.json`→APA 7th ed bibliography keyed by refId for every quantitative claim (rules/citations.md) | `_scraped_content.json`→all pages from existing website by URL (scraper) | `_assets.json`→image manifest with metadata (discovery pipeline) | `_image_profiles.json`→GPT-4o analysis per image: quality+placement+colors (profiling) | `_videos.json`→YouTube/Pexels embed URLs+metadata | `_places.json`→Google Places enrichment: photos+reviews+rating | `_form_data.json`→user-submitted form data from /create | `_domain_features.json`→category-specific feature requirements (template cache)
+ALL BEFORE writing any React code. Text-only site = failed build.
+
+## Context files (written before model runs)
+
+- `_research.json` — business profile + hours + phone + address + reviews + geo
+- `_brand.json` — colors + fonts + personality + logo URL + color_source
+- `_citations.json` — APA 7th bibliography keyed by refId per `citations.md`
+- `_scraped_content.json` — all pages by URL
+- `_assets.json` — image manifest w/ metadata
+- `_image_profiles.json` — GPT Image 2 vision analysis per image: quality + placement + colors
+- `_videos.json` — YouTube / Pexels embed URLs + metadata
+- `_places.json` — Google Places enrichment: photos + reviews + rating
+- `_form_data.json` — user-submitted from `/create`
+- `_domain_features.json` — category-specific feature requirements
 
 ## Build Rules (NON-NEGOTIABLE)
 
-**Images:** USE ALL images in assets/. Never use external URLs (hotlinking blocked). Hero: assets/hero-*. Gallery: full-width slider with ALL images. Service cards: relevant images. No image in assets/ left unused. ***Minimum 30 unique images per site*** (discovered + AI-generated originals + stock). 3-5 AI-generated originals per site (hero backgrounds, service illustrations, textures). The site must feel media-rich from first scroll — no sparse pages. All images processed through optimization pipeline (skill 12 image-optimization.md): WebP+AVIF at 320/640/1280/1920w, blur placeholders, dominant color extraction. Use <ResponsiveImage> component — never raw <img> with PNG/JPG src.
+### Images
 
-**Design:** Dark-first, brand-extracted base color (skill 10 design patterns — MANDATORY). 10+ @keyframes animations. Glassmorphism cards (bg-white/5 backdrop-blur-md border-white/10). Gradient text on key headings. Parallax-style depth on hero. 25+ inline SVG decorative elements. Every interactive element has hover+active+focus states. Smooth scroll for ALL same-page nav (scrollIntoView, never #href jumps).
+- USE ALL images in `assets/`. Never external URLs (hotlinking blocked).
+- Hero: `assets/hero-*`. Gallery: full-width slider w/ ALL images. Service cards: relevant images. No image in `assets/` left unused.
+- Minimum count: `max(30, original_image_count × 1.4, page_count × 6_home_or_4_sub)`:
+  - 4-page rebuild ⇒ 30-50 images
+  - 50-page ⇒ 200+
+  - 500-page ⇒ 2000+
+- Per-page floor: home ≥6 images, every sub-page ≥4.
+- Minimum 5 AI-generated GPT Image 1.5 originals per site.
+- Site must feel media-rich from first scroll. All images through optimization pipeline (skill 12): WebP + AVIF at 320/640/1280/1920w, blur placeholders, dominant color extraction. Use `<ResponsiveImage>`, never raw `<img>` w/ PNG/JPG src.
+- Dedupe via 301 not deletion — md5-hashed twins keep canonical, delete twin, emit `{deleted-url:canonical}` to Worker redirect map. Source-code refs use FULL canonical filenames.
 
-**Content:** Word count must MATCH OR EXCEED original site — never ship a site with less content than before. 5000+ words minimum. Migrate ALL blog posts, news, events, team bios from scraped content. About page 2000+ words. Every claim factually accurate from research. Blog → individual routes per post with RSS feed. Addresses → Google Maps links. Phone → tel: links. Email → mailto: links. NO lorem ipsum, NO placeholder text, NO TODO stubs. URL preservation: every original URL must resolve (200 or 301) — generate `_redirects` file for merged pages.
+### Video (extract alongside images — never strip)
 
-**SEO:** JSON-LD LocalBusiness with ALL structured data. OG tags with hero image. Twitter cards. Canonical URL. robots.txt + sitemap.xml. Primary keyword in H1+title+meta+first paragraph. FAQ section with FAQPage schema. Breadcrumbs with BreadcrumbList schema.
+Walker captures `<video>` + `<source>` + `<iframe src*=youtube|vimeo|wistia|loom>` + `data-video-id` + CSS `background-video` + autoplay-loop hero MP4s + animated WebPs + lottie `.json`.
 
-**Brand:** Extract colors from LOGO first → website → signage in photos (see skill 09 "Brand Extraction from Physical Assets" section). Never guess from category. Use ALL original content from scraped site. Logo must appear in every header. Brand fonts influence entire design.
+Output `_videos.json` keyed by source URL w/ `{src, poster, duration, dims, transcript?, captions_vtt?, original_route, slot_hint}`.
 
-**Tech:** Vite+React+Tailwind+shadcn/ui. React Router for multi-page nav. IntersectionObserver for scroll animations. Lucide React icons (verified names only). `npm run build` must compile zero errors. `prefers-reduced-motion` on ALL animations (see skill 11). 16 local business components from template-system.md: HeroWithPhoto, ServiceCards, TestimonialCarousel, MapEmbed, StickyPhoneCTA, NAPFooter, TrustBadges, ReviewCTA, GalleryGrid, BeforeAfterSlider, QuickActions, EmergencyBanner, SpeedDial, BookingEmbed, LocalSchemaGenerator, ResponsiveImage. PWA manifest + favicon set + print stylesheet mandatory. Service worker for offline mode mandatory — local business customers need contact info without connectivity.
+Template's `<VideoEmbed>` lazy-loads, poster-first, captions if VTT exists, respects `prefers-reduced-motion`. Hero videos preserve slot. Augment via Pexels Video API (free) + YouTube Data API search-by-topic for missing background loops.
 
-**Analytics (***NON-NEGOTIABLE — skill 13***):** PostHog snippet (`persistence:'memory'`, cookie-free) + GA4/GTM container + local conversion tracking (phone_click, direction_click, form_submit, booking_click). See skill 13 conversion-optimization.md for event taxonomy. Every `tel:` link fires phone_click. Every Maps link fires direction_click. Every form submit fires form_submit.
+Video count gate: every original `<video>` and embed accounted for in `_videos.json`; missing = fail.
 
-## Container Architecture
+### GPT Image 1.5 purpose-craft (per-slot prompts, never generic)
 
-Container is a stateless Claude Code executor on CF Workers Containers. Pre-bakes: `@anthropic-ai/claude-code`, `~/.agentskills` (this repo), `~/template-local` (megabytespace/template.projectsites.dev), `~/template-saas` (megabytespace/saas-starter), `~/upload-to-r2.mjs` (R2 upload script), `~/inspect.js` (visual QA), `~/validate-urls.js` (URL preservation validator), `~/validate-citations.js` (citation gate via citation-js npm), `~/format-citations.js` (BibTeX/RIS/CSL→APA 7th converter). Runs as non-root `cuser` with `--dangerously-skip-permissions`.
+Every AI-generated image gets slot-specific prompt naming:
 
-The container entrypoint: HTTP server on 8080. POST /build → select template from `_form_data.json.category` (local→`~/template-local`, saas→`~/template-saas`) → copy to `~/build/` → write context files → write CLAUDE.md → run single `claude -p` → on completion, run `npm run build` → run `node ~/validate-urls.js` (fail if original URLs unaccounted) → run `node ~/validate-citations.js dist/` (fail if any unsourced numeric claim) → run `node ~/inspect.js dist/index.html` → run `node ~/upload-to-r2.mjs` → return status. GET /status → poll job. GET /result → return metadata.
+1. Route + section it lives in (`/about hero` not "hero image")
+2. Page topic + intent ("octogenarian volunteer plating soup at NJSK, gratitude-faced guest receiving")
+3. Brand palette tokens by hex from `_brand.json` ("matte navy #060610 base, cyan #00E5FF accent edge-light")
+4. Composition + aspect ratio (16:9 hero / 1:1 card / 4:5 portrait / 21:9 banner)
+5. Subject specificity (named noun + modifiers + lighting + lens metaphor — "shot on 35mm, soft window light, documentary style")
+6. Negative prompt (no text, no watermarks, no AI artifacts, no extra fingers, no logos, no captions)
 
-**R2 upload script** runs inside the container after build. Uses CF REST API (`api.cloudflare.com/client/v4/accounts/{acctId}/r2/buckets/{bucket}/objects/{key}`). Detects Vite projects via dist/ prefix. dist/ files → `sites/{slug}/{version}/`. Source → `sites/{slug}/{version}/_src/`. Writes `_manifest.json`. Credentials passed as env vars.
+Build `_image_briefs.json` per site BEFORE generation — one brief per slot, reused across providers in fallback chain (GPT Image 1.5 → GPT Image 1.5 → Ideogram → Recraft).
 
-## Env Vars Available in Container
+Generic "create a hero image" = fail; discarded + brief regenerated.
 
-API keys passed from Worker → container: ANTHROPIC_API_KEY, OPENAI_API_KEY, PEXELS_API_KEY, PIXABAY_API_KEY, YOUTUBE_API_KEY, LOGODEV_TOKEN, BRANDFETCH_API_KEY, FOURSQUARE_API_KEY, YELP_API_KEY, GOOGLE_PLACES_API_KEY, GOOGLE_CSE_KEY, GOOGLE_CSE_CX, IDEOGRAM_API_KEY, REPLICATE_API_TOKEN, STABILITY_API_KEY, GOOGLE_MAPS_API_KEY, CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, MAPBOX_TOKEN.
+### Per-route SEO (every route — unique title/desc/keyphrase/JSON-LD)
 
-R2 credentials: CF_API_TOKEN, CF_ACCOUNT_ID, R2_BUCKET_NAME, SITE_SLUG, SITE_VERSION.
+SPAs dynamically swap meta on `useLocation()` change via `<PageHead />` side-effect reading `src/data/page-meta.ts`. Each entry:
 
-Donation/payment: STRIPE_PAYMENT_LINK_URL (for DonationForm component, nonprofit/church sites).
+- Title 50-60ch keyphrase-first
+- Description 120-156ch
+- Researched intent-based keyphrase (`donate to {city} soup kitchen` not generic "best")
+- Canonical, og:*, twitter:*, JSON-LD (Org / Service / BlogPosting / BreadcrumbList / FAQPage)
 
-## Site Types Supported
+Blog posts derive meta dynamically from `blogPosts[]`. Hard gate: every `<Route path>` has `page-meta.ts` entry or data-derived meta.
 
-**Local business:** Restaurant, salon, medical, legal, fitness, automotive, construction, photography, real estate, education, financial, cafe, retail. Category-specific features loaded from domain-features.md.
+### Font-flash mitigation
 
-**SaaS:** Feature comparison tables, pricing tiers (3-column), integrations grid, API documentation page, changelog, status page link, trust badges (SOC2, GDPR), free trial CTA, demo video hero.
+`index.html` `<head>` includes:
 
-**Portfolio:** Masonry project grid, case study pages, client logos, testimonials carousel, skills/tech stack, resume/CV page, contact form with project brief fields.
+- `<link rel="preload" as="style">` + animate.css
+- `html:not(.fonts-loaded) body { opacity: 0 }`
+- Inline `document.fonts.ready.then(reveal)` + `setTimeout(reveal, 1200)` safety net
 
-**Non-profit:** Donation CTA (prominent, multiple placements), impact counters (animated), volunteer signup, event calendar, newsletter signup, partner logos, annual report highlights, mission statement hero.
+Page fades in once fonts load. All in-page motion uses animate.css transform/opacity classes (`animate__fadeInUp animate__faster`) gated on `prefers-reduced-motion`.
 
-**Government/institutional:** Clean navigation for dense content, accessibility-first, multi-language support, document library, news/press section, org chart, service finder.
+### Hero context match
 
-## Credit Discipline (***NON-NEGOTIABLE***)
+Every hero image/video literally depicts page topic — `/mass-schedule` gets stained-glass-window, `/donate` gets volunteers-serving, `/health-clinic` gets medical imagery. Never reuse generic kitchen/food shot across topically-different pages. AI-vision QA scores `image_matches_page_topic` 0-10 per hero; <8 = replace.
 
-Never waste API credits on speculative builds. If error: reduce to simplest reproducible state first. Fix issues as separate minimal tests. Only trigger full builds when pipeline proven working.
+### Empty-config widgets
 
-**Two separate budgets — don't confuse them:**
+Gate every third-party widget render on env var: `{import.meta.env.VITE_TURNSTILE_SITEKEY ? <div className="cf-turnstile" data-sitekey={...} /> : null}`. Same for Stripe pk, PostHog snippet, Resend embed. Empty `data-sitekey=""` = console error on every render.
 
-1. **GPT-4o vision QA: ***$1 HARD CAP.*** ** Image profiling FREE (Workers AI) + hero pick ~$0.02 (GPT-4o), logo pick ~$0.02, inspect.js draft rounds FREE (Workers AI) + final homepage ~$0.02, post-deploy homepage QA ~$0.02. Homepage/ATF gets GPT-4o priority. Total ~$0.08-0.15 typical.
-2. **Media generation/acquisition: $0.50-2.00 (GOOD spend).** Ideogram logos ~$0.05, GPT Image 1.5 originals ~$0.04/each (5-10 per site), Stability textures ~$0.03/each, stock APIs (free tiers). This spend CREATES the content that makes sites convert — never cap it below what's needed for 30-50 images + 3-5 videos per site.
+### Post-deploy parallel scan (BOTH scripts run or deploy not verified)
 
-## Post-Launch Email Sequence (***DISABLED BY DEFAULT***)
+- `scripts/scan-assets.mjs` (Playwright concurrency 6, captures console errors/warnings + `requestfailed` + `response.status>=400` per route)
+- `scripts/check-routes.sh` (curl every route + every blog slug for non-200)
 
-After site generation, the pipeline CAN auto-send a welcome email to the business owner (extracted from `_research.json.contact.email` or `_form_data.json.email`). Currently disabled — enable via `ENABLE_POST_LAUNCH_EMAIL=true` env var in container.
+BOTH run as last step of every deploy. Bash sweep alone misses asset 404s and console errors; Playwright alone slower. Both green = verified.
 
-**Sequence (Resend + Inngest):**
+### Design
 
-1. **Immediate:** "Your new website is live at {slug}.projectsites.dev" — screenshot, direct link, QR code
-2. **Day 3:** "Claim your Google Business listing" — step-by-step with deep link to `business.google.com/create`
-3. **Day 7:** "Get your first 5-star review" — review QR card PDF, email template, SMS template
-4. **Day 14:** "Share your site on social media" — pre-written posts for Facebook/Instagram/LinkedIn
-5. **Day 30:** "Your first month: {pageviews} visitors, {calls} calls" — PostHog analytics summary
+- Dark-first, brand-extracted base color (skill 10 — MANDATORY)
+- 10+ `@keyframes` animations
+- Glassmorphism cards (`bg-white/5 backdrop-blur-md border-white/10`)
+- Gradient text on key headings
+- Parallax-style depth on hero
+- 25+ inline SVG decorative elements
+- Every interactive element has hover + active + focus states
+- Smooth scroll for ALL same-page nav (`scrollIntoView`, never `#href` jumps)
 
-**Implementation:** Inngest step functions with scheduled delays. Each step checks `_research.json.contact.email` validity. Unsubscribe link in every email. CAN-SPAM compliant. Templates in Resend with brand colors from `_brand.json`.
+### Content
 
-**Trigger:** Worker sends Inngest event `site/launched` with slug+email+brandColors after successful build+deploy. Inngest function handles timing.
+- Word count MATCH OR EXCEED original — never ship less content than before
+- 5000+ words minimum
+- Migrate ALL blog posts, news, events, team bios from scraped content
+- About page 2000+ words
+- Every claim factually accurate from research
+- Blog → individual routes per post with RSS feed
+- Addresses → Google Maps links
+- Phone → `tel:` links
+- Email → `mailto:` links
 
-## Unit Economics at Scale (***1M+ SITES***)
-
-### Per-Site Cost Model (current → optimized)
-
-| Component | Current | At Scale | Notes |
-|-----------|---------|----------|-------|
-| **Code generation** | $0.50-2.00 (Claude Code) | $0.02-0.05 (Workers AI) | Llama 3.3 70B for template fill, Claude only for complex/custom |
-| **Research APIs** | ~$0.01 (Google Places) | ~$0.005 | Batch + cache nearby businesses, reuse geo data |
-| **Web scraping** | ~$0 (fetch) | ~$0 | CF Workers fetch, zero cost |
-| **Image profiling** | ~$0.02 (Workers AI bulk + GPT-4o hero) | ~$0.01 (Workers AI) | Llama Vision for all, GPT-4o hero pick only |
-| **Logo generation** | ~$0.05 (Ideogram) | ~$0.05 | No cheap alternative for quality logos |
-| **AI images** | ~$0.30 (5-8 GPT Image) | ~$0.10 (Workers AI SDXL) | Edge inference, bulk pricing, category caching |
-| **Stock images** | ~$0 (free tiers) | ~$0 | Pexels/Pixabay unlimited for most uses |
-| **Video discovery** | ~$0 (YouTube embed) | ~$0 | YouTube/Pexels embeds, no storage |
-| **Vision QA** | ~$0.06 (Workers AI bulk + GPT-4o homepage) | ~$0.02 (Workers AI) | Workers AI all pages, GPT-4o homepage ATF only |
-| **In-container inspect** | ~$0.02 (Workers AI draft + GPT-4o final) | ~$0.005 (Workers AI) | Workers AI drafts, GPT-4o final homepage only |
-| **R2 storage** | ~$0 (free egress) | ~$0.001/site/mo | ~5MB/site × 1M = 5TB, $0.015/GB/mo |
-| **D1 database** | ~$0 | ~$0.001/site/mo | Row storage minimal |
-| **Container compute** | ~$0.10 (CF Container) | ~$0.02 | Pre-warm pools, shorter runs with template engine |
-| **DNS/routing** | ~$0 | ~$0 | Wildcard *.projectsites.dev |
-| **TOTAL** | **$1.00-3.50** | **$0.25-0.40** | 80-90% cost reduction at scale |
-
-### Scale Optimization Strategies
-
-**Tier 1: Template Engine (80% of sites, $0.10-0.20/site)**
-Most local businesses (restaurant, salon, medical, legal) are structurally identical. Pre-build 18 category templates as complete React apps. Worker fills data slots (business name, hours, phone, colors, images) via string replacement — NO LLM needed. Workers AI Llama 3.3 70B generates copy (about text, service descriptions, FAQs) at $0.001/1K tokens. Reserve Claude Code for custom/complex sites only.
-
-**Tier 2: Workers AI First (15% of sites, $0.20-0.40/site)**
-Sites needing layout customization beyond templates. Workers AI generates component JSX (not full site). Llama Vision replaces GPT-4o for image profiling and QA. Edge inference = zero network latency, included in Workers Paid plan.
-
-**Tier 3: Claude Code (5% of sites, $1.50-4.00/site)**
-Complex multi-page sites, custom designs, SaaS, portfolios with unique layouts. Full container build. Worth the cost — these are premium-priced sites.
-
-### Media Caching (***MASSIVE SAVINGS***)
-
-**Category media pools:** Pre-generate and cache 500+ stock-quality images per business category (restaurant interiors, salon styling, dental offices, law offices, etc.). Store in R2 `media-pools/{category}/`. Each new site draws from pool + adds discovered originals. Amortized cost: $0.00/site for stock imagery after pool is built.
-
-**Logo template caching:** For businesses without logos, pre-generate 50 logo templates per category (text-based with industry icons). Workers AI picks best match → Ideogram refines with business name. Cost drops from $0.05 to ~$0.02/logo.
-
-**Texture/pattern library:** Pre-generate 200 abstract backgrounds, gradients, geometric patterns in brand-neutral colors. Apply CSS color filter per site. Cost: $0 after initial generation.
-
-### API Rate Limit Strategy at Scale
-
-| API | Free Tier | Paid | Strategy |
-|-----|-----------|------|----------|
-| Google Places | 0 (pay per req) | $17/1K requests | Cache aggressively, batch nearby |
-| Pexels | 200/hr | 200/hr | Pool across Workers, queue system |
-| Pixabay | 100/hr | 100/hr | Same pooling |
-| Ideogram | pay per gen | Volume pricing | Batch logo generation via Queues |
-| GPT Image | pay per gen | Batch API (50% off) | Use Batch API for all image gen |
-| Workers AI | 10K neurons free | Included in paid | DEFAULT for all inference at scale |
-
-### Batch Processing Architecture
-
-```
-CF Queue → Fan-Out Workers → Parallel Phases:
-  Phase 0: Research Worker (Google Places + scrape) → _research.json to R2
-  Phase 1: Media Worker (stock APIs + AI gen + profiling) → assets/ to R2  
-  Phase 2: Build Worker (template fill OR Workers AI OR Container)
-  Phase 3: QA Worker (a11y tree + optional vision) → score to D1
-  Phase 4: Publish Worker (DNS + CDN purge + D1 status)
-```
-
-Queue-based: 1000 concurrent builds, auto-retry on failure, dead letter queue for manual review. Each phase independent → massive parallelism. Target: 10K sites/hour sustained, 100K sites/day burst.
-
-### Break-Even Analysis
-
-| Volume | Cost/Site | Total | Revenue @ $50/site | Margin |
-|--------|-----------|-------|---------------------|--------|
-| 1K | $2.50 | $2,500 | $50,000 | 95% |
-| 10K | $1.00 | $10,000 | $500,000 | 98% |
-| 100K | $0.40 | $40,000 | $5,000,000 | 99.2% |
-| 1M | $0.30 | $300,000 | $50,000,000 | 99.4% |
-
-At 1M sites, infrastructure + API costs are <1% of revenue. The bottleneck is customer acquisition, not unit economics.
+## See submodules for: research-pipeline, media-acquisition, build-prompts, quality-gates, domain-features, template-system, local-seo, bolt-artifact-protocol, page-set-expansion, source-fidelity-loop, build-breaking-rules.

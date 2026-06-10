@@ -3,142 +3,149 @@ name: "motion-and-interaction-system"
 description: "Meaning-first animation with 3-tier hierarchy. CSS scroll-driven (animation-timeline: scroll()), View Transitions API, @starting-style DOM-insert, container scroll-state queries, prefers-reduced-motion mandatory on all animations."
 metadata:
   version: "2.1.0"
-  updated: "2026-04-23"
+  updated: "2026-05-03"
+  effort: "medium"
+  model: "sonnet"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
+submodules:
+  - build-breaking-rules.md
+priority: 3
+pack: "design"
+triggers:
+  - "motion"
+  - "animation"
+  - "transition"
+paths:
+  - "concern:public_facing"
 ---
 
 # 11 — Motion and Interaction System
 
-## Motion Hierarchy
+## Motion serves one of three purposes
 
-**Tier 1 (always):** Page transitions, loading/skeleton, form validation, success/error, nav hover, smooth scroll, accordion, modal, tooltip.
-**Tier 2 (usually):** Scroll-reveal, hover enhancements, staggered reveals, counters, progress, subtle parallax.
-**Tier 3 (when appropriate):** CTA micro-interactions, confetti, animated illustrations, ambient motion, easter eggs.
-Anti-slop: each animation serves one purpose — state change, attention direction, or brand reinforcement. Uniform fade-in on everything = red flag.
+1. **Feedback** — confirm user action (button press, form submit, save)
+2. **Continuity** — preserve spatial context across state changes (page transition, modal open)
+3. **Delight** — express brand personality (hero parallax, signature reveal)
 
-## Transition Grammar
+Anything else = AI slop. Cut it.
 
-```css
-:root {
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-```
+## 3-Tier Hierarchy
 
-Micro 100-150ms | Short 200-250ms | Medium 300-400ms | Long 500-700ms | Extended 800-1200ms. If in doubt: 200ms.
+- **Tier 1 — Functional** — feedback on every interaction (hover, focus, active, tap). Duration 100-200ms. Transform/opacity only.
+- **Tier 2 — Choreographic** — page transitions, modal entrance, section reveal. Duration 300-500ms. View Transitions or `@starting-style`.
+- **Tier 3 — Cinematic** — hero parallax, signature reveal, scroll-driven storytelling. Duration ≥600ms. Scroll-timeline.
 
-## CSS Scroll-Driven Animations (Chrome/Edge/Safari 26+ — off main thread)
+Never stack 3 tiers in same surface — overwhelming. One cinematic per page.
 
-```css
-/* Tied to scroll position */
-.progress-bar { animation: grow-width linear; animation-timeline: scroll(root block); }
+## Mandatory `prefers-reduced-motion`
 
-/* Tied to element visibility */
-.reveal {
-  animation: slide-up linear both;
-  animation-timeline: view();
-  animation-range: entry 0% cover 50%;
-}
-
-/* Named timeline for cross-element sync */
-.scroller { scroll-timeline: --page block; }
-.synced { animation-timeline: --page; }
-
-/* Firefox fallback (no native scroll-driven yet) */
-@supports not (animation-timeline: scroll()) {
-  .reveal { opacity: 1; transform: none; }
-}
-```
-
-Stagger via `sibling-index()` (Chrome 129+): `.item { transition-delay: calc((sibling-index() - 1) * 80ms); }`. IntersectionObserver only when scroll-driven CSS is insufficient.
-
-## @starting-style — Enter Animations
-
-```css
-.toast {
-  opacity: 1; transform: translateY(0);
-  transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
-  @starting-style { opacity: 0; transform: translateY(20px); }
-}
-.modal[open] {
-  opacity: 1; scale: 1;
-  @starting-style { opacity: 0; scale: 0.95; }
-}
-```
-
-Use for: modals, toasts, tooltips, drawers — anything inserted into DOM. Replaces JS add-class-on-mount patterns.
-
-## Container Scroll-State Queries
-
-```css
-.header { container-type: scroll-state; }
-@container scroll-state(stuck: top) {
-  .header { box-shadow: 0 2px 8px rgba(0,0,0,0.15); backdrop-filter: blur(12px); }
-}
-.carousel { container-type: scroll-state; }
-@container scroll-state(snapped: x) { .slide { scale: 1.02; } }
-```
-
-States: `stuck` | `snapped` | `scrollable` | `scrolled`. No JS sticky detection needed.
-
-## View Transitions (Baseline Newly Available — Oct 2025)
-
-```css
-@view-transition { navigation: auto; }
-::view-transition-old(root) { animation: fade-out 0.25s var(--ease-out); }
-::view-transition-new(root) { animation: fade-in 0.25s var(--ease-out); }
-
-/* Shared elements */
-.card { view-transition-name: match-element; view-transition-class: card; }
-::view-transition-group(.card) { animation-duration: 0.35s; }
-```
-
-`view-transition-name: match-element` (Chrome 137+) auto-names from identity — no manual names for list items. Nested groups (Chrome 140+) for clipping/3D. `element.startViewTransition()` for subtree-scoped (Chrome 140 experimental). <300ms total. Fade safe; slide for hierarchical nav only. Prerender: `<script type="speculationrules">{"prerender":[{"where":{"href_matches":"/details/*"}}]}</script>`
-
-## Hover / Focus / Active
-
-All interactive: `transition: color 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.1s`. Button hover: `translateY(-1px)`. Active: `scale(0.98)`. Card: border-hover + shadow-glow + `translateY(-2px)`. Focus-visible: 3px cyan, 2px offset, no focus for mouse users.
-
-## Loading
-
-Skeleton: shimmer gradient 1.5s infinite. Spinner: 20px, cyan top border, 0.6s spin. Always reserve space with `aspect-ratio` or min-height — zero CLS.
-
-## Reduced Motion (MANDATORY — every animation)
+EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final state, never hide content. Pair with `animation-duration:1ms` fallback for unsupported browsers.
 
 ```css
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  [data-animate] { opacity: 1 !important; transform: none !important; }
 }
 ```
 
-CSS `if()` alternative: `transition-duration: if(media(prefers-reduced-motion: reduce), 0s, 0.3s);`
+## View Transitions API
 
-## Performance
+- Same-document SPA: `document.startViewTransition(() => updateDOM())`
+- Cross-document MPA: `@view-transition { navigation: auto; }` in CSS
+- Per-element: `view-transition-name: hero-image;` on persistent elements
+- Chrome 126+, Safari 18+, Firefox 144 (Oct 2025)
 
-Only `transform` + `opacity`. Never width/height/margin/top/left. `will-change` sparingly, remove after animation ends. Max 10 simultaneous. Test 4× CPU throttle. JS scroll listeners banned — use CSS scroll-driven or IntersectionObserver. DOM <1500 nodes. `scheduler.yield()` / `setTimeout` for INP chunking.
+```css
+::view-transition-old(root), ::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+```
 
-## Motion by Section
+## Scroll-Driven Animations
 
-Hero: fade 400ms, stagger CTA 200ms. Features: scroll-driven reveal, stagger 80ms. Stats: counter on view() timeline. Testimonials: fade 300ms. Pricing: hover lift. FAQ: accordion 250ms. Footer: none. Nav: blur on scroll-state(stuck), smooth active indicator.
+- `animation-timeline: scroll()` (root scroller) or `view()` (element-in-viewport)
+- Off-main-thread on Chrome stable + Safari 26 (2025)
+- Firefox unsupported — pair w/ `prefers-reduced-motion` AND duration:1ms fallback
 
-## SVG Draw-On
+```css
+@keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.reveal { animation: fade-up linear; animation-timeline: view(); animation-range: entry 0% cover 30%; }
+```
 
-`.scribble path { stroke-dasharray: 300; stroke-dashoffset: 300; animation: draw 1s var(--ease-out) forwards; }`
+## `@starting-style` (DOM-insert animation)
 
-## Scroll Pseudo-Elements (Chrome 135+)
+- Baseline 2026
+- Animates from explicit "starting" state to default state when element enters DOM
 
-`::scroll-button(up)` / `::scroll-button(down)` — generated controls for scrollable containers. `::scroll-marker` — pagination dots. Style with CSS, no JS carousel boilerplate.
+```css
+.toast { opacity: 1; transform: translateY(0); transition: opacity 0.3s, transform 0.3s; }
+@starting-style { .toast { opacity: 0; transform: translateY(-10px); } }
+```
 
-## Playwright Tests
+## Container Scroll-State Queries (Baseline 2026)
 
-Reduced motion: `page.emulateMedia({reducedMotion:'reduce'})` → assert 0 running animations. Scroll-driven: scroll container, wait for `animation-timeline` to progress, assert computed style. Hover: compare computed style before/after. View transition: `page.waitForURL()` + assert shared element position.
+- `@container scroll-state(stuck: top)` — apply styles when element is stuck
+- Replaces JS scroll-listener-based sticky styling
+
+```css
+.nav { container-type: scroll-state; }
+@container scroll-state(stuck: top) { .nav { box-shadow: 0 4px 12px rgba(0,0,0,0.4); } }
+```
+
+## Micro-Interactions (Tier 1 patterns)
+
+- **Button press** — `transform: scale(0.98)` on `:active`, 100ms transition
+- **Hover** — `transform: translateY(-1px)` + color shift + 200ms
+- **Focus-visible** — 3px brand-accent ring, 2px offset, 0ms transition (instant)
+- **Tap** — haptic feedback on mobile via `navigator.vibrate(10)` if supported
+- **Toggle** — animated check/cross morph via `<svg>` path interpolation
+- **Loading** — pulse animation 1.2s ease-in-out infinite
+
+## Stagger sequences (no JS needed)
+
+```css
+.list-item { animation: fade-up 0.4s ease-out backwards; }
+.list-item:nth-child(1) { animation-delay: 0ms; }
+.list-item:nth-child(2) { animation-delay: 80ms; }
+/* OR use sibling-index() (Baseline 2026) */
+.list-item { transition-delay: calc((sibling-index() - 1) * 80ms); }
+```
+
+## Performance constraints
+
+- Animate `transform` + `opacity` ONLY on hot paths
+- `will-change` sparingly (transform, opacity only when actually animated)
+- Drop GPU layers after animation completes
+- INP target ≤100ms per `_kernel/standards.md#cwv` — animations shouldn't block input
+
+## Interaction polish (every interactive element)
+
+Per `10-experience-and-design-system` § 4-state distinction:
+
+- Default → neutral
+- Hover → underline-sweep + color shift + `translateY(-1px)`
+- Focus-visible → 3px brand-accent ring 2px offset (distinct from hover)
+- Active → `scale(0.98)` + immediate color confirm
+
+Audit gate: Playwright cycles each interactive through 4 states → diff ≥3px pixel-difference or fail.
+
+## Banned motion
+
+- ❌ Uniform fade-in on every element (AI slop tell)
+- ❌ Parallax on every section (one cinematic per page)
+- ❌ Spinning loaders that don't progress (use indeterminate progress bars or skeletons)
+- ❌ Auto-playing video w/ sound
+- ❌ Carousel auto-rotate (manual swipe only — accessibility)
+- ❌ Scroll-jacking that breaks browser back button
+- ❌ Animations that block input (INP >100ms)
+- ❌ Easter eggs on critical conversion paths
+
+## See submodules: view-transitions.md, scroll-driven.md, micro-interactions.md, reduced-motion.md, build-breaking-rules.md.

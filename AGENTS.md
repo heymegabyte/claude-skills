@@ -4,17 +4,7 @@ This repository contains 14 skill categories, 18 agents, and 94 reference docs f
 
 ## Stack
 
-- **Hosting** — CF Workers + Hono
-- **Frontend** — Angular 21 + Ionic 8 + PrimeNG 21
-- **Database** — D1 / Neon
-- **ORM** — Drizzle v1
-- **Auth** — Clerk
-- **Payments** — Stripe
-- **Jobs** — Inngest
-- **Email** — Resend
-- **Runtime** — Bun
-- **Testing** — Playwright v1.59+
-- **Monitoring** — PostHog + Sentry
+CF Workers + Hono | Angular 21 + Ionic 8 + PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
 
 ## Usage
 
@@ -33,51 +23,11 @@ This repo is compatible with the agentskills.io open standard. Skills work in Cl
 
 ## Platform Variants (30 total)
 
-### Modern formats
+Modern formats: `.cursor/rules/` (MDC) | `.windsurf/rules/` (trigger frontmatter) | `.augment/rules/` (type frontmatter) | `.github/instructions/` (applyTo frontmatter) | `.openhands/microagents/` | `.aiassistant/rules/` | `.kiro/steering/` | `.void/rules/`
+Legacy formats: `.cursorrules` | `.windsurfrules` | `.clinerules` | `.rules` | `.augment-guidelines` | `.aider-conventions.md` | `.github/copilot-instructions.md`
+Named formats: `AGENTS.md` | `GEMINI.md` | `AMP.md` | `CODEX.md` | `QODO.MD` | `replit.md`
+Directory formats: `.amazonq/rules/` | `.junie/` | `.trae/rules/` | `.tabnine/guidelines/` | `.kilo/rules/` | `.roo/rules/` | `.continue/rules/` | `.agents/skills/` | `.bolt/` | `.cursor/BUGBOT.md`
 
-- `.cursor/rules/` (MDC)
-- `.windsurf/rules/` (trigger frontmatter)
-- `.augment/rules/` (type frontmatter)
-- `.github/instructions/` (applyTo frontmatter)
-- `.openhands/microagents/`
-- `.aiassistant/rules/`
-- `.kiro/steering/`
-- `.void/rules/`
-
-### Legacy formats
-
-- `.cursorrules`
-- `.windsurfrules`
-- `.clinerules`
-- `.rules`
-- `.augment-guidelines`
-- `.aider-conventions.md`
-- `.github/copilot-instructions.md`
-
-### Named formats
-
-- `AGENTS.md`
-- `GEMINI.md`
-- `AMP.md`
-- `CODEX.md`
-- `QODO.MD`
-- `replit.md`
-
-### Directory formats
-
-- `.amazonq/rules/`
-- `.junie/`
-- `.trae/rules/`
-- `.tabnine/guidelines/`
-- `.kilo/rules/`
-- `.roo/rules/`
-- `.continue/rules/`
-- `.agents/skills/`
-- `.bolt/`
-- `.cursor/BUGBOT.md`
-
-## Install
-
-- **Claude Code** — `claude plugin install heymegabyte/claude-skills`
-- **Codex** — clone into `~/.codex/skills/` or `.agents/skills/`
-- **npm** — `npm i @heymegabyte/claude-skills`
+Install: `claude plugin install heymegabyte/claude-skills`
+Codex: Clone into `~/.codex/skills/` or `.agents/skills/`
+npm: `npm i @heymegabyte/claude-skills`

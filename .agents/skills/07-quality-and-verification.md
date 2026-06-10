@@ -2,128 +2,156 @@
 name: "quality-and-verification"
 description: "5-level verification pyramid: static→unit→Playwright E2E (homepage-first, 6bp)→AI visual→post-deploy. 8-check quality gate. Multi-agent testing (functional/security/a11y/performance). Playwright v1.59+ AI agents (Planner/Generator/Healer). WCAG 2.2 AA via axe-core v4.11. Percy+Chromatic visual regression. ADA Title II 2027/2028 deadlines."
 metadata:
-  version: "2.0.0"
-  updated: "2026-04-23"
-  token_budget: "5K"
+  version: "2.1.0"
+  updated: "2026-05-03"
+  effort: "high"
+  model: "sonnet"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
   - accessibility-gate.md
-  - performance-optimization.md
-  - security-hardening.md
-  - computer-use-automation.md
+  - adversarial-testing.md
+  - agentic-security.md
+  - audio-video-sync.md
+  - build-breaking-rules.md
   - chrome-and-browser-workflows.md
   - completeness-verification.md
-  - visual-inspection-loop.md
+  - computer-use-automation.md
+  - contract-testing.md
+  - e2e-accumulation.md
+  - eval-driven-development.md
+  - evidence-collection.md
+  - performance-optimization.md
+  - picovoice-eagle-biometric.md
+  - security-hardening.md
+  - semgrep-codebase-rules.md
+  - slop-detection.md
+  - spec-driven-development.md
+  - stagehand-ai-fallback.md
+  - stagehand-ai-testing.md
   - tdd-verification.md
   - testing-matrices.md
-  - adversarial-testing.md
-  - spec-driven-development.md
-  - stagehand-ai-testing.md
-  - visual-regression.md
-  - contract-testing.md
-  - slop-detection.md
-  - eval-driven-development.md
   - ui-completeness-sweep.md
-  - semgrep-codebase-rules.md
-  - audio-video-sync.md
-  - e2e-accumulation.md
-  - evidence-collection.md
-  - agentic-security.md
-  - picovoice-eagle-biometric.md
-  - stagehand-ai-fallback.md
+  - visual-inspection-loop.md
+  - visual-regression.md
+  - wcag-2-2-2026.md
+priority: 2
+pack: "testing"
+triggers:
+  - "test"
+  - "verify"
+  - "qa"
+  - "lighthouse"
+paths:
+  - "*"
 ---
 
 # 07 — Quality and Verification
 
-Submodules: accessibility-gate (axe-core v4.11, WCAG 2.2 AA, focus-not-obscured, target-size 24px, accessible-auth)|performance-optimization (CWV, INP 3-phase, budgets)|security-hardening (CSP nonce-based, OWASP 2025, supply-chain #3)|computer-use-automation (native macOS)|chrome-and-browser-workflows (Chrome/Playwright MCP)|completeness-verification (multi-pass AI visual)|visual-inspection-loop (screenshot/critique/fix)|tdd-verification (10-point journey)|testing-matrices (payment/email/form)|adversarial-testing (chaos/stress)|stagehand-ai-testing (AI browser fallback, a11y-tree selectors)|visual-regression (Percy AI+Chromatic+pixelmatch)|contract-testing (Zod vs live APIs)|slop-detection (AI filler scanner)|eval-driven-development (LLM-as-judge)|ui-completeness-sweep (***MANDATORY*** Playwright+GPT-4o, blocks done until >=8/10)|semgrep-codebase-rules (AST-level per-project rules)|e2e-accumulation (append-only parallel chunks)|evidence-collection (R2 video+screenshots).
+## 5-level pyramid (bottom to top)
 
-## Verification Pyramid
+1. **Static** — TS strict + ESLint + oxlint + Prettier + knip (dead code)
+2. **Unit** — Vitest 3 (40% faster on 5k+ tests, Rust sharding, browser mode default)
+3. **Playwright E2E** — homepage-first, 6 viewports × 3 browsers, hermetic, parallel
+4. **AI visual** — vision rubric ≥8/10 per route, 6bp screenshots
+5. **Post-deploy** — `wrangler tail` clean + console-error-free + axe-clean + Lighthouse green
 
-L5: Post-Deploy (08). L4: Visual (screenshots+AI). L3: E2E (Playwright v1.59+). L2: Integration (API/DB). L1: Static (lint/typecheck).
-Every code change: L1-L3. Every deploy: L4-L5.
+## 8-check quality gate (every PR)
 
-### Playwright AI Agents (v1.59.1+)
+1. `npm run typecheck` clean (0 errors)
+2. `npm run lint` clean (0 errors, 0 warnings)
+3. `npm test` (Vitest) green
+4. `npm run e2e:prod` green at 6 breakpoints
+5. axe-core 0 violations per `_kernel/standards.md#wcag22`
+6. Lighthouse Perf ≥75, A11y ≥95, BP ≥95, SEO ≥95
+7. AI vision QA ≥8/10 per route
+8. Console / CSP / network errors = 0
 
-Planner: explores app, designs test plans from natural language. Generator: creates executable test code. Healer: auto-fixes broken tests. Pattern: static specs for stable tests, AI agents for flaky/new. Run agents only on failed tests in second pass (70% token savings).
+Any fail = blocker. Fix-forward per `rules/verification-loop.md`.
 
-### Playwright v1.59.1 New APIs
+## Playwright Test Agents (v1.59+)
 
-`page.screencast({ path })` — video recording with action annotations and real-time frame capture (video receipts for CI). `browser.bind()` — connect to running browser instances. `page.consoleMessages()`/`page.pageErrors()`/`page.requests()` — snapshot-in-time accessors (no event listeners needed). `await using` async disposables for auto-cleanup. Trace CLI for agent-driven test analysis.
+- `npx playwright init-agents --loop=claude` once per repo
+- **Planner** — Markdown plan
+- **Generator** — test code
+- **Healer** — auto-fix broken selectors (run before manual rewrite)
+- `browser.bind()` for MCP interop
+- `page.screencast` for video receipts on flaky specs
 
-### MCP-Based Testing
+## Hermetic spec contract (per `rules/e2e-tdd-organization.md`)
 
-Playwright MCP operates on accessibility tree, not screenshots. Returns structured snapshots: role hierarchy, names, states. Target "Role: button, Name: Checkout" — 10x more stable than CSS selectors. AOM-reasoning > DOM-scraping.
+1. Starts at homepage (`/`); navigates via clicks/keyboard
+2. Seeds own data via `_fixtures/`
+3. Cleans own data after-each
+4. Doesn't write to localStorage / IDB / cookies next spec reads
+5. Doesn't depend on Date.now() / timezone / random
+6. Doesn't open network to live third-party APIs (MSW / stub)
 
-### Multi-Agent Testing Pattern
+Violating any = build fail.
 
-Functional agent: happy path clicks. Security agent: XSS probing, auth bypass. Accessibility agent: WCAG 2.2 compliance. Performance agent: CWV measurement. Run all four in parallel per deploy.
+## Parallel execution
 
-### Self-Healing Loop
+- `fullyParallel: true`
+- `workers: process.env.CI ? '50%' : '75%'`
+- Sharded via `--shard=$INDEX/$TOTAL`
+- 6 viewports per `_kernel/standards.md#breakpoints`
+- 3 browsers: Chromium, Firefox, WebKit
 
-Test fails→read full error→classify (code/test/env/flaky)→fix root cause→re-run→loop max 5. NEVER .skip/.only/.fixme()/comment assertions/increase timeouts. After fix: full suite.
+## AI visual QA
 
-### Zero Console Errors
+- Random snapshot sampling 30% per step (seeded hash, reproducible)
+- New-section AI vision: `e2e/__seen-routes__.json` gates first render of any unknown route
+- Rubric: layout sane / contrast WCAG AA / brand / no slop / ≥8/10 (Claude Sonnet 4.6 or GPT Image 2 vision)
+- Baselines in `e2e/__snapshots__/`
+- Pixelmatch tolerance 0.1% / 0.5% area
 
-```typescript
-const errors: string[] = [];
-page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
-expect(errors).toEqual([]);
-```
+Per `rules/e2e-visual-inspection.md`.
 
-### Zero Recommendations Gate
+## Visual regression
 
-After all tests pass: "How improve?" If ANY recommendation→implement+retest. Done when AI has zero suggestions.
+- **Percy AI Visual Review** — 3× faster review, 40% OCR-based noise filter, full-page + flows
+- **Chromatic** — component-level via Storybook
+- **pixelmatch** — local deterministic CI
 
-## L1: Static
+Three-tier: local → PR → deploy.
 
-TypeScript (tsc --noEmit), ESLint flat config, Prettier. Fix all. Suppress lines only with comment.
+## Multi-agent testing
 
-## L2: Unit/Integration (Vitest)
+Spawn parallel in single `Agent` call:
 
-100% on new functions. Happy+error+edge+auth paths. Don't test: framework internals, 3rd-party, CSS, simple getters.
+- **functional-tester** — happy path + edge cases
+- **security-reviewer** — OWASP Top 10:2025 per `_kernel/standards.md#owasp2025`
+- **accessibility-auditor** — axe 6bp + WCAG 2.2 manual review
+- **performance-profiler** — Lighthouse CI + bundle audit + INP via LoAF
+- **visual-qa** — AI vision rubric ≥8/10
 
-## L3: E2E (Playwright v1.59+)
+Each: 100-300 word brief, ≤200 word summary back. Per `rules/agent-selection.md`.
 
-Homepage-first. No sleeps (waitFor, toBeVisible, waitForResponse). Stable selectors: data-testid→role→text→Stagehand AI fallback. Parallel-safe, deterministic, production URLs. 6bp: 375/390/768/1024/1280/1920.
+## INP debugging
 
-## L4: Visual
+- `PerformanceObserver` type `long-animation-frame` (LoAF, Chrome 123+)
+- For SPA per-route CWV: web-vitals v4+ w/ `softNavs:true`
+- Target ≤100ms cinematic, ≤200ms = fail per `_kernel/standards.md#cwv`
 
-Percy AI Visual Review Agent (3x review reduction, 40% false positive filtering, OCR text-shift elimination). Chromatic for component-level (Storybook+Playwright). pixelmatch for local CI. See visual-inspection-loop.md + completeness-verification.md.
+## Console-error gate
 
-## 8-Check Quality Gate
+- After every deploy, check browser console for CSP violations, JS errors, failed resources
+- ALL must be 0 before marking complete
+- Fixed by `rules/verification-loop.md` console-error gate
 
-| # | Check | Pass |
-|---|-------|------|
-| 1 | E2E | 0 failures |
-| 2 | Visual | No breaks 1280+375px, Percy/Chromatic clean |
-| 3 | Links | All 200 |
-| 4 | SEO | JSON-LD 4+, OG 1200x630, sitemap |
-| 5 | Performance | LCP<2.5s, INP<200ms, CLS<0.1 |
-| 6 | A11y | WCAG 2.2 AA, axe-core 0, focus-not-obscured, target>=24px |
-| 7 | Security | CSP nonce-based, OWASP 2025, no secrets, Zod |
-| 8 | Web Property | Manifest, shortcuts, 4+ JSON-LD, cross-site links |
+## E2E accumulation
 
-## WCAG & ADA Landscape
+- Tests NEVER deleted, only appended
+- `journey.spec.ts` serial + stateful — each feature adds steps
+- 100% feature coverage matrix in `e2e/FEATURES.md`
+- Removed features: skip + comment, don't delete
 
-WCAG 2.2 AA = baseline (9 new SC: focus-not-obscured, target-size-minimum 24px, accessible-auth, consistent-help, redundant-entry, dragging-movements, focus-appearance 2px/3:1). ADA Title II: large entities April 2027, smaller April 2028. WCAG 3.0 working draft (174 requirements, est. 2028-2030, no A/AA/AAA — assertions+scoring). axe-core v4.11.3 covers WCAG 2.0/2.1/2.2 at A/AA/AAA.
+## Inventory enforcement
 
-## GitHub Integration
+- `e2e/FEATURES.md` — row per feature
+- `e2e/COVERAGE.yml` — feature→spec map; CI fails on any feature without entry/test
+- Pre-commit lint: new component without matching `e2e/<feature>/` warns
 
-PR checks: `gh pr checks`→`gh run view --log-failed`→diagnose→fix→push→verify.
-
-## CWV Targets
-
-LCP <2.5s (4-phase: TTFB→resource delay→load duration→render delay). INP <200ms (3-phase: input delay→processing→presentation). CLS <0.1 (explicit dimensions, aspect-ratio, font-display). 47% of sites pass all three. See performance-optimization.md.
-
-## Quick Check (small fixes)
-
-tsc --noEmit, relevant E2E, visual 1280+375, no console errors, deploy+purge+verify 200.
-
-## Test Shortcuts
-
-New page: adapted homepage test. New form: 8-point matrix. New API: valid 200, invalid 400, missing 404. Visual: screenshot at 6bp. Auth: unauth 401, wrong 403, valid 200.
-
-Shared values (breakpoints, CSP): CONVENTIONS.md.
+## See submodules: ai-vision-qa.md, multi-agent-testing.md, visual-regression.md.

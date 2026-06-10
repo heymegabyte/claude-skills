@@ -3,86 +3,164 @@ name: "media-orchestration"
 description: "Section-by-section media planning and generation. Image generation (GPT Image 1.5 primary, built-in fallback), logo/icon generation (Ideogram v3 → favicon set), video generation (Sora), social preview images (OG 1200x630 + AI search optimization), stock photo curation (Pexels, Pixabay), critique/remix loops (max 3 rounds), asset compression pipeline, and media performance budgets."
 metadata:
   version: "2.1.0"
-  updated: "2026-04-23"
+  updated: "2026-05-03"
   context: "fork"
+  effort: "high"
+  model: "sonnet"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
-  - media-prompts.md
+  - 30-ideogram-methods.md
+  - build-breaking-rules.md
   - compression-pipeline.md
-  - og-image-generation.md
   - image-optimization.md
-  - technical-diagramming.md
   - image-profiling.md
+  - lightbox-classifier.md
+  - media-prompts.md
+  - notebooklm-pipeline.md
+  - og-image-generation.md
+  - social-brand-hex.md
+  - technical-diagramming.md
+priority: 3
+pack: "media"
+triggers:
+  - "image gen"
+  - "dalle"
+  - "media"
+  - "og image"
+paths:
+  - "org:website_build"
 ---
 
-# 12 -- Media Orchestration
+# 12 — Media Orchestration
 
-Submodules: media-prompts.md (prompt templates, Ideogram v3 API), compression-pipeline.md (Python code, format tables, CF Image Transforms, CLS, broken image detection), og-image-generation.md (Satori edge-rendered OG images, KV/R2 cache, meta-tag helper), image-optimization.md (Sharp processing, responsive srcset, WebP/AVIF, blur placeholders, R2 pipeline), image-profiling.md (GPT-4o vision batch profiling — quality+placement+colors per image, pre-digest for builders).
+> **Model migration note (pass-77, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Media pipeline unchanged.
+
+## Submodules
+
+- **media-prompts** — prompt templates, Ideogram v3 API
+- **compression-pipeline** — Python code, format tables, CF Image Transforms, CLS, broken image detection
+- **og-image-generation** — Satori edge-rendered OG, KV / R2 cache, meta-tag helper
+- **image-optimization** — Sharp processing, responsive srcset, WebP/AVIF, blur placeholders, R2 pipeline
+- **image-profiling** — GPT Image 2 vision batch profiling
+- **lightbox-classifier** — per-image eligibility — `kind!=logo` + ≥1024×768 + score≥7
+- **social-brand-hex** — canonical brand-color map per social platform
+- **notebooklm-pipeline** — per-site podcast via ElevenLabs Studio + infographic via Vega-Lite/Recraft/GPT-Image-2 + HeyGen video + CF Stream + RSS + JSON-LD + cost ceiling $3.50/site
 
 ## Strategy by Section
 
-Hero: GPT Image 1.5/Sora. Features: GPT Image 1.5/SVG. How It Works: GPT Image 1.5. Testimonials: stock. About: stock/real. Blog: GPT Image 1.5. Social: Satori OG 1200x630. Icons: Ideogram v3+processing.
+- **Hero** — GPT Image 1.5 / Sora
+- **Features** — GPT Image 1.5 / SVG
+- **How It Works** — GPT Image 1.5
+- **Testimonials** — stock
+- **About** — stock / real
+- **Blog** — GPT Image 1.5
+- **Social** — Satori OG 1200×630
+- **Icons** — Ideogram v3 + processing
 
 Pre-gen: communication goal? Brand style? Dimensions? Format? Budget? Stock or generated?
 
 ## Visual Inspection (MANDATORY)
 
-Read every image before deploy. Check: blur, artifacts, watermarks, wrong colors, AI hallucinations, gibberish text. Failed: regenerate improved prompt. Quality: 2x retina, no artifacts, brand palette, consistent style, no uncanny valley.
+Read every image before deploy. Check: blur, artifacts, watermarks, wrong colors, AI hallucinations, gibberish text. Failed = regenerate w/ improved prompt. Quality: 2× retina, no artifacts, brand palette, consistent style, no uncanny valley.
 
 ## Brian's Style
 
-Space/cosmic: #00E5FF + #7C3AED, deep black (#060610). Connections/dots: quantum, neural, constellation. "Ultra realistic" scenes. Transparent logos. Simpler always. Motifs: squirrels, turtles.
+- Space/cosmic — `#00E5FF` + `#7C3AED`, deep black (`#060610`)
+- Connections/dots — quantum, neural, constellation
+- "Ultra realistic" scenes
+- Transparent logos
+- Simpler always
+- Motifs — squirrels, turtles
 
 ## Image Generation
 
-GPT Image 1.5 preferred (best quality). GPT Image 1 for speed. GPT Image 1-mini for bulk/drafts. Fallback: scripts/image_gen.py. Be specific, include colors, specify avoidances. Product screenshots: browser rendering via Playwright on live URL.
+- **GPT Image 1.5** preferred (best quality)
+- **GPT Image 1** for speed
+- **GPT Image 1-mini** for bulk/drafts
+- Fallback: `scripts/image_gen.py`
+- Be specific, include colors, specify avoidances
+- Product screenshots: browser rendering via Playwright on live URL
 
-**DALL-E deprecated May 12, 2026.** Never use DALL-E -- use gpt-image-1.5 (quality), gpt-image-1 (balanced), gpt-image-1-mini (fast/cheap). Sora video deprecates Sept 24, 2026.
+## GPT Image 1.5 First Slot-Fill (CANONICAL — UNIVERSAL)
 
-## Logo (NON-NEGOTIABLE)
+GPT Image 1.5 (gpt-image-1.5 / gpt-image-1) is PRIMARY originator for every image slot the source-resolution chain didn't fill from real-entity sources (Places / uploads / scrape).
 
-**Discovery:** Logo.dev, Brandfetch, scrape header, Google Images, favicon, social. High quality: use. Low: AI-enhance. Favicon only: upscale.
+- After real-entity sources exhaust, GPT Image 1.5 invoked BEFORE generic stock — per-slot prompt produces tighter topic match than any stock library
+- Stock APIs run parallel speed-pass fallback (instant return if GPT Image 1.5 hangs >15s) but GPT Image 1.5 output preferred at curation
+- See skill 15 `media-acquisition` Media-Slot-Manifest + Fail-CLOSED auto-regenerate (5 attempts, prompt-refinement loop, $0.40 worst-case ceiling per slot)
 
-**Generation (if none):** 3 Ideogram v3 variants (A=lockup, B=icon, C=wordmark). Single GPT-4o call rates all 3 (1-10). Winner <7: regenerate losing slot only (max 2 rounds). Cost: ~$0.05 total (3 Ideogram + 1 GPT-4o detail:low).
+## Per-Slot Prompt Mandatory Fields (BUILD-BREAKING — `validate-image-prompts.mjs` + `validate-dalle-slot-fill.mjs`)
 
-**Assets:** favicon.ico (16+32+48), 16/32/180/192/512 PNGs, logo-header, logo-mark, og-image 1200x630.
+Every GPT Image 1.5 call MUST encode 6 fields from `_media_slots.json`:
 
-**Auto-favicon pipeline (EVERY NEW PROJECT):** Generate winning logo→`magick logo.png -fuzz 15% -trim +repage` then: `-resize 512x512 android-chrome-512x512.png`|`-resize 192x192 android-chrome-192x192.png`|`-resize 180x180 apple-touch-icon.png`|`-resize 32x32 favicon-32x32.png`|`-resize 16x16 favicon-16x16.png`|multi-size `.ico` with 16+32+48. Ensure `site.webmanifest` references 192+512. Head tags: `<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>`|`<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>`|`<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>`|`<link rel="manifest" href="/site.webmanifest"/>`.
+1. Page topic + intent verbatim from `topic_intent`
+2. Brand palette tokens from `_brand.json.colors` (inline hex)
+3. Composition + aspect ratio matching `aspect`
+4. Subject specificity (NEVER "people" — always "octogenarian volunteer plating soup, soft window light, documentary style")
+5. Photographic technical specs (camera, lens, lighting, DoF — "shot on Hasselblad, 85mm prime, golden hour, shallow DoF")
+6. Negative prompt block ("no text, no watermarks, no logos, no extra fingers, no AI artifacts, no stock-photo cliches")
 
-**OpenAI key:** Load from `~/.claude/.env` via `source ~/.claude/.env`. Manage at https://platform.openai.com/api-keys. Replicate at https://replicate.com/account/api-tokens. Ideogram at https://developer.ideogram.ai/keys.
+Generic prompts FAIL validator. Same template applies to FLUX, Recraft, Stability — reuse slot-prompt across providers w/ fallback chain.
 
-**Gates:** legible 32px+512px, transparent bg, brand palette, no artifacts, dark+light, GPT-4o >=7/10.
+## Fail-CLOSED Auto-Regenerate (BUILD-BREAKING — `validate-no-empty-slots.mjs`)
 
-## Video (Sora)
+Every slot in `_media_slots.json` MUST end build w/ `filled_url != null AND filled_score >= relevance_floor` (default 8/10 via GPT Image 2 vision).
 
-Hero bg (4-8s muted autoplay loop), explainer (15-30s), demo (5-10s). Model: sora-2/sora-2-pro. 1280x720. Delivery: autoplay muted loop playsinline poster. <2MB hero. Lazy below fold. Sora deprecates Sept 24, 2026 -- evaluate alternatives before then.
+Failure modes (Pexels returns nothing, GPT Image 1.5 NSFW-flagged, scraped image broken, vision relevance below floor) trigger immediate auto-regeneration via GPT Image 1.5 w/ REFINED prompt — NEVER silent skip, NEVER substitute brand-gradient unless 5 regen attempts exhausted.
 
-## Social Previews + AI Search Optimization
+Build orchestrator's `media_pipeline_orchestrator` sub-agent owns this loop. Submodule: `media-acquisition.md` § Fail-CLOSED chain.
 
-PWA screenshots: Playwright on live URL (never mockups). Wide 1920x1080 + narrow 390x844. OG: 1200x630 per page (MANDATORY). Edge-rendered via Satori + resvg (see og-image-generation.md).
+## Logo / Icon Generation
 
-**AI Search (GEO):** OG images now consumed by ChatGPT, Perplexity, Google AI Overviews. Ensure: descriptive og:title (40-60 words quotable), structured JSON-LD on every page, FAQ sections for AI extraction, clear entity definitions. ChatGPT favors Wikipedia/G2; Perplexity favors Reddit/YouTube; Google AI Overviews favor traditionally ranked pages.
+- **Ideogram v3** for logos (best text rendering)
+- **Recraft V3** for vector-style icons
+- Output: PNG transparent + SVG (if possible)
+- Process: bg removal → favicon set (16/32/180/192/512 + maskable)
+- Brand mark MUST be vector-clean — no AI artifacts on edges
 
-## Stock
+## Video Generation
 
-Pexels (PEXELS_API_KEY), Pixabay (PIXABAY_API_KEY). Review 5+, prefer candid/diverse/mood-matching. WebP, alt text.
+- **Sora** for primary cinematic content
+- Veo for narrative stitching (7-8 × 8-sec clips → 60-sec arc)
+- HeyGen for explainer + spokesperson
+- All include captions VTT + transcript
+- `prefers-reduced-motion` → static poster fallback
 
-## Critique Loop (max 3)
+## OG Image (1200×630)
 
-Communicates? Brand-matching? Strong composition? Consistent palette? Legible? Premium? No artifacts? Issues: adjust prompt, regenerate. Score 1-10 on 8 criteria (see templates/PROMPTS.md). Overall <7: regenerate.
+- Satori edge-rendered from template
+- Per-route unique
+- BRANDED CARD never raw photo
+- ≤100KB
+- Cached in KV 7d / R2 forever
 
-## Performance Budget
+## Stock Photography
 
-Total images <500KB, largest <200KB, hero LCP <2.5s, total media <3MB, requests <15. Hero: eager+preload+fetchpriority=high. Others: lazy. All: decoding=async. WebP+AVIF via CF Image Transforms (format=auto). srcset 320/640/1280/1920w. Inline SVGs <2KB. 1s LCP delay = 7% conversion loss.
+- **Pexels** first (free, high quality, API)
+- **Pixabay** second
+- Never: Unsplash (generic, overused), iStock/Getty (paid, unnecessary)
+- Critique-and-remix loop max 3 rounds
+- AI vision rates each candidate; <7/10 = reject + regenerate
 
-## Fallback Chain
+## Asset Compression Pipeline
 
-1. GPT Image 1.5 (scenes/hero/OG -- best quality) 2. Ideogram v3 (logos/icons) 3. GPT Image 1-mini (bulk drafts) 4. Pexels (200/hr) 5. Pixabay (100/hr) 6. Replicate (specialty).
-All keys: project .env.local or shared key pool. `~/.claude/.env` for shared keys (OPENAI_API_KEY, etc).
+- AVIF primary (94% browser support, 20-30% smaller than WebP)
+- WebP fallback (Safari 14+)
+- JPEG legacy
+- Sharp: 320 / 640 / 1280 / 1920w responsive srcset
+- Blur placeholder generation
+- Dominant color extraction → CSS bg fill while loading
+- R2 upload pipeline per-extension content-type
 
-## Design Phase API Scan (EVERY NEW PROJECT)
+## Performance Budgets
 
-Before first design: scan `get-secret` vault for available media APIs. Check: OPENAI_API_KEY (GPT Image)|PEXELS_API_KEY (stock photos)|PIXABAY_API_KEY (stock)|REPLICATE_API_TOKEN (Flux/specialty)|IDEOGRAM_API_KEY (logos). Also scan for: embedded video APIs (YouTube Data API, Vimeo), background video sources (Pexels Video API supports free HD video), high-res content APIs (NASA/APOD for space themes, Giphy for motion). Map available APIs to section needs before generating any media. Always provide exact API key management URLs when prompting user for missing keys.
+- Total images per page ≤500KB
+- Largest single image ≤200KB
+- Hero LCP image `fetchpriority="high"` + preload link
+- `loading="lazy"` on every other image
+- `decoding="async"` always
+
+## See submodules for: media-prompts, compression-pipeline, og-image-generation, image-optimization, image-profiling, lightbox-classifier, social-brand-hex, notebooklm-pipeline, build-breaking-rules.

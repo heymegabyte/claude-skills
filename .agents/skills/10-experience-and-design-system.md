@@ -3,28 +3,52 @@ name: "experience-and-design-system"
 description: "Anti-AI-slop design system for distinctive, premium interfaces. Bold typography, dark-first #060610, fluid clamp() type, cascade layers + native nesting + container queries, OKLCH color, @starting-style, View Transitions API, DTCG tokens."
 metadata:
   version: "2.1.0"
-  updated: "2026-04-23"
+  updated: "2026-05-03"
+  effort: "high"
+  model: "opus"
 license: "Rutgers"
 compatibility:
   claude-code: ">=2.0.0"
   agentskills: ">=1.0.0"
 submodules:
+  - build-breaking-rules.md
+  - cinematic-doctrine.md
   - design-tokens.md
+priority: 3
+pack: "design"
+triggers:
+  - "design"
+  - "ui"
+  - "components"
+  - "theme"
+paths:
+  - "concern:public_facing"
 ---
 
 # 10 — Experience and Design System
 
 ## The Apple Test
 
-After every design: would Apple's design team find this acceptable? Two elements compete: remove one. Crowded: whitespace. Busy type: reduce sizes, increase weight contrast. Final: effortless, inevitable. "Cooler and catchier" within simplicity.
+After every design: would Apple's design team find this acceptable?
 
-## CSS Patterns (Brian's code)
+- Two elements compete: remove one
+- Crowded: whitespace
+- Busy type: reduce sizes, increase weight contrast
+- Final: effortless, inevitable
 
-Overlay: rgba(0,0,0,0.81). Text shadow: 1px 1px 1px rgba(255,255,255,0.333). Box shadow: 2px 2px 2px rgba(0,0,0,0.69). Border-radius: 5px interactive, 10px containers (never 0, never pill). Hero padding: 40px. Max text: 720px. Line-height: 1.4. Letter-spacing: 0.4px labels, 0.5px nav, 1px titles, 1.4px CTAs. CTA: uppercase always. Button: 700 always. Install Doctor blue: #119eff. Reference: Linear, Notion, Stripe.
+## CSS Patterns
+
+- Overlay `rgba(0,0,0,0.81)` · Text shadow `1px 1px 1px rgba(255,255,255,0.333)` · Box shadow `2px 2px 2px rgba(0,0,0,0.69)`
+- Border-radius 5px interactive, 10px containers (never 0, never pill)
+- Hero padding 40px · Max text 720px · Line-height 1.4
+- Letter-spacing: 0.4px labels, 0.5px nav, 1px titles, 1.4px CTAs
+- CTA uppercase always · Button 700 always
+- Reference: Linear, Notion, Stripe
 
 ## Typography
 
-Body: Sora 400/500. Headings: Space Grotesk 600/700. Mono: JetBrains Mono 400/500. Display: Clash Display 700 (hero only). Variable fonts: WOFF2, subset to needed chars, self-host (never Google Fonts CDN), font-display:swap. Restrain axes to weight+width only.
+- Body: Sora 400/500 · Headings: Space Grotesk 600/700 · Mono: JetBrains Mono 400/500 · Display: Clash Display 700 (hero only)
+- Variable fonts: WOFF2, subset to needed chars, self-host (never Google Fonts CDN), `font-display:swap`
 
 ```css
 :root {
@@ -40,7 +64,9 @@ Body: Sora 400/500. Headings: Space Grotesk 600/700. Mono: JetBrains Mono 400/50
 }
 ```
 
-Body min 16px (prefer 18). Line-height: 1.6 body (or `calc(2px + 2ex + 2px)` for proportional), 1.1-1.2 headings. Letter-spacing: -0.02em >2rem. Max: 65ch. Never skip levels. Scale ratio: Minor Third 1.2 general, Perfect Fourth 1.333 marketing. `text-wrap:balance` headings, `text-wrap:pretty` paragraphs.
+- Body min 16px (prefer 18) · Line-height 1.6 body, 1.1-1.2 headings · Letter-spacing -0.02em >2rem · Max 65ch
+- Never skip levels. Scale: Minor Third 1.2 general, Perfect Fourth 1.333 marketing
+- `text-wrap:balance` headings, `text-wrap:pretty` paragraphs
 
 ## Color (Dark Default)
 
@@ -59,89 +85,106 @@ Body min 16px (prefer 18). Line-height: 1.6 body (or `calc(2px + 2ex + 2px)` for
 }
 ```
 
-Never #000 (use #060610 — pure black causes visual vibration, halation, eye strain). Never #fff (use #f0f0f5). Cyan: primary CTAs. Blue: secondary. Gradients on buttons only. 6% borders. Subtle glow on primary interactive.
-Dark-first architecture: elevation via lightness not shadows. Background hierarchy: base->surface 1->surface 2->surface 3. Text hierarchy: primary->secondary->tertiary. Status colors: desaturate 10-20% from light-mode equivalents. Sans-serif fonts perform best in dark mode; use `-webkit-font-smoothing:antialiased` to mitigate halo effects.
-Theme implementation: `color-scheme:light dark` declaration, `data-theme="dark|light"` attributes for user override, `localStorage` for persistence, `prefers-color-scheme` as system default. Always provide toggle.
-Modern color: OKLCH perceptually uniform, `color-mix()` for blending without precomputed palettes, relative colors `oklch(from var(--brand) l c calc(h + 30))`, `light-dark()` for theme-aware values. Contrast: 4.5:1 normal text, 3:1 large text/UI components (WCAG 2.2 AA). Target size minimum 24x24 CSS px (2.5.8). Focus indicators 2px thick, 3:1 contrast (2.4.13).
+- Never `#000` (use `#060610` — pure black causes vibration/halation/eye strain) · Never `#fff` (use `#f0f0f5`)
+- Cyan: primary CTAs · Blue: secondary · Gradients on buttons only · 6% borders · Subtle glow on primary interactive
+
+### Dark-first
+
+- Elevation via lightness not shadows · base → surface 1 → surface 2 → surface 3
+- Status colors desaturate 10-20% from light-mode equivalents
+- Sans-serif fonts best in dark mode; use `-webkit-font-smoothing:antialiased`
+
+### Theme
+
+- `color-scheme:light dark` · `data-theme="dark|light"` user override · `localStorage` persistence · `prefers-color-scheme` system default · Always provide toggle
+
+### Modern color
+
+- OKLCH perceptually uniform · `color-mix()` for blending · Relative `oklch(from var(--brand) l c calc(h + 30))` · `light-dark()` theme-aware
+- Contrast 4.5:1 normal, 3:1 large/UI (WCAG 2.2 AA) · Target size min 24×24 px (2.5.8) · Focus 2px thick, 3:1 contrast (2.4.13)
 
 ## CSS Architecture (2026)
 
 ```css
-/* Cascade layers: declare order at top, specificity ignored across layers */
 @layer reset, base, tokens, components, utilities, overrides;
 ```
 
-Native nesting (Sass now optional). Container queries (`container-type:inline-size`, `@container`). `:has()` parent selector replaces JS. `@scope` for bounded styling (Baseline 2026 — production-ready). Anchor positioning for tooltips/dropdowns without JS (Baseline 2026 — production-ready, replaces Floating UI). Scroll-state container queries: `@container scroll-state(stuck: top)` (Baseline 2026). CSS `if()` conditional logic. Typed `attr()`. `sibling-index()`/`sibling-count()` for stagger delays: `transition-delay: calc((sibling-index() - 1) * 40ms)`. `appearance:base-select` for native `<select>` customization (Chrome 135+). Feature queries (`@supports`) for progressive enhancement.
-**Baseline 2026 (newly interoperable):** `@scope` bounded styling | anchor positioning (CSS Anchor Positioning) | scroll-state queries | `@starting-style` (all browsers) | `interpolate-size: allow-keywords` for animating `auto` | `field-sizing: content` for auto-sizing inputs | `text-wrap: pretty` (all browsers) | `@property` (typed custom properties, all browsers).
+- Native nesting (Sass optional) · Container queries (`container-type:inline-size`, `@container`) · `:has()` replaces JS
+- `@scope` bounded styling (Baseline 2026) · Anchor positioning replaces Floating UI (Baseline 2026) · Scroll-state queries `@container scroll-state(stuck: top)` (Baseline 2026)
+- CSS `if()` conditional · Typed `attr()` · `sibling-index()` / `sibling-count()` for stagger: `transition-delay: calc((sibling-index() - 1) * 40ms)`
+- `appearance:base-select` native `<select>` (Chrome 135+) · `@supports` for progressive enhancement
+
+### Baseline 2026
+
+- `@scope` · Anchor positioning · Scroll-state queries · `@starting-style` (all browsers) · `interpolate-size: allow-keywords` · `field-sizing: content` · `text-wrap: pretty` · `@property`
 
 ## W3C DTCG Design Tokens (2025.10 Stable)
 
-JSON format, `.tokens`/`.tokens.json` extensions, MIME: `application/design-tokens+json`. Token structure: `$value` (required), `$type`, `$description`, `$deprecated`, `$extensions` (vendor). Types: color|dimension|duration|fontFamily|fontWeight|cubicBezier|number + composites (shadow, border, gradient, typography, transition). Aliasing: `"$value": "{base.color}"` resolves to target. `$ref` JSON Pointer for property access. Group `$type` inheritance to children. `$root` for base+variants, `$extends` for deep merge. Full Display P3, OKLCH, CSS Color Module 4. Naming: no `$` prefix, no `{}`/`.` in names. Multi-brand theming without file duplication. Tools: Tokens Studio, Style Dictionary, Penpot, Figma.
+- JSON `.tokens` / `.tokens.json`, MIME `application/design-tokens+json`
+- Token: `$value` (required), `$type`, `$description`, `$deprecated`, `$extensions`
+- Types: color | dimension | duration | fontFamily | fontWeight | cubicBezier | number + composites (shadow, border, gradient, typography, transition)
+- Aliasing: `"$value": "{base.color}"` · `$ref` JSON Pointer · Group `$type` inheritance · `$root` for base + variants · `$extends` for deep merge
+- Full Display P3, OKLCH, CSS Color Module 4
+- Naming: no `$` prefix, no `{}` / `.` in names
+- Tools: Tokens Studio, Style Dictionary, Penpot, Figma
 
 ## AI-Ready Design Documentation
 
-DESIGN.md: plain-text markdown optimized for LLM consumption. Sections: Visual Theme, Color Palette, Typography, Spacing+Layout, Components, Elevation. Atomic documentation: small context-rich units tied to components. Consistent naming across Figma/docs/code. Component metadata: states, variants, props, constraints, a11y attributes, rationale. MCP servers (Figma Dev Mode MCP) for standardized programmatic access. Token APIs queryable by AI tools.
+- `DESIGN.md`: plain-text markdown for LLM consumption
+- Sections: Visual Theme, Color Palette, Typography, Spacing + Layout, Components, Elevation
+- Atomic documentation: small context-rich units tied to components
+- Component metadata: states, variants, props, constraints, a11y, rationale
+- MCP servers (Figma Dev Mode MCP) for programmatic access
 
 ## Layout
 
-Container: 1140px (wide 1400, narrow 720), padding clamp(1rem,3vw,3rem). Sections: clamp(4rem,8vw,8rem), border between. Grid: auto-fit minmax(280px,1fr), 1fr at 768px.
-Patterns: Hero (full-viewport, centered), Features (3-col icon+heading+desc), Alternating (zigzag), Pricing (3-tier highlighted), FAQ (accordion), CTA (full-width dark), Footer (4-col stack). SaaS: single-CTA 13.5%, Hero/Proof/Features/Demo/Testimonials/Pricing/FAQ/CTA. Bento grid for feature showcases.
+- Container 1140px (wide 1400, narrow 720), padding `clamp(1rem,3vw,3rem)`
+- Sections `clamp(4rem,8vw,8rem)`, border between
+- Grid `auto-fit minmax(280px,1fr)`, 1fr at 768px
+
+### Patterns
+
+- Hero (full-viewport, centered) · Features (3-col icon + heading + desc) · Alternating (zigzag) · Pricing (3-tier highlighted) · FAQ (accordion) · CTA (full-width dark) · Footer (4-col stack)
+
+### SaaS
+
+- Single-CTA 13.5%
+- Hero / Proof / Features / Demo / Testimonials / Pricing / FAQ / CTA
+- Bento grid for feature showcases
 
 ## Components
 
-Cards: bg-card, border-subtle, 12px radius, hover: border-hover+shadow-glow. Buttons: Primary gradient #060610 text, 600 weight, 8px radius, hover 0.9, active scale(0.98), focus 3px cyan. Secondary: transparent, border, hover cyan. Nav: sticky, rgba(6,6,16,0.85), blur(16px). Forms: bg-secondary, border-subtle, 8px, focus cyan+glow. PrimeNG: standalone imports (not NgModule), OnPush on all, lazy-load heavy components (DataTable, Editor, Chart), design tokens for theming integration.
+- **Cards** — bg-card, border-subtle, 12px radius, hover: border-hover + shadow-glow
+- **Buttons** — Primary gradient #060610 text, 600 weight, 8px radius, hover 0.9, active scale(0.98), focus 3px cyan. Secondary: transparent, border, hover cyan
+- **Nav** — sticky, `rgba(6,6,16,0.85)`, `blur(16px)`
+- **Forms** — bg-secondary, border-subtle, 8px, focus cyan + glow
+- **PrimeNG** — standalone (not NgModule), OnPush on all, lazy-load heavy (DataTable, Editor, Chart), design tokens for theming
 
-## Interaction Affordances (EVERY interactive element)
+## Interaction (every interactive element)
 
-cursor:pointer, hover state, focus-visible (3px cyan, 2px offset), active (scale 0.98), transition (0.2s color, 0.1s transform). WCAG 2.2: min 24x24px targets, focus not obscured by sticky headers, dragging alternatives required, accessible auth (support password managers).
+`cursor:pointer`, hover state, focus-visible (3px cyan, 2px offset), active (scale 0.98), transition (0.2s color, 0.1s transform).
 
-## Motion (CSS-Native 2026)
+WCAG 2.2 — min 24×24px targets, focus not obscured by sticky headers, dragging alternatives required, accessible auth.
 
-View Transitions API (baseline all browsers Oct 2025): `@view-transition { navigation: auto; }` for full-page. Named: `view-transition-name: match-element` (Chrome 137+) auto-assigns from element identity — no manual names for list items. Nested groups (Chrome 140+) for clipping/3D. `<300ms total. Scroll-driven:`animation-timeline: scroll(root block)` | `animation-timeline: view()`, off main thread,`animation-range: entry 0% cover 50%`.`@starting-style` for DOM-insert animations (modals, toasts, drawers) — replaces JS add-class-on-mount. Container scroll-state: `@container scroll-state(stuck: top)` for sticky headers, `@container scroll-state(snapped: x)` for carousels. `::scroll-button()` / `::scroll-marker` for scroll UI (Chrome 135+). `prefers-reduced-motion` on ALL animations (mandatory — see skill 11).
+### 4-state distinction (NON-NEGOTIABLE)
 
-## Local Business Design Patterns (***SITE GENERATION***)
+Every link/button/card MUST visually differ across `:default | :hover | :focus-visible | :active` — NEVER let two states look identical.
 
-Local business sites have fundamentally different design needs than SaaS. These patterns are NON-NEGOTIABLE for all generated local business sites:
+- Default → neutral
+- Hover → underline-sweep + color shift + `translateY(-1px)`
+- Focus-visible → 3px cyan ring 2px offset (distinct from hover)
+- Active → `scale(0.98)` + immediate color confirm
 
-**Hero:** Full-viewport REAL business photo (never abstract gradient). Dark overlay 55-65% opacity. Business name in brand heading font at `--text-hero` scale. Tagline/specialty below. Twin CTAs: "Call Now" (primary, `tel:` link, phone icon) + "Get Directions" (secondary, Maps link, map-pin icon). Rating badge overlay (Google stars + "X reviews"). On mobile: CTAs full-width stacked, rating moves above CTAs.
+Audit gate: Playwright cycles each interactive element through 4 states and screenshots → diff ≥3px pixel-difference between adjacent states or fail.
 
-**Sticky Mobile CTA Bar:** Fixed bottom, 56px height, brand-primary bg. Phone icon + "Call Now" centered. `position:fixed; bottom:0; z-index:50`. Hides when footer in viewport (IntersectionObserver). Touch target 44px+. This is THE highest-converting element on local business sites — 60%+ of mobile conversions come from sticky CTAs.
+### Underline-sweep (text links default)
 
-**Service Cards Section:** Auto-fill grid from research data. Each card: relevant image (from `_image_profiles.json` keyword match), service name, 2-line description, price range (if available), "Learn More" or "Book Now" CTA. Glassmorphism style: `bg-white/5 backdrop-blur-md border border-white/10`. 3-col desktop, 1-col mobile with horizontal scroll peek.
+```css
+.underline-hover{position:relative}
+.underline-hover::after{content:"";position:absolute;z-index:1;left:51%;right:51%;bottom:0;background:var(--brand-accent);height:1px;transition:left .3s ease-out,right .3s ease-out}
+.underline-hover:hover::after,.underline-hover:focus-visible::after{left:0;right:0}
+```
 
-**Google Maps Integration:** Dark-styled iframe embed (`&style=feature:all|element:geometry|color:0x212121`). Below: address (clickable directions link), hours grid (today's hours highlighted brand-primary), phone, email. Container query responsive — sidebar on wide, stacked on narrow.
+Brand-accent = theme's primary (`var(--brand-accent)` / theme equivalent — never hard-coded #hex).
 
-**Trust Section:** Horizontal badge row immediately after hero. Google rating (star SVG + number + "X reviews"), BBB rating, industry certs, "Licensed & Insured", years in business counter. Subtle bg-secondary band. This section builds instant credibility — local customers check these first.
-
-**Testimonials:** Google Places reviews displayed as cards. Star rating (brand-colored fill), reviewer name, date, text (truncated 150 chars with "Read more on Google →"). Carousel on mobile, grid on desktop. Min 3 reviews or fallback to review CTA.
-
-**Gallery:** Masonry grid of ALL business photos. Full-bleed section, no side padding. Lightbox on click. Lazy-loaded. Caption from image profiles. This section should feel like walking into the business — immersive and media-rich. Min 12 images visible without scrolling.
-
-**NAP Footer:** Business name + logo, full address (Google Maps deep link), phone (`tel:`), email (`mailto:`), hours (collapsible accordion on mobile), social icons. MUST match JSON-LD exactly — divergence hurts rankings. This is the canonical source; header phone/address link to this section.
-
-**Before/After (optional):** CSS slider (`<input type="range">`) showing transformation (salons, contractors, auto body, landscaping). Dramatic visual proof of service quality. Uses actual client photos from Places/uploads.
-
-**Booking Integration:** If `_research.json.operations.booking_url` exists: prominent "Book Online" CTA in hero + nav + floating button. Embeds or links to: OpenTable (restaurant), Calendly/Acuity (professional), Vagaro/Booksy (salon), Mindbody (fitness). Never build custom booking — link to what they already use.
-
-## Responsive
-
-Mobile 375px: no h-scroll, 44px targets, readable, hamburger, full-width buttons. Desktop 1280px: centered, multi-column, hover states, 65ch max. 6 breakpoints: 375,390,768,1024,1280,1920.
-
-## Anti-Slop
-
-Never: default Bootstrap/Tailwind, Inter/Poppins font, generic purple-blue gradients, uncurated stock, same-weight text, centered-everything, >16px radius, rainbow text, "AI feel", gray on white, uniform fade-in, shadcn defaults, vague headlines ("Build the future").
-Always: hierarchy via scale+weight, sparse color, scannable 3s, distinct sections, whitespace, custom typography (never default AI fonts), semantic color naming (--color-action not --color-gradient-start), purposeful motion (each animation serves state/attention/brand), real photography over AI illustrations, test 375+1280, polished footer.
-Anti-AI (NNGroup 2026): asymmetry, custom icons, mixed serif/sans, bespoke micro-interactions. If "make me a modern website" could produce it, it fails.
-
-## Accessibility (WCAG 2.2 AA Baseline)
-
-Focus Appearance: 2px thick, 3:1 contrast. Focus Not Obscured: never hidden by sticky headers. Target Size: min 24x24px (44px touch). Dragging: single-pointer alternative for all drag-and-drop. Consistent Help: same relative order across pages. Redundant Entry: never require same info twice. Accessible Auth: support password managers/autofill/biometrics.
-WCAG 3.0 (Working Draft March 2026, est. 2028-2030): 174 requirements, no A/AA/AAA levels, covers touch/gesture/voice/VR/AR.
-axe-core: 0 violations, covers WCAG 2.0/2.1/2.2 + Section 508 + ADA. Detects ~57% automatically, zero false positives.
-
-## Research Intelligence
-
-Design psychology: golden ratio spacing (0.382rem..4.236rem), Gestalt (proximity, similarity, figure/ground), Hick's (max 7 nav, 3 pricing), Miller's (3-6 cards).
-INP: <200ms p75. Break callbacks via scheduler.yield(), content-visibility:auto, batch DOM, <1500 nodes, CSS containment `contain:layout style paint`. transform+opacity only for 60fps.
-Performance: variable fonts (one WOFF2 replaces 4+ static files, 80% fewer requests), CSS clamp() eliminates media queries for type, container queries replace many @media, `:has()` replaces JS for parent-based styling. Preprocessors now optional (CSS has variables, nesting, math, color functions).
-Stats: human-written content outperforms AI 94% of the time. 40-62% AI-generated code has security/design flaws. Poor design drives 38% of visitors away. 25% conversion increase with good CWV.
+## See submodules: design-tokens.md, build-breaking-rules.md, cinematic-doctrine.md.
