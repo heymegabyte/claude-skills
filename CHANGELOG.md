@@ -1,5 +1,98 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-100 — 🎯 MILESTONE: widen gate #10 to `scripts/*.sh` + codify scope-completeness
+
+### Closes pass-99 candidates 1 + 2 (gate widening + codify discipline)
+
+100th pass since the closure-loop arc began. Pass-100 closes the scope-completeness gap pass-99 surfaced and codifies the 12th discipline.
+
+### Gate #10 scope extended
+
+`bin/check-deprecated-models.sh` now includes `scripts/*.sh` in its grep paths:
+
+```diff
+   mapfile -t hits < <(
+     grep -rnE "$pattern" \
+       rules/*.md \
+       [0-9][0-9]-*/*.md \
+       agents/*.md \
+       CONVENTIONS.md \
+       SKILL_PROFILES.md \
+       README.md \
++      scripts/*.sh \
+       2>/dev/null \
+```
+
+The filter chain (3 categories: retirement-docs · prose-lists · historical-anecdotes/codified-pattern) already handles legitimate `.sh` documentation references — the pass-99 fix to `scripts/gpt4o-vision-analyze.sh` header includes "retirement" which the filter excludes.
+
+### Injection test confirms detection
+
+```text
+# Append `INJECTED="GPT-4o injection"` to scripts/gpt4o-vision-analyze.sh
+$ bash bin/check-deprecated-models.sh
+  ✗ GPT-4o (retired 2026-02-13) — 1 hits
+      scripts/gpt4o-vision-analyze.sh:80
+━━━ SUMMARY: 1 total hits across 8 denylist entries
+
+# Revert
+$ bash bin/check-deprecated-models.sh
+━━━ SUMMARY: 0 total hits across 8 denylist entries
+```
+
+Gate fires on real drift in scripts/. Future runtime-failing API calls in shell scripts now blocked at pre-commit.
+
+### Codified `rules/lint-doctrine.md § Codified incidents` — 12th discipline
+
+New row capturing the scope-completeness lesson:
+
+> Detector scope-list incomplete. Detectors only see drift in directories they explicitly grep — a `.sh` script in `scripts/` calling a retired API endpoint goes unnoticed if `scripts/*.sh` isn't in the path list. → When building any new detector, explicitly enumerate the FULL set of directories where the class can manifest. For deprecated-identifier detectors: docs + scripts + workflows + agents + templates. For staleness detectors: any doc that cites the value. Audit pass-1 of every detector should list every parallel file-type that could harbor the same class.
+>
+> Source: pass-99 found `scripts/gpt4o-vision-analyze.sh` runtime-failing for 4 months. Same class of miss as pass-89 (CI gate not local-mirrored): "covered everywhere we checked, missed somewhere we didn't"
+
+### Pattern recognition complete
+
+3 classes of detector miss codified across the arc:
+
+1. **Pass-89 → codified pass-90**: CI gates not local-mirrored → "local mechanical enforcement is only half the contract"
+2. **Pass-96 → codified pass-96**: Over-broad filter regex → "anchored disambiguation required"
+3. **Pass-99 → codified pass-100**: Scope-list incomplete → "enumerate every file-type that can harbor the class"
+
+Future detector designs should consult these 3 rows to avoid replicating the misses.
+
+### Milestone — closure-loop arc pass-58→100
+
+- **12 latent bugs + 2 long-standing CI failures + 1 over-broad filter + 1 lib hardening + 1 runtime-failing script + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output bugs + 2 README pre-existing fixes**
+- **15-gate main suite + 3 info sections + 1 post-push verifier + 1 weekly cron**
+- **12 disciplines codified** in `lint-doctrine.md § Codified incidents`
+- **1 supplementary doctrine** codified (`audit-arc-maturity-ladder.md`) with 4 promotion paths
+- **`bin/lib/emit-json.sh` lib: 15 callers** (5× extraction threshold) + RFC 8259 compliant
+- **1 pre-commit hook** + 1 install script
+- **2 cron workflows** (doc-urls-check, pricing-check)
+- **Pre-existing surface fixes from this arc**: 8 + 6 + 28 + 2 = **44** retroactive corrections
+
+### What survived the arc
+
+The closure-loop arc spanned **43 passes**. Through it, the toolchain matured from a 9-gate suite (pass-43→48) to a 15-gate suite with 4 audit info sections. The codified-incidents table grew from 4 rows to 12. Every failure mode caught became a discipline future maintainers can consult.
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+bash bin/check-deprecated-models.sh                    # ✓ 0 hits (now scans scripts/*.sh too)
+gh run list --limit 1 -q '.[0].conclusion'             # green
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated since pass-39, 61 passes ago
+
+### Next candidates (pass-101+)
+
+- Arc reached natural maturity at pass-100. Future passes respond to fresh drift.
+- Both gated queue items remain ungated. No timeline.
+
+---
+
 ## 2026-06-10 — pass-99 — Real bug found: script called retired `gpt-4o` API endpoint
 
 ### Audit scope: `scripts/` directory (gate #10 doesn't scan it)

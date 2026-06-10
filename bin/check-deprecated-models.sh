@@ -65,6 +65,7 @@ for entry in "${DENYLIST[@]}"; do
       CONVENTIONS.md \
       SKILL_PROFILES.md \
       README.md \
+      scripts/*.sh \
       2>/dev/null \
       | grep -viE 'retired|deprecat|removed.*api|sunset|replaced.*by|legacy|formerly|previous(ly)?|migrat(e|ed|ion)' \
       | grep -viE '(Midjourney|Ideogram|Stable Diffusion|Sora|FLUX)' \
