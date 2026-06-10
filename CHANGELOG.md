@@ -1,5 +1,89 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-96 — Fix gate #10 over-broad filter regex + codify
+
+### Closes pass-95 investigation candidate (why gate #10 missed README:309)
+
+### Root cause traced
+
+Pass-95 manually caught a `GPT-4o` reference in `README.md:309` that gate #10 (`check-deprecated-models.sh`) should have flagged. Pass-96 traced WHY.
+
+The detector's filter chain includes (from pass-81):
+
+```bash
+| grep -viE '(substring substitution|sed pattern|s/[A-Za-z]+|codified-pattern|historical|learned the hard way|chapel candles|read as fabrication)' \
+```
+
+The `s/[A-Za-z]+` pattern was intended to filter codified-sed-pattern documentation lines (e.g. `s/GPT-4o/GPT Image 2 vision/g` in `lint-doctrine.md § Codified incidents`). But it accidentally matches **any line containing a Unix-style file path with a single-letter directory prefix followed by `/`** — including `scripts/gpt4o-vision-analyze.sh`.
+
+```bash
+echo 'README.md:309:scripts/gpt4o-vision-analyze.sh ... GPT-4o' | grep -E 's/[A-Za-z]+'
+# Match: "s/cripts" — false positive
+```
+
+Result: every line containing `scripts/` (or `s/cripts`, or `s/cript`...) was silently filtered out by the detector.
+
+### Fix
+
+Anchored the sed-pattern exclusion to require backticks + full substitution shape:
+
+```diff
+-| grep -viE '(...|s/[A-Za-z]+|...)'
++| grep -viE '(...|`s/[A-Za-z][^`]*/[^`]*/g`|...)'
+```
+
+Now matches only lines like `\`s/old/new/g\`` (codified sed pattern docs) and not innocent file paths.
+
+### Verification via simulation
+
+```bash
+# OLD filter (broken):
+echo 'README.md:309:scripts/gpt4o-vision-analyze.sh GPT-4o' | grep -viE 's/[A-Za-z]+'
+# (empty — incorrectly filtered)
+
+# NEW filter:
+echo 'README.md:309:scripts/gpt4o-vision-analyze.sh GPT-4o' | grep -viE '`s/[A-Za-z][^`]*/[^`]*/g`'
+# README.md:309:scripts/gpt4o-vision-analyze.sh GPT-4o  ← correctly passes through
+```
+
+### Codified `rules/lint-doctrine.md § Codified incidents`
+
+New row capturing the failure mode:
+
+> Filter regex too broad accidentally matches innocent content. Example: `s/[A-Za-z]+` (intended to skip codified-sed-pattern docs) silently filters out lines containing innocent paths like `scripts/...`. → Filter regexes for "intentional doc context" must REQUIRE the disambiguating context. Anchor by backticks (`` `s/.../.../g` ``), section headers (`^## Codified`), or doc-specific markers. Generic identifier patterns over-match.
+>
+> Source: pass-96 traced why gate #10 missed a deprecated-identifier reference (`README.md:309`, caught manually pass-95).
+
+### In-pass bug + codification meta-loop
+
+Adding the codified row WITH the literal `GPT-4o` mention triggered gate #10 → blocked commit. Rephrased to "a deprecated-identifier reference" so the row describes the pattern without naming the specific identifier. The fact that gate #10 caught my own CHANGELOG row demonstrates the fix works.
+
+### Closure-loop arc pass-58→96 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures unmasked + fixed + 1 over-broad filter regex + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output bugs + 2 README pre-existing fixes**
+- **15-gate suite + 3 info sections + 1 post-push verifier**
+- **11 disciplines codified** (added: filter-regex-too-broad)
+- `bin/lib/emit-json.sh` lib: 15 callers
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+bash bin/check-deprecated-models.sh                    # ✓ 0 hits (filter fix preserves all real hits = 0)
+gh run list --limit 1 -q '.[0].conclusion'             # post-push verify
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-97)
+
+- Both queue items remain explicitly gated
+- The arc has matured. Future passes likely smaller/more targeted.
+
+---
+
 ## 2026-06-10 — pass-95 — README.md staleness audit: 2 more pre-existing references fixed
 
 ### Agent-surface audit + README.md secondary sweep

@@ -68,7 +68,7 @@ for entry in "${DENYLIST[@]}"; do
       2>/dev/null \
       | grep -viE 'retired|deprecat|removed.*api|sunset|replaced.*by|legacy|formerly|previous(ly)?|migrat(e|ed|ion)' \
       | grep -viE '(Midjourney|Ideogram|Stable Diffusion|Sora|FLUX)' \
-      | grep -viE '(substring substitution|sed pattern|s/[A-Za-z]+|codified-pattern|historical|learned the hard way|chapel candles|read as fabrication)' \
+      | grep -viE '(substring substitution|sed pattern|`s/[A-Za-z][^`]*/[^`]*/g`|codified-pattern|historical|learned the hard way|chapel candles|read as fabrication)' \
       | grep -v ':# ' \
       | grep -vE ':[0-9]+:- `[^ `]+`$' \
       || true
