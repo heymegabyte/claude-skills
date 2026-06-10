@@ -332,7 +332,7 @@ In any card/tile grid, ALL cards MUST have images or NONE do. Mixed grids (some 
 
 When generating cards:
 
-- If ≥50% of items in the corpus have images, ALL cards get images (augment missing ones via DALL-E per-slot prompt)
+- If ≥50% of items in the corpus have images, ALL cards get images (augment missing ones via GPT Image 1.5 per-slot prompt)
 - If <50% of items have images, render ALL cards without images (use icon/number/initial avatar as uniform accent)
 
 Validator (`validate-card-image-uniformity.mjs`): for each `[data-card-grid]`, compute `cards_with_img / total_cards` — if `> 0` and `< 1.0` = fail (must be all-or-nothing).
@@ -395,7 +395,7 @@ Decorative images (pure CSS decoration that conveys no information) use `alt=""`
 
 Validator: grep dist/ HTML for `alt=""` on non-decorative images (any img inside `[data-gallery]`, article, `section:not([data-decorative])`) = fail; grep for `alt="image"` or `alt="photo"` = fail.
 
-Per-slot DALL-E prompt must include `alt_text` in the JSON response schema — auto-applied to the generated img tag.
+Per-slot GPT Image 1.5 prompt must include `alt_text` in the JSON response schema — auto-applied to the generated img tag.
 
 ## Every comparison table / data grid (***FULL-BLEED LAYOUT WHEN >1100px CONTENT — UNIVERSAL — BUILD-BREAKING — extends "Every full-width visual section"***)
 

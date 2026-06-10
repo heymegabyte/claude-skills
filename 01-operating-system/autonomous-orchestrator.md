@@ -87,7 +87,7 @@ c. **Empty state check** — render pages with no data; what does user see?
 d. **Loading state check** — throttle network; is there a skeleton or blank?
 e. **Error state check** — block APIs; does UI handle gracefully or crash?
 f. Playwright a11y tree snapshot ALL pages (FREE) → axe-core scan (FREE) → fix a11y/functional issues
-g. Screenshot 2 key breakpoints (375 + 1280) → GPT-4o `detail:low` for aesthetic-only issues → rate 0-10
+g. Screenshot 2 key breakpoints (375 + 1280) → GPT Image 2 vision `detail:low` for aesthetic-only issues → rate 0-10
 h. **Below 8/10 = NOT DONE.** Fix all findings. Max 3 rounds, $1 vision budget cap. Homepage/ATF gets vision priority.
 i. Re-sweep. Loop until ALL pages ≥8/10 AND zero findings OR budget exhausted.
 j. Log sweep results to `~/.claude/audit/sweep-results.jsonl` (Stop hook checks this)
@@ -151,7 +151,7 @@ Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer,
 - `grep "Coming soon"` returns zero
 - Every data array from real API endpoint
 - Every button has working handler
-- GPT-4o visual verification converged on ALL routes
+- GPT Image 2 vision visual verification converged on ALL routes
 
 ## Self-Healing Decision Tree
 

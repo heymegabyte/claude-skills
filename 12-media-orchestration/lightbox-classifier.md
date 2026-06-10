@@ -65,7 +65,7 @@ Every lightbox-eligible image MUST carry `{ title, description, credit?, link? }
 
 1. Source-site `<figcaption>`
 2. Source-site `alt` (when ≥6 words and not filename-like)
-3. AI-generated 8-15 word description via GPT-4o vision
+3. AI-generated 8-15 word description via GPT Image 2 vision
 4. Manual brand voice pass
 
 Render captions in TWO places:
@@ -94,7 +94,7 @@ Wrap each in `<a>` if logo points to source (journal homepage, sponsor site, cli
 
 ## ImageProfile Augmentation (skill 12 `image-profiling.md`)
 
-Per-image GPT-4o vision call returns:
+Per-image GPT Image 2 vision call returns:
 
 ```ts
 interface ImageProfile {

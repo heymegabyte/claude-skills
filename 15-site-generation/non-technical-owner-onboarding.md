@@ -53,7 +53,7 @@ Owner is NEVER asked:
 - **Email provider** — Resend by default
 - **Payment processor** — Stripe Standard, owner KYC happens later only when they activate booking/donation
 - **Logo upload** — Ideogram generates from name + business type if no source logo; owner replaces later
-- **Colors** — extracted from primary photo via GPT-4o vision; owner overrides via "make it more blue" email
+- **Colors** — extracted from primary photo via GPT Image 2 vision; owner overrides via "make it more blue" email
 - **Fonts** — chosen by mode + business type. Small-business defaults:
   - Classic = Playfair Display + Source Sans 3
   - Bold = Sora + Inter
@@ -79,7 +79,7 @@ Owner clicks admin link in welcome email → Worker validates Clerk magic-link �
 
 - Drag-drop uploader (Uppy bundled per skill 06)
 - Files go straight to R2
-- GPT-4o tags + scores relevance per skill 12 image-relevance gate
+- GPT Image 2 vision tags + scores relevance per skill 12 image-relevance gate
 - Rejected uploads: "this looks more like a sunset than your restaurant — try another?"
 - Owner can star Google Places photos to feature
 

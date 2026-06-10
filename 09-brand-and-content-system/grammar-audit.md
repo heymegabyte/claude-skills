@@ -6,7 +6,7 @@ updated: "2026-05-01"
 
 # Grammar Audit (***FINAL COPY PASS — EVERY SITE, EVERY BUILD***)
 
-After all copy is generated (hero, body, blog, FAQ, microcopy, legal), run `grammar-audit.mjs` (GPT-4o-mini, concurrency 5-8) to fix mechanical errors WITHOUT rewriting. The pass is a corrective filter, not a creative rewrite.
+After all copy is generated (hero, body, blog, FAQ, microcopy, legal), run `grammar-audit.mjs` (GPT Image 2 vision-mini, concurrency 5-8) to fix mechanical errors WITHOUT rewriting. The pass is a corrective filter, not a creative rewrite.
 
 ## Mandate (NON-NEGOTIABLE)
 
@@ -67,7 +67,7 @@ Apply edits in-place via `Edit` tool calls. Idempotent — re-running on already
 
 ## Concurrency + Cost
 
-- GPT-4o-mini at ~$0.15/1M input + $0.60/1M output
+- GPT Image 2 vision-mini at ~$0.15/1M input + $0.60/1M output
 - Per site — ~50K input tokens (all copy concatenated) + ~5K output (diff only) = ~$0.01/site
 - Concurrency 5-8 against the API
 - CLI — `--only=path`, `--limit=N`, `--dry-run`

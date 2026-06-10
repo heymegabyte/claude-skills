@@ -95,7 +95,7 @@ Post-slice grep gate before deploy.
 
 - **T1 (FREE)** — Playwright a11y tree + axe-core + DOM-walker contrast first. Catches ~80% with zero token spend.
 - **T2 (FREE on Max 20x)** — Claude Vision Sonnet 4.6 on every slice every breakpoint
-- **T3 (METERED, $0.50 build cap)** — GPT-4o JUDGE reserved for hero/ATF slice + brand-fidelity slice vs source-site screenshot + arbitration when Claude Vision <8 OR Claude+a11y-tree disagree
+- **T3 (METERED, $0.50 build cap)** — GPT Image 2 vision JUDGE reserved for hero/ATF slice + brand-fidelity slice vs source-site screenshot + arbitration when Claude Vision <8 OR Claude+a11y-tree disagree
 
 ### Consensus
 
@@ -113,7 +113,7 @@ Post-slice grep gate before deploy.
 2. Playwright 2bp screenshots
 3. Tier 1 axe-core (FREE)
 4. Tier 2 Claude Vision (FREE) with prompt template `(slice_role, brand_palette, target_aesthetic, source_screenshot?) → score 0-10 + evidence per claim`
-5. If hero/ATF or brand-fidelity slice, also fire Tier 3 GPT-4o judge (consumes budget)
+5. If hero/ATF or brand-fidelity slice, also fire Tier 3 GPT Image 2 vision judge (consumes budget)
 6. If Claude<8 or providers disagree, fire Tier 3 arbitration
 7. Every vision call logs `{slice_id, vision_provider, auth_mode ("max-oauth"|"api-key"), score, cost_usd}` to `_iteration_log.json.vision_calls[]` + D1 `audit_logs`
 

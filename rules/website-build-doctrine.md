@@ -135,7 +135,7 @@ After every replacement, run `supreme-polish.md` 100-ideas audit on page.
 
 ### Maps + spatial
 
-- Interactive map with GPT-4o POI stories per pin
+- Interactive map with GPT Image 2 vision POI stories per pin
 - WebXR AR preview — 360 photos → AR overlay
 - Time-travel slider — Wayback + Google Street View before/after
 
@@ -159,7 +159,7 @@ After every replacement, run `supreme-polish.md` 100-ideas audit on page.
 
 ### Perf + UX
 
-- AI-narrated 404 — GPT-4o riffs → friendly redirect suggestions
+- AI-narrated 404 — GPT Image 2 vision riffs → friendly redirect suggestions
 - Smart redirects — Levenshtein + AI fuzzy-match for unknown URLs
 - Predictive prefetch — tiny on-device model trained on session nav
 

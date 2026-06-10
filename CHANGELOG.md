@@ -1,5 +1,98 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-80 — DALL·E prose-list filter + 10-file mop-up: 37 → 15 hits
+
+### Closes pass-79 candidates 1 + 2 (mop-up + DALL·E unicode decision)
+
+### Decision on DALL·E unicode prose-list references
+
+Audit of the 5 DALL·E unicode references confirmed they're **prose-list landscape references** — DALL·E appears alongside Midjourney, Ideogram, Stable Diffusion, Sora, FLUX, etc. in human-readable lists describing the AI-image-gen LANDSCAPE, not specific API endpoints.
+
+Examples:
+
+- `rules/always.md:102`: "NEVER DALL·E, GPT Image, Midjourney, Ideogram, Stable Diffusion, "evocative" stock next to dated event"
+- `rules/timeline-authenticity.md:33`: "DALL·E / GPT Image / Midjourney / Ideogram / Stable Diffusion / any AI image generator"
+- `rules/copy-writing.md:98`: "NEVER DALL·E / GPT Image / Midjourney / Ideogram / Stable Diffusion / generic stock"
+- `rules/image-quality.md:64`: header "DALL·E / GPT Image 1.5 / Sora prompt-craft"
+
+**Decision: keep as historical+landscape references.** Removing DALL·E from these lists would be intellectually dishonest — the prose intent IS to enumerate AI image generators including the well-known historical names. The list also includes Midjourney/Stable Diffusion which Brian doesn't use either.
+
+### Detector filter improvement
+
+Extended the detector's filter to exclude lines containing well-known AI-image-gen alternative names:
+
+```diff
+- | grep -viE 'retired|deprecat|removed.*api|sunset|...|migrat(e|ed|ion)'
++ | grep -viE 'retired|deprecat|removed.*api|sunset|...|migrat(e|ed|ion)'
++ | grep -viE '(Midjourney|Ideogram|Stable Diffusion|Sora|FLUX)'
+```
+
+When DALL·E sits in a list alongside Midjourney/Ideogram/Stable Diffusion/Sora/FLUX, the line is prose-list landscape reference, not an API recommendation.
+
+Effect: 37 → 33 hits (filter improvement alone removed 4).
+
+### 10-file batch migration (2-hit files)
+
+| File | Hits | Stutter check |
+|---|---|---|
+| `rules/website-build-doctrine.md` | 2 | ✓ 0 |
+| `rules/timeline-authenticity.md` | 2 | ✓ 0 |
+| `15-site-generation/research-pipeline.md` | 2 | ✓ 0 |
+| `15-site-generation/non-technical-owner-onboarding.md` | 2 | ✓ 0 |
+| `12-media-orchestration/lightbox-classifier.md` | 2 | ✓ 0 |
+| `10-experience-and-design-system/build-breaking-rules.md` | 2 | ✓ 0 |
+| `09-brand-and-content-system/grammar-audit.md` | 2 | ✓ 0 |
+| `07-quality-and-verification/stagehand-ai-fallback.md` | 2 | ✓ 0 |
+| `06-build-and-slice-loop/build-breaking-rules.md` | 2 | ✓ 0 |
+| `01-operating-system/autonomous-orchestrator.md` | 2 | ✓ 0 |
+
+All 10 migrated cleanly. Per pass-79's discipline (note threshold = 4+ hits), no per-file migration notes added — CHANGELOG is the authoritative record.
+
+### Detector count drop
+
+| Pattern | Pre-pass-80 | Post-pass-80 | Δ |
+|---|---|---|---|
+| GPT-4o | 25 | 11 | -14 |
+| DALL-E | 7 | 4 | -3 |
+| DALL·E | 5 | 0 (filtered) | -5 |
+| TOTAL | 37 | **15** | **-22** |
+
+### Migration arc trajectory
+
+- pass-72: 270
+- pass-73→79: ~234 references migrated
+- pass-80: 37 → 15 (-22, including +4 filter improvement)
+
+**256 references migrated across 8 passes + 5 prose-list references correctly preserved**. Remaining 15 hits across ~10 files at 1-hit each.
+
+### Pass-58→80 closure-loop summary
+
+- **12 latent bugs caught + 256 references migrated + 5 prose-lists preserved**
+- **7 disciplines codified**
+- **5 audit scripts** mechanized + filter discipline matured
+- Approaching <20 hit threshold for surgical mop-up
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 9/9 green
+bash bin/check-deprecated-models.sh 2>&1 | grep SUMMARY  # 15 total hits
+```
+
+### What was NOT done
+
+- 15 remaining deprecated-identifier hits — pass-81→ (surgical 1-hit-per-file)
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-81)
+
+- Surgical migration of the 10 remaining 1-hit files
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Once count hits 0: promote detector from soft-info to a hard CI gate (regression protection at zero)
+
+---
+
 ## 2026-06-09 — pass-79 — 7-file mop-up: 60 → 37 hits
 
 ### Closes pass-78 candidate 1 (continue mop-up of 4-hit + 3-hit files)

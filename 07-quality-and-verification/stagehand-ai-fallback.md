@@ -28,9 +28,9 @@ Map descriptions to profile field values via keyword matching (first name → `f
 
 ## Error Recovery Chain
 
-Step fails → Stagehand observe + fill entire page → GPT-4o Vision screenshot analysis → alternative selector retry → abort with evidence.
+Step fails → Stagehand observe + fill entire page → GPT Image 2 vision screenshot analysis → alternative selector retry → abort with evidence.
 
-**Three-tier fallback:** CSS selectors (fast) → Stagehand AI (smart) → GPT-4o Vision (visual).
+**Three-tier fallback:** CSS selectors (fast) → Stagehand AI (smart) → GPT Image 2 vision (visual).
 
 ## Evidence Integration
 

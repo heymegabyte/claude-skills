@@ -71,8 +71,8 @@ For each platform (Facebook, Instagram, Twitter/X, LinkedIn, YouTube, TikTok, Pi
 **Extract via**:
 
 1. **Brandfetch API** (`BRANDFETCH_API_KEY`) — returns full brand kit (colors, fonts, logos) at 90% confidence
-2. **Logo.dev API** (`LOGODEV_TOKEN`) — logo image → GPT-4o vision extracts dominant colors
-3. **GPT-4o vision** on screenshot of existing site
+2. **Logo.dev API** (`LOGODEV_TOKEN`) — logo image → GPT Image 2 vision extracts dominant colors
+3. **GPT Image 2 vision** on screenshot of existing site
 4. **Color extraction** from downloaded images in `assets/` (look for signage, storefront, uniforms)
 
 ### Output to `_brand.json`

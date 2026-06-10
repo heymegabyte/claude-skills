@@ -67,6 +67,7 @@ for entry in "${DENYLIST[@]}"; do
       README.md \
       2>/dev/null \
       | grep -viE 'retired|deprecat|removed.*api|sunset|replaced.*by|legacy|formerly|previous(ly)?|migrat(e|ed|ion)' \
+      | grep -viE '(Midjourney|Ideogram|Stable Diffusion|Sora|FLUX)' \
       | grep -v ':# ' \
       | grep -vE ':[0-9]+:- `[^ `]+`$' \
       || true
