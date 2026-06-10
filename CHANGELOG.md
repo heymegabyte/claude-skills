@@ -1,5 +1,80 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-90 — Codify CI-status discipline + `bin/check-ci-status.sh`
+
+### Closes pass-89 candidate 1 (codify CI-verification discipline)
+
+Pass-89 unmasked 23+ passes of red CI hidden because local pre-commit hook covered `lint-all` only. Pass-90 codifies the lesson + ships the tool that would have caught it earlier.
+
+### NEW `bin/check-ci-status.sh` (14th caller of `bin/lib/emit-json.sh`)
+
+- Wraps `gh run list --limit 1 --json conclusion,headSha,status,name`
+- Exit 0 if conclusion is `success` or `in_progress`; exit 1 on `failure` or `cancelled`
+- `--wait` flag polls up to 5 minutes for an in-progress run to complete
+- `--json` mode per uniform-JSON doctrine
+- Graceful no-op when `gh` is not installed (exit 0 + skip message)
+
+Current output:
+
+```text
+✓ CI green — Validate & Publish Skills @ d8387c9
+```
+
+### Codified `rules/lint-doctrine.md § Codified incidents`
+
+New row capturing the systemic lesson:
+
+> Local pre-commit hook covers `lint-all` only; CI runs independently. Pushing while ignoring `gh run list` = silent red CI for weeks → After every `git push`, run `bash bin/check-ci-status.sh` (`npm run check:ci`) to verify the run went green. Use `--wait` to poll. CI failure surface MUST be local-mirrored when feasible (add gates to `lint-all`) OR explicitly checked post-push.
+>
+> Source: pass-89 discovered `gh run list --limit 5` showed all 5 recent runs failed since pass-66. publish.yml's "Check SKILL.md submodule alignment" step had been failing for 23+ passes while local hook stayed green. Local mechanical enforcement is only half the contract.
+
+### Wired into npm scripts
+
+- `npm run check:ci` — quick status check
+- `npm run check:ci:wait` — poll until completed
+- `npm run check:ci:json` — JSON envelope for CI dashboards
+
+### NOT in lint-all (deliberate)
+
+`bin/check-ci-status.sh` checks the state of the LAST push. Running it in `lint-all` (which runs PRE-push) would check the previous push's CI before this push happens — confusing semantics. Belongs in a post-push routine, not pre-commit.
+
+### Maturity ladder application
+
+Per `rules/audit-arc-maturity-ladder.md` — this is a **tracking-class** detector (like `check-doc-urls.sh` for external URLs):
+
+- Doesn't have a "drift count" to migrate to zero
+- Reports point-in-time state (most recent run)
+- Stays as a manual / cron-driven check, not a hard gate
+
+Different from the migrate-to-zero pattern but the script structure (uniform-JSON, npm alias, lib usage) is identical.
+
+### Closure-loop arc pass-58→90 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures unmasked + fixed + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output/f-string bugs**
+- **13-gate main lint suite + 4 audit scripts** in info section
+- **10 disciplines codified** (added: CI-status verification)
+- `bin/lib/emit-json.sh` lib: **14 callers** (4.7× extraction threshold)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet          # ✓ 13 pass · 0 fail · 0 skip
+bash bin/check-ci-status.sh            # ✓ CI green — Validate & Publish Skills @ d8387c9
+npm run check:ci:json | jq             # valid envelope
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-91)
+
+- Audit for OTHER local-CI gaps (other CI gates that lint-all doesn't mirror)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-89 — Migrate 28 submodules + CI status realization
 
 ### Closes pass-88 candidates 1 (migrate) + 2 (investigate CI gap)
