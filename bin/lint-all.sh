@@ -133,6 +133,14 @@ logHeader "10. deprecated-models"
 runGate "deprecated-models" "check-deprecated-models" \
   bash "$SKILLS_ROOT/bin/check-deprecated-models.sh"
 
+# Hard gate 11 (pass-83 promotion) — pack-frontmatter was soft-info pass-66→82
+# (17 passes stable at 83 rules · 0 drift). Promoted to blocking gate. Any rule
+# frontmatter `pack:` claim that doesn't match a real `_packs/*.yml` membership
+# blocks here.
+logHeader "11. pack-frontmatter"
+runGate "pack-frontmatter" "check-pack-frontmatter" \
+  bash "$SKILLS_ROOT/bin/check-pack-frontmatter.sh"
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.
@@ -157,7 +165,6 @@ runInfoSection() {
 
 runInfoSection "pricing" "bin/check-pricing.sh"
 runInfoSection "agent-routing" "bin/check-agent-routing.sh"
-runInfoSection "pack-frontmatter" "bin/check-pack-frontmatter.sh"
 runInfoSection "agent-fallback" "bin/check-agent-fallback.sh"
 
 if [ "$JSON" = "0" ]; then
@@ -175,13 +182,11 @@ if [ "$JSON" = "0" ]; then
     "bin/check-pricing.sh" 8
   emitInfoSection "ℹ agent-routing drift (info-only, doesn't gate)" \
     "bin/check-agent-routing.sh" 6
-  emitInfoSection "ℹ pack-frontmatter drift (info-only, doesn't gate)" \
-    "bin/check-pack-frontmatter.sh" 5
   emitInfoSection "ℹ Opus agent fallback compliance (info-only, doesn't gate)" \
     "bin/check-agent-fallback.sh" 4
 
   if [ "$QUIET" = "1" ] && [ "$INFO_DRIFT" = "0" ]; then
-    printf '\n━━━ ℹ 4 audit sections clean (pricing · agent-routing · pack-frontmatter · agent-fallback) — use `npm run lint` for full output\n' >&2
+    printf '\n━━━ ℹ 3 audit sections clean (pricing · agent-routing · agent-fallback) — use `npm run lint` for full output\n' >&2
   else
     cat "$INFO_BUF" >&2
   fi

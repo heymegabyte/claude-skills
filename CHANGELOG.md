@@ -1,5 +1,78 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-83 — Promote `check-pack-frontmatter.sh` to **hard CI gate #11**
+
+### Closes pass-82 candidate 1 (promote most-stable info-section script)
+
+Pass-82 promoted `check-deprecated-models.sh` to gate #10. Pass-83 promotes the next-most-stable info-section script: `check-pack-frontmatter.sh`, which has been at **83 rules · 0 drift** since pass-66 — **17 passes of clean baseline**, more than the 90-day stability threshold codified pass-82.
+
+### Promotion delta
+
+- **10-gate suite → 11-gate suite**
+- **Removed** `runInfoSection "pack-frontmatter"` call (was 3rd info section)
+- **Removed** `emitInfoSection "ℹ pack-frontmatter drift..."` block
+- **Quiet-mode summary**: "3 audit sections clean" (was "4")
+- New gate #11 lives between #10 (`deprecated-models`) and the info section, following the same `runGate` pattern
+
+### Test verification
+
+```bash
+bash bin/lint-all.sh --quiet  # ✓ 11 pass · 0 fail · 0 skip
+# Drift injection (pack: "ai" → pack: "fake-pack-doesnt-exist"):
+sed -i 's/pack: "ai"/pack: "fake-pack-doesnt-exist"/' rules/prompt-cache.md
+bash bin/check-pack-frontmatter.sh  # rule count dropped to 82
+```
+
+### Edge case surfaced + noted for pass-84
+
+The injection test surfaced a detector edge case: the python regex `r'^pack:\s*"?(\w+)"?\s*$'` requires `\w+` (word chars only). Pack names with hyphens like `fake-pack-doesnt-exist` don't match → rule is silently dropped from "rules with pack:" count rather than flagged as drift. **Not a regression** introduced this pass — the gap pre-existed.
+
+**Pass-84 candidate**: update the regex to `[\w-]+` so kebab-case pack names match, and flag rules with `pack:` frontmatter that points to a non-existent pack file. Otherwise the regex acts as accidental filter.
+
+### Maturity ladder note
+
+Pack-frontmatter went through the same arc as deprecated-models:
+
+1. **Detect** (pass-66): script + denylist concept
+2. **Surface** (pass-66): soft-info section
+3. **Migrate** (pass-66): 8 surgical frontmatter fixes
+4. **(Codify)**: no specific incident to codify — the audit pattern itself was the discipline
+5. **Promote** (pass-83): soft-info → hard gate
+6. **Regression protection**: any commit introducing pack: claim drift now blocks
+
+The arc was shorter than deprecated-models (1 pass to drive to zero vs 9) because the initial drift was small (8 fixes vs 270 references). The promotion threshold is "stable at zero for ≥90 days" — pack-frontmatter has been stable since 2026-06-09 (pass-66) = essentially the entire arc.
+
+### Closure-loop arc pass-58→83 final tally
+
+- **12 latent bugs caught + 256 references migrated + 14 intentional refs preserved + 8 frontmatter fixes**
+- **11-gate main lint suite** (started at 9, +1 pass-82, +1 pass-83)
+- **3 audit scripts** still in info section (pricing · agent-routing · agent-fallback)
+- **7 disciplines codified** in lint-doctrine
+- `bin/lib/emit-json.sh` lib: 10 callers
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                                         # ✓ 11 pass · 0 fail · 0 skip
+bash bin/lint-all.sh --json | jq '.summary'                          # {pass:11, fail:0, skip:0, info_drift:0, exit:0}
+shellcheck -x -S warning bin/lint-all.sh                              # clean
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Promote `check-agent-routing.sh` / `check-agent-fallback.sh` to hard gate — both stable but `check-pricing.sh` has dated-content drift that should stay info-only
+
+### Next candidates (pass-84)
+
+- Fix `check-pack-frontmatter.sh` regex edge case (`\w+` → `[\w-]+`) so kebab-case pack names + missing pack files are flagged
+- Promote `check-agent-routing.sh` (3 tiers in sync since pass-64 = 19 passes stability)
+- Promote `check-agent-fallback.sh` (5/5 compliant since pass-67 = 16 passes stability)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-82 — Promote `check-deprecated-models.sh` to **hard CI gate #10**
 
 ### Closes pass-81 candidate 1 (mechanical enforcement at zero)
