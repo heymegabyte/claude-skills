@@ -38,15 +38,32 @@ for dir in [0-9][0-9]-*/; do
   ACTUAL=$((ACTUAL + COUNT))
 done
 
+# Pass-97 extension: also check for "full N docs" phrasing that pass-95 found
+# at README:315 (escaped the original line-21-only pattern from pass-91).
+SECONDARY_HITS=$(grep -oE 'full ([0-9]+) docs' README.md | grep -oE '[0-9]+' || true)
+
 EXIT=0
 [ "$EXPECTED" != "$ACTUAL" ] && EXIT=1
+# Check secondary instances too
+if [ -n "$SECONDARY_HITS" ]; then
+  while IFS= read -r n; do
+    [ -z "$n" ] && continue
+    [ "$n" != "$ACTUAL" ] && EXIT=1
+  done <<<"$SECONDARY_HITS"
+fi
 
 if [ "$JSON" = "0" ]; then
   if [ "$EXIT" = "0" ]; then
-    printf '✓ doc counts match — README says %d, actual %d\n' "$EXPECTED" "$ACTUAL" >&2
+    printf '✓ doc counts match — README says %d, actual %d (incl. secondary "full N docs" phrasings)\n' "$EXPECTED" "$ACTUAL" >&2
   else
     printf '✗ doc count mismatch — README says %d, actual %d\n' "$EXPECTED" "$ACTUAL" >&2
     printf '  → fix README.md "%d reference docs" → "%d reference docs"\n' "$EXPECTED" "$ACTUAL" >&2
+    if [ -n "$SECONDARY_HITS" ]; then
+      while IFS= read -r n; do
+        [ -z "$n" ] && continue
+        [ "$n" != "$ACTUAL" ] && printf '  → also fix README.md "full %d docs" → "full %d docs"\n' "$n" "$ACTUAL" >&2
+      done <<<"$SECONDARY_HITS"
+    fi
   fi
 fi
 

@@ -1,5 +1,60 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-97 — Extend gate #14 to catch `full N docs` phrasing
+
+### Closes pass-95 leftover (gate #14 only caught line-21 pattern)
+
+Pass-91's gate #14 (`check-doc-counts.sh`) only scanned README.md for `N reference docs` (the line-21 pattern). Pass-95 manually surfaced a second instance at README:315 saying `full 119 docs` — escaped the gate because it's a different phrasing.
+
+Pass-97 extends gate #14 to also catch `full N docs`:
+
+```bash
+# Primary check (pass-91)
+EXPECTED=$(grep -o '[0-9]* reference docs' README.md | grep -o '[0-9]*' | head -1)
+
+# Secondary check (pass-97)
+SECONDARY_HITS=$(grep -oE 'full ([0-9]+) docs' README.md | grep -oE '[0-9]+')
+
+# Both must match the actual count
+```
+
+### Behavior
+
+- Both phrasings count their numbers
+- Each must equal the actual file count
+- Mismatch on either → exit 1 with specific remediation message per phrasing
+
+### Why narrow rather than broad
+
+`grep -E '[0-9]+ docs?'` would over-match: changelog entries mentioning specific counts ("256 references migrated"), code comments, etc. Anchoring to "full N docs" matches the documentation patterns we care about (the user-facing claim of corpus size in README) without over-matching.
+
+This is the same disambiguation discipline pass-96 codified — narrow filters anchored to context, not broad identifier patterns.
+
+### Closure-loop arc pass-58→97 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures unmasked + fixed + 1 over-broad filter regex + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output bugs + 2 README pre-existing fixes**
+- **15-gate suite** (gate #14 strengthened) + 3 info sections + 1 post-push verifier
+- **11 disciplines codified**
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+bash bin/check-doc-counts.sh                           # ✓ 135 = 135 (incl. secondary "full N docs" phrasings)
+# Injection test: append `full 100 docs` to README → detector now flags it
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-98)
+
+- The arc is at maturity asymptote. Future passes likely respond to fresh drift rather than retrospective sweeps.
+- Both gated queue items remain
+
+---
+
 ## 2026-06-10 — pass-96 — Fix gate #10 over-broad filter regex + codify
 
 ### Closes pass-95 investigation candidate (why gate #10 missed README:309)
