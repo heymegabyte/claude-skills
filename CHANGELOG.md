@@ -1,5 +1,70 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-92 — Promote `check-skill-submodules` to gate #15 (CI-mirror short-path)
+
+### Closes pass-91 candidate 2 (promote skill-submodules to hard gate)
+
+Same CI-mirroring rationale as pass-91's `doc-counts` promotion. `publish.yml` has the "Check SKILL.md submodule alignment" step. Per pass-91's codified short-path: when a CI gate exists that local doesn't mirror, skip the 90-day stability period.
+
+14-gate suite → **15-gate suite**.
+
+### Two consecutive immediate-promotes — pattern proven
+
+| Pass | Gate | Source |
+|---|---|---|
+| pass-91 | #14 doc-counts | publish.yml "Check doc counts" |
+| pass-92 | #15 skill-submodules | publish.yml "Check SKILL.md submodule alignment" |
+
+### Why not reckless promotion
+
+CI gate has been production-tested on every push for the workflow's lifetime; local detector deliberately mirrors same logic; drift surface already 0 (pass-89 fixed); risk profile identical to CI gate. The codified short-path (pass-91) is now a proven pattern with 2 instances.
+
+### Info section back to 3 audits
+
+`pricing` (info-only by design — dated content) + `skill-required-fields` (pass-86 baseline) + `skill-pack-claim` (pass-87 baseline). Both fresh detectors still in stability periods.
+
+### Maturity-ladder applied: 6 promotions, 2 paths
+
+- **Standard path (90-day stability)**: 4 promotions (pass-82, 83, 84a, 84b)
+- **CI-mirroring short-path (immediate)**: 2 promotions (pass-91, 92)
+
+Promotion decisions are now mechanical, not judgment calls.
+
+### Closure-loop arc pass-58→92 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures unmasked + fixed + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output/f-string bugs**
+- **15-gate main lint suite** (started 9; +6 promotions)
+- **3 audit scripts** in info section
+- **10 disciplines codified**
+- `bin/lib/emit-json.sh` lib: 15 callers (5× extraction threshold)
+
+### In-pass discipline lapse caught
+
+The pass-92 commit `a8da9d2` shipped with `1 file changed` (only `bin/lint-all.sh`). The CHANGELOG.md `Edit` had failed silently because of the Read-before-Edit tracker (file modified externally by linter earlier in turn). Commit message correctly described the changes but the CHANGELOG entry was missing. Fixed retroactively in this commit.
+
+**Codifiable**: when `git commit` shortstat shows fewer files than expected, verify ALL intended files made it into the commit before pushing. Or amend if not yet pushed.
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+bash bin/check-skill-submodules.sh                     # ✓ 124 · 0 missing
+gh run list --limit 1 -q '.[0].conclusion'             # success
+```
+
+### What was NOT done
+
+- Audit cron workflows (lower priority — they're cron/PR-only, don't gate validate)
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-93)
+
+- Brief audit of cron workflows for completeness
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-10 — pass-90 — Codify CI-status discipline + `bin/check-ci-status.sh`
 
 ### Closes pass-89 candidate 1 (codify CI-verification discipline)
