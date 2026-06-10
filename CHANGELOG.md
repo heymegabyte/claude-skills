@@ -1,5 +1,82 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-79 — 7-file mop-up: 60 → 37 hits
+
+### Closes pass-78 candidate 1 (continue mop-up of 4-hit + 3-hit files)
+
+### 7 files migrated in one pass
+
+| File | Hits | Stutter check |
+|---|---|---|
+| `09-brand-and-content-system/build-breaking-rules.md` | 4 | ✓ 0 |
+| `07-quality-and-verification/build-breaking-rules.md` | 4 | ✓ 0 |
+| `15-site-generation/template-improvements-100.md` | 3 | ✓ 0 |
+| `12-media-orchestration/image-profiling.md` | 3 | ✓ 0 |
+| `07-quality-and-verification/stagehand-ai-testing.md` | 3 | ✓ 0 |
+| `07-quality-and-verification/spec-driven-development.md` | 3 | ✓ 0 |
+| `06-build-and-slice-loop/pre-digested-builds.md` | 3 | ✓ 0 |
+
+All 7 migrated cleanly using the now-fully-codified sed recipe (numeric pre-clean + word pre-clean + general subs). Zero stutters, zero collisions across all 7 files.
+
+### Migration-note discipline shift
+
+Compact migration notes added only to the **2 highest-density files** (4 hits each). The 3-hit files: migration is documented in this CHANGELOG entry; per-file notes add cumulative noise without proportional value at sub-density levels.
+
+Rule of thumb established: **migration note threshold = 4+ hits per file**. Lower-density files reference the CHANGELOG.
+
+### Detector count drop
+
+| Pattern | Pre-pass-79 | Post-pass-79 | Δ |
+|---|---|---|---|
+| GPT-4o | 38 | 25 | -13 |
+| DALL-E | 17 | 7 | -10 |
+| DALL·E | 5 | 5 | 0 |
+| TOTAL | 60 | **37** | **-23** |
+
+DALL·E (unicode variant, 5 hits) is concentrated in 4 rules files (`always.md`, `timeline-authenticity.md`, `copy-writing.md`, `image-quality.md`) where it appears in human-readable prose lists. Different migration consideration than the code-API references.
+
+### Migration arc trajectory
+
+- pass-72: 270
+- pass-73: 226 (-44)
+- pass-74: 190 (-36)
+- pass-75: 160 (-30)
+- pass-76: 116 (-44)
+- pass-77: 80 (-36)
+- pass-78: 60 (-20)
+- pass-79: 37 (-23)
+
+**234 references migrated across 7 passes**. Approaching <20 hit territory — 2-3 more passes to zero on standard refs; DALL·E (unicode) needs separate decision.
+
+### Pass-58→79 closure-loop summary
+
+- **12 latent bugs caught + 234 references migrated**
+- **7 disciplines codified** in lint-doctrine
+- **5 audit scripts** mechanized
+- Migration-note discipline established (≥4 hits/file)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 9/9 green
+bash bin/check-deprecated-models.sh 2>&1 | grep SUMMARY  # 37 total hits
+```
+
+### What was NOT done
+
+- 37 remaining deprecated-identifier migrations — pass-80→
+- The 5 DALL·E (unicode) prose-list references — need separate decision (keep as historical prose vs migrate)
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-80)
+
+- Final cleanup of 2-hit + 1-hit files (~25 hits across ~15 files)
+- Decision on the 5 DALL·E unicode prose-list references
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-78 — Codify numeric-collision + 3-file mop-up: 80 → 60 hits
 
 ### Closes pass-77 candidates 1 + 2 (codify pattern + mop-up)

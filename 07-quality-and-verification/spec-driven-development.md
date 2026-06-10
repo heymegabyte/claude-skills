@@ -93,13 +93,13 @@ For full-app builds, use the autonomous loop:
    - Read `progress.md` → find next unchecked AC
    - Write failing test for that AC
    - Implement until test passes on production
-   - Screenshot → GPT-4o critique → fix if needed
+   - Screenshot → GPT Image 2 vision critique → fix if needed
    - Mark AC complete in `progress.md`
    - Git commit with AC reference
    - If context getting full → save progress → spawn fresh agent to continue
    - Repeat until all ACs checked
 4. Run recommendations loop (skill 14)
-5. **Done when** — all ACs pass + all recommendations implemented or rejected + GPT-4o says zero issues
+5. **Done when** — all ACs pass + all recommendations implemented or rejected + GPT Image 2 vision says zero issues
 
 ## Context Exhaustion Prevention
 
@@ -122,7 +122,7 @@ tests/
 │   ├── donation-flow.spec.ts   (~1 min)
 │   ├── auth-flow.spec.ts       (~1 min)
 │   ├── search.spec.ts          (~1 min)
-│   └── visual-regression.spec.ts (~1 min, screenshots + GPT-4o)
+│   └── visual-regression.spec.ts (~1 min, screenshots + GPT Image 2 vision)
 ├── unit/
 │   └── (vitest files)
 └── playwright.config.ts

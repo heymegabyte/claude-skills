@@ -29,7 +29,7 @@ Each runs independently with profile as input.
 ### Phase 3: Media (~60s, 5 parallel)
 
 - Discover images (5 APIs — Pexels, Pixabay, Google CSE, Foursquare, Yelp)
-- Generate logo (DALL-E if none found)
+- Generate logo (GPT Image 1.5 if none found)
 - Generate section images
 - Discover videos (YouTube, Pexels)
 - Move user uploads
@@ -39,7 +39,7 @@ Store all media in object storage, return metadata only.
 ### Phase 4: Profile Images (~90s)
 
 - Workers AI Llama Vision profiles all images (FREE) — description, quality score, relevance score, suggested placement, alt text, dominant colors
-- GPT-4o `detail:low` ONLY for top 5 hero candidates (~$0.02)
+- GPT Image 2 vision `detail:low` ONLY for top 5 hero candidates (~$0.02)
 - Pre-selects top picks for hero/about/services/gallery
 - See `image-profiling` skill for tiered architecture
 
@@ -73,7 +73,7 @@ Pre-digested builds produce dramatically better first-time results because:
 
 ## Cost Savings
 
-- Pre-container phases — ~$0.15-0.50 (LLM calls + API queries + Workers AI profiling + GPT-4o hero pick)
+- Pre-container phases — ~$0.15-0.50 (LLM calls + API queries + Workers AI profiling + GPT Image 2 vision hero pick)
 - Container time saved — ~15min ($3-5 of compute)
 - **Net savings** — $3-5/build + dramatically higher quality
 

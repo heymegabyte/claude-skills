@@ -117,7 +117,7 @@ await agent.execute('Navigate to pricing, select the Pro plan, and fill out the 
 - **Dynamic / personalized content** → Stagehand `extract()`
 - **Unknown page structure** → Stagehand `observe()`
 - **Multi-step unknown flow** → Stagehand `agent()`
-- **Visual layout check** → GPT-4o Vision (not Stagehand)
+- **Visual layout check** → GPT Image 2 vision (not Stagehand)
 - **Accessibility audit** → axe-core + Playwright a11y tree
 
 **Rule:** Playwright for the 80% predictable. Stagehand for the 20% requiring AI.
@@ -196,7 +196,7 @@ When generating Playwright tests, add Stagehand fallback for fragile selectors. 
 
 ### Visual Inspection Loop
 
-Stagehand `observe()` discovers interactive elements. GPT-4o Vision scores aesthetics. Both run in `visual-inspection-loop.md` cycle.
+Stagehand `observe()` discovers interactive elements. GPT Image 2 vision scores aesthetics. Both run in `visual-inspection-loop.md` cycle.
 
 ### CI/CD
 
@@ -223,7 +223,7 @@ Local mode (`env: 'LOCAL'`) runs headless Chromium — no external API needed fo
 ## Anti-Patterns
 
 - NEVER use Stagehand for every action (slow, expensive). Playwright first.
-- NEVER use Stagehand for visual checks (use GPT-4o Vision).
+- NEVER use Stagehand for visual checks (use GPT Image 2 vision).
 - NEVER skip Zod schemas in `extract()` (untyped data = bugs).
 - NEVER run `agent()` for single actions (use `act()` instead).
 - NEVER hardcode Browserbase API key in repo (use `get-secret`).

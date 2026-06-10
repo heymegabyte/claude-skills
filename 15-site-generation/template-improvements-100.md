@@ -55,8 +55,8 @@ Brian (2026-05-11): *"Come up with 100 ideas + recommendations + upgrades on how
 36. **Topic-matched Pexels** — per-page topic → Pexels search → top result; fallback when AI image fails relevance gate; legally licensed.
 37. **Sora b-roll for hero-video-loop** — 12s loop generated from `videoBrief` prompt; AV1 + H.264 dual encode.
 38. **NotebookLM podcast parallel** — per-site podcast generation runs alongside image gen, not after; cuts critical path 8min.
-39. **GPT-4o vision auto-alt-text** — every image gets accurate alt-text from vision model, not template strings; a11y score jump 78 → 98.
-40. **Image-relevance gate ≥8/10** — GPT-4o judges "does this image match the section topic"; below threshold auto-regenerates (max 3 rounds).
+39. **GPT Image 2 vision auto-alt-text** — every image gets accurate alt-text from vision model, not template strings; a11y score jump 78 → 98.
+40. **Image-relevance gate ≥8/10** — GPT Image 2 vision judges "does this image match the section topic"; below threshold auto-regenerates (max 3 rounds).
 
 ## 5 · SEO Automation (41-50)
 
@@ -118,7 +118,7 @@ Brian (2026-05-11): *"Come up with 100 ideas + recommendations + upgrades on how
 84. **Differential regeneration** — only rebuild changed pages on iteration N+1; track `_iteration_log.json` diffs.
 85. **Background research while user is on intro** — start research before user finishes filling out brief; 30-90s saved.
 86. **Pre-warm common research in KV** — BLS volunteer data, USDA food insecurity, Charity Navigator EIN lookups cached 7d.
-87. **Cache GPT-4o vision per image URL** — same hero image gets vision called once across all sites that share it.
+87. **Cache GPT Image 2 vision per image URL** — same hero image gets vision called once across all sites that share it.
 88. **Template token substitution before LLM** — replace `{{BRAND_HEX}}`, `{{NAP}}`, `{{EIN}}` server-side; cuts prompt 30-40%.
 89. **Multi-model routing** — Haiku for SEO copy + slugs, Sonnet for body copy + JSON-LD, Opus for architecture + research synthesis.
 90. **Cost-budget guard rails** — estimate before run, abort if >$X; budget per site (default $2-5 for full 14-page emit).

@@ -14,6 +14,8 @@ compatibility:
 
 # 09 — Build-Breaking Brand + Content Rules
 
+> **Model migration note (pass-79, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`.
+
 Migrated from `~/.claude/rules/always.md` 2026-05-03.
 
 ## Every social link
@@ -63,7 +65,7 @@ Encode as `social-brand-hex.json` map shipped in template — never hardcode gen
 
 ### Validator (`validate-logo-contrast.mjs`)
 
-GPT-4o samples logo bbox + container computed bg at 6bp, fails if contrast <4.5:1.
+GPT Image 2 vision samples logo bbox + container computed bg at 6bp, fails if contrast <4.5:1.
 
 **Reference incident:** the lone-mountain-global-3 (2026-05-01) header rendered white-text-logo on white bg (invisible) AND footer rendered dark-text-logo on dark bg (invisible) — both invisible — drove this rule.
 
@@ -187,7 +189,7 @@ Every testimonial / review / quote rendered on the site MUST include:
 
 1. `<blockquote>` semantic element with `cite` attribute set to the source URL when available
 2. `<cite>` element wrapping — person first + last name (MANDATORY), their job title / role (MANDATORY), their company / organization name (MANDATORY when a business context exists — NOT optional)
-3. **Avatar** — source photo ≥40×40px → DALL-E representative headshot → initials monogram badge (bg = brand-accent, text = bg-primary, 2 initials from name)
+3. **Avatar** — source photo ≥40×40px → GPT Image 1.5 representative headshot → initials monogram badge (bg = brand-accent, text = bg-primary, 2 initials from name)
 4. **Date of testimonial** (year minimum: "2024") when derivable from source
 5. **Star rating** (1-5) when source had one
 
@@ -432,7 +434,7 @@ Grep dist `<link href="https://fonts.googleapis.com/css2?family=...">` against `
 
 Brand color extraction MUST run TWO passes:
 
-1. GPT-4o vision call against source homepage screenshot → returns `primary, secondary, accent, bg_dark, bg_light` hex array
+1. GPT Image 2 vision call against source homepage screenshot → returns `primary, secondary, accent, bg_dark, bg_light` hex array
 2. `node-vibrant` / `Vibrant.js` color-thief on extracted logo PNG → returns palette
 
 **Merge:** vision-pass wins for primary / accent; vibrant wins for backgrounds. Result written to `_brand.json.colors.{primary,secondary,accent,bg,fg,muted}`.
@@ -491,7 +493,7 @@ Fail any route with cosine <0.78 against its source counterpart.
 
 ## Every site rebuild (***BRAND FIDELITY #7 — HERO IMAGE/VIDEO SOURCE-FIRST PRIORITY — UNIVERSAL — BUILD-BREAKING***)
 
-Every rebuild hero (image OR video) MUST attempt source-site reuse FIRST — only fall back to Sora / DALL-E / Pexels when source hero is unrecoverable.
+Every rebuild hero (image OR video) MUST attempt source-site reuse FIRST — only fall back to Sora / GPT Image 1.5 / Pexels when source hero is unrecoverable.
 
 ### Pipeline
 

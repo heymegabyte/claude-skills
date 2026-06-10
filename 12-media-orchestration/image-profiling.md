@@ -1,6 +1,6 @@
 ---
 name: "image-profiling"
-description: "Tiered vision profiling: Workers AI Llama Vision (free, bulk) → GPT-4o (paid, hero/logo picks only). Scores, placement, alt text, colors."
+description: "Tiered vision profiling: Workers AI Llama Vision (free, bulk) → GPT Image 2 vision (paid, hero/logo picks only). Scores, placement, alt text, colors."
 updated: "2026-04-25"
 ---
 
@@ -17,7 +17,7 @@ Bridge between visual assets and text-only AI builders. Profile every candidate 
 - Handles: description, keywords, quality_score, suggested_placement, alt_text, dominant_colors
 - Sufficient for gallery/about/services/background images
 
-### Tier 2 — GPT-4o detail:low ($0.01/call, 10% of images)
+### Tier 2 — GPT Image 2 vision detail:low ($0.01/call, 10% of images)
 
 - Hero candidates only (top 5 by Tier 1 score) + logo variants + brand color extraction
 - Single batch call with all hero candidates
@@ -69,7 +69,7 @@ Pre-container: collect 50-100 candidate images from all APIs → batch profile �
 ## Cost Management
 
 - **Workers AI** — FREE (included in Workers Paid plan). 60 images = $0.00.
-- **GPT-4o** — 1 batch call for top 5 hero candidates ≈ $0.02.
+- **GPT Image 2 vision** — 1 batch call for top 5 hero candidates ≈ $0.02.
 - **Total profiling cost** — ~$0.02/site (down from $0.60-1.20).
 - Skip duplicates (hash-based dedup before profiling)
 - Skip images <100px or >5MB

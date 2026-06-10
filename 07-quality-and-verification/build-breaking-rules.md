@@ -14,6 +14,8 @@ compatibility:
 
 # 07 — Build-Breaking Verification Rules
 
+> **Model migration note (pass-79, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`.
+
 Every rule below is a HARD build-gate. Failure of any validator blocks deploy. Migrated verbatim from `~/.claude/rules/always.md` 2026-05-03 to keep the universal layer lean (skill activates only when 07 is in scope, see `rules/prompt-cache.md`).
 
 ## Every clickable entity (***UNIVERSAL — NO EXCEPTIONS — supersedes prior partial rules***)
@@ -133,7 +135,7 @@ Grep `src/**/*.{ts,tsx,jsx}` AND `dist/**/*.html` for entity literals outside `<
 
 ### Why visible-H1
 
-An h1 hidden behind sr-only fails Yoast, fails GPT-4o vision audit, and gets penalized by Google as cloaking.
+An h1 hidden behind sr-only fails Yoast, fails GPT Image 2 vision audit, and gets penalized by Google as cloaking.
 
 ### Validator (`validate-h1.mjs`)
 
@@ -300,7 +302,7 @@ Assert final `_recommendations.json` is `[]` OR `iteration_count >= MAX_ITER` AN
 ## Every build (***CONVERGENCE LOOP #2 — DELTA-DRIVEN ITERATION (no full rebuild from scratch) — UNIVERSAL — BUILD-BREAKING***)
 
 - Every iteration ≥2 of repeatable-build flow MUST apply DELTA to prior dist — NEVER rebuild from scratch
-- Total iteration ≥2 cost SHOULD be ≤15% of iteration 1 cost (LLM tokens + R2 PUTs + DALL-E calls + CDN purges)
+- Total iteration ≥2 cost SHOULD be ≤15% of iteration 1 cost (LLM tokens + R2 PUTs + GPT Image 1.5 calls + CDN purges)
 
 ### Pipeline
 
@@ -377,7 +379,7 @@ Claude Vision (Sonnet 4.6 via OAuth) scores 0-10 with mandatory evidence field p
 
 ### Tier 3 (METERED, $0.50/build cap)
 
-GPT-4o judge fires on:
+GPT Image 2 vision judge fires on:
 
 - Hero / ATF + brand-fidelity vs source
 - Final pre-publish 6bp homepage
@@ -391,7 +393,7 @@ GPT-4o judge fires on:
 
 ### Logging
 
-- Per-build GPT-4o spend logged to `_iteration_log.json[current].vision_spend_cents`
+- Per-build GPT Image 2 vision spend logged to `_iteration_log.json[current].vision_spend_cents`
 - D1 `audit_logs(vision_provider, auth_mode, cost_cents, route, breakpoint)`
 - Claude Vision `auth_mode` MUST equal `max-oauth` (NEVER `api-key` on macOS dev — see `~/.claude/rules/auth-spawned-claude.md`); api-key fallback alerts
 
