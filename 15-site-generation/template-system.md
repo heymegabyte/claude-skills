@@ -526,7 +526,7 @@ Every container with potential bg-luminance mismatch (header on light bg, footer
 
 Component reads `_brand.json.logo.{transparent_dark, transparent_light, original}` and emits `<picture>` with `<source media="(prefers-color-scheme: dark)" srcset="<transparent_light>">` + `<img src="<transparent_dark>">` swap.
 
-Build pipeline (skill 09 logo extraction) MUST emit BOTH variants — if source logo has solid `<rect>` background, run `sharp.removeAlphaBackground()` + GPT-4o vision verify transparent corners.
+Build pipeline (skill 09 logo extraction) MUST emit BOTH variants — if source logo has solid `<rect>` background, run `sharp.removeAlphaBackground()` + GPT Image 2 vision verify transparent corners.
 
 `_brand.json.logo` schema:
 

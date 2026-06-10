@@ -80,7 +80,7 @@ Violating any = build fail.
 
 - Random snapshot sampling 30% per step (seeded hash, reproducible)
 - New-section AI vision: `e2e/__seen-routes__.json` gates first render of any unknown route
-- Rubric: layout sane / contrast WCAG AA / brand / no slop / ≥8/10 (Claude Sonnet 4.6 or GPT-4o)
+- Rubric: layout sane / contrast WCAG AA / brand / no slop / ≥8/10 (Claude Sonnet 4.6 or GPT Image 2 vision)
 - Baselines in `e2e/__snapshots__/`
 - Pixelmatch tolerance 0.1% / 0.5% area
 

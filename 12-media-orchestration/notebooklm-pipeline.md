@@ -254,7 +254,7 @@ Three-panel minimum mandatory; can scale to 6-9 panels for content-heavy sites (
 
 ### Per-panel slot record (slots into `_notebooklm.json.infographic.panels[]`)
 
-Identical 6-field prompt structure as DALL-E slot manifest (page topic + brand palette + composition + subject specificity + technical specs + negative prompt).
+Identical 6-field prompt structure as GPT Image 1.5 slot manifest (page topic + brand palette + composition + subject specificity + technical specs + negative prompt).
 
 Validator `validate-infographic-on-about.mjs` greps for ≥3 `<svg>` OR `<img>` inside `[data-infographic-gallery]` on `/about`.
 

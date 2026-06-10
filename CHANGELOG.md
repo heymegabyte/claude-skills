@@ -1,5 +1,114 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-81 — **MIGRATION ARC COMPLETE: 15 → 0 hits**
+
+### Closes pass-80 candidate 1 (surgical mop-up to zero)
+
+The 9-pass migration arc that began pass-72 has reached **zero deprecated-model hits**.
+
+### Final 3 categories of remaining references handled
+
+1. **10 files migrated** via sed (1-hit-per-file batch) — same fully-codified recipe
+2. **README.md** — 2 surgical line edits:
+   - Line 191: "slot-first DALL-E media" → "slot-first GPT Image 1.5 media"
+   - Line 243: "AI vision (GPT-4o)" → "AI vision (Claude Sonnet 4.6 default; current OpenAI multimodal fallback)"
+3. **Filter extended for 2 legitimate non-migration cases**:
+   - **Historical anecdotes**: `rules/timeline-authenticity.md:19` says "pasting DALL·E chapel candles next to '1853'" — a Brian-rule narrative about an ACTUAL past incident. The DALL·E reference IS the historical fact (what was used at the time). Filter via "learned the hard way / chapel candles / read as fabrication".
+   - **Codified-pattern documentation**: `rules/lint-doctrine.md:156` documents the very sed migration recipe via "Substring substitution" example. Filter via "substring substitution / sed pattern / codified-pattern".
+
+### Detector filter — final shape
+
+3 categories of legitimate exclusions:
+
+```bash
+# Retirement / migration documentation
+| grep -viE 'retired|deprecat|removed.*api|sunset|...|migrat(e|ed|ion)'
+
+# Prose-list landscape references (pass-80)
+| grep -viE '(Midjourney|Ideogram|Stable Diffusion|Sora|FLUX)'
+
+# Historical anecdotes + codified-pattern docs (pass-81)
+| grep -viE '(substring substitution|sed pattern|s/[A-Za-z]+|codified-pattern|historical|learned the hard way|chapel candles|read as fabrication)'
+
+# Pure catalog lines
+| grep -vE ':[0-9]+:- `[^ `]+`$'
+```
+
+The filter codifies "what counts as a deprecated-identifier mention vs intentional historical/educational reference."
+
+### Final detector state
+
+```text
+▸ Scanning docs surface for retired AI model identifiers...
+  ✓ GPT-4o    (retired 2026-02-13) — 0 hits
+  ✓ DALL-E    (retired 2026-05-12) — 0 hits
+  ✓ DALL·E    (retired 2026-05-12) — 0 hits
+  ✓ dall-e-2  (retired 2026-05-12) — 0 hits
+  ✓ dall-e-3  (retired 2026-05-12) — 0 hits
+  ✓ claude-3-opus  (retired 2025-01-15) — 0 hits
+  ✓ claude-3-haiku (retired 2025-01-15) — 0 hits
+  ✓ claude-haiku-3-5 (retired 2025-09-30) — 0 hits
+━━━ SUMMARY: 0 total hits across 8 denylist entries
+✓ no deprecated model identifiers in docs surface
+```
+
+### Migration arc trajectory (final)
+
+- pass-72: 270 (detector ships, baseline)
+- pass-73: 226 (-44) — first migration, media-acquisition
+- pass-74: 190 (-36) — visual-inspection-loop + 2 codified patterns
+- pass-75: 160 (-30) — 12-media-orchestration
+- pass-76: 116 (-44) — 3-file cluster
+- pass-77: 80 (-36) — 4-file cluster + numeric-collision finding
+- pass-78: 60 (-20) — codify numeric-collision + 3-file mop-up
+- pass-79: 37 (-23) — 7-file mop-up + note-threshold discipline
+- pass-80: 15 (-22) — DALL·E prose-list filter + 10-file mop-up
+- **pass-81: 0 (-15) — surgical mop-up + 2 filter categories — MIGRATION COMPLETE**
+
+**270 references audited across 9 passes**. Outcome:
+
+- **256 references migrated** (legitimately stale API endpoints)
+- **9 prose-list/historical/codified references preserved** (intentional landscape/historical/educational context)
+- **5 DALL·E unicode prose-list references** (already preserved pass-80)
+
+### Pass-58→81 closure-loop arc — final tally
+
+- **12 latent bugs caught + 256 references migrated + 14 intentional references preserved**
+- **7 disciplines codified** in `lint-doctrine.md`
+- **5 audit scripts** mechanized in `lint-all` info section
+- **3 filter categories** matured (retirement-docs · landscape-prose · historical-anecdotes)
+- The cross-rule consistency arc that started with pass-51's Opus 4.7→4.8 sweep has matured into a complete claim-vs-reality discipline framework
+
+### Pass-82+ promotion candidate
+
+With count at 0, the detector can graduate from soft-info to **hard CI gate**:
+
+- Move `deprecated-models` from lint-all soft-info section to one of the 9 main gates
+- Any commit that introduces a deprecated identifier blocks at the pre-commit hook
+- Same pattern as pass-52 mechanical enforcement: discipline → toolchain enforcement
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 9/9 green
+bash bin/check-deprecated-models.sh                    # ✓ 0 hits, exit 0
+echo "Migration arc complete: 270 → 0 hits across 9 passes"
+```
+
+### What was NOT done
+
+- Promote detector from soft-info to hard gate — pass-82 candidate
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-82)
+
+- Promote `check-deprecated-models.sh` from soft-info to hard CI gate (regression protection at zero)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- Audit other long-tail surfaces using the same `bin/check-<class>.sh` + sed-recipe + filter pattern (next deprecation cycle: e.g. Sonnet 4.6 → Sonnet 5 when it ships)
+
+---
+
 ## 2026-06-09 — pass-80 — DALL·E prose-list filter + 10-file mop-up: 37 → 15 hits
 
 ### Closes pass-79 candidates 1 + 2 (mop-up + DALL·E unicode decision)

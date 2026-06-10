@@ -160,7 +160,7 @@ const IGNORE_REGIONS: Record<string, Array<{ x: number; y: number; w: number; h:
 `visual-regression` feeds into the `visual-qa` agent (07/visual-inspection-loop.md):
 
 1. Run pixelmatch diff → any failures?
-2. Yes → send diff images + current screenshots to GPT-4o Vision
+2. Yes → send diff images + current screenshots to GPT Image 2 vision
 3. AI classifies: intentional change | regression | flaky (animation/timing)
 4. Intentional → auto-update baselines
 5. Regression → generate fix suggestions

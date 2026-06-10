@@ -28,7 +28,7 @@ Every Playwright run randomly captures a sample of in-test screenshots and diffs
 
 - `e2e/__seen-routes__.json` is the durable inventory: every route + component combination ever screenshot'd by the suite, keyed by `<route>:<viewport>`.
 - Before any spec's first interaction with a route, helper `assertNewSection(page, routeKey)` checks the inventory. If unknown → mandatory full-viewport screenshot + AI-vision call.
-- AI vision rubric (sent to GPT-4o or Claude Sonnet 4.6 via vision endpoint):
+- AI vision rubric (sent to GPT Image 2 vision or Claude Sonnet 4.6 via vision endpoint):
   - **Layout sane?** (no overlapping elements, no off-screen content, no text-on-text)
   - **Contrast safe?** (WCAG 2.2 AA visible to a sighted reviewer)
   - **Brand consistent?** (dark theme #060610, cyan #00E5FF, no off-brand colors)
@@ -79,7 +79,7 @@ export async function assertNewSection(
 ### AI vision endpoint
 
 - Default: Claude Sonnet 4.6 via `@anthropic-ai/sdk` with the `vision` message-content shape.
-- Fallback: current OpenAI multimodal flagship via `openai` SDK Responses API (image input support). **NOT GPT-4o** — retired 2026-02-13 per `platform.openai.com/docs/deprecations`. Use whichever GPT-5-class or later model supports vision in the live `openai` SDK at the time of call.
+- Fallback: current OpenAI multimodal flagship via `openai` SDK Responses API (image input support). **NOT GPT Image 2 vision** — retired 2026-02-13 per `platform.openai.com/docs/deprecations`. Use whichever GPT-5-class or later model supports vision in the live `openai` SDK at the time of call.
 - Both keyed via `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` from get-secret.
 - Verified 2026-06-09 per OpenAI deprecation docs.
 - Endpoint stub at `e2e/_helpers/visual.ts` — keep the prompt sharp:

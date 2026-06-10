@@ -72,7 +72,7 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 4 parallelism rul
 
 - **Phase 0 (boot)** — ≥7
 - **Phase 1 (synthesis)** — ≥3 (page-by-page parallel)
-- **Phase 2 (media fill)** — ≥10 (DALL-E batch)
+- **Phase 2 (media fill)** — ≥10 (GPT Image 1.5 batch)
 - **Phase 3 (validation)** — ≥5 (parallel validators)
 - **Phase 4 (deploy)** — ≥1
 

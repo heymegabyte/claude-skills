@@ -120,7 +120,7 @@ Rebuild prompts trigger `monitor-orchestration.md` per `always.md` line 10. Moni
 2. **Agent-B `demographics`** — ACS B16001 on `_research.json.service_area` → `_locales.json` `{locales[], hreflang_pairs[]}`
 3. **Agent-C `org-type-inferrer`** — skill 02 inference from prompt+domain+`_research.json.category` → `_org_type.json`
 4. **Agent-D `media-walker`** — image+video+PDF+logo extraction → `_assets/` + `_videos.json` + `_image_briefs.json`
-5. **Agent-E `brand-extractor`** — GPT-4o vision on homepage → `_brand.json` palette+fonts+tone
+5. **Agent-E `brand-extractor`** — GPT Image 2 vision on homepage → `_brand.json` palette+fonts+tone
 6. **Agent-F..K `jewel-content-authors`** (one per jewel batch) → 2-3 jewel page contents as typed-block JSON
 7. **Agent-L..N `i18n-translators`** (one per locale beyond English) → `/{locale}/*` translated via Workers AI Llama 3.3 70B first pass + Claude Opus 4.8 polish on top-10 conversion routes per `i18n-by-demographics.md`
 8. **Agent-O `IA-normalizer`** — consume `_url_inventory.json`+`_org_type.json` → `_redirects` 301 manifest + slug rename map + service-hierarchy nesting

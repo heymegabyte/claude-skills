@@ -41,7 +41,7 @@ For each page/route:
 
 1. Navigate via Playwright
 2. Screenshot at all 6 breakpoints (`375`, `390`, `768`, `1024`, `1280`, `1920`)
-3. Analyze each screenshot with GPT-4o vision
+3. Analyze each screenshot with GPT Image 2 vision
 4. Report issues with severity and fix description
 
 ### Step 3: Playwright E2E

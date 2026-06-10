@@ -32,7 +32,7 @@ Research data informs scaffold choices (stack, features, pages).
 - **Agent E** — Generate all copy: hero headline, features, meta desc, JSON-LD, pricing copy. Replace `SITE_NAME`/`HERO_HEADLINE`/etc placeholders in `index.html`.
 - **Agent F** — Ideogram logo → favicon set → OG 1200x630 → hero image. Place in `public/`.
 - **Agent G** — Generate project `CLAUDE.md` + `.claude/rules/` from brief.
-- **Agent H** — Profile all collected images via GPT-4o vision → scores, placements, alt text (see skill 12 image-profiling).
+- **Agent H** — Profile all collected images via GPT Image 2 vision → scores, placements, alt text (see skill 12 image-profiling).
 
 ## Phase 3: Build (parallel agents in worktrees, ~15min)
 

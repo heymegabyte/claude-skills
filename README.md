@@ -188,7 +188,7 @@ Auto-generated on every push to master. Each format uses native frontmatter for 
 | 12 | **Media Orchestration** | 10 | Image/video generation, AI prompts, compression, OG previews, diagramming |
 | 13 | **Growth & Observability** | 7 | Stripe billing, analytics, Sentry alerts, email, experiments, CRO |
 | 14 | **Idea Engine** | — | Autonomous research, evidence-backed improvement proposals |
-| 15 | **Site Generation** | 9 | Full-corpus rebuild, slot-first DALL-E media, NotebookLM podcast/infographic/video, citations |
+| 15 | **Site Generation** | 9 | Full-corpus rebuild, slot-first GPT Image 1.5 media, NotebookLM podcast/infographic/video, citations |
 
 ## Agents
 
@@ -240,7 +240,7 @@ Every deploy must clear all gates. No exceptions. No overrides.
 | Gate | Threshold | Tool |
 |------|:---------:|------|
 | E2E Tests | 0 failures @ 6 breakpoints | Playwright v1.59+ |
-| Visual QA | ≥ 8/10 | AI vision (GPT-4o) |
+| Visual QA | ≥ 8/10 | AI vision (Claude Sonnet 4.6 default; current OpenAI multimodal fallback) |
 | Accessibility | ≥ 95 | Lighthouse |
 | A11y Violations | 0 | axe-core |
 | SEO Score | GREEN | Yoast-equivalent |

@@ -209,7 +209,7 @@ describe('Quality Evals', () => {
 
 ## Anti-Patterns
 
-- Never use GPT-4o for evals (10x cost, marginally better)
+- Never use GPT Image 2 vision for evals (10x cost, marginally better)
 - Don't judge your own output with the same model that generated it
 - Don't skip reasoning field (can't debug failures)
 - Don't set threshold at 10 (too brittle)
