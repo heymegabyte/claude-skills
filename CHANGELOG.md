@@ -1,5 +1,103 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-86 — First application of the maturity ladder: skill-required-fields detector
+
+### Closes pass-85 candidate 1 (apply ladder to new class)
+
+First production use of the codified maturity ladder (pass-85's `rules/audit-arc-maturity-ladder.md`). Applied Steps 1 + 2 (Detect + Surface) for a new class: **SKILL.md required frontmatter fields**.
+
+### Class definition
+
+Every `[0-9][0-9]-*/SKILL.md` must declare 4 required frontmatter fields: `name`, `description`, `priority`, `pack`. Without these, the skill router can't classify the skill correctly when triggered.
+
+### NEW `bin/check-skill-required-fields.sh` (11th caller of `bin/lib/emit-json.sh`)
+
+- Iterates `[0-9][0-9]-*/SKILL.md`
+- Parses frontmatter (between first 2 `---` lines via awk)
+- Checks each required field via `grep -qE "^${field}:"`
+- Reports per-skill compliance
+- Exit 0 if all comply, 1 on any missing field
+- Human + `--json` modes per uniform-JSON doctrine
+
+### Baseline (Step 3 — Migrate = nothing needed)
+
+```text
+▸ Checking SKILL.md required fields: name description priority pack
+  ✓ 01-operating-system
+  ✓ 02-goal-and-brief
+  ✓ 03-planning-and-research
+  ✓ 04-preference-and-memory
+  ✓ 05-architecture-and-stack
+  ✓ 06-build-and-slice-loop
+  ✓ 07-quality-and-verification
+  ✓ 08-deploy-and-runtime-verification
+  ✓ 09-brand-and-content-system
+  ✓ 10-experience-and-design-system
+  ✓ 11-motion-and-interaction-system
+  ✓ 12-media-orchestration
+  ✓ 13-observability-and-growth
+  ✓ 14-independent-idea-engine
+  ✓ 15-site-generation
+  ✓ 16-cinematic-website-prime-directive
+━━━ SUMMARY: 16 compliant · 0 non-compliant
+✓ all SKILL.md files declare name + description + priority + pack
+```
+
+16/16 compliant from day one. Migrate step skipped.
+
+### Wired into lint-all (Step 2 — Surface)
+
+- `bin/lint-all.sh` — added as 2nd soft-info section (after pricing)
+- Quiet-mode summary updated: "2 audit sections clean (pricing · skill-required-fields)"
+- shellcheck + shfmt coverage extended to include `bin/check-skill-required-fields.sh`
+- `package.json` — `npm run check:skill-required-fields` + `:json` aliases
+
+### Ladder steps 4-6 deferred per the doctrine
+
+- **Step 4 (Codify)**: no specific failure mode caught yet — the all-clean baseline means no incident to write
+- **Step 5 (Promote)**: starts pass-86 stability clock. Per `audit-arc-maturity-ladder.md`, promote at ≥90 days OR ≥15 passes stable. Earliest possible promotion: pass-101 (assuming continuous clean runs).
+- **Step 6 (Regression protection)**: automatic via pre-commit hook once promoted
+
+### Significance — first ladder application
+
+Pass-85 codified the ladder. Pass-86 USED the ladder for the first time. Future detector classes follow the same path:
+
+```text
+ladder doctrine (pass-85) → first application (pass-86) → reference example
+```
+
+The audit-arc maturity ladder is now self-applying.
+
+### Closure-loop arc pass-58→86 — final tally
+
+- **12 latent bugs caught + 256 references migrated + 14 intentional refs preserved + 8 frontmatter fixes + 1 output bug**
+- **13-gate main lint suite** (unchanged)
+- **2 audit scripts** in info section (pricing + skill-required-fields)
+- **9 disciplines codified** (8 in lint-doctrine + composed-envelope + maturity-ladder)
+- `bin/lib/emit-json.sh` lib: **11 callers** (3.7× extraction threshold)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                                         # ✓ 13 pass · 0 fail · 0 skip
+bash bin/check-skill-required-fields.sh                               # ✓ 16/16 compliant
+bash bin/check-skill-required-fields.sh --json | python3 -m json.tool # valid envelope
+shellcheck -x -S warning bin/check-skill-required-fields.sh           # clean
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- Promote new detector — must wait for stability period per ladder Step 5
+
+### Next candidates (pass-87)
+
+- Audit another new candidate class (e.g. `check-skill-pack-claim.sh` parallel to pack-frontmatter but for skill-dir SKILL.md `pack:` claims vs `_packs/*.yml` membership)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-85 — Codify the audit-arc maturity ladder doctrine
 
 ### Pivoted from pass-84's info-section refactor
