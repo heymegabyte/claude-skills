@@ -1,5 +1,79 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-95 — README.md staleness audit: 2 more pre-existing references fixed
+
+### Agent-surface audit + README.md secondary sweep
+
+Pass-95 shifted from the closure-loop core to peripheral surfaces (agents/ + top-level README.md). Three findings:
+
+### `agents/*.md` — clean
+
+- 18 agents · 1175 lines total
+- No deprecated-model identifiers (gate #10 already enforces)
+- 2 apparent dangling refs in `architect.md` (`acceptance-criteria.md`, `repo-map.md`) — false-positive: both exist in `templates/`, which the agent generates. Agent docs healthy.
+- Description lengths all 180-200 chars — long-form but appropriately descriptive
+
+### README.md — 2 more pre-existing stale references fixed
+
+Pass-89's hotfix updated 2 of 3 stale README references (line 21 doc count, line 243 GPT-4o vision tool). Pass-95 surfaced the **3rd and 4th instances** missed at the time:
+
+**Line 309 — script description**:
+
+```diff
+-| `scripts/gpt4o-vision-analyze.sh` | GPT-4o screenshot analysis for visual QA |
++| `scripts/gpt4o-vision-analyze.sh` | OpenAI multimodal screenshot analysis for visual QA (script filename predates the 2026-02 GPT-4o retirement; uses current GPT Image 2 vision per `platform.openai.com/docs/deprecations`) |
+```
+
+Script filename stays (renaming would break inbound references) but description explains the legacy name + points to current model.
+
+**Line 315 — doc count**:
+
+```diff
+-The router loads the smallest useful subset per task — never the full 119 docs.
++The router loads the smallest useful subset per task — never the full 135 docs.
+```
+
+Third instance of the 119→135 mismatch. Pass-91's `check-doc-counts.sh` gate only checks line 21's pattern (`grep -o '[0-9]* reference docs'`), so this line-315 instance wasn't caught.
+
+### Why detector didn't catch line 309
+
+`bin/check-deprecated-models.sh` already filters lines containing `retired|deprecat|removed|sunset|legacy|formerly|previous`. Line 309's old text said "GPT-4o screenshot analysis" — no filter keyword. After my fix, the line includes "2026-02 GPT-4o retirement" — "retirement" is matched by the filter. So:
+
+- BEFORE fix: would have surfaced as drift IF the detector also scanned README.md... but the detector's grep paths INCLUDE README.md per pass-56's widened scope. The line wasn't caught because the original prose didn't contain a deprecated identifier the detector knows about — wait, `GPT-4o` IS in the denylist.
+
+Let me re-check — the filter excludes `migrat(e|ed|ion)` (pass-74) which my fix DOES include. So the fix line is self-filtering. Good.
+
+But the BEFORE state should have surfaced as a hit. Why didn't it? Because the detector exit was 0 throughout the entire arc — there's a gap I missed.
+
+**Investigation pass-96 candidate**: trace why README.md:309 (with `GPT-4o` in prose) didn't trigger the detector. Either a path-globbing issue, a filter false-positive, or the prose was overlooked.
+
+### Closure-loop arc pass-58→95 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures unmasked + fixed + 256 references migrated + 14 intentional refs preserved + 8 rule-frontmatter + 6 skill-frontmatter + 28 submodule + 1 doc-count + 2 output bugs + 2 README pre-existing fixes**
+- **15-gate suite + 3 info sections + 1 post-push verifier**
+- 10 disciplines codified
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+bash bin/check-deprecated-models.sh                    # ✓ 0 hits (filter excluded the migration-note prose)
+grep "119 docs\|119 reference docs" README.md          # 0 matches
+```
+
+### What was NOT done
+
+- Investigate why README:309 GPT-4o reference didn't trigger gate #10 — pass-96 candidate
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-96)
+
+- Investigate the gate #10 path-globbing / filter false-positive that missed README:309
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-10 — pass-94 — Compression audit + cross-link the rule trinity
 
 ### Closes pass-93 candidate "compression opportunities" — outcome: no compression, but cross-links refreshed

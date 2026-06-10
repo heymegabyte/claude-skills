@@ -306,13 +306,13 @@ Every deploy must clear all gates. No exceptions. No overrides.
 | `bin/emdash-secret-scan` | Pre-commit secret detection via `detect-secrets` |
 | `bin/emdash-cost-check` | Quick Cloudflare cost estimate from wrangler.toml |
 | `scripts/discover-secrets.sh` | Inventory all available API keys across sources |
-| `scripts/gpt4o-vision-analyze.sh` | GPT-4o screenshot analysis for visual QA |
+| `scripts/gpt4o-vision-analyze.sh` | OpenAI multimodal screenshot analysis for visual QA (script filename predates the 2026-02 GPT-4o retirement; uses current GPT Image 2 vision per `platform.openai.com/docs/deprecations`) |
 | `scripts/validate-skills.sh` | Cross-reference validation for skill files |
 | `scripts/visual-tdd-loop.sh` | Automated screenshot→fix→verify loop |
 
 ## Task Routing
 
-The router loads the smallest useful subset per task — never the full 119 docs. See [`_router.md`](_router.md) for the complete routing table.
+The router loads the smallest useful subset per task — never the full 135 docs. See [`_router.md`](_router.md) for the complete routing table.
 
 | When you say... | Skills loaded |
 |-----------------|---------------|
