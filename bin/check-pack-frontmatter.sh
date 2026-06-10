@@ -35,7 +35,7 @@ rules = {}
 for f in glob.glob('rules/*.md'):
     name = os.path.basename(f).replace('.md','')
     txt = open(f).read()
-    m = re.search(r'^pack:\s*"?(\w+)"?\s*$', txt, re.M)
+    m = re.search(r'^pack:\s*"?([\w-]+)"?\s*$', txt, re.M)
     if m:
         rules[name] = m.group(1)
 packs = {}
@@ -65,13 +65,15 @@ if [ "$JSON" = "0" ]; then
   printf '▸ Checking rule frontmatter pack: claims vs _packs/*.yml membership...\n' >&2
   printf '  Rules with pack: frontmatter: %d · Total pack files: %d\n' "$TOTAL_RULES" "$TOTAL_PACKS" >&2
   if [ "$DRIFT_COUNT" -gt 0 ]; then
-    printf '%s' "$RESULT" | python3 -c "
+    printf '%s' "$RESULT" | python3 -c '
 import sys, json
-d = json.load(sys.stdin)['drift']
+d = json.load(sys.stdin)["drift"]
 for x in d:
-    actual = ', '.join(x['actual_packs']) if x['actual_packs'] else 'NONE'
-    print(f'  ✗ {x[chr(34)+\"rule\"+chr(34)]:<40s} claimed→{x[chr(34)+\"claimed_pack\"+chr(34)]:<10s} actual→{actual}')
-" >&2
+    actual = ", ".join(x["actual_packs"]) if x["actual_packs"] else "NONE"
+    rule = x["rule"]
+    claimed = x["claimed_pack"]
+    print(f"  ✗ {rule:<40s} claimed→{claimed:<10s} actual→{actual}")
+' >&2
     printf '\n━━━ SUMMARY: %d total rules · %d drift\n' "$TOTAL_RULES" "$DRIFT_COUNT" >&2
     printf '✗ frontmatter-pack drift detected — fix the rule frontmatter or add it to the claimed pack\n' >&2
   else

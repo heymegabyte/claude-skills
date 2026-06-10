@@ -1,5 +1,81 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-84 — Fix pack-frontmatter regex + promote 2 more to gates #12/#13
+
+### Closes pass-83 candidates 1 (regex fix) + 2 (promote agent-routing + agent-fallback)
+
+11-gate suite → **13-gate suite**.
+
+### 3 changes this pass
+
+**1. `bin/check-pack-frontmatter.sh` regex fix** — `\w+` → `[\w-]+` so kebab-case pack names are matched. Effect: total rules with `pack:` frontmatter detected: **83 → 89** (6 rules previously silently dropped). All 89 verified clean against `_packs/*.yml` membership.
+
+**2. NEW gate #12: `agent-routing`** — stable at 3 tiers in sync since pass-64 (19 passes past 90-day threshold). `rules/model-routing.md § Agent routing` claims vs `agents/*.md` frontmatter now blocks at pre-commit.
+
+**3. NEW gate #13: `agent-fallback`** — stable at 5/5 compliant since pass-67 (16 passes past 90-day threshold). Opus-pinned agents missing `model_fallback`/`effort`/`effort_fallback` now blocks.
+
+### Output bug caught in-pass
+
+`check-pack-frontmatter.sh`'s human-mode python output used `x[chr(34)+"rule"+chr(34)]` (literal-double-quote key) — KeyError. Rewrote with single-quoted heredoc + explicit `rule = x["rule"]` variable. Now prints drift cleanly:
+
+```text
+  ✗ prompt-cache                             claimed→fake-pack-doesnt-exist actual→ai
+━━━ SUMMARY: 89 total rules · 1 drift
+✗ frontmatter-pack drift detected
+```
+
+### Test verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 13 pass · 0 fail · 0 skip
+# Regex fix verification:
+sed -i 's/pack: "ai"/pack: "fake-pack-doesnt-exist"/' rules/prompt-cache.md
+bash bin/check-pack-frontmatter.sh  # 89 rules · 1 drift (NEW: matches kebab-case)
+```
+
+### `lint-all` info section state
+
+3 audit sections were active pre-pass-83. After 3 promotions (deprecated-models → 10, pack-frontmatter → 11, agent-routing → 12, agent-fallback → 13), only **1 audit section remains in soft-info: pricing**. Quiet-mode summary now: "ℹ pricing-staleness clean".
+
+### Closure-loop arc pass-58→84 final tally
+
+- **12 latent bugs caught + 256 references migrated + 14 intentional refs preserved + 8 frontmatter fixes + 1 output bug fixed**
+- **13-gate main lint suite** (started 9, +4 promotions across pass-82/83/84)
+- **1 audit script** in info section (pricing)
+- **7 disciplines codified** in lint-doctrine
+- `bin/lib/emit-json.sh` lib: 10 callers
+
+### Maturity ladder application
+
+Demonstrated that the soft-info → hard-gate promotion ladder is repeatable:
+
+- pass-82: deprecated-models promoted (after 9-pass migration arc)
+- pass-83: pack-frontmatter promoted (after 17-pass stability)
+- pass-84: agent-routing + agent-fallback promoted (after 19 + 16 passes stability)
+
+3 promotions in 3 consecutive passes. The pattern works.
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                                         # ✓ 13 pass · 0 fail · 0 skip
+bash bin/lint-all.sh --json | jq '.summary.pass'                     # 13
+shellcheck -x -S warning bin/lint-all.sh bin/check-pack-frontmatter.sh  # clean
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+- `check-pricing.sh` not promoted — has dated-content drift (12-day age stamps) by design; promoting would block any commit older than the 90-day max-age. Stays info-only.
+
+### Next candidates (pass-85)
+
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+- The lint-all soft-info section now has only 1 audit (pricing) — could potentially refactor to drop the entire info-section machinery if the doctrine matures further
+
+---
+
 ## 2026-06-09 — pass-83 — Promote `check-pack-frontmatter.sh` to **hard CI gate #11**
 
 ### Closes pass-82 candidate 1 (promote most-stable info-section script)

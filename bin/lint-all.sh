@@ -141,6 +141,21 @@ logHeader "11. pack-frontmatter"
 runGate "pack-frontmatter" "check-pack-frontmatter" \
   bash "$SKILLS_ROOT/bin/check-pack-frontmatter.sh"
 
+# Hard gate 12 (pass-84 promotion) — agent-routing stable since pass-64
+# (19 passes at 3 tiers in sync). Promoted to blocking gate. Any rules/model-
+# routing.md § Agent routing claim diverging from agents/*.md frontmatter
+# blocks here.
+logHeader "12. agent-routing"
+runGate "agent-routing" "check-agent-routing" \
+  bash "$SKILLS_ROOT/bin/check-agent-routing.sh"
+
+# Hard gate 13 (pass-84 promotion) — agent-fallback stable since pass-67
+# (16 passes at 5/5 compliant). Promoted to blocking gate. Any Opus-pinned
+# agent missing model_fallback / effort / effort_fallback blocks here.
+logHeader "13. agent-fallback"
+runGate "agent-fallback" "check-agent-fallback" \
+  bash "$SKILLS_ROOT/bin/check-agent-fallback.sh"
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.
@@ -164,8 +179,6 @@ runInfoSection() {
 }
 
 runInfoSection "pricing" "bin/check-pricing.sh"
-runInfoSection "agent-routing" "bin/check-agent-routing.sh"
-runInfoSection "agent-fallback" "bin/check-agent-fallback.sh"
 
 if [ "$JSON" = "0" ]; then
   INFO_BUF=$(mktemp)
@@ -180,13 +193,9 @@ if [ "$JSON" = "0" ]; then
   }
   emitInfoSection "ℹ pricing-staleness (info-only, doesn't gate)" \
     "bin/check-pricing.sh" 8
-  emitInfoSection "ℹ agent-routing drift (info-only, doesn't gate)" \
-    "bin/check-agent-routing.sh" 6
-  emitInfoSection "ℹ Opus agent fallback compliance (info-only, doesn't gate)" \
-    "bin/check-agent-fallback.sh" 4
 
   if [ "$QUIET" = "1" ] && [ "$INFO_DRIFT" = "0" ]; then
-    printf '\n━━━ ℹ 3 audit sections clean (pricing · agent-routing · agent-fallback) — use `npm run lint` for full output\n' >&2
+    printf '\n━━━ ℹ pricing-staleness clean — use `npm run lint` for full output\n' >&2
   else
     cat "$INFO_BUF" >&2
   fi
