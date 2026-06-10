@@ -164,6 +164,14 @@ logHeader "14. doc-counts"
 runGate "doc-counts" "check-doc-counts" \
   bash "$SKILLS_ROOT/bin/check-doc-counts.sh"
 
+# Hard gate 15 (pass-92) — skill-submodules. publish.yml "Check SKILL.md
+# submodule alignment" step. Same CI-mirroring rationale as gate #14:
+# this gate exists in CI, so immediate-promote bypasses the 90-day
+# stability period per pass-91's codified short-path.
+logHeader "15. skill-submodules"
+runGate "skill-submodules" "check-skill-submodules" \
+  bash "$SKILLS_ROOT/bin/check-skill-submodules.sh"
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.
@@ -189,7 +197,6 @@ runInfoSection() {
 runInfoSection "pricing" "bin/check-pricing.sh"
 runInfoSection "skill-required-fields" "bin/check-skill-required-fields.sh"
 runInfoSection "skill-pack-claim" "bin/check-skill-pack-claim.sh"
-runInfoSection "skill-submodules" "bin/check-skill-submodules.sh"
 
 if [ "$JSON" = "0" ]; then
   INFO_BUF=$(mktemp)
@@ -208,11 +215,9 @@ if [ "$JSON" = "0" ]; then
     "bin/check-skill-required-fields.sh" 4
   emitInfoSection "ℹ SKILL.md pack: claim drift (info-only, doesn't gate)" \
     "bin/check-skill-pack-claim.sh" 5
-  emitInfoSection "ℹ SKILL.md submodule existence (info-only, doesn't gate)" \
-    "bin/check-skill-submodules.sh" 5
 
   if [ "$QUIET" = "1" ] && [ "$INFO_DRIFT" = "0" ]; then
-    printf '\n━━━ ℹ 4 audit sections clean (pricing · skill-required-fields · skill-pack-claim · skill-submodules) — use `npm run lint` for full output\n' >&2
+    printf '\n━━━ ℹ 3 audit sections clean (pricing · skill-required-fields · skill-pack-claim) — use `npm run lint` for full output\n' >&2
   else
     cat "$INFO_BUF" >&2
   fi
