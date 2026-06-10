@@ -1,5 +1,64 @@
 # Skills System Changelog
 
+## 2026-06-10 — pass-101 — Apply scope-completeness discipline to 2 more detectors
+
+### Closes pass-100 codified discipline application
+
+The 12th codified discipline (pass-100 row): "Detector scope-list incomplete. Detectors only see drift in directories they explicitly grep." Pass-100 applied it to gate #10 (`check-deprecated-models.sh`). Pass-101 applies the same discipline to 2 other detectors that had the identical scope gap.
+
+### Detectors widened
+
+**`bin/check-pricing.sh`** — added `scripts/*.sh` to grep paths. Result: 5 total · 5 current · 0 stale · 0 unannotated (no NEW pricing references surfaced — scripts/ was clean). Future cost-rate references in script comments will now be tracked.
+
+**`bin/check-doc-urls.sh`** — added `scripts/*.sh` to grep paths. Result: 87 pass · 0 fail · 93 skip (was 86 pass · 0 fail · 94 skip). One new URL from `scripts/gpt4o-vision-analyze.sh` surfaced (the OpenAI API endpoint `https://api.openai.com/v1/chat/completions`) — passed HEAD check.
+
+### Why these were missed pre-pass-100
+
+The scope-completeness discipline didn't exist as a codified rule until pass-100. Before that, each detector's path list was set ad-hoc at creation. The 3 detectors:
+
+- `check-deprecated-models.sh` (pass-72) — scoped to docs surface only (gap caught pass-99)
+- `check-pricing.sh` (pass-62) — scoped to docs surface only (gap caught + fixed THIS pass)
+- `check-doc-urls.sh` (pass-54) — scoped to docs surface only (gap caught + fixed THIS pass)
+
+All 3 had the same gap class. Pass-100's codification gave the explicit name + remedy.
+
+### Now-uniform scope across the 3 deprecation/staleness detectors
+
+| Detector | Pre-pass-100 scope | Post-pass-101 scope |
+|---|---|---|
+| `check-deprecated-models.sh` | docs only | docs + `scripts/*.sh` |
+| `check-pricing.sh` | docs only | docs + `scripts/*.sh` |
+| `check-doc-urls.sh` | docs only | docs + `scripts/*.sh` |
+
+The scope-completeness discipline is now mechanically applied to every detector class that benefits.
+
+### Closure-loop arc pass-58→101 — final tally
+
+- **12 latent bugs + 2 long-standing CI failures + 1 over-broad filter + 1 lib hardening + 1 runtime-failing script + 256 references migrated + 14 intentional refs preserved + 44 retroactive corrections**
+- **15-gate suite + 3 info sections + 1 post-push verifier + 1 weekly cron**
+- **12 disciplines codified** + maturity-ladder
+- Scope-completeness discipline now applied to **3 detectors** (was 1 pass-100)
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 15 pass · 0 fail · 0 skip
+bash bin/check-pricing.sh                              # ✓ 5/5 current
+bash bin/check-doc-urls.sh 2>&1 | grep SUMMARY         # ✓ 87 pass · 0 fail · 93 skip
+gh run list --limit 1 -q '.[0].conclusion'             # green
+```
+
+### What was NOT done
+
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-102)
+
+- Respond to fresh drift as it surfaces
+- Both gated queue items remain ungated
+
+---
+
 ## 2026-06-10 — pass-100 — 🎯 MILESTONE: widen gate #10 to `scripts/*.sh` + codify scope-completeness
 
 ### Closes pass-99 candidates 1 + 2 (gate widening + codify discipline)

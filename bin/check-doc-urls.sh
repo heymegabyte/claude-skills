@@ -46,6 +46,7 @@ mapfile -t URLS < <(
     CONVENTIONS.md \
     SKILL_PROFILES.md \
     _router.md \
+    scripts/*.sh \
     README.md \
     llms.txt \
     agents/*.md \

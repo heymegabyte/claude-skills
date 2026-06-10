@@ -45,6 +45,9 @@ TODAY_EPOCH=$(date -u +%s)
 [ "$JSON" = "0" ] && printf '▸ Scanning pricing references (max age=%d days)...\n' "$MAX_AGE_DAYS" >&2
 
 # Find every pricing-like reference in the docs surface.
+# Pass-101: scripts/*.sh + bin/check-pricing.sh added per the scope-completeness
+# discipline (rules/lint-doctrine.md § Codified incidents row 12, pass-100).
+# Note: bin/check-pricing.sh self-scans intentionally to validate its own regex.
 mapfile -t HITS < <(
   grep -rnE '\$[0-9]+(\.[0-9]+)?(/MTok|/GB-month|/M (requests|extra requests|rows-read|rows-written|reads|writes|CPU-ms))' \
     rules/*.md \
@@ -53,6 +56,7 @@ mapfile -t HITS < <(
     SKILL_PROFILES.md \
     README.md \
     agents/*.md \
+    scripts/*.sh \
     2>/dev/null
 )
 
