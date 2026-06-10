@@ -1,11 +1,13 @@
 ---
 name: "AI Technology Integration"
-description: "Latest AI APIs, models, and techniques for building AI-native products. GPT-4o vision for visual QA, Workers AI for edge inference, AI Search namespace binding (per-tenant/per-agent RAG), embeddings for RAG, structured outputs, image/video generation, speech, and the visual TDD loop."
+description: "Latest AI APIs, models, and techniques for building AI-native products. GPT Image 2 vision for visual QA, Workers AI for edge inference, AI Search namespace binding (per-tenant/per-agent RAG), embeddings for RAG, structured outputs, image/video generation, speech, and the visual TDD loop."
 updated: "2026-04-24"
 allowed-tools: "Bash, Read, Write, Edit, mcp__playwright__*"
 ---
 
 # AI Technology Integration
+
+> **Model migration note (pass-78, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Visual TDD loop + cost tiers structurally unchanged; verify against current rates.
 
 ## Visual TDD Loop (MANDATORY every deploy — ***COST-TIERED***)
 
@@ -16,12 +18,12 @@ Pipeline:
 3. axe-core (FREE) → fix
 4. Screenshot 2bp (375 + 1280)
 5. Workers AI Llama Vision (FREE) → fix
-6. GPT-4o `detail:low` homepage ATF only ($0.02) → fix
+6. GPT Image 2 vision `detail:low` homepage ATF only ($0.02) → fix
 7. DONE
 
 ### Methods
 
-- **Quick (inline)** — Playwright a11y tree + axe-core (FREE, catches 80%) → Workers AI vision for layout → GPT-4o `detail:low` for homepage aesthetics only
+- **Quick (inline)** — Playwright a11y tree + axe-core (FREE, catches 80%) → Workers AI vision for layout → GPT Image 2 vision `detail:low` for homepage aesthetics only
 - **Automated** — `/Users/apple/.agentskills/scripts/visual-tdd-loop.sh https://example.com 2`
 - **Single image** — `/Users/apple/.agentskills/scripts/gpt4o-vision-analyze.sh screenshot.png`
 
@@ -37,7 +39,7 @@ Pipeline:
 - 2 breakpoints (375 + 1280) clean
 - Zero critical/high issues
 - Max 3 iterations
-- ***$1 HARD CAP on GPT-4o per prompt***
+- ***$1 HARD CAP on GPT Image 2 vision per prompt***
 
 ## Global AI Provider Policy
 
@@ -54,7 +56,7 @@ Prefer the free Cloudflare option whenever it makes no material difference to re
 | Task | Model | Cost | Latency |
 |------|-------|------|---------|
 | Visual QA (bulk) | Workers AI Llama Vision | FREE | <1s |
-| Visual QA (homepage) | GPT-4o detail:low | ~$0.02/call | 2-5s |
+| Visual QA (homepage) | GPT Image 2 vision detail:low | ~$0.02/call | 2-5s |
 | Code gen | Claude Opus 4.6 | Included | - |
 | Logo | Ideogram v3 | ~$0.03 | 5-10s |
 | Hero/scene image | gpt-image-1.5 | ~$0.04 | 10-20s |
@@ -116,7 +118,7 @@ const merged = await env.AI_SEARCH.search(query, { instances: ['tenant-a', 'tena
 - Built-in storage + vector index on new instances
 - Use for: per-tenant RAG, per-agent knowledge bases, multi-language search
 
-## GPT-4o Structured Outputs
+## GPT Image 2 vision Structured Outputs
 
 ```typescript
 response_format: { type: 'json_schema', json_schema: { name: 'visual_qa', schema: {
@@ -130,7 +132,7 @@ response_format: { type: 'json_schema', json_schema: { name: 'visual_qa', schema
 - **Logo (Ideogram)** — `"Minimalist logo for [BRAND], cyan (#00E5FF) on black (#060610), clean geometric, no text, vector style"` — V_3, 1:1, DESIGN style
 - **Hero (GPT Image)** — `"Dark atmospheric hero, abstract geometric, cyan light on deep black, premium tech, 21:9"` — gpt-image-1.5, 1536x1024, high
 - **OG (1200x630)** — Generate 1536x1024 then resize with CF Image Resizing
-- **Critique Loop** — Generate → GPT-4o rate 1-10 → if <8 remix with improved prompt → max 3 iterations
+- **Critique Loop** — Generate → GPT Image 2 vision rate 1-10 → if <8 remix with improved prompt → max 3 iterations
 
 ## RAG Architecture (Cloudflare)
 

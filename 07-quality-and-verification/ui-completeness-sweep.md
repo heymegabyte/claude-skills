@@ -1,17 +1,19 @@
 ---
 name: "UI Completeness Sweep"
-description: "Playwright + GPT-4o vision sweep that finds incomplete UI: disabled buttons, empty states, Coming soon, placeholder images, broken links, unfinished forms, missing error states. Runs BEFORE declaring done. Blocks completion until zero findings."
+description: "Playwright + GPT Image 2 vision sweep that finds incomplete UI: disabled buttons, empty states, Coming soon, placeholder images, broken links, unfinished forms, missing error states. Runs BEFORE declaring done. Blocks completion until zero findings."
 updated: "2026-04-23"
 related: visual-inspection-loop.md (3-round per-page vision), completeness-verification.md (5-pass full-project)
 ---
 
 # UI Completeness Sweep (***MANDATORY BEFORE DONE***)
 
+> **Model migration note (pass-78, 2026-06-09)**: `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Sweep protocol unchanged.
+
 ## Why This Exists
 
 AI builds 90% of a feature then declares done. The last 10% — empty states, error handling, loading skeletons, disabled buttons, placeholder text — is what users actually see. This sweep catches everything the AI skipped.
 
-## The Sweep (Playwright + GPT-4o)
+## The Sweep (Playwright + GPT Image 2 vision)
 
 ### Phase 1: Static Code Scan (fast, catches obvious)
 
@@ -84,9 +86,9 @@ for (const img of await page.locator('img').all()) {
 // Does the UI handle it gracefully or crash?
 ```
 
-### Phase 3: GPT-4o Vision Analysis
+### Phase 3: GPT Image 2 vision Analysis
 
-For each screenshot, ask GPT-4o:
+For each screenshot, ask GPT Image 2 vision:
 > "You are a QA engineer reviewing a deployed SaaS product. Look at this screenshot and identify:
 >
 > 1. Any UI element that looks unfinished, placeholder, or broken
@@ -103,7 +105,7 @@ For each screenshot, ask GPT-4o:
 ### Phase 4: Fix Loop
 
 ```
-findings = sweep()  // a11y tree + axe-core first (FREE), GPT-4o detail:low 2bp only for aesthetics
+findings = sweep()  // a11y tree + axe-core first (FREE), GPT Image 2 vision detail:low 2bp only for aesthetics
 while findings.length > 0 AND round < 3:
   for finding in findings:
     implement_fix(finding)
@@ -132,7 +134,7 @@ while findings.length > 0 AND round < 3:
 ## Integration Points
 
 - `completeness-checker` agent runs this sweep
-- `visual-qa` agent runs the GPT-4o analysis
+- `visual-qa` agent runs the GPT Image 2 vision analysis
 - `deploy-verifier` agent runs post-deploy checks
 - The orchestrator MUST run this before declaring any build task complete
 - The Stop hook SHOULD verify this ran (check for sweep results in audit log)

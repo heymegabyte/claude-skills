@@ -1,5 +1,91 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-78 — Codify numeric-collision + 3-file mop-up: 80 → 60 hits
+
+### Closes pass-77 candidates 1 + 2 (codify pattern + mop-up)
+
+### Codified `rules/lint-doctrine.md § Codified incidents`
+
+New row: substring substitution colliding with numeric-suffix idioms.
+
+> When `sed -e 's/DALL-E/GPT Image 1.5/g'` is applied to "DALL-E 2/3 removed", the result is "GPT Image 1.5 2/3 removed" — semantically wrong. Pre-clean numeric idioms BEFORE the general sub: `sed -e 's/DALL-E 2\/3/DALL-E 2 and DALL-E 3/g' -e 's/DALL-E 3/.../' -e 's/DALL-E 2/.../' -e 's/DALL-E/.../'`. Always order longest-most-specific patterns FIRST. Grep post-migration: `<new> [0-9]+` should be empty.
+
+Source: pass-77 caught the `GPT Image 1.5 2/3 removed` collision in `09-brand-and-content-system/SKILL.md:76`. Same class as the pass-74 stutter pattern but with numeric tails instead of word tails.
+
+### sed recipe upgraded
+
+Added `-e 's/DALL-E 2\/3/DALL-E 2 and DALL-E 3/g'` as the first pattern (longest-most-specific). Order matters: pre-clean expands the idiom, then specific suffix matches handle the rest cleanly.
+
+```bash
+sed -e 's/DALL-E 2\/3/DALL-E 2 and DALL-E 3/g' \    # pre-clean numeric idiom (pass-78)
+    -e 's/DALL-E 3/GPT Image 1.5/g' \
+    -e 's/DALL-E 2/gpt-image-2/g' \                 # NEW: standalone "DALL-E 2"
+    -e 's/DALL-E/GPT Image 1.5/g' \
+    -e 's/GPT-4o Vision/GPT Image 2 vision/g' \    # pre-clean stutter (pass-74)
+    -e 's/GPT-4o/GPT Image 2 vision/g' \
+    ...
+```
+
+### 3 files migrated
+
+| File | Hits | Stutter check |
+|---|---|---|
+| `15-site-generation/SKILL.md` | 7 | ✓ 0 |
+| `05-architecture-and-stack/ai-technology-integration.md` | 7 | ✓ 0 |
+| `07-quality-and-verification/ui-completeness-sweep.md` | 6 | ✓ 0 |
+
+All 3 files migrated cleanly with the upgraded sed recipe. Compact migration notes added.
+
+### Detector count drop
+
+| Pattern | Pre-pass-78 | Post-pass-78 | Δ |
+|---|---|---|---|
+| GPT-4o | 56 | 38 | -18 |
+| DALL-E | 19 | 17 | -2 |
+| DALL·E | 5 | 5 | 0 |
+| TOTAL | 80 | **60** | **-20** |
+
+### Migration arc trajectory
+
+- pass-72: 270
+- pass-73: 226 (-44)
+- pass-74: 190 (-36)
+- pass-75: 160 (-30)
+- pass-76: 116 (-44)
+- pass-77: 80 (-36)
+- pass-78: 60 (-20)
+
+**211 references migrated across 6 passes**. Remaining 60 across long tail (mostly 1-4 hits per file).
+
+### Pass-58→78 closure-loop summary
+
+- **12 latent bugs caught + 211 references migrated**
+- **7 disciplines codified** in lint-doctrine (added: numeric-collision)
+- **5 audit scripts** mechanized
+- Migration recipe now fully codified — future similar deprecations follow the same sed-then-Read-then-Edit-note pattern
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                          # ✓ 9/9 green
+bash bin/check-deprecated-models.sh 2>&1 | grep SUMMARY  # 60 total hits
+grep -E 'GPT Image 1\.5 [0-9]+' [0-9][0-9]-*/**/*.md rules/*.md 2>/dev/null   # 0 collisions
+```
+
+### What was NOT done
+
+- 60 remaining deprecated-identifier migrations — pass-79→
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-79)
+
+- Continue mop-up of 4-hit files (`09-brand build-breaking-rules.md`, `07-quality build-breaking-rules.md`)
+- Cluster more 3-hit files (3 files = 9 hits)
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-77 — 4-file cluster + numeric-collision codification: 116 → 80 hits
 
 ### Closes pass-76 candidates 1 + 2 (cluster + build-prompts.md)

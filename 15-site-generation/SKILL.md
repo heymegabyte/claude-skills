@@ -1,6 +1,6 @@
 ---
 name: "site-generation"
-description: "End-to-end AI website generation pipeline. Claude Opus 4.8 emits Bolt-style <boltArtifact> envelopes (multi-file, plan-first) that customize Vite+React+Tailwind templates from pre-researched business data. Pre-research via APIs, media acquisition, brand extraction, visual inspection via GPT-4o, R2 upload (per-file content-type by extension), D1 status updates. Supports all business types: SaaS, portfolio, non-profit, restaurant, salon, medical, legal, retail, tech."
+description: "End-to-end AI website generation pipeline. Claude Opus 4.8 emits Bolt-style <boltArtifact> envelopes (multi-file, plan-first) that customize Vite+React+Tailwind templates from pre-researched business data. Pre-research via APIs, media acquisition, brand extraction, visual inspection via GPT Image 2 vision, R2 upload (per-file content-type by extension), D1 status updates. Supports all business types: SaaS, portfolio, non-profit, restaurant, salon, medical, legal, retail, tech."
 metadata:
   version: "2.0.0"
   updated: "2026-04-30"
@@ -38,6 +38,8 @@ paths:
 
 # 15 — Site Generation
 
+> **Model migration note (pass-78, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Generation pipeline unchanged.
+
 ## Submodules
 
 - **research-pipeline** — API-driven business research, scraping, enrichment
@@ -48,7 +50,7 @@ paths:
 - **template-system** — Vite + React + Tailwind + shadcn/ui starter
 - **local-seo** — citation building, GBP sync, review generation, trust badges, local conversion tracking
 - **bolt-artifact-protocol** — `<boltArtifact>` XML envelope spec — ordered file/shell actions, PLAN.md-first, runtime parser + executor, ~$6/site at 80K output tokens
-- **blog-import.mjs** — RSS-first crawl + Squarespace JSON fallback → strip CMS residue → GPT-4o-mini typed-block restructure → pHash dedup → `src/data/blog-posts.ts`
+- **blog-import.mjs** — RSS-first crawl + Squarespace JSON fallback → strip CMS residue → GPT Image 2 vision-mini typed-block restructure → pHash dedup → `src/data/blog-posts.ts`
 - **validate-assets.mjs** — post-build R2 / dist gate — 13 mandatory files + every img / link / script / source ref resolves OR matches allowlist
 
 ## Dual-Template Architecture (TWO REPOS — NEVER CONFUSE)
@@ -123,7 +125,7 @@ Phase 1: Claude Opus 4.8 Bolt-Artifact Emission (Worker OR Container)
   → Runtime parser validates first-action-PLAN.md + REQUIRED_FILES + build shell action; failures re-prompt (max 2 retries)
 
 Phase 2: Post-Build Verification (Worker)
-  → Screenshot via microlink.io → GPT-4o vision scoring
+  → Screenshot via microlink.io → GPT Image 2 vision scoring
   → D1 status update → email notification
 ```
 
@@ -143,7 +145,7 @@ ALL BEFORE writing any React code. Text-only site = failed build.
 - `_citations.json` — APA 7th bibliography keyed by refId per `citations.md`
 - `_scraped_content.json` — all pages by URL
 - `_assets.json` — image manifest w/ metadata
-- `_image_profiles.json` — GPT-4o analysis per image: quality + placement + colors
+- `_image_profiles.json` — GPT Image 2 vision analysis per image: quality + placement + colors
 - `_videos.json` — YouTube / Pexels embed URLs + metadata
 - `_places.json` — Google Places enrichment: photos + reviews + rating
 - `_form_data.json` — user-submitted from `/create`
@@ -160,7 +162,7 @@ ALL BEFORE writing any React code. Text-only site = failed build.
   - 50-page ⇒ 200+
   - 500-page ⇒ 2000+
 - Per-page floor: home ≥6 images, every sub-page ≥4.
-- Minimum 5 AI-generated DALL-E 3 originals per site.
+- Minimum 5 AI-generated GPT Image 1.5 originals per site.
 - Site must feel media-rich from first scroll. All images through optimization pipeline (skill 12): WebP + AVIF at 320/640/1280/1920w, blur placeholders, dominant color extraction. Use `<ResponsiveImage>`, never raw `<img>` w/ PNG/JPG src.
 - Dedupe via 301 not deletion — md5-hashed twins keep canonical, delete twin, emit `{deleted-url:canonical}` to Worker redirect map. Source-code refs use FULL canonical filenames.
 
@@ -174,7 +176,7 @@ Template's `<VideoEmbed>` lazy-loads, poster-first, captions if VTT exists, resp
 
 Video count gate: every original `<video>` and embed accounted for in `_videos.json`; missing = fail.
 
-### DALL-E purpose-craft (per-slot prompts, never generic)
+### GPT Image 1.5 purpose-craft (per-slot prompts, never generic)
 
 Every AI-generated image gets slot-specific prompt naming:
 
@@ -185,7 +187,7 @@ Every AI-generated image gets slot-specific prompt naming:
 5. Subject specificity (named noun + modifiers + lighting + lens metaphor — "shot on 35mm, soft window light, documentary style")
 6. Negative prompt (no text, no watermarks, no AI artifacts, no extra fingers, no logos, no captions)
 
-Build `_image_briefs.json` per site BEFORE generation — one brief per slot, reused across providers in fallback chain (DALL-E 3 → GPT Image 1.5 → Ideogram → Recraft).
+Build `_image_briefs.json` per site BEFORE generation — one brief per slot, reused across providers in fallback chain (GPT Image 1.5 → GPT Image 1.5 → Ideogram → Recraft).
 
 Generic "create a hero image" = fail; discarded + brief regenerated.
 
