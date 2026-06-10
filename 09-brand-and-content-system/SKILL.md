@@ -31,6 +31,8 @@ paths:
 
 # 09 — Brand and Content System
 
+> **Model migration note (pass-77, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Brand extraction protocol unchanged.
+
 ## Brian's Brand Voice
 
 - Slogans: "Open-Source Wizardry. 100% Wizardry. 0% Robes." / "Often imitated, never duplicated."
@@ -51,13 +53,13 @@ Psychology: reciprocity (teach), social proof near CTAs, authority (depth/number
 
 1. Screenshot existing (Wayback if down). Extract logo / colors / fonts / tone. Never discard equity.
 
-2. **Color extraction (NON-NEGOTIABLE)** — Screenshot with Playwright, GPT-4o extracts hex (logo priority), cross-ref logo, build palette, validate WCAG AA. NEVER invent, NEVER use Emdash defaults for clients, NEVER infer from category.
+2. **Color extraction (NON-NEGOTIABLE)** — Screenshot with Playwright, GPT Image 2 vision extracts hex (logo priority), cross-ref logo, build palette, validate WCAG AA. NEVER invent, NEVER use Emdash defaults for clients, NEVER infer from category.
 
-2b. **Second-pass verification (BUILD-BREAKING — pre-deploy)** — GPT-4o vision color extraction NOT trusted blind. After GPT-4o returns `{primary, secondary, accent}`:
+2b. **Second-pass verification (BUILD-BREAKING — pre-deploy)** — GPT Image 2 vision color extraction NOT trusted blind. After GPT Image 2 vision returns `{primary, secondary, accent}`:
 
 - (a) Load logo PNG via sharp, sample dominant chroma via k-means k=5 ignoring transparent + near-white/near-black (top-3 cluster centroids in HSL)
 - (b) For EACH returned color, compute min HSL hue-distance to top-3 logo chromas — if `min_hue_distance > 30°` AND saturation>0.2, FAIL w/ diagnostic
-- (c) Re-run GPT-4o w/ corrective prompt naming top-3 logo chromas + demanding `primary` derived from one
+- (c) Re-run GPT Image 2 vision w/ corrective prompt naming top-3 logo chromas + demanding `primary` derived from one
 - Validator: `validate-color-from-logo.mjs` in `build_validators.ts` between brand-research and template-pick
 - NEVER ship primary color failing hue-distance check
 
@@ -65,7 +67,7 @@ Psychology: reciprocity (teach), social proof near CTAs, authority (depth/number
    - Signal A: logo dominant-color luminance (WCAG formula)
    - Signal B: source-site dominant background luminance (Playwright screenshot of `body` background — avg pixel luminance)
    - Decision: BOTH agree (logo dark + source bg light → `theme="light"`; logo light + source bg dark → `theme="dark"`) → match. Disagree → source-site wins UNLESS source design score <7/10 (then logo wins)
-   - High-quality source (≥7/10 via GPT-4o `detail:low`) → match source theme verbatim
+   - High-quality source (≥7/10 via GPT Image 2 vision `detail:low`) → match source theme verbatim
    - Set theme BEFORE template selection. Reject palette where logo-on-bg contrast <4.5:1 (WCAG AA).
    - "Dark-first" applies to accent-rich Emdash/SaaS brands, NOT to (a) logo-driven non-profit/serif clients, (b) high-quality light-themed source brands
 
@@ -73,13 +75,13 @@ Psychology: reciprocity (teach), social proof near CTAs, authority (depth/number
 
 - Forbidden: white-text-logo on white/cream | dark-text-logo on dark/navy | low-saturation-logo on same-hue bg
 - Resolution: header AND footer themes chosen AFTER logo luminance scan. Dual-theme site needing SAME logo → ship TWO files (`brand-mark-light.svg` for dark bg, `brand-mark-dark.svg` for light bg) + CSS `<picture><source media>` swaps
-- Automate via skill 12 logo-variant-generator (Real-ESRGAN inversion or `magick -channel RGB -negate` for monochrome; color logos with text → GPT Image 1.5 w/ "same logo on transparent bg w/ text inverted to <opposite-luminance>" — DALL-E 2/3 removed from API 2026-05-12, see `platform.openai.com/docs/deprecations`)
+- Automate via skill 12 logo-variant-generator (Real-ESRGAN inversion or `magick -channel RGB -negate` for monochrome; color logos with text → GPT Image 1.5 w/ "same logo on transparent bg w/ text inverted to <opposite-luminance>" — DALL-E 2/3 predecessors removed from API 2026-05-12, see `platform.openai.com/docs/deprecations`)
 - Validator: `validate-logo-contrast.mjs` — Claude Sonnet 4.6 vision (or current OpenAI multimodal fallback per `rules/e2e-visual-inspection.md`) samples logo bbox + container computed bg at 6bp + pixel sampling, fails if <4.5:1
 
-3a. **Brand-element extraction (logo is gold mine — extract DNA)** — When source logo found, GPT-4o vision returns `{font_family_guess, suggested_heading_font, suggested_body_font, font_weight, letterspacing, has_icon_mark, icon_mark_description, icon_mark_dominant_color, decorative_motif_description, motif_extractable (bool)}`
+3a. **Brand-element extraction (logo is gold mine — extract DNA)** — When source logo found, GPT Image 2 vision returns `{font_family_guess, suggested_heading_font, suggested_body_font, font_weight, letterspacing, has_icon_mark, icon_mark_description, icon_mark_dominant_color, decorative_motif_description, motif_extractable (bool)}`
 
 - (i) Matched Google Font → `--font-heading` site-wide
-- (ii) `motif_extractable=true` (mountain silhouette, wave, leaf, geometric mark embedded) → crop icon-only region (`magick logo.png -alpha extract -trim +repage`), upscale 2-4× via Real-ESRGAN / DALL-E variation, save as `assets/brand-splash.png` (full-bleed hero bg) + `assets/brand-mark.png` (favicon source)
+- (ii) `motif_extractable=true` (mountain silhouette, wave, leaf, geometric mark embedded) → crop icon-only region (`magick logo.png -alpha extract -trim +repage`), upscale 2-4× via Real-ESRGAN / GPT Image 1.5 variation, save as `assets/brand-splash.png` (full-bleed hero bg) + `assets/brand-mark.png` (favicon source)
 
 3c. **Logo singularity (BUILD-BREAKING — exactly ONE logo file per container)** — Every logo container renders EXACTLY ONE logo asset
 
@@ -101,12 +103,12 @@ Most local businesses have no website. Brand lives in physical world — signage
 
 1. Street View Static API: `https://maps.googleapis.com/maps/api/streetview?size=1200x800&location={lat},{lng}&source=outdoor`
 2. Places photos: filter `types: ["exterior", "storefront"]`
-3. GPT-4o vision on storefront: extract sign text (font), sign colors (hex), logo, building, awning/accent
+3. GPT Image 2 vision on storefront: extract sign text (font), sign colors (hex), logo, building, awning/accent
 4. Prompt: "Extract brand identity from this business storefront photo. Return JSON: `{sign_text, sign_font_style (serif/sans/script/decorative/hand-lettered), primary_color (hex), secondary_color (hex), accent_color (hex), logo_description, overall_aesthetic, confidence (0-1)}`"
 
 ### Business Cards / Collateral (user uploads via form)
 
-GPT-4o vision extracts: logo (crop region), colors (exact hex), font, tagline, NAP for verification.
+GPT Image 2 vision extracts: logo (crop region), colors (exact hex), font, tagline, NAP for verification.
 
 ### Vehicle Wraps / Uniforms (Google Places photos)
 
@@ -126,7 +128,7 @@ Each color tagged with `color_source` for provenance.
 
 ### Font matching from signage
 
-GPT-4o identifies style → map to closest Google Font:
+GPT Image 2 vision identifies style → map to closest Google Font:
 
 - Script → Dancing Script
 - Serif → Playfair Display

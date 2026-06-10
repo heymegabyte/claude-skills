@@ -35,13 +35,15 @@ paths:
 
 # 12 — Media Orchestration
 
+> **Model migration note (pass-77, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Media pipeline unchanged.
+
 ## Submodules
 
 - **media-prompts** — prompt templates, Ideogram v3 API
 - **compression-pipeline** — Python code, format tables, CF Image Transforms, CLS, broken image detection
 - **og-image-generation** — Satori edge-rendered OG, KV / R2 cache, meta-tag helper
 - **image-optimization** — Sharp processing, responsive srcset, WebP/AVIF, blur placeholders, R2 pipeline
-- **image-profiling** — GPT-4o vision batch profiling
+- **image-profiling** — GPT Image 2 vision batch profiling
 - **lightbox-classifier** — per-image eligibility — `kind!=logo` + ≥1024×768 + score≥7
 - **social-brand-hex** — canonical brand-color map per social platform
 - **notebooklm-pipeline** — per-site podcast via ElevenLabs Studio + infographic via Vega-Lite/Recraft/GPT-Image-2 + HeyGen video + CF Stream + RSS + JSON-LD + cost ceiling $3.50/site
@@ -81,17 +83,17 @@ Read every image before deploy. Check: blur, artifacts, watermarks, wrong colors
 - Be specific, include colors, specify avoidances
 - Product screenshots: browser rendering via Playwright on live URL
 
-## DALL-E First Slot-Fill (CANONICAL — UNIVERSAL)
+## GPT Image 1.5 First Slot-Fill (CANONICAL — UNIVERSAL)
 
-DALL-E (gpt-image-1.5 / gpt-image-1) is PRIMARY originator for every image slot the source-resolution chain didn't fill from real-entity sources (Places / uploads / scrape).
+GPT Image 1.5 (gpt-image-1.5 / gpt-image-1) is PRIMARY originator for every image slot the source-resolution chain didn't fill from real-entity sources (Places / uploads / scrape).
 
-- After real-entity sources exhaust, DALL-E invoked BEFORE generic stock — per-slot prompt produces tighter topic match than any stock library
-- Stock APIs run parallel speed-pass fallback (instant return if DALL-E hangs >15s) but DALL-E output preferred at curation
+- After real-entity sources exhaust, GPT Image 1.5 invoked BEFORE generic stock — per-slot prompt produces tighter topic match than any stock library
+- Stock APIs run parallel speed-pass fallback (instant return if GPT Image 1.5 hangs >15s) but GPT Image 1.5 output preferred at curation
 - See skill 15 `media-acquisition` Media-Slot-Manifest + Fail-CLOSED auto-regenerate (5 attempts, prompt-refinement loop, $0.40 worst-case ceiling per slot)
 
 ## Per-Slot Prompt Mandatory Fields (BUILD-BREAKING — `validate-image-prompts.mjs` + `validate-dalle-slot-fill.mjs`)
 
-Every DALL-E call MUST encode 6 fields from `_media_slots.json`:
+Every GPT Image 1.5 call MUST encode 6 fields from `_media_slots.json`:
 
 1. Page topic + intent verbatim from `topic_intent`
 2. Brand palette tokens from `_brand.json.colors` (inline hex)
@@ -104,9 +106,9 @@ Generic prompts FAIL validator. Same template applies to FLUX, Recraft, Stabilit
 
 ## Fail-CLOSED Auto-Regenerate (BUILD-BREAKING — `validate-no-empty-slots.mjs`)
 
-Every slot in `_media_slots.json` MUST end build w/ `filled_url != null AND filled_score >= relevance_floor` (default 8/10 via GPT-4o vision).
+Every slot in `_media_slots.json` MUST end build w/ `filled_url != null AND filled_score >= relevance_floor` (default 8/10 via GPT Image 2 vision).
 
-Failure modes (Pexels returns nothing, DALL-E NSFW-flagged, scraped image broken, vision relevance below floor) trigger immediate auto-regeneration via DALL-E w/ REFINED prompt — NEVER silent skip, NEVER substitute brand-gradient unless 5 regen attempts exhausted.
+Failure modes (Pexels returns nothing, GPT Image 1.5 NSFW-flagged, scraped image broken, vision relevance below floor) trigger immediate auto-regeneration via GPT Image 1.5 w/ REFINED prompt — NEVER silent skip, NEVER substitute brand-gradient unless 5 regen attempts exhausted.
 
 Build orchestrator's `media_pipeline_orchestrator` sub-agent owns this loop. Submodule: `media-acquisition.md` § Fail-CLOSED chain.
 

@@ -6,6 +6,8 @@ updated: "2026-04-24"
 
 # Build Prompts
 
+> **Model migration note (pass-77, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Build prompt structure unchanged.
+
 The container runs ONE comprehensive Claude Code prompt. This prompt encompasses all build phases. The prompt is dynamically assembled from form data + research results. Claude Code reads pre-written context files (`_research.json`, `_brand.json`, `_assets.json`, etc.) and customizes the pre-installed template.
 
 ## njsk.org Quality Bar (***THE FLOOR***)
@@ -144,7 +146,7 @@ import → strip_cms_residue → ai_block_typing(lead/heading/paragraph/quote/ca
 - **demographics-agent** → ACS B16001 lookup on service_area, emits `_locales.json` per [[i18n-by-demographics]] (Census API, county-FIPS resolution, LEP-pct thresholds → translation_strategy)
 - **org-type-inferrer-agent** → resolves `_research.json.identity.schema_org_type` from name+category+content signals, returns canonical-floor route set per [[page-set-expansion]] § Org-Type Canonical Floor, emits `_page_set_gap.json` (missing_routes + jewel_candidates)
 - **media-walker-agent** → walks `<img>+<picture>+CSS-bg+slider+og:image+linked-PDF/DOC` across every source URL, downloads to `public/images/<section>/`, emits `_assets.json` + `_sliders.json` (preserves order)
-- **brand-extractor-agent** → logo extraction chain (header→og:image→link rel=icon→wp-content→Squarespace→Wix→favicon→Wayback) + Brandfetch/Logo.dev/GPT-4o-vision color extraction → `_brand.json` (colors + fonts + personality + logo variants light/dark)
+- **brand-extractor-agent** → logo extraction chain (header→og:image→link rel=icon→wp-content→Squarespace→Wix→favicon→Wayback) + Brandfetch/Logo.dev/GPT Image 2 vision-vision color extraction → `_brand.json` (colors + fonts + personality + logo variants light/dark)
 - **jewel-content-authors** (***one parallel agent per jewel batch — 3-5 jewels each***) → each gets a slice of `_jewels.json` JewelBrief[] (see [[page-set-expansion]] § Jewel Content Authoring Playbook), authors h1+sections+JSON-LD+inline-link-targets+APA citations against `_pdf_facts.json`+`_research.json`+`_corpus.json`, returns typed-block JSON per skill 15 build-prompts.md "Editorial typed-blocks" pattern. Batch by topic cluster (about+team+history one batch, programs+services+impact next, donate+volunteer+events next, blog+faq+contact last) so each agent has coherent context
 - **i18n-translator-agents** (***one parallel agent per secondary_locale in `_locales.json`***) → each translates ENTIRE route corpus (h1, body blocks, meta, JSON-LD strings) into target locale, emits `_translations.<locale>.json` keyed by route+block-id. Translation strategy = `full_route_alt` → ship `/<locale>/<route>`; `hreflang_only` → ship hreflang link tags + translated meta only. Native speaker register, NEVER literal machine output — pass `_research.json` cultural-context block into each prompt
 - **IA-normalizer-agent** → reconciles `_scraped_content.json.sitemap_urls[]` (source) + `_page_set_gap.json.canonical_floor_routes[]` (floor) + `_jewels.json[].route` (jewels) into single normalized IA, emits `_redirects` map (source-CMS-garbage slugs → clean canonical routes, never 404) + `_sitemap.json` (union output)
@@ -157,7 +159,7 @@ Read ALL _ prefixed files in this directory for context:
 - _brand.json — colors, fonts, personality, logo URL
 - _scraped_content.json — content from existing website (if available)
 - _assets.json — manifest of all images in assets/ folder
-- _image_profiles.json — GPT-4o analysis of each image
+- _image_profiles.json — GPT Image 2 vision analysis of each image
 - _videos.json — YouTube/video URLs and metadata
 - _places.json — Google Places enrichment data
 - _form_data.json — user-submitted form data
@@ -191,11 +193,11 @@ Every image in assets/ MUST appear on the site. Every fact must come from resear
 - If original is WebP: convert to PNG via sips/sharp/imagemagick for broad compatibility
 - Logo MUST appear in: header nav (every page), footer, OG image, JSON-LD logo field, favicon
 - NEVER substitute SVG placeholder icons for the real logo — the njsk.org soup-bowl-SVG incident
-- ***Original-asset retention default:*** when source logo is professional (GPT-4o vision quality score ≥7/10), KEEP it verbatim. Replacement requires explicit user instruction OR quality <7/10. Brand equity > AI novelty. The lonemountainglobal.com 2026-04-30 incident: rebuild shipped without the original logo because extraction stopped at the header `<img>` and didn't walk og:image / `<link rel="icon">` / wp-content paths
+- ***Original-asset retention default:*** when source logo is professional (GPT Image 2 vision quality score ≥7/10), KEEP it verbatim. Replacement requires explicit user instruction OR quality <7/10. Brand equity > AI novelty. The lonemountainglobal.com 2026-04-30 incident: rebuild shipped without the original logo because extraction stopped at the header `<img>` and didn't walk og:image / `<link rel="icon">` / wp-content paths
 - If no logo found on website: check Google Places photos, social media profile images, Brandfetch API, logo.dev API — exhaust ALL sources before generating one
 - Logo colors inform brand palette extraction: dominant color→primary, secondary accent→secondary
-- ***Background-asset-from-logo extraction (LMG mountain-splash pattern):*** when logo contains a strong graphic motif (mountain, wave, leaf, geometric mark), crop the icon-only region (`magick logo.png -alpha extract -trim +repage`), upscale 2-4x via Real-ESRGAN/DALL-E variation, save as `assets/brand-splash.png` (full-bleed hero bg) + `assets/brand-mark.png` (favicon source). Pair with logo's matched font for cohesive design. See skill 09 §3a + skill 12/15 media-acquisition.md
-- ***Font matching from logo:*** GPT-4o vision identifies logo font → maps to closest Google Font → site uses that as `--font-heading` site-wide. Same hand drew the logo and the headlines
+- ***Background-asset-from-logo extraction (LMG mountain-splash pattern):*** when logo contains a strong graphic motif (mountain, wave, leaf, geometric mark), crop the icon-only region (`magick logo.png -alpha extract -trim +repage`), upscale 2-4x via Real-ESRGAN/GPT Image 1.5 variation, save as `assets/brand-splash.png` (full-bleed hero bg) + `assets/brand-mark.png` (favicon source). Pair with logo's matched font for cohesive design. See skill 09 §3a + skill 12/15 media-acquisition.md
+- ***Font matching from logo:*** GPT Image 2 vision identifies logo font → maps to closest Google Font → site uses that as `--font-heading` site-wide. Same hand drew the logo and the headlines
 
 ### Favicon Pipeline (***real-favicongenerator MANDATORY — every site, every build***)
 - Run real-favicongenerator (API preferred when `REAL_FAVICON_GENERATOR_API_KEY` set, ImageMagick fallback otherwise) on the icon-only logo region (extract icon from lockup if needed)
@@ -296,7 +298,7 @@ Media enrichment is NOT optional. Whether running in container, via prompt, or i
 1. **Extract images from original site (***WALK EVERY PAGE — not just homepage***):** Phase-0 Playwright crawler MUST iterate every URL in source sitemap (capped at 1000), wait for `networkidle`, walk `<img>`+`<picture>`+CSS bg+slider/swiper/splide/glide+Squarespace/Wix gallery+lazy `data-src`+`og:image`+linked PDFs/DOCs (see media-acquisition.md "Original Media Extraction"). Download each to `public/images/{section}/{slug}-{i}.{ext}`. EVERY original image MUST land locally — hotlinking is blocked at the worker. Slider groups preserve order via `_sliders.json` manifest.
 2. **Pexels agent (***FIRST-CLASS — query in parallel, fan out across business-type variants***):** Required when `PEXELS_API_KEY` set. Run 4-6 parallel queries: `{business_type} interior`, `{business_type} {city}`, `{service_specific} professional`, `{atmosphere_keyword}` plus Pexels Video API for 3-5 B-roll clips. Fetch top 15-25 photos per query, dedup by id, AI-rate via Workers AI Llama Vision (free), keep top by relevance. Min 8 Pexels stills + 3 Pexels videos per site. License: free commercial.
 3. **Google CSE agent (***FIRST-CLASS — context shots and brand verification***):** Required when `GOOGLE_CSE_KEY` + `GOOGLE_CSE_CX` set. Run 3-5 parallel queries with `searchType=image&imgSize=xlarge&rights=cc_publicdomain,cc_attribute,cc_sharealike`: `"{business_name}" {city}`, `"{business_name}" team`, `"{business_name}" exterior`, `{neighborhood} {business_type}`, `{notable_partner} {business_name}`. Fetch top 10/query, AI-rate, keep ≥5. Verify license before download. Use for storefront context, owner/team shots when no original exists, neighborhood scenery, partner logos.
-4. **DALL-E 3 agent (***PRIMARY ORIGINAL-IMAGERY ENGINE — Brian's stated preference, use heavily***):** Required when `OPENAI_API_KEY` set. Generate ≥5 originals per site via DALL-E 3 (HD 1024×1792 for hero, 1024×1024 for sections). Two modes: (a) **Ultra-real photography** — `"Photorealistic [scene depicting page topic], [extracted brand color palette], shot on Hasselblad, golden hour, 85mm prime, no text/logos, hyperdetailed, cinematic"` for hero backgrounds, service illustrations, atmospheric textures; (b) **Creative narrative** — when source site has unique brand story or original artwork, generate scene-by-scene narrative imagery extending that visual world (e.g. extracted logo motif → narrative scenes featuring the motif in different contexts). Cost: ~$0.04-0.08/image, ~$0.30-0.50/site total. GPT Image 1.5 secondary (faster iteration). Stability AI for textures/patterns. Sora API for short videos when key present.
+4. **GPT Image 1.5 agent (***PRIMARY ORIGINAL-IMAGERY ENGINE — Brian's stated preference, use heavily***):** Required when `OPENAI_API_KEY` set. Generate ≥5 originals per site via GPT Image 1.5 (HD 1024×1792 for hero, 1024×1024 for sections). Two modes: (a) **Ultra-real photography** — `"Photorealistic [scene depicting page topic], [extracted brand color palette], shot on Hasselblad, golden hour, 85mm prime, no text/logos, hyperdetailed, cinematic"` for hero backgrounds, service illustrations, atmospheric textures; (b) **Creative narrative** — when source site has unique brand story or original artwork, generate scene-by-scene narrative imagery extending that visual world (e.g. extracted logo motif → narrative scenes featuring the motif in different contexts). Cost: ~$0.04-0.08/image, ~$0.30-0.50/site total. GPT Image 1.5 secondary (faster iteration). Stability AI for textures/patterns. Sora API for short videos when key present.
 5. **Video embeds:** YouTube Data API search `"{business_name}"` + 3-5 business-type queries → embed top results via iframe (no download). Pexels Video API B-roll already covered by step 2. Sora when `OPENAI_API_KEY` available — generate 1-2 short narrative video loops per site.
 6. **Image placement:** Hero section MUST have a background image, video, or photo. Every service/feature card needs an image. About page ≥2 photos. Team page = real headshots from source site (initials only as fallback per existing rule). Blog posts inherit source-site post photos. Gallery/photo section auto-renders when ≥5 images in a `[data-gallery]` ancestor.
 7. **Hard gate (***page-count-scaled — NEVER fixed 10***):** Count `public/images/**/*` minus chrome (logo+favicon). Threshold = `max(30, original_image_count × 1.4, page_count × 6_home_or_4_sub)`. 4-page rebuild ⇒ ≥30 images. 50-page ⇒ ≥200. 500-page ⇒ ≥2000. Below threshold = build NOT complete. Below 50% of threshold = media acquisition NOT started. Verify via `find public/images -type f | wc -l`.
@@ -838,7 +840,7 @@ After customizing all files:
 1. Run `npm run build` — fix ANY errors
 2. Run `node /home/cuser/validate-urls.js` — compare _scraped_content.json.original_urls against new sitemap +_redirects. Fail if any URL unaccounted.
 3. Run `node /home/cuser/validate-citations.js dist/` — grep for unsourced numeric claims. Fail if any `\d+%|\$\d+[MBK]|\d+x|\d+ users|since \d{4}` lacks a `<Citation refId="...">` wrapper resolving to `_citations.json`.
-4. Run `node /home/cuser/inspect.js dist/index.html` — read the GPT-4o critique
+4. Run `node /home/cuser/inspect.js dist/index.html` — read the GPT Image 2 vision critique
 4. Fix ALL issues scoring below 8/10 in the critique
 5. Run `npm run build` again — verify zero errors
 6. If inspect score < 8: repeat fix+build (max 3 iterations)
@@ -883,7 +885,7 @@ The Worker builds this prompt dynamically:
 `/home/cuser/inspect.js` — pre-baked in Docker image.
 
 - Takes HTML file path
-- Sends first 14KB to GPT-4o with "senior Stripe web designer" persona
+- Sends first 14KB to GPT Image 2 vision with "senior Stripe web designer" persona
 - Scores 1-10 across: color contrast, typography, layout/spacing, animations, images, mobile, brand consistency, visual polish
 - Returns `{ score, issues[], recommendations[] }` as JSON to stdout
 - 25s timeout
@@ -907,7 +909,7 @@ Any time the build imports long-form blog content (Squarespace, WordPress, Mediu
 - Names/dates/facts never rewritten
 
 ### Stage 2 — Editorial pass (`enhance-blog-posts.mjs` — see reference script in this skill dir)
-GPT-4o-mini editorial pass over every cleaned post. Mandates:
+GPT Image 2 vision-mini editorial pass over every cleaned post. Mandates:
 
 1. **Grammar/spelling/professional tone** — fix without altering author voice or factual content
 2. **Quote preservation** — anything in `quote` blocks or `"..."` strings stays verbatim

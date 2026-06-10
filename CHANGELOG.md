@@ -1,5 +1,95 @@
 # Skills System Changelog
 
+## 2026-06-09 — pass-77 — 4-file cluster + numeric-collision codification: 116 → 80 hits
+
+### Closes pass-76 candidates 1 + 2 (cluster + build-prompts.md)
+
+### 4 files migrated
+
+| File | Hits | Stutter check |
+|---|---|---|
+| `07-quality-and-verification/completeness-verification.md` | 10 | ✓ 0 |
+| `09-brand-and-content-system/SKILL.md` | 10 | 1 collision |
+| `12-media-orchestration/SKILL.md` | 8 | ✓ 0 |
+| `15-site-generation/build-prompts.md` | 9 | ✓ 0 |
+
+### NEW failure mode caught: numeric-suffix collision
+
+`09-brand-and-content-system/SKILL.md:76` had pass-71's surgical fix: `DALL-E 2/3 removed from API 2026-05-12` (referring to BOTH `dall-e-2` AND `dall-e-3`). Bulk sed `s/DALL-E/GPT Image 1.5/g` collided with the trailing `2/3` numeric suffix to produce `GPT Image 1.5 2/3 removed`. The phrase is now semantically wrong — GPT Image 1.5 was not retired; DALL-E 2/3 were the things removed.
+
+Fix: rewrote the parenthetical as `DALL-E 2/3 predecessors removed from API 2026-05-12` (preserving the historical reference correctly).
+
+### Codifiable pattern (next pass-78 work)
+
+Pre-clean sed patterns must include numeric-suffix variants:
+
+```bash
+# WRONG — collides with `DALL-E 2/3` idiom
+sed -e 's/DALL-E 3/GPT Image 1.5/g' -e 's/DALL-E/GPT Image 1.5/g'
+
+# RIGHT — pre-clean numeric idioms first
+sed -e 's/DALL-E 2\/3/DALL-E 2 and DALL-E 3/g' \
+    -e 's/DALL-E 3/GPT Image 1.5/g' \
+    -e 's/DALL-E 2/gpt-image-2/g' \
+    -e 's/DALL-E/GPT Image 1.5/g'
+```
+
+This goes into `rules/lint-doctrine.md § Codified incidents` next pass.
+
+### Compact migration notes (pass-76 convention)
+
+All 4 files got the single-line blockquote format pass-76 established.
+
+### Detector count drop
+
+| Pattern | Pre-pass-77 | Post-pass-77 | Δ |
+|---|---|---|---|
+| GPT-4o | 87 | 56 | -31 |
+| DALL-E | 24 | 19 | -5 |
+| DALL·E | 5 | 5 | 0 |
+| TOTAL | 116 | **80** | **-36** |
+
+### Migration arc trajectory
+
+- pass-72: 270
+- pass-73: 226 (-44)
+- pass-74: 190 (-36)
+- pass-75: 160 (-30)
+- pass-76: 116 (-44)
+- pass-77: 80 (-36)
+
+**191 references migrated across 5 passes**. Sub-100 territory now. Remaining 80 distributed across ~6-8 files with smaller hit counts each.
+
+### Pass-58→77 closure-loop summary
+
+- **12 latent bugs caught + 191 references migrated**
+- **6 disciplines codified** in lint-doctrine + composed-envelope codified
+- **5 audit scripts** mechanized
+- New failure mode (numeric-suffix collision) staged for pass-78 codification
+
+### Verification
+
+```bash
+bash bin/lint-all.sh --quiet                                          # ✓ 9/9 green
+bash bin/check-deprecated-models.sh 2>&1 | grep SUMMARY                # 80 total hits
+grep -nE 'GPT Image 1\.5 [0-9]+' [0-9][0-9]-*/**/*.md rules/*.md 2>/dev/null   # 0 collisions
+```
+
+### What was NOT done
+
+- 80 remaining deprecated-identifier migrations — pass-78→
+- Codify numeric-collision pattern — pass-78 (after this pattern stabilizes through one more migration)
+- Pass-39 candidates 2/3 (SessionStart hook + Python `emit-json` parity) — still gated
+
+### Next candidates (pass-78)
+
+- Codify the numeric-suffix collision pattern (pass-77 surfaced it)
+- Continue migrating remaining low-density files
+- Session-recap SessionStart hook (still gated)
+- Python `emit-json` parity (still gated)
+
+---
+
 ## 2026-06-09 — pass-76 — 3-file cluster migration: 160 → 116 hits
 
 ### Closes pass-75 candidates 1 + 2 (next dense file + lighter cluster)
