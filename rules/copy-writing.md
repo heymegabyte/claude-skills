@@ -134,3 +134,12 @@ Only ship names confirmed against:
 4. Explicit parish/institution confirmation logged in `_confirmations.json`
 
 Otherwise slot stays blank ("Executive Director" w/ no name) or omitted. Blank > faked.
+
+### Fabricated-people build gate (DETERMINISTIC — ship in every people-bearing site)
+
+- The "Blank > faked" rule is unenforced prose unless a gate checks it. Invented testimonials ship silently — they look plausible and pass every other validator. Ship a `validate-no-fabricated-people.mjs` gate wired into `check` + `build`.
+- **Detects:** a person-like `name: '<literal>'` (`First L.` / `First Last` / `Rev. James O.`, plus org-endorser tokens `Bank|Corp|Inc|LLC|Foundation|Company|University|Reserve|Group|Partners`) paired in the SAME object window with a TESTIMONIAL signal — `quote:` / `reviewBody:` / `testimonial:`, OR `body:` alongside `role:`/`years:` (the alumni-card shape) — UNLESS the name is in `_confirmations.json` `confirmed_voices`.
+- **Precise by design:** staff directories (name + role, NO quote), citation authors, and blog posts (no name+role+body trio) are NOT flagged. Dynamic `name: t.name` (no string literal) is NOT matched — only hard-coded personas.
+- **`_confirmations.json`** is the allowlist: `{ "confirmed_voices": [] }`. A name enters ONLY when the testimonial is collected with permission AND verified (signed release / public LinkedIn / staff page / press release). Empty is the correct default.
+- **Partnerships are different from quotes.** A named org tied to a REAL primary source (e.g. the kitchen's own blog post documenting a volunteer day, slug-checked by `validate-links`) is honest provenance — NOT a fabrication. The gate targets attributed first-person QUOTES, not sourced org mentions. Don't gut a sourced partner list.
+- **Reference incident (njsk.org, 2026-06):** invented testimonials shipped to prod across 3 surfaces (`/alumni`, `/testimonials`, AND `/home` — the last only caught when the gate ran). All used `First L.` personas + first-person quotes + even `Person`/`Review` JSON-LD, zero provenance. The gate caught the 3rd site on its first run. Fix = remove the people + reframe to cited general patterns / honest invitations. Reference impl: `scripts/validate-no-fabricated-people.mjs` + `_confirmations.json`.
