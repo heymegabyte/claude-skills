@@ -56,6 +56,28 @@ Architecture drift is the gap between how the system is SUPPOSED to be structure
 - `.github/workflows/feature-architecture.yml` runs both on every push
 - Copy these verbatim into every new emdash project; wire into `predeploy` + CI
 
+## Build-artifact drift guards (every generated artifact validates against its source)
+
+Any artifact GENERATED at build (sitemap, RSS/JSON feed, service-worker precache list, robots.txt, OG/JSON-LD, an icon manifest) silently drifts from its source-of-truth the moment a route/asset/file is added or renamed — and the usual gates (typecheck, tests, link-check of `src/`) DON'T scan it. A drifted artifact fails quietly in production: a route missing from the sitemap is un-indexed; a renamed image still listed in the SW precache 404s on every install; a JSON-LD block missing a required field fails Rich Results. **Every generated/curated artifact gets a build gate that re-derives or cross-checks it against its single source of truth, and fails the build on mismatch.**
+
+### The rule
+
+- **One source of truth per route/asset set**, imported by BOTH the app and every validator (Node ≥23 can `import` a `.ts` directly — strip-types — so a `.mjs` build script and the TS app can share one module). No hand-maintained second copy.
+- For each generated artifact, write a gate that asserts coverage/validity against that source, wired into the build chain. Exit 1 on drift.
+- When a gate's class first bites, fix the instance AND ship the gate the same turn (per `prompt-as-training-signal`): the one-off bug becomes a permanent build failure.
+
+### Reference guards (njsk.org, 2026-06 — copy the shape into every build)
+
+- **sitemap ↔ route source** — `generate-sitemap.mjs` imports `pageMeta` and fails if any public SEO route is absent from `STATIC_ROUTES` (caught `/get-help` + `/stock-gift` un-indexed for several passes). Curated per-route priority/changefreq stays; only coverage is enforced.
+- **SW precache ↔ public/** — `validate-links.mjs` parses `sw.js` `STATIC_ASSETS` and asserts every asset-extension entry exists in `public/` (caught `/og-image.jpg` precached when the file was renamed to `.png` → 404 on every service-worker install; `Promise.allSettled` hid it). HTML shell entries excluded.
+- **JSON-LD structural** — `validate-jsonld.mjs` imports the route meta and asserts each block has `@context` + `@type` + the type-specific required fields (`HowTo→step`, `FAQPage→mainEntity`, `WebPage→name`, …) — caught 2 nameless Speakable `WebPage` blocks.
+- **route manifest ↔ worker soft-404** — one shared `known-routes.ts` (`KNOWN_ROUTES` + `isKnownRoute`) imported by the link validator AND the Worker, so unknown HTML paths return a real 404 status (not a 200 soft-404) with zero drift risk; conservative dynamic prefixes stay 200.
+- **fabricated-people** — `validate-no-fabricated-people.mjs` flags a person-name paired with a quote/testimonial lacking a `_confirmations.json` entry (both `name:`-field and object-`'Name':`-key attribution). See `copy-writing.md § Fabricated-people build gate`.
+
+### Audit cadence
+
+- Periodically curl/Playwright the LIVE artifacts a crawler/browser actually fetches — `sitemap.xml`, `feed.xml`, `robots.txt` (watch the edge-injected CF managed block per `always.md`), `site.webmanifest` (every icon/screenshot/shortcut/start_url resolves), `sw.js` precache, OG image dimensions (1200×630 ≤100KB), hreflang reciprocity. Built ≠ served-correctly. A zero-find audit round after a run of finds is the signal the artifact surface has converged.
+
 ## Scan cadence (before every new feature)
 
 1. `pnpm validate:architecture` — confirm zero existing drift before adding more
