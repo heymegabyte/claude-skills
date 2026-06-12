@@ -42,6 +42,7 @@ paths:
 - `sitemap.xml` (every `<url>` has `<lastmod>`)
 - `browserconfig.xml`
 - `.well-known/security.txt`
+  - **Cloudflare gotcha (same class as the robots.txt one above)**: CF's account-level **managed `security.txt`** edge-serves a single file across EVERY zone in the account (`server: cloudflare`, CF-injected `report-to`/`nel`, no `cf-cache-status`), SHADOWING any `public/.well-known/security.txt` asset — the repo file NEVER serves. A repo copy then silently drifts (stale contacts/expiry) and a future agent "fixes" a dead file. Always `curl` the LIVE security.txt; if CF-managed, edit the **account security.txt dashboard setting**, not the asset, and keep the repo copy reconciled (or delete it) so it can't contradict prod. Reference incident: pdf.megabyte.space 2026-06-12.
 - `favicon.ico` + `favicon-16x16.png` + `favicon-32x32.png`
 - `apple-touch-icon.png` (180×180)
 - OG image
