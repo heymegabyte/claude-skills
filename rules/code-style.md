@@ -126,6 +126,7 @@ paths:
 - 3.3.9 Accessible Authentication (Enhanced) — AAA
 
 - **"axe 0 violations ≠ accessible."** axe-core auto-tests ONLY 2.5.8 of the 9; it catches ~57% of issues by volume and fully automates ~30% of WCAG SC. The 6 AA-level criteria above (2.4.11, 2.5.7, 2.5.8, 3.2.6→A, 3.3.7→A, 3.3.8) need MANUAL review — bake a manual-checklist gate into the a11y pass, never claim AA from a green axe run alone.
+- **2.5.8 inline-text exemption is NARROW — box-styled controls don't qualify.** The "inline" exception (target in a sentence / constrained by line-height) covers inline `<a>` text links in running prose ONLY. A chip / pill / tag / badge / button styled as a discrete BOX (real border OR non-transparent background + a non-inline display) is NOT "a target in a sentence" — it must clear the 24px floor like any control. A 23px bordered chip is a real AA failure that axe never flags (it auto-tests only the raw control box). When auditing tap targets, classify by box-vs-inline, not by tag. Remedy mirrors the checkbox case: `inline-flex min-h-[24px] items-center` grows only the clickable region, visual box ~unchanged. (brickcitylabor pass +87 — homepage Services example-chips at 23px.)
 
 ### ADA deadlines (DOJ Title II, extended Apr 2026 IFR)
 
