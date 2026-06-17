@@ -21,6 +21,7 @@ members:
   - rules/parallel-subagent-economy
   - rules/feature-flags
   - rules/drift-detection
+  - rules/repo-folder-hygiene
   - rules/extra-mile
   - rules/proactive-improvements
   - rules/auto-integrate-recs
