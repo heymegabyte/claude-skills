@@ -193,7 +193,9 @@ Frameworks: IEEE EAD, ACM, W3C, UNESCO, EFF, Humane by Design, Ethical OS, Copen
 Render as markdown in chat, NOT via bash:
 
 ```
-**⚡ {project}** · `{branch}` · {time}
+**⚡ {project}** · `{branch}` · {finish_time}
+
+**⏱ Time:** {start_time} → {finish_time} · {elapsed}
 
 **Changes:**
 - {change 1}
@@ -211,6 +213,11 @@ Render as markdown in chat, NOT via bash:
 **Links:** [Repo]({url}) · [CF]({url}) · [Skills](https://github.com/heymegabyte/claude-skills)
 ```
 
+- **`⏱ Time` line is MANDATORY on every report** — start time, finish time, AND elapsed duration. No exceptions.
+  - **Capture the start** at the FIRST tool call of the turn: `date '+%s %-I:%M:%S %p %Z'` (epoch + human time). Stash the epoch.
+  - **Capture the finish** when composing the report: run `date '+%s %-I:%M:%S %p %Z'` again.
+  - **Elapsed** = finish_epoch − start_epoch, formatted human-readable (`{N}s`, `{M}m {S}s`, or `{H}h {M}m`). If the turn did zero Bash calls (pure conversational answer), state wall-clock isn't tracked and give the timestamp only — never fabricate a duration.
+  - Times in the user's local zone (whatever `date` returns). Example: `**⏱ Time:** 2:31:07 PM EDT → 2:48:22 PM EDT · 17m 15s`.
 - Config/Repos lines ALWAYS present (print "none" if no changes)
 - Every URL: FULL deeplinked
 - Also run `source ~/.claude/hooks/prompt-report.sh && emdash_report` via Bash (bg)
