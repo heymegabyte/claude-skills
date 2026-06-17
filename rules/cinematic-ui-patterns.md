@@ -78,6 +78,10 @@ paths:
 - Module-scoped order counter resets per page reload — every first-paint re-staggers
 - Safe-by-default — host's final state is visible; the animation only adds the entrance flourish
 
+### ⚠️ NEVER `appReveal` on a live-filtered/result `@for` loop (the "list disappears" trap)
+
+`appReveal` starts its host at `opacity:0` + `translateY(16px)` and animates in — a FIRST-PAINT flourish. Put it on a per-item `@for (x of filtered())` loop and every filter keystroke re-mounts the freshly-matched items at opacity 0 and re-runs the enter animation, so the list visibly **disappears / flashes / "waits on stale animations"** on each change. Keep `appReveal` on the STATIC shell (header, result-bar, section roots); result/filtered items render IMMEDIATELY at full opacity with no per-item reveal. **Test it with an immediate-visible-state assertion** — a real-DOM render asserting `querySelector('.item[appReveal]')` is `null` (items don't re-reveal) while a static `[appReveal]` host remains. Reference incident: projectsites.dev `/admin/apps` catalog cards (§17, fixed 2026-06-17).
+
 ## Canonical usage — `<app-before-after-slider>`
 
 ```html
