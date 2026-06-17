@@ -68,6 +68,20 @@ export type CreateSiteInput = z.infer<typeof CreateSiteSchema>; // never hand-wr
 - Don't validate client-side only — the server re-validates at its own boundary.
 - Don't scatter duplicate schemas; one schema per shape, imported everywhere it's needed.
 
+## Front-end + back-end parity (every processed input field — MANDATE)
+
+Every input field a user fills that the system PROCESSES (form field, search box,
+address, name, amount, slug, file metadata, query param the UI sends) MUST be
+Zod-validated on BOTH sides from ONE shared schema:
+
+- **One shared schema** in `src/shared/<feature>.ts` (or `libs/features/<slug>/schemas.ts`) — imported by the client form AND the server handler. Never two hand-kept copies.
+- **Front end** — validate live (on change/blur) for instant feedback; gate submit on validity.
+- **Back end** — re-validate the SAME schema at the boundary (`@hono/zod-validator` on every `POST`/`PATCH`, or `safeParse` at the edge). The client check is UX; the server check is the contract. Never trust the client.
+- **Visible per-field affordance is the standard** — a green check (valid) / red x (invalid) plus `aria-invalid` on each processed field, so validity is obvious without submitting. Reference impl: pdf.megabyte.space Mail widget (`src/shared/postcard.ts` `isValidName` + `lobAddressSchema`, used by the client check/x AND `/api/mail/postcard`).
+- **Pure validity helpers** (`isValidName`, etc.) live beside the schema and are unit-tested, so the same predicate drives the live affordance and the schema `.refine()`.
+
+Retrofit discipline: when you touch ANY surface with a processed input that lacks shared FE+BE Zod, fix it that turn (per `drift-detection`); audit the rest of the app's forms as a tracked sweep, never a silent skip.
+
 ## Type-safety baseline
 
 - TS config already enforces `"strict": true` + `"noUncheckedIndexedAccess": true` + `"exactOptionalPropertyTypes": true` per ``code-style``.
