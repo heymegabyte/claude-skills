@@ -27,6 +27,12 @@ Auth gap (`wrangler whoami` fails, missing `CLOUDFLARE_API_TOKEN`) is NOT a pass
 2. Fall back to `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL`
 3. If both stale, ask user `! npx wrangler login` and resume from deploy
 
+### Docker (Cloudflare Worker container builds)
+
+- A local `wrangler deploy` of a Worker with a Container/Durable-Object image (e.g. projectsites SITE_BUILDER) needs the **Docker daemon running** — it builds the container image locally.
+- **On macOS, ensure Docker yourself — don't block on the user**: `open -a "Docker Desktop"` (older installs: `open -a Docker`), then poll readiness with `until docker info >/dev/null 2>&1; do sleep 2; done` (Docker Desktop takes ~20-40s to accept connections after launch). Only after `docker info` succeeds is a container-image `wrangler deploy` viable.
+- If Docker can't start (headless/CI), fall back to **push → Workers Builds** (CF CI has Docker) or `gh workflow run container-deploy.yaml`. Frontend R2 deploys have NO Docker dependency.
+
 ### Done definition
 
 - Local typecheck + build pass is NEVER sufficient
