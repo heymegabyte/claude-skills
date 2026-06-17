@@ -102,6 +102,16 @@ Match effort to task complexity.
 - Verify availability via REST: `GET /accounts/{id}/ai/models/search?search=<term>` before shipping a model name in code
 - Reference incident (2026-05-24, projectsites.dev): AI chat returned "service is unavailable" 100% — 18 files referenced retired aliases; patched to `…-fp8-fast` + `…-fp8` in one sed pass.
 
+## Provider cost tiers (premium / mid-grade / instant)
+
+Standing routing policy for APPLICATION LLM calls + agent build pipelines — a DIFFERENT axis from the Claude-altitude orchestration tiers below (that axis picks which *Claude* model runs a loop phase; this picks which *vendor* serves an app/build call). Brian's directive 2026-06-17.
+
+- **Premium — Anthropic (Claude) / OpenAI (ChatGPT).** Higher-order research, architecture + planning, security/payment/auth decisions, and ALL vision (DeepSeek has none). Reserve for judgment, not volume.
+- **Mid-grade — DeepSeek** (`deepseek-chat`; `deepseek-reasoner` for higher-order). The DEFAULT for most generation/implementation/build work, AND the primary provider for headless **Claude Code build agents** via DeepSeek's Anthropic-compatible endpoint: `ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic` + `ANTHROPIC_AUTH_TOKEN=$DEEPSEEK_API_KEY` + `ANTHROPIC_MODEL=deepseek-chat` (keep `ANTHROPIC_API_KEY` as passive fallback; `BUILD_LLM_PROVIDER=anthropic` forces Claude). API base `https://api.deepseek.com`; key `DEEPSEEK_API_KEY` is ALWAYS a `wrangler secret` / get-secret entry — never committed.
+- **Instant — Cloudflare Workers AI** (`env.AI.run` `@cf/meta/llama-*`, free, edge). Pre-routing, classification, moderation, embeddings, anything it does well at sub-ms latency. Default-reach for reflex-speed work.
+- **End state:** collapse everything toward Workers AI as it catches up to Anthropic/DeepSeek. Until then — premium for judgment, DeepSeek for volume, Workers AI for reflexes.
+- Reference impl: projectsites.dev `external_llm.chooseProviderForTier(env, 'premium'|'standard'|'instant')` + `ai_gateway` deepseek slug + container `_deepseekKey`/`_anthropicBaseUrl` injection. Cloudflare AI Gateway supports a `deepseek` provider slug — route through it for caching/observability.
+
 ## Hierarchical orchestration
 
 1. **Orchestrator** — Opus, `xhigh`
