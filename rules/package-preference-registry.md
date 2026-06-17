@@ -14,6 +14,10 @@ paths:
 
 The canonical list of PREFERRED packages + the decision discipline. **Listing ≠ installing.** A package enters the codebase ONLY when a real business requirement perfectly fits it. Every dependency must have a reason. Avoid bloat, demos-as-features, duplicate architectures, shallow integrations.
 
+## Prime principle (OSS-first)
+
+**Prefer high-quality open-source products, libraries, and composable systems when they reduce implementation risk, improve user value, or create reusable capabilities. Evaluate licensing, maintenance, API stability, security, tests, and deployment fit before integrating.** Liberal adoption of *recyclable, actively-maintained, typed, composable, testable, accessible, provider-agnostic* tools beats hand-rolling — but every candidate still clears the § Decision discipline gate below. (projectsites.dev convergence mission, 2026-06.)
+
 ## Decision discipline (run for EVERY candidate)
 
 1. Does the project already have an equivalent? 2. Does the feature truly need it? 3. License (free/OSS only — no paid/pro-only, no non-commercial, no proprietary UI kits). 4. Angular/SSR compatibility. 5. Bundle/perf impact. 6. Cloudflare compatibility (behind an adapter where relevant). 7. Is a lighter existing solution enough? → Decide: **install now · defer · adapter-only · reject** + document why.
