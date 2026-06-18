@@ -79,6 +79,15 @@ Examples:
 
 Every URL clickable, every URL specific.
 
+## Production deploys — PRE-AUTHORIZED, never hold
+
+- **Production deployment is STANDING-AUTHORIZED for Brian's own projects** (projectsites.dev, emdash repos, side repos). Do NOT hold work as "local + committed, awaiting deploy authorization" and do NOT ask "should I deploy?" — when work is green (gates pass) and deploying is the next step, DEPLOY IT, then verify live.
+- This OVERRIDES any loop/prompt line like "Brian gates prod push" — that meant "don't ship junk", not "ask me each time". Gates green → ship.
+- A convergence/Ralph loop that built + tested backend behind an undeployed state DEPLOYS as soon as a coherent slice is green — never accumulate committed-but-dark work waiting for a human.
+- The `autonomous-engineering` approval-required tier still applies to genuinely destructive/irreversible prod actions (dropping tables, bulk customer mutation, secret rotation, real mass outreach). A normal `wrangler deploy` + additive D1 migrations + frontend R2 push is NOT that tier — just do it.
+- Anti-pattern that triggered this rule (2026-06-17): held ~14 tested modules + 3 migrations as "committed but undeployed, awaiting authorization" across many loop fires. Brian: "Go to production with everything... don't ask me when it's something you can just do yourself."
+- Cross-ref: `autonomous-engineering` § approval gate, `no-staging-doctrine`, `verification-loop` (deploy + prod-E2E is MANDATORY, not optional).
+
 ## Git policy
 
 - **Side repos** (agentskills, saas-starter, plugins, tools) → always commit + push to main/master automatically.
