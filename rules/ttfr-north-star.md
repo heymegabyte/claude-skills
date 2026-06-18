@@ -109,6 +109,7 @@ In CI, `lighthouserc.json` enforces scores:
 - Unoptimized `<img src="/hero.png">` without dimensions, priority, or format
 - Loading >1 custom font family at initial paint
 - Blocking third-party scripts in `<head>` (analytics, widgets) — defer or async all
+- **Full-bleed decorative hero `<video>` behind the content.** A `<video>`'s LCP is its FIRST-FRAME paint (Chrome M120+), so a full-bleed background video that paints a frame inside the (no-interaction) LCP window BECOMES the LCP — at whenever the video decodes (~3–4s), blowing the budget non-deterministically. Deferring the source or keeping ONE stable element does NOT fix it (the late frame still updates LCP); `key`-remounting a `<video>` makes it worse (fresh element = fresh late paint). The cinematic-prime-directive's love of hero video collides head-on with TTFR here. Fixes, in order of preference: (1) drop the decorative video, carry motion with a Ken-Burns/`scale` CSS animation on the LCP `<img>` (also saves the video's ~600KB — a real win for low-bandwidth audiences); (2) if the video is essential, render it STRICTLY SMALLER than the foreground LCP `<img>` (a slight inset/scale) so the img stays the largest candidate and the video frame can never overtake it (LCP only replaces with a *strictly larger* element). Reference incident: njsk.org pass-163 (home `/` LCP 3596ms, the `food-packing.mp4` opacity-30 hero video was the LCP at 3.4s; removed → deterministic `<img>` LCP ~0.5–1.0s).
 
 ## Preloading the LCP element
 
