@@ -19,3 +19,5 @@ members:
   - rules/payments-routing
   - rules/feature-module-architecture
   - rules/collaboration-sync-supervisor
+  - rules/hardware-aware-programming
+  - rules/pii-handling-discipline

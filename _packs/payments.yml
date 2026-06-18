@@ -3,3 +3,4 @@ description: Stripe + Square + webhook discipline
 members:
   - rules/payments-routing
   - 13-observability-and-growth
+  - rules/refund-automation

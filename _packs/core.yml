@@ -36,3 +36,22 @@ members:
   - rules/lint-doctrine
   - rules/uniform-json-output
   - rules/audit-arc-maturity-ladder
+  - rules/agent-resilience-discipline
+  - rules/backwards-compatibility-removal-cadence
+  - rules/blast-radius-minimization
+  - rules/cost-per-request-accountability
+  - rules/customer-facing-changelog
+  - rules/data-residency-by-default
+  - rules/documentation-as-code
+  - rules/error-budget
+  - rules/fail-fast-build-fail-soft-prod
+  - rules/one-way-two-way-doors
+  - rules/principles-incident-log
+  - rules/production-observability-default-on
+  - rules/router-drift-auto-reconciliation
+  - rules/state-is-the-enemy
+  - rules/structured-logging
+  - rules/supply-chain-integrity
+  - rules/sync-ui-async-backing
+  - rules/ttfr-north-star
+  - rules/vendor-risk-tiering

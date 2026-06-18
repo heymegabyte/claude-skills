@@ -3,7 +3,7 @@
     <img width="148" alt="Emdash Skills" src="https://raw.githubusercontent.com/heymegabyte/claude-skills/master/logo.png" />
   </a>
   <h1>Emdash Skills</h1>
-  <p><strong>Autonomous product-building OS for 32+ AI coding tools.<br/>One-line prompts → deployed products on Cloudflare Workers.</strong></p>
+  <p><strong>Complete solo-SaaS-founder platform for 32+ AI coding tools.<br/>One-line prompts → deployed products on Cloudflare Workers.</strong></p>
 </div>
 
 <div align="center">
@@ -18,9 +18,26 @@
 <br/>
 
 <div align="center">
-  <code>16 categories</code> · <code>135 reference docs</code> · <code>19 agents</code> · <code>12 templates</code><br/>
-  <a href="https://claude.megabyte.space"><strong>🌐 Showcase Website</strong></a>
+  <code>19 categories</code> · <code>117 doctrine rules</code> · <code>18 agents</code> · <code>20+ slash commands</code> · <code>32 platform variants</code><br/>
+  <a href="https://claude.megabyte.space"><strong>Showcase Website</strong></a>
 </div>
+
+## What's New
+
+**Skills 17–19 + integration arc (2026-06)**
+
+- **Skill 17 — Non-Engineering Verticals** — C-suite personas, finance domain, compliance OS, PM domain. One OS, every function.
+- **Skill 18 — Document Processing** — DOCX/XLSX read-write, PDF generation + parsing, PPTX generation. Full pipeline, no manual exports.
+- **Skill 19 — MCP Authoring** — forge HTTP MCP servers on Workers, stdio MCP templates, OpenAPI→MCP forger. Publish to the registry in one command.
+- **20+ slash commands** — `/saas`, `/forge-from-openapi`, `/forge-webhook-handler`, `/generate-prp`, `/execute-prp`, `/run-evals`, `/audit-doctrine`, `/audit-mcp-fleet`, `/dashboard-cockpit`, `/drift-check`, and more.
+- **Production forge script** — `bin/forge-skill-from-openapi.mjs` generates a full SKILL.md + command scaffold from any OpenAPI spec.
+- **LLM eval harness** — `/run-evals` + structured rubrics + schema-validated results + regression tracking. AI-heavy behavior now has a repeatable quality gate.
+- **15 new doctrinal principles** — `state-is-the-enemy`, `fail-fast-build-fail-soft-prod`, `ttfr-north-star`, `sync-ui-async-backing`, `cost-per-request-accountability`, `inverted-abstraction-pyramid`, `one-way-two-way-doors`, `vendor-risk-tiering`, `data-residency-by-default`, `right-to-deletion`, `refund-automation`, `documentation-as-code`, `production-observability-default-on`, `hardware-aware-programming`, `webhook-receiver-architecture`.
+- **DO agent scaffolding** — Durable Objects as stateful AI agents via skill 19, wired to the MCP registry.
+- **RAG pipeline** — vectorize + D1 hybrid search documented in skill 05 architecture submodules.
+- **Multi-tenant subdomain provisioning** — Cloudflare custom hostnames + per-tenant D1 namespacing, baked into skill 05.
+- **5 new PreToolUse hooks** — permission-discipline enforcement before destructive tool calls.
+- **MCP server registry** — `/audit-mcp-fleet` catalogs, health-checks, and version-pins every MCP in your harness.
 
 <br/>
 
@@ -189,6 +206,10 @@ Auto-generated on every push to master. Each format uses native frontmatter for 
 | 13 | **Growth & Observability** | 7 | Stripe billing, analytics, Sentry alerts, email, experiments, CRO |
 | 14 | **Idea Engine** | — | Autonomous research, evidence-backed improvement proposals |
 | 15 | **Site Generation** | 9 | Full-corpus rebuild, slot-first GPT Image 1.5 media, NotebookLM podcast/infographic/video, citations |
+| 16 | **Cinematic Website** | — | 100-rule prime directive: cinematic UX, PWA, JSON-LD, CWV, a11y, integrations, TDD, deploy |
+| 17 | **Non-Engineering Verticals** | 4 | C-suite personas, finance domain, compliance OS, PM domain — full-org coverage |
+| 18 | **Document Processing** | 4 | DOCX/XLSX read-write, PDF parse + generate, PPTX generation — zero manual exports |
+| 19 | **MCP Authoring** | 3 | HTTP MCP on Workers, stdio server templates, OpenAPI→MCP forger, registry publish |
 
 ## Agents
 
@@ -312,7 +333,7 @@ Every deploy must clear all gates. No exceptions. No overrides.
 
 ## Task Routing
 
-The router loads the smallest useful subset per task — never the full 135 docs. See [`_router.md`](_router.md) for the complete routing table.
+The router loads the smallest useful subset per task — never the full 163 docs. See [`_router.md`](_router.md) for the complete routing table. This plugin ships 163 reference docs across 19 skill categories.
 
 | When you say... | Skills loaded |
 |-----------------|---------------|

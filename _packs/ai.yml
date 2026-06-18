@@ -12,3 +12,7 @@ members:
   - rules/model-routing
   - rules/prompt-cache
   - rules/opus-quota-fallback
+  - rules/agent-permission-discipline
+  - rules/bash-matcher-guardrails
+  - rules/loop-driven-development
+  - rules/mcp-server-hardening
