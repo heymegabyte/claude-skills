@@ -145,6 +145,23 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 
 ## Iteration log
 
+### iter 10 — 2026-06-19 (more skill dirs + SKILL indexes)
+
+- Compressed 12 more files (~900 lines cut), all 0 markdownlint errors, SKILL.md frontmatter intact:
+  - `09-brand-and-content-system/seo-and-keywords.md` 215→130 (-40%)
+  - `04-preference-and-memory/wisdom-and-human-psychology.md` 227→143 (-37%)
+  - `07-quality-and-verification/chrome-and-browser-workflows.md` 204→128 (-37%)
+  - `07-quality-and-verification/computer-use-automation.md` 232→149 (-36%)
+  - `13-observability-and-growth/stripe-billing.md` 323→213 (-34%)
+  - `13-observability-and-growth/square-payments.md` 325→229 (-30%)
+  - `09-brand-and-content-system/SKILL.md` 266→187 (-30%)
+  - `15-site-generation/local-seo.md` 219→177 (-19%)
+  - `15-site-generation/SKILL.md` 254→220 (-13%)
+  - `01-operating-system/autonomous-orchestrator.md` 205→186 (-9%)
+  - `15-site-generation/pseo-templates.md`, `12-media-orchestration/notebooklm-pipeline.md` — code-dominant, ~0-1% (preserved).
+- Gate 17 pass · 0 fail. 65 instruction files compressed total.
+- Next: remaining NN-*/ + commands/ + agents/ files; then idea #4 semantic dedup.
+
 ### iter 9 — 2026-06-19 (more numbered skill dirs)
 
 - Compressed 9 more skill-dir/command files, ~3163→2330 lines (~833 cut), all 0 markdownlint errors, requirement counts verified equal:

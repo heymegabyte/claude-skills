@@ -7,11 +7,7 @@ description: "Full SEO engine: keyword research, competitor analysis, per-page p
 
 # SEO and Keywords
 
-Every page targets:
-
-- 1 holy-grail keyword (high-volume)
-- 1-2 longtail phrases (lower competition, high intent)
-- Semantic variations woven naturally
+Every page targets: 1 holy-grail keyword (high-volume) + 1-2 longtail phrases (lower competition, high intent) + semantic variations woven naturally.
 
 ## Keyword Research Workflow
 
@@ -34,16 +30,15 @@ async function getAutocompleteSuggestions(seed: string): Promise<string[]> {
 
 #### Other tools
 
-- **DataForSEO** (~$0.01/keyword) — returns volume, CPC, competition, trends
-- **Google Search Console** (FREE) — real clicks, impressions, position for existing sites
+- **DataForSEO** (~$0.01/keyword) — volume, CPC, competition, trends
+- **Google Search Console** (FREE) — real clicks, impressions, position
 - **Google Trends** — relative interest over time
 
 ### Step 3: Competitor Analysis
 
 1. Identify 3-5 competitors
 2. Scrape `sitemap.xml` → fetch pages → extract title / h1 / meta
-3. Find gaps (keywords they rank for that we don't)
-4. Find easy wins (high volume + low competition)
+3. Find gaps (keywords they rank for that we don't) + easy wins (high volume + low competition)
 
 ### Step 4: Selection Matrix
 
@@ -53,78 +48,28 @@ async function getAutocompleteSuggestions(seed: string): Promise<string[]> {
 
 ## Per-Page Yoast Checklist (ALL GREEN)
 
-### Title Tag
-
-50-60 chars, keyword at start, unique, includes brand. Format: `{Keyword} — {Supporting} | Brand`.
-
-### Meta Description
-
-120-156 chars, contains keyword, includes CTA, unique per page.
-
-### URL
-
-Short, readable, keyword-rich, lowercase, hyphens. Good: `/docker-hosting`.
-
-### Headings
-
-- One H1 with keyword
-- H2s with longtail / semantic variations
-- Logical hierarchy
-- No skipped levels
-
-### Content
-
-- Keyword in first 100 words
-- Density 0.5-3% (natural)
-- Min 300 words (600+ preferred)
-- Flesch ≥60
-- Short paragraphs (2-4 sentences)
-- Subheadings every 200-300 words
-- Transition words ≥30% of sentences
-
-### Images
-
-- Alt text with keyword (natural)
-- Descriptive filename
-- Width / height set
-- Lazy load below-fold
-- WebP <200KB
-
-### Links
-
-- **Internal** — 2-3+ per page, descriptive anchors
-- **External** — 1-2 outbound to authoritative sources, `target="_blank" rel="noopener"`
-
-### Schema / JSON-LD (4+ per page minimum)
-
-Organization + WebSite + WebPage + domain-specific (FAQ, Product, BreadcrumbList, Article, HowTo, SoftwareApplication, DonateAction).
-
-### Technical
-
-Canonical URL, mobile-friendly, LCP <2.5s, HTTPS, no duplicate content, XML sitemap, robots.txt.
+- **Title** — 50-60 chars, keyword at start, unique, includes brand. Format: `{Keyword} — {Supporting} | Brand`
+- **Meta description** — 120-156 chars, contains keyword, includes CTA, unique per page
+- **URL** — short, readable, keyword-rich, lowercase, hyphens. Good: `/docker-hosting`
+- **Headings** — one H1 with keyword; H2s with longtail/semantic variations; logical hierarchy; no skipped levels
+- **Content** — keyword in first 100 words; density 0.5-3% (natural); min 300 words (600+ preferred); Flesch ≥60; short paragraphs (2-4 sentences); subheadings every 200-300 words; transition words ≥30% of sentences
+- **Images** — alt text with keyword (natural); descriptive filename; width/height set; lazy load below-fold; WebP <200KB
+- **Internal links** — 2-3+ per page, descriptive anchors
+- **External links** — 1-2 outbound to authoritative sources, `target="_blank" rel="noopener"`
+- **Schema / JSON-LD** — 4+ per page minimum: Organization + WebSite + WebPage + domain-specific (FAQ, Product, BreadcrumbList, Article, HowTo, SoftwareApplication, DonateAction)
+- **Technical** — canonical URL, mobile-friendly, LCP <2.5s, HTTPS, no duplicate content, XML sitemap, robots.txt
 
 ## Readability Enforcement (Flesch ≥60)
 
 ### Yoast 9 Checks (All Automatable)
 
-- **Flesch** — ≥60
-- **Sentence length** — avg ≤20 words
-- **Paragraph length** — ≤150 words
-- **Passive voice** — <10%
-- **Transition words** — ≥30% of sentences
-- **Consecutive sentences** — <3 with same opening word
-- **Subheading distribution** — ≤300 words between H2 / H3
-- **Text presence** — content exists
-- **Single H1** — exactly one
+- Flesch ≥60 | Sentence length avg ≤20 words | Paragraph length ≤150 words
+- Passive voice <10% | Transition words ≥30% of sentences | Consecutive sentences <3 with same opening word
+- Subheading distribution ≤300 words between H2/H3 | Text present | Exactly 1 H1
 
 ### By Section
 
-- Hero — 80+
-- Body — 50-65
-- Technical docs — 40-50
-- Legal — 50+
-- Errors — 70+
-- CTAs — 80+
+Hero 80+ | Body 50-65 | Technical docs 40-50 | Legal 50+ | Errors 70+ | CTAs 80+
 
 ## Programmatic SEO
 
@@ -138,31 +83,17 @@ for (const city of cities) {
 
 ### Internal Linking Strategy
 
-- Homepage → category pages → product pages
-- Blog → relevant products + related posts
-- Every page — 2-3 internal links min
-- Anchor text — keyphrase variations, never "click here"
+- Homepage → category pages → product pages | Blog → relevant products + related posts
+- Every page: 2-3 internal links min; anchor text = keyphrase variations, never "click here"
 - Orphan detection after build
 
 ## SEO Audit (Every Deploy)
 
-Playwright test verifying:
-
-- Title 30-60 chars
-- Meta desc 120-160 chars
-- Exactly 1 H1
-- Canonical URL
-- OG tags
-- JSON-LD ≥1
-- No Lorem / TODO / placeholder
-- Images have alt
-- Internal links ≥3
-- `robots.txt` 200
-- `sitemap.xml` 200
+Playwright test verifying: title 30-60 chars · meta desc 120-160 chars · exactly 1 H1 · canonical URL · OG tags · JSON-LD ≥1 · no Lorem/TODO/placeholder · images have alt · internal links ≥3 · `robots.txt` 200 · `sitemap.xml` 200
 
 ## API Stack ($8/mo total)
 
-- **Google Search Console** — Free — real clicks / impressions
+- **Google Search Console** — Free — real clicks/impressions
 - **VebAPI** — $8/mo — competitor keywords, SERP
 - **Serper free tier** — Free — 2,500/mo SERP + PAA
 - **Google Suggest** — Free — keyword expansion
@@ -171,19 +102,18 @@ Playwright test verifying:
 
 ## Google's SEO Rules (2026 Core Update)
 
-- Original research / proprietary data rewarded (Information Gain signal)
+- Original research/proprietary data rewarded (Information Gain signal)
 - Write naturally, no stuffing
-- Core Web Vitals — LCP <2.5s is hard ranking factor
+- LCP <2.5s is a hard ranking factor
 - AI Overviews steal short-tail clicks — longtail more important than ever
 - Meta keywords tag ignored
 
 ## Longtail Strategy (Moz 2026)
 
-- Ultra-long-tail is "new normal"
-- Short-tail triggers AI Overviews
-- Modifier stacking — `[product] + [use case] + [audience] + [qualifier]`
+- Ultra-long-tail is "new normal"; short-tail triggers AI Overviews
+- Modifier stacking: `[product] + [use case] + [audience] + [qualifier]`
 - Problem-first keywords beat feature keywords
-- GSC — impressions >10 but position >10 = low-hanging fruit
+- GSC: impressions >10 but position >10 = low-hanging fruit
 
 ## MANDATORY: Research BEFORE Writing
 
@@ -210,5 +140,5 @@ Every page — Organization + WebSite(SearchAction) + WebPage + domain-specific 
 
 ## Ownership
 
-- **Owns:** Keyword research, competitor analysis, per-page targeting, Yoast checks, readability, programmatic SEO, audit automation, internal linking, schema / JSON-LD, OG / Twitter tags, sitemap, robots.txt, keyword-to-page mapping
-- **Never owns:** Content writing (→09, 22), visual design (→10), deployment (→08)
+- **Owns:** keyword research, competitor analysis, per-page targeting, Yoast checks, readability, programmatic SEO, audit automation, internal linking, schema/JSON-LD, OG/Twitter tags, sitemap, robots.txt, keyword-to-page mapping
+- **Never owns:** content writing (→09, 22), visual design (→10), deployment (→08)

@@ -36,16 +36,13 @@ updated: "2026-04-23"
 | Calendar | Google Calendar MCP | Scheduling, availability |
 | Storage | Google Drive MCP | Documents, shared files |
 
-Orchestrator scans this inventory BEFORE planning. For every task ask: "Which combination of tools gets this done fastest?"
+Scan this inventory BEFORE planning. For every task ask: "Which combination of tools gets this done fastest?"
 
 ## Master Process Flow
 
 ### 1. ANALYZE
 
-- Read context (CLAUDE.md, package.json, code)
-- Identify current vs desired state
-- Research competitors
-- Generate task list
+- Read context (CLAUDE.md, package.json, code), identify current vs desired state, research competitors, generate task list
 
 ### 1.5. ***ARCHITECTURE THOUGHT LOOP***
 
@@ -63,45 +60,45 @@ Run `01/architecture-thought-loop.md` (30-point checklist):
 
 ### 2. PLAN
 
-- Group into parallel streams
-- Identify dependencies
-- Create execution order
+Group into parallel streams, identify dependencies, create execution order.
 
 ### 3. EXECUTE (parallel)
 
-- Spawn agents
-- Build completely
-- Make creative decisions inline
-- Deploy continuously
+Spawn agents, build completely, make creative decisions inline, deploy continuously.
 
 ### 4. VERIFY
 
-- E2E tests, Lighthouse, a11y (axe-core)
-- Responsive check (6 breakpoints)
+E2E tests, Lighthouse, a11y (axe-core), responsive check (6 breakpoints).
 
 ### 4.5. ***UI COMPLETENESS SWEEP (MANDATORY — BLOCKS DONE)***
 
 a. **Static scan** — grep `src/` for `Coming soon|TODO|placeholder|lorem|not implemented|stub|mock|fake|dummy|TBD|WIP`
+
 b. **Playwright interactive** — click EVERY button (catch disabled/no-handler), submit EVERY form (valid+invalid), check EVERY link (catch 404s), verify EVERY image (catch broken/placeholder)
+
 c. **Empty state check** — render pages with no data; what does user see?
+
 d. **Loading state check** — throttle network; is there a skeleton or blank?
+
 e. **Error state check** — block APIs; does UI handle gracefully or crash?
-f. Playwright a11y tree snapshot ALL pages (FREE) → axe-core scan (FREE) → fix a11y/functional issues
+
+f. Playwright a11y tree snapshot ALL pages → axe-core scan → fix a11y/functional issues
+
 g. Screenshot 2 key breakpoints (375 + 1280) → GPT Image 2 vision `detail:low` for aesthetic-only issues → rate 0-10
+
 h. **Below 8/10 = NOT DONE.** Fix all findings. Max 3 rounds, $1 vision budget cap. Homepage/ATF gets vision priority.
+
 i. Re-sweep. Loop until ALL pages ≥8/10 AND zero findings OR budget exhausted.
+
 j. Log sweep results to `~/.claude/audit/sweep-results.jsonl` (Stop hook checks this)
 
 ### 5. ITERATE
 
-- Compare vs competitors
-- Fix gaps, re-deploy
-- Continue until exceeds
+Compare vs competitors, fix gaps, re-deploy, continue until exceeds.
 
 ### 6. DOCUMENT
 
-- Update CLAUDE.md, skills, memories
-- Descriptive commits
+Update CLAUDE.md, skills, memories. Descriptive commits.
 
 ## Agent Types
 
@@ -128,8 +125,7 @@ Team Lead (claude-opus-4-6) — plans, coordinates
 ```
 
 - File ownership: frontend owns `src/app/`, backend owns `src/api/`
-- Test agents never modify app code
-- Deploy runs AFTER all builds complete
+- Test agents never modify app code | deploy runs AFTER all builds complete
 
 ## ToolSearch Bulk-Loading (***CRITICAL***)
 
@@ -141,17 +137,10 @@ Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer,
 
 ## Completion Criteria
 
-- All features implemented (no stubs/TODOs)
-- Deployed to production
-- E2E tests pass
-- Lighthouse ≥90
-- Responsive at 375px and 1280px
-- axe-core 0 violations
-- CLAUDE.md updated
-- `grep "Coming soon"` returns zero
-- Every data array from real API endpoint
-- Every button has working handler
-- GPT Image 2 vision visual verification converged on ALL routes
+- All features implemented (no stubs/TODOs) | deployed to production | E2E tests pass
+- Lighthouse ≥90 | responsive at 375px and 1280px | axe-core 0 violations | CLAUDE.md updated
+- `grep "Coming soon"` returns zero | every data array from real API endpoint
+- Every button has working handler | GPT Image 2 vision visual verification converged on ALL routes
 
 ## Self-Healing Decision Tree
 
@@ -171,8 +160,7 @@ Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer,
 
 ## Spawn/Kill Pattern
 
-- Decompose → parallel phases → agents complete + return (ephemeral, not persistent)
-- Master merges → next phase
+- Decompose → parallel phases → agents complete + return (ephemeral, not persistent) → master merges → next phase
 - Context >60% → `progress.md` → fresh agent
 - 3x critical fail → alert brian@megabyte.space via Resend
 - DONE when all Hard Gates pass + zero recommendations
@@ -183,16 +171,9 @@ Custom agents from `~/.agentskills/agents/`: deploy-verifier, security-reviewer,
 
 ## Anti-Patterns
 
-- Pick best, not ask
-- No skeletons "for next session"
-- Never sequential when parallel-safe
-- No "good enough"
-- No "Coming soon"
-- No mock data
-- No "done" without AI vision proof
-- No ignoring admin sections
-- No crons for work
-- No recurring tasks for one-run work
+- Pick best, not ask | no skeletons "for next session" | never sequential when parallel-safe
+- No "good enough" | no "Coming soon" | no mock data | no "done" without AI vision proof
+- No ignoring admin sections | no crons for work | no recurring tasks for one-run work
 
 ## Trigger/Stop Conditions
 

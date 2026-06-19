@@ -9,52 +9,12 @@ updated: "2026-04-23"
 
 ## Universal Principles
 
-### 1. Serve Others First
-
-- Give value before asking
-- "How can we help?" not "Contact sales"
-- Error messages help, not blame
-- Free tier genuinely generous
-- Brian's 99% wealth donation ethos — maximize impact, not extraction
-
-### 2. Simplicity Is Mastery
-
-- One CTA per page
-- **Miller's Law** — max 7 options
-- **Hick's Law** — fewer choices = faster action
-- **Paradox of Choice** — 3 pricing tiers > 5
-- Best interface is invisible
-
-### 3. Truth Builds Trust
-
-- No fake testimonials/urgency/scarcity
-- Show real numbers ("127 donors" not "hundreds")
-- Transparent pricing
-- Plain English legal pages
-- Admit when broken
-
-### 4. Excellence as Habit
-
-- **Apple Test** — would Apple's design team approve?
-- No placeholders, no "good enough"
-- Every pixel intentional
-- After every deploy ask "what's 5% better?"
-- Kaizen compounds
-
-### 5. Know Thy User
-
-- VoC (`04-preference-and-memory`) is empathy
-- Accessibility (`07/accessibility-gate`) = loving your blind/deaf/motor-impaired neighbor
-- i18n = loving your Spanish-speaking neighbor
-- Error messages for frustrated users, not developers
-
-### 6. Give More Than Expected
-
-- Easter eggs (`06/easter-eggs`)
-- Over-deliver on free tier
-- Blog content that teaches, not just markets
-- Docs anticipate questions
-- Idea engine (`14-independent-idea-engine`) gives users more than asked
+- **Serve first** — give value before asking; "How can we help?" not "Contact sales"; generous free tier; Brian's 99% wealth-donation ethos
+- **Simplicity is mastery** — one CTA/page; Miller's Law (max 7 options); Hick's Law (fewer choices → faster action); Paradox of Choice (3 tiers > 5); best interface is invisible
+- **Truth builds trust** — no fake testimonials/urgency/scarcity; real numbers ("127 donors"); transparent pricing; plain-English legal; admit when broken
+- **Excellence as habit** — Apple Test (would Apple's design team approve?); no placeholders; every pixel intentional; ask "what's 5% better?" after every deploy; kaizen compounds
+- **Know thy user** — VoC (`04-preference-and-memory`) is empathy; accessibility (`07/accessibility-gate`) = loving blind/deaf/motor-impaired users; i18n = loving your Spanish-speaking neighbor; error messages for frustrated users, not developers
+- **Over-deliver** — easter eggs (`06/easter-eggs`); blog teaches not markets; docs anticipate questions; idea engine (`14-independent-idea-engine`) gives users more than asked
 
 ## Behavioral Psychology
 
@@ -72,8 +32,7 @@ updated: "2026-04-23"
 
 `Behavior = Motivation + Ability + Trigger` (at same moment)
 
-- Don't ask push permissions on page load (no motivation yet)
-- Ask after first success moment (high motivation + demonstrated ability)
+- Don't ask push permissions on page load — ask after first success moment (high motivation + demonstrated ability)
 - CTAs appear after value demonstrated, not before
 
 ### Kahneman's Key Biases
@@ -86,15 +45,8 @@ updated: "2026-04-23"
 | Endowment Effect | "Your dashboard" not "A dashboard" |
 | Status Quo Bias | Default to best option (annual billing, recommended plan) |
 
-### Zeigarnik Effect
-
-- Incomplete tasks create tension to complete
-- Use: onboarding progress bars ("3 of 5 steps"), profile completion %, "You started but didn't finish..." emails
-
-### Flow State (Csikszentmihalyi)
-
-- Challenge matches skill, clear immediate feedback, sense of control, no distractions
-- Progressive disclosure, instant feedback, keyboard shortcuts for power users, minimize interruptions
+- **Zeigarnik Effect** — incomplete tasks create tension; use onboarding progress bars ("3 of 5 steps"), profile completion %, "You started but didn't finish..." emails
+- **Flow State (Csikszentmihalyi)** — progressive disclosure, instant feedback, keyboard shortcuts for power users, minimize interruptions
 
 ## Design Psychology
 
@@ -109,44 +61,19 @@ updated: "2026-04-23"
 
 ### Color Psychology
 
-- **Blue** — trust/security
-- **Cyan** — innovation (#00E5FF)
-- **Green** — success
-- **Red** — urgency/error
-- **Orange** — warning
-- **White space** — premium
+- **Blue** — trust/security | **Cyan** — innovation (#00E5FF) | **Green** — success
+- **Red** — urgency/error | **Orange** — warning | **White space** — premium
 
 ### Gestalt Principles
 
-- **Proximity** — close = grouped
-- **Similarity** — consistent styles
-- **Closure** — progress bars
-- **Figure/Ground** — CTAs contrast
-- **Continuity** — visual flow hero → features → CTA
+- **Proximity** — close = grouped | **Similarity** — consistent styles | **Closure** — progress bars
+- **Figure/Ground** — CTAs contrast | **Continuity** — visual flow hero → features → CTA
 
 ## Ethical Line
 
-### DO
+DO: genuine social proof · real scarcity only · default to best for USER · give before asking · respect "no" · accessibility as moral imperative · transparent pricing/data/AI
 
-- Genuine social proof
-- Real scarcity only
-- Default to best for USER
-- Give before asking
-- Respect "no"
-- Accessibility as moral imperative
-- Transparent pricing/data/AI
-
-### NEVER
-
-- Fake urgency timers
-- Hidden costs
-- Confirmshaming
-- Forced continuity
-- Misdirection
-- Disguised ads
-- Roach motels
-- Trick questions
-- Bait-and-switch
+NEVER: fake urgency timers · hidden costs · confirmshaming · forced continuity · misdirection · disguised ads · roach motels · trick questions · bait-and-switch
 
 ### Brian's Higher Pursuits
 
@@ -167,7 +94,7 @@ updated: "2026-04-23"
 ## Copy Patterns
 
 - **Headlines** — "Your clean driveway feeds a family" (service), "One number. No hold music." (simplicity)
-- **CTAs** — "Start helping today" > "Sign up now", "Join 1,200 builders" > "Create account"
+- **CTAs** — "Start helping today" > "Sign up now" | "Join 1,200 builders" > "Create account"
 - **Errors** — "Something broke on our end. We're on it." (honesty + service)
 
 ## Hard Numbers from Studies
@@ -186,41 +113,24 @@ updated: "2026-04-23"
 | Endowed progress | 34% vs 19% completion | Nunes & Dreze |
 | 1s page load delay | -7% conversion | Amazon |
 
-### Fitts's Law
-
-- Primary buttons — large and near focus
-- Mobile — min 44x44px
-- Group related actions
-
-### Meta-Filter (Every Decision)
-
-1. Does this genuinely serve the user?
-2. Am I being honest?
-3. Does this respect their autonomy?
-
-All yes → ship it.
+- **Fitts's Law** — primary buttons large and near focus; mobile min 44×44px; group related actions
+- **Meta-Filter** — (1) genuinely serves user? (2) honest? (3) respects autonomy? All yes → ship.
 
 ## Laws of UX (30 evidence-based)
 
-- **Perception** — Aesthetic-Usability (polish = perceived usability), Cognitive Load (progressive disclosure), Miller's Law (7±2), Selective Attention (CTAs unmissable)
-- **Decision** — Hick's Law (reduce choices), Choice Overload (defaults, curation), Fitts's Law (big close CTAs), Goal-Gradient (progress bars past 50%), Zeigarnik (onboarding checklists)
+- **Perception** — Aesthetic-Usability, Cognitive Load (progressive disclosure), Miller's Law (7±2), Selective Attention (CTAs unmissable)
+- **Decision** — Hick's Law, Choice Overload (defaults/curation), Fitts's Law, Goal-Gradient (progress bars past 50%), Zeigarnik (onboarding checklists)
 - **Memory** — Peak-End Rule (nail first + last), Serial Position (key items first/last), Von Restorff (CTAs visually distinct)
 - **Gestalt** — Proximity, Similarity, Common Region (cards/containers), Uniform Connectedness, Pragnanz (clean layouts)
-- **System** — Jakob's Law (follow conventions), Doherty Threshold (<400ms = instant), Tesler's Law (move complexity to system), Postel's Law (accept broadly, send conservatively), Occam's Razor, Pareto (80/20), Parkinson's (tight deadlines)
+- **System** — Jakob's Law, Doherty Threshold (<400ms = instant), Tesler's Law, Postel's Law, Occam's Razor, Pareto (80/20), Parkinson's (tight deadlines)
 
 ## COM-B Diagnosis
 
-When users aren't converting, diagnose:
-
-- **Capability** — can they?
-- **Opportunity** — does environment allow?
-- **Motivation** — do they want?
-
-Fix the actual bottleneck.
+When users aren't converting — diagnose: **Capability** (can they?), **Opportunity** (does environment allow?), **Motivation** (do they want?). Fix the actual bottleneck.
 
 ## 2026 Research
 
-- **Handmade Designs** (NNGroup) — AI-fatigued users prefer human-crafted. Anti-slop = trust signal.
-- **AI Agents as Users** (NNGroup) — design for both humans and AI. Semantic HTML + structured data serve both.
-- **Less Chat, More Answer** (NNGroup) — direct scannable answers, not conversations. Lead with answer.
-- **YC Philosophy** — code is cheap, insight is rare. AI-native is baseline. Focus on workflows, not features.
+- **Handmade Designs** (NNGroup) — AI-fatigued users prefer human-crafted; anti-slop = trust signal
+- **AI Agents as Users** (NNGroup) — design for both humans and AI; semantic HTML + structured data serve both
+- **Less Chat, More Answer** (NNGroup) — direct scannable answers; lead with answer
+- **YC Philosophy** — code is cheap, insight is rare; AI-native is baseline; focus on workflows, not features

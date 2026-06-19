@@ -37,8 +37,6 @@ Hybrid is allowed: Square for donations + Stripe for SaaS subscription on the sa
 
 ### Nonprofit / Donation (Square default)
 
-Preset tiers:
-
 - **$10** — "Feeds a family for a day"
 - **$25** — "Covers supplies for a week"
 - **$50** — "Powers the hotline for a month"
@@ -46,17 +44,14 @@ Preset tiers:
 - **$250** — "Transforms a life"
 - **$500** — "Makes a lasting impact"
 - **Custom** — "Choose your amount"
-
-Rules:
-
-- One-time as default frequency for small orgs (Square Subscriptions adds setup complexity)
-- Monthly recurring opt-in via Square Subscriptions API + Plans (only when client has staff to manage)
+- One-time as default (Square Subscriptions adds setup complexity)
+- Monthly recurring opt-in via Square Subscriptions API + Plans — only when client has staff to manage
 - Impact labels mandatory — specific + concrete, never vague
 - Progress bar showing goal achievement (optional, requires Durable Object aggregation)
 
 ### Square Nonprofit Discount
 
-501(c)(3) organizations qualify for reduced processing: **2.2% + $0.30** vs standard **2.6% + $0.10**. Apply at `squareup.com/help/us/en/article/6358` with EIN + IRS determination letter. For $25 average donation: standard fee = $0.95, nonprofit fee = $0.85 — ~10% per-transaction savings vs Stripe (2.9% + $0.30 = $1.03).
+501(c)(3) orgs qualify for **2.2% + $0.30** vs standard **2.6% + $0.10**. Apply at `squareup.com/help/us/en/article/6358` with EIN + IRS determination letter. For $25 average donation: nonprofit fee = $0.85 vs Stripe $1.03 (~10% per-transaction savings).
 
 ## Web Payments SDK (Browser — Tokenize Card Client-Side)
 
@@ -120,7 +115,7 @@ async function chargeOnce(env: Env, sourceId: string, amountCents: number, email
 }
 ```
 
-**Idempotency** is mandatory: every charge request MUST include a unique `idempotency_key` (UUID). Retrying with the same key returns the original payment, never double-charges.
+Every charge MUST include a unique `idempotency_key` (UUID) — retrying with the same key returns the original payment, never double-charges.
 
 ## Webhook Handler (Cloudflare Worker)
 
@@ -159,7 +154,7 @@ app.post('/api/webhooks/square', async (req, env) => {
 
 ## Subscriptions (Recurring Donations)
 
-Square Subscriptions requires a Plan + Plan Variation FIRST. Two-step setup:
+Square Subscriptions requires a Plan + Plan Variation first. Two-step setup:
 
 ```typescript
 // 1. Create catalog plan (once, via wrangler or admin tool)
@@ -189,17 +184,17 @@ await fetch(`${apiBase}/v2/subscriptions`, {
 });
 ```
 
-For most small nonprofits without staff to manage Plans, default to one-time charges + "donate again" CTA in receipt email. Don't add subscription complexity until the client explicitly asks.
+For small nonprofits without staff to manage Plans, default to one-time charges + "donate again" CTA in receipt email.
 
 ## Environment Toggle
 
-- `SQUARE_ACCESS_TOKEN` — secret; sandbox or production
-- `SQUARE_LOCATION_ID` — secret; receiving location
-- `SQUARE_APPLICATION_ID` — secret; Web Payments SDK app ID (public-ish, kept as secret for env parity)
+- `SQUARE_ACCESS_TOKEN` — sandbox or production
+- `SQUARE_LOCATION_ID` — receiving location
+- `SQUARE_APPLICATION_ID` — Web Payments SDK app ID
 - `SQUARE_ENVIRONMENT` — `"sandbox"` (default) or `"production"`
-- `SQUARE_WEBHOOK_SIGNATURE_KEY` — secret; for webhook HMAC verification
+- `SQUARE_WEBHOOK_SIGNATURE_KEY` — for webhook HMAC verification
 
-Sandbox + production accounts are separate dashboards. Get sandbox creds at `developer.squareup.com → Sandbox`; production creds at `developer.squareup.com → Production` (requires verified business). Test card in sandbox: `4111 1111 1111 1111` / any future date / any CVV / any ZIP.
+Sandbox creds: `developer.squareup.com → Sandbox`; production: `developer.squareup.com → Production` (requires verified business). Test card: `4111 1111 1111 1111` / any future date / any CVV / any ZIP.
 
 ## CSP Allowances (every site using Square Web Payments SDK)
 
@@ -212,8 +207,6 @@ img-src 'self' https://*.squarecdn.com https://*.squareup.com data:
 ```
 
 ## Donation Page Design (givedirectly.org energy)
-
-### Layout
 
 - Hero with cause story + impact stat counter (rAF roll-in, IntersectionObserver-gated)
 - Amount selector grid (6 presets + custom input)
@@ -235,11 +228,7 @@ img-src 'self' https://*.squarecdn.com https://*.squareup.com data:
 
 ## Auto-Detect Square Account
 
-When provisioning a new site, check if client has existing Square: `GET /v2/locations` returns all locations on account.
-
-- Single location → auto-use as `SQUARE_LOCATION_ID`
-- Multi-location → ask which is the receiving location
-- No Square account → prompt user to sign up at `squareup.com/signup` with `/agentskills` referral link (no affiliate, just direct)
+- `GET /v2/locations`: single location → auto-use as `SQUARE_LOCATION_ID`; multi-location → ask which is receiving; no account → prompt signup at `squareup.com/signup`
 
 ## Square API Coverage
 
@@ -273,21 +262,14 @@ When provisioning a new site, check if client has existing Square: `GET /v2/loca
 
 ## Conversion Optimization (Research-Backed)
 
-### Donation Page Best Practices (Source: NextAfter, M+R Benchmarks 2025)
-
-- Donation page conversion rate median: 17% (NextAfter 2024). Top 10%: 30%+.
-- Suggested amount with social proof: "$25 — most common gift this month" lifts AOV 12%
-- One-time as default for new donors converts higher than monthly default (lowers commitment friction)
-- Cash App Pay adds 8-15% to total donations on Gen Z / Millennial audiences (Cash App user base)
+- Donation page conversion median: 17% (NextAfter 2024); top 10%: 30%+
+- Suggested amount with social proof lifts AOV 12%: `"$25 — most common gift this month"`
+- One-time default for new donors converts higher than monthly (lowers commitment friction)
+- Cash App Pay adds 8-15% to total donations on Gen Z / Millennial audiences
 - Apple Pay reduces mobile abandonment 30-40% (Source: Apple Pay merchant data)
-
-### Checkout Optimization (Source: Baymard Institute)
-
 - Inline card form (Square Web Payments SDK) converts higher than redirect (Square Checkout)
-- Show security badges + "Powered by Square" near payment form
-- Progress indicator for multi-step donation forms (amount → details → payment)
-- Guest checkout default (never force account creation for donations)
-- Show total prominently before final submit
+- Show `"Powered by Square"` security badge; progress indicator for multi-step forms
+- Guest checkout default; show total prominently before final submit
 
 ## Receipt Email Template (Resend)
 

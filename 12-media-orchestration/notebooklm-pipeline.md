@@ -73,10 +73,10 @@ Mirrors `_media_slots.json` shape so the same fail-CLOSED auto-regenerate patter
 
 ### Provider order
 
-1. **ElevenLabs Studio Create Podcast** (`POST /v1/studio/podcasts` with `mode:"conversation"`, two voice IDs, source text = condensed research brief 8-15K chars) — production REST API, deterministic, no browser automation, ships finished MP3 + transcript JSON. ~$0.30/episode at 30 min
+1. **ElevenLabs Studio Create Podcast** (`POST /v1/studio/podcasts` with `mode:"conversation"`, two voice IDs, source text = condensed research brief 8-15K chars) — deterministic REST API, no browser automation, ships finished MP3 + transcript JSON. ~$0.30/episode at 30 min
 2. **AutoContent API** ($39/mo unlimited, NotebookLM-format mimicry) — when ElevenLabs quota exhausted
-3. **`teng-lin/notebooklm-py`** wrapper (Python lib, browser-automated NotebookLM consumer) — ONLY in CF Container with feature flag `NOTEBOOKLM_BROWSER=1` — used for true NotebookLM-format match when client demands "made in NotebookLM" as marketing claim
-4. **Skip-with-warning** — if all 3 fail, surface in dashboard for manual upload
+3. **`teng-lin/notebooklm-py`** wrapper — ONLY in CF Container with feature flag `NOTEBOOKLM_BROWSER=1`; use when client demands "made in NotebookLM" as marketing claim
+4. **Skip-with-warning** — surface in dashboard for manual upload
 
 NEVER block deploy on podcast — it's enrichment, not infrastructure.
 
@@ -100,7 +100,7 @@ Default voice IDs from `~/.claude/.env`:
 - `ELEVENLABS_VOICE_HOST_A=21m00Tcm4TlvDq8ikWAM` (Rachel)
 - `ELEVENLABS_VOICE_HOST_B=AZnzlk1XvdvUeBnXmlld` (Domi)
 
-Override per-site via `_brand.json.podcast.voices[]` when client supplies brand voices. NEVER use the same voice for both hosts (defeats the conversation format).
+Override per-site via `_brand.json.podcast.voices[]` when client supplies brand voices. NEVER use the same voice for both hosts.
 
 ### ElevenLabs API call
 
@@ -125,7 +125,7 @@ const { project_id } = await r.json();
 - `episode-NN.mp3` — 96kbps stereo VBR, ≤1MB/min
 - `transcript.json` — ElevenLabs-provided word-timing JSON
 - `transcript.vtt` — derived for `<audio>` track
-- `cover-3000.jpg` — 3000×3000 JPEG, Apple-required, branded card via Satori with brand palette + logo + episode title
+- `cover-3000.jpg` — 3000×3000 JPEG (Apple-required), branded via Satori with brand palette + logo + episode title
 - `chapters.json` — auto-extracted from transcript via gpt-4o-mini topical-segmentation pass
 
 ### `/about` page embed (template ships `<PodcastPlayer>`)
@@ -158,7 +158,7 @@ export function PodcastPlayer({ src, transcriptUrl, captionsVtt }: Props) {
 
 ### Transcript on-page (mandatory for SEO + accessibility)
 
-Full transcript rendered below the player as collapsed `<details><summary>Full transcript</summary>...</details>` — search engines + AI search crawlers index the text, screen-reader users get the content, mobile users save scroll. `<details>` `[open]` on desktop ≥1280px via CSS `@media (min-width:1280px) { details[data-podcast-transcript] { open:open } }` (use the JS `details.open=true` if pure-CSS unsupported).
+Render full transcript below the player as `<details><summary>Full transcript</summary>...</details>`. Use `details.open=true` via JS on desktop ≥1280px.
 
 ### RSS feed `/podcast.xml` (Hono route)
 
@@ -227,17 +227,17 @@ app.get('/podcast.xml', async (c) => {
 
 First-episode auto-submit to:
 
-- (a) **Apple Podcasts Connect** via `https://podcastsconnect.apple.com/api/v1/podcasts` (requires `APPLE_PODCAST_KEY_ID` + `APPLE_PODCAST_PRIVATE_KEY` JWT auth — manage at `https://podcastsconnect.apple.com/access`)
-- (b) **Spotify for Podcasters** via web UI (no API — manual)
-- (c) **Google Podcasts deprecated 2024** → submit to YouTube Music podcast directory instead
+- (a) **Apple Podcasts Connect** via `https://podcastsconnect.apple.com/api/v1/podcasts` (`APPLE_PODCAST_KEY_ID` + `APPLE_PODCAST_PRIVATE_KEY` JWT auth — manage at `https://podcastsconnect.apple.com/access`)
+- (b) **Spotify for Podcasters** — no API, manual
+- (c) **YouTube Music** podcast directory (Google Podcasts deprecated 2024)
 - (d) **Podcast Index** `https://podcastindex.org/add` (free, instant)
 - (e) **Amazon Music Podcasters** `https://podcasters.amazon.com`
 
-Document each submission in `_podcast_directories.json` with submission timestamp + directory URL + status. Brian receives email summary via Resend after first episode goes live.
+Document each submission in `_podcast_directories.json` with timestamp + directory URL + status. Brian receives Resend email summary after first episode goes live.
 
 ## Infographic Gallery (≥3 Panels — `/about` Below Podcast)
 
-Three-panel minimum mandatory; can scale to 6-9 panels for content-heavy sites (research orgs, B2B SaaS with deep product docs).
+Three-panel minimum mandatory; scale to 6-9 panels for content-heavy sites.
 
 ### Panel sources (priority order per panel type)
 
@@ -248,13 +248,13 @@ Three-panel minimum mandatory; can scale to 6-9 panels for content-heavy sites (
    ```
 
    Render via `npx vl2svg spec.json out.svg` then optimize via SVGO. Falls back to `vl2png` for raster sharing previews.
-2. **Process / flow panel** (recommended) — **Recraft v3 API** SVG generation — best programmatic SVG output with text rendering accuracy, brand-palette-aware. `POST https://external.api.recraft.ai/v1/images/generations` with `style:"vector_illustration"` + `model:"recraftv3"` + per-slot prompt naming brand palette + composition + topic. ~$0.04/SVG
-3. **Hero illustration panel** (recommended) — **GPT Image 2** (`gpt-image-2` via OpenAI Images API) — ~99% character-level text accuracy in 2026, best for illustrations needing brand-text legibility. Per-slot prompt with all 6 mandatory fields (skill 12 SKILL.md "Per-Slot Prompt Mandatory Fields"). ~$0.06/image at 1536×1024
-4. **Napkin AI API** (`api.napkin.ai`) when both Recraft + GPT-Image saturated for the slot — produces SVG/PNG/PDF infographics from text prompt, $39/mo unlimited. Best for concept-explainer panels (org charts, comparison tables, timelines)
+2. **Process / flow panel** (recommended) — **Recraft v3 API** SVG generation — `POST https://external.api.recraft.ai/v1/images/generations` with `style:"vector_illustration"` + `model:"recraftv3"` + per-slot prompt naming brand palette + composition + topic. ~$0.04/SVG
+3. **Hero illustration panel** (recommended) — **GPT Image 2** (`gpt-image-2` via OpenAI Images API) — ~99% character-level text accuracy in 2026. Per-slot prompt with all 6 mandatory fields (skill 12 SKILL.md "Per-Slot Prompt Mandatory Fields"). ~$0.06/image at 1536×1024
+4. **Napkin AI API** (`api.napkin.ai`) — when both Recraft + GPT-Image saturated; $39/mo unlimited; best for concept-explainer panels (org charts, comparison tables, timelines)
 
-### Per-panel slot record (slots into `_notebooklm.json.infographic.panels[]`)
+### Per-panel slot record
 
-Identical 6-field prompt structure as GPT Image 1.5 slot manifest (page topic + brand palette + composition + subject specificity + technical specs + negative prompt).
+Slots into `_notebooklm.json.infographic.panels[]`. Uses identical 6-field prompt structure as GPT Image 1.5 slot manifest (page topic + brand palette + composition + subject specificity + technical specs + negative prompt).
 
 Validator `validate-infographic-on-about.mjs` greps for ≥3 `<svg>` OR `<img>` inside `[data-infographic-gallery]` on `/about`.
 
@@ -278,27 +278,23 @@ export function InfographicGallery({ panels }: Props) {
 }
 ```
 
-Lightbox grouping inherits `data-gallery="infographic"` per always.md "Every multi-image section" rule. Captions mandatory per same rule.
+Lightbox grouping inherits `data-gallery="infographic"` per always.md "Every multi-image section" rule. Captions mandatory.
 
 ## Explainer Video — Homepage BTF (Second Screen)
 
 ### Provider order
 
-1. **HeyGen API** (`https://api.heygen.com/v2/video/generate`) — production winner for talking-head explainer. ~$1/min standard avatars, $4/min Avatar IV 1080p personalized. 60-90 second target ($1.50-$6/site). Custom-branded backgrounds + intro/outro animations. API docs `https://docs.heygen.com`
-2. **Synthesia API** (`https://api.synthesia.io/v2/videos`) — fallback, ~$0.80-1.20/min. 140+ avatars + 120+ languages
-3. **Tavus API** ($59/mo subscription + per-min credits) — when client has founder photo + voice samples for personalized digital twin. Best for high-touch B2B SaaS
-4. **Veo 3.1 Fast** ($0.15/sec, 8 sec/clip) — fallback to a CINEMATIC HERO LOOP (no narration, MP4 background) when talking-head budget exceeded or brand prefers atmospheric over instructional
-5. **Sora 2** ($0.10/sec 720p, 25s hard cap) — deprecates Sept 24, 2026 — evaluate replacements (likely Sora 3 by then)
+1. **HeyGen API** (`https://api.heygen.com/v2/video/generate`) — production winner for talking-head. ~$1/min standard, $4/min Avatar IV 1080p. 60-90s target ($1.50-$6/site). Docs: `https://docs.heygen.com`
+2. **Synthesia API** (`https://api.synthesia.io/v2/videos`) — fallback, ~$0.80-1.20/min; 140+ avatars + 120+ languages
+3. **Tavus API** ($59/mo + per-min credits) — when client has founder photo + voice samples for personalized digital twin; best for high-touch B2B SaaS
+4. **Veo 3.1 Fast** ($0.15/sec, 8 sec/clip) — fallback to CINEMATIC HERO LOOP when talking-head budget exceeded
+5. **Sora 2** ($0.10/sec 720p, 25s hard cap) — deprecates Sept 24, 2026; evaluate replacements (likely Sora 3)
 
 ### Script generation (Phase 0 step 2c)
 
-gpt-4o synthesizes 75-second script from `_podcast_source.md` summary (reuses the brief):
+gpt-4o synthesizes 75-second script from `_podcast_source.md`:
 
-- Hook (10s)
-- Problem (15s)
-- Solution (30s)
-- Proof (10s)
-- CTA (10s)
+- Hook (10s), Problem (15s), Solution (30s), Proof (10s), CTA (10s)
 
 Saved to `_video_script.md`. Script feeds HeyGen `script` field directly.
 
@@ -360,7 +356,7 @@ export function ExplainerVideo({ uid, posterUrl, captionsVtt }: Props) {
 // In root index.html: <script src="https://embed.cloudflarestream.com/embed/sdk.latest.js"></script>
 ```
 
-**BTF placement = second screen** (immediately after hero, BEFORE features/services). Validator `validate-explainer-video-btf.mjs` asserts the `[data-section="explainer-btf"]` element appears as the 2nd `<section>` in `<main>` on `/`. Hero loop video (when used) does NOT count — it's hero, not BTF.
+**BTF placement = second screen** (immediately after hero, BEFORE features/services). Validator `validate-explainer-video-btf.mjs` asserts `[data-section="explainer-btf"]` is the 2nd `<section>` in `<main>` on `/`. Hero loop video does NOT count — it's hero, not BTF.
 
 ### JSON-LD `VideoObject` (mandatory on `/`)
 
@@ -388,22 +384,22 @@ export function ExplainerVideo({ uid, posterUrl, captionsVtt }: Props) {
 
 ### Video description (the third NotebookLM artifact)
 
-The `_notebooklm.json.video_description` block becomes:
+`_notebooklm.json.video_description` block becomes:
 
 - (a) Cloudflare Stream `meta.name` + `meta.description`
 - (b) YouTube/Vimeo upload metadata when cross-posted
-- (c) The `description` + `transcript` fields in `VideoObject` JSON-LD
-- (d) The `<figcaption>` + collapsed `<details>` transcript on `/` page
+- (c) `description` + `transcript` fields in `VideoObject` JSON-LD
+- (d) `<figcaption>` + collapsed `<details>` transcript on `/` page
 
-Description paragraph 1 MUST be a 40-60 word quotable answer block (per `rules/copy-writing.md` "GEO/AI search").
+Description paragraph 1 MUST be a 40-60 word quotable answer block per `rules/copy-writing.md` "GEO/AI search".
 
 ## Phase 0 Integration (Where the Pipeline Hooks In)
 
 1. **Step 1** — enumerate Media Slot Manifest (`_media_slots.json`) per skill 15 media-acquisition
-2. **Step 2** — enumerate NotebookLM Manifest (`_notebooklm.json`) **in parallel** — same Phase 0 pre-build batch. Both load from `_research.json` + `_pdf_facts.json` + `_corpus.json` so dependencies match
-3. **Step 3** (parallel batch) — kick off ElevenLabs Studio podcast (~3 min wait), HeyGen video (~5 min wait), Vega-Lite/Recraft/GPT-Image-2 infographic panels (~30 sec each). Webhooks update `_notebooklm.json` filled fields when artifacts complete
-4. **Step 4** — while artifacts cook, Phase 1 page builders proceed — `/about` + `/` reference `_notebooklm.json` URLs (placeholder loaders if not yet filled, swapped in deploy-time when ready)
-5. **Step 5** — pre-deploy gate waits for ALL `_notebooklm.json` artifacts OR exhausted-with-warning state — never block infinitely
+2. **Step 2** — enumerate NotebookLM Manifest (`_notebooklm.json`) in parallel — same Phase 0 pre-build batch
+3. **Step 3** (parallel batch) — kick off ElevenLabs Studio podcast (~3 min wait), HeyGen video (~5 min wait), Vega-Lite/Recraft/GPT-Image-2 infographic panels (~30 sec each); webhooks update `_notebooklm.json` filled fields when artifacts complete
+4. **Step 4** — while artifacts cook, Phase 1 page builders proceed — `/about` + `/` reference `_notebooklm.json` URLs (placeholder loaders if not yet filled, swapped in at deploy time)
+5. **Step 5** — pre-deploy gate waits for ALL `_notebooklm.json` artifacts OR exhausted-with-warning state; never block infinitely
 
 ## Cost Tracking + Budget Ceiling
 
@@ -413,25 +409,25 @@ Description paragraph 1 MUST be a 40-60 word quotable answer block (per `rules/c
 {"date":"2026-05-02","spend_usd":47.20,"sites":{"site-id-1":{"podcast":0.30,"infographic":0.18,"video":1.50,"hosting":0.05}}}
 ```
 
-Daily ceiling `NOTEBOOKLM_DAILY_BUDGET` (default $300 = ~100 sites). Exhaustion → fall back to:
+Daily ceiling `NOTEBOOKLM_DAILY_BUDGET` (default $300 = ~100 sites). Exhaustion fallbacks:
 
 - **Video** → Veo 3.1 Fast 8s loop ($1.20 → $0.80)
 - **Infographic** → Vega-Lite only (free)
 - **Podcast** → defer to next day, skip with warning
 
-NEVER block site deploy on NotebookLM artifacts — they're enrichment.
+NEVER block site deploy on NotebookLM artifacts.
 
 ## API Keys Required
 
-- `ELEVENLABS_API_KEY` — manage at `https://elevenlabs.io/app/settings/api-keys`
-- `HEYGEN_API_KEY` — manage at `https://app.heygen.com/settings/api`
-- `HEYGEN_AVATAR_ID`, `HEYGEN_VOICE_ID` — pick at `https://app.heygen.com/avatars` + `https://app.heygen.com/voices`
+- `ELEVENLABS_API_KEY` — `https://elevenlabs.io/app/settings/api-keys`
+- `HEYGEN_API_KEY` — `https://app.heygen.com/settings/api`
+- `HEYGEN_AVATAR_ID`, `HEYGEN_VOICE_ID` — `https://app.heygen.com/avatars` + `https://app.heygen.com/voices`
 - `SYNTHESIA_API_KEY` (fallback) — `https://app.synthesia.io/account/integrations`
 - `TAVUS_API_KEY` (premium) — `https://platform.tavus.io/api-keys`
 - `RECRAFT_API_KEY` — `https://www.recraft.ai/profile/api`
-- `OPENAI_API_KEY` — already present, gpt-image-2 + gpt-4o for scripts
+- `OPENAI_API_KEY` — already present; gpt-image-2 + gpt-4o for scripts
 - `CF_STREAM_TOKEN` + `CF_ACCOUNT_ID` — already present in build pipeline
-- `APPLE_PODCAST_KEY_ID` + `APPLE_PODCAST_PRIVATE_KEY` — Apple Podcasts Connect submission, JWT auth — generate at `https://podcastsconnect.apple.com/access`
+- `APPLE_PODCAST_KEY_ID` + `APPLE_PODCAST_PRIVATE_KEY` — Apple Podcasts Connect; generate at `https://podcastsconnect.apple.com/access`
 - `AUTOCONTENT_API_KEY` (fallback) — `https://autocontentapi.com/account`
 - `NAPKIN_API_KEY` (panel fallback) — `https://www.napkin.ai/account/api`
 
@@ -439,9 +435,9 @@ All loaded via `get-secret KEY` or sourced from `${CLAUDE_ENV_FILE}` per CLAUDE.
 
 ## Quality Gates (cross-ref skill 15 quality-gates.md)
 
-- `validate-podcast-on-about.mjs` — Phase 1 post-build: asserts `/about` HTML contains `<audio>` with `[src*=".mp3"]` AND PodcastSeries + PodcastEpisode JSON-LD blocks AND inline transcript text ≥500 chars. Failures: `podcast.missing` | `podcast.no_jsonld` | `podcast.no_transcript`
+- `validate-podcast-on-about.mjs` — asserts `/about` HTML contains `<audio>` with `[src*=".mp3"]` AND PodcastSeries + PodcastEpisode JSON-LD AND inline transcript text ≥500 chars. Failures: `podcast.missing` | `podcast.no_jsonld` | `podcast.no_transcript`
 - `validate-infographic-on-about.mjs` — asserts `[data-infographic-gallery]` on `/about` contains ≥3 `<svg>|<object[type="image/svg+xml"]>|<img>` children, each with caption attrs. Failures: `infographic.missing` | `infographic.fewer_than_three` | `infographic.caption_missing`
 - `validate-explainer-video-btf.mjs` — asserts `[data-section="explainer-btf"]` is 2nd `<section>` of `<main>` on `/` AND contains `<stream>` element with valid CF Stream UID AND VideoObject JSON-LD with `hasPart` chapters array. Failures: `video.missing` | `video.not_btf` | `video.no_jsonld` | `video.no_chapters`
-- `validate-podcast-rss.mjs` — asserts `/podcast.xml` returns 200 with valid RSS 2.0 + iTunes namespace + ≥1 `<item>` element with `<enclosure type="audio/mpeg">`. Failures: `rss.missing` | `rss.invalid` | `rss.no_episodes`
+- `validate-podcast-rss.mjs` — asserts `/podcast.xml` returns 200 with valid RSS 2.0 + iTunes namespace + ≥1 `<item>` with `<enclosure type="audio/mpeg">`. Failures: `rss.missing` | `rss.invalid` | `rss.no_episodes`
 
 All four wired into `build_validators.ts` between R2 upload and `published` status. Initial deploy in `report` mode, flip to `strict` once template ships clean.

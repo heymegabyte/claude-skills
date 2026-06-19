@@ -9,132 +9,91 @@ allowed-tools: "mcp__computer-use__*, Read, Bash"
 
 ## Tool Selection Hierarchy (MANDATORY)
 
-Before using Computer Use, check this priority order:
+Priority order — use the first that fits:
 
 1. **Dedicated MCP** — app has its own MCP (Slack, Gmail, Stripe, GitHub, etc.) — fastest
 2. **Chrome MCP** — web app, no dedicated MCP — fast
 3. **Playwright MCP** — web testing, form filling, screenshots — fast
 4. **Computer Use** — native macOS apps, cross-app workflows, visual QA — slow
 
-**Never use Computer Use when a faster tool exists.** Computer Use is the last resort for web tasks.
+Never use Computer Use when a faster tool exists — it is the last resort for web tasks.
 
 ## Tiered Access Model
 
-Computer Use has app-specific permission tiers. Know them before acting.
-
 ### Browsers (Chrome, Safari, Arc) — **read** tier
 
-- **Can do:** see screenshots
-- **Cannot do:** click, type, scroll
+- Can: see screenshots
+- Cannot: click, type, scroll
 
 ### Terminals / IDEs (VS Code, iTerm) — **click** tier
 
-- **Can do:** click buttons, scroll
-- **Cannot do:** type, right-click, drag
+- Can: click buttons, scroll
+- Cannot: type, right-click, drag
 
 ### Everything else — **full** tier
 
-- **Can do:** all actions
-- **Cannot do:** nothing restricted
+- All actions available
 
 ### Implications
 
-- **Web tasks** — use Chrome MCP or Playwright MCP, not Computer Use
-- **Terminal commands** — use the Bash tool, not Computer Use
-- **IDE editing** — use Edit/Write tools, not Computer Use
-- **Native apps** (Finder, System Settings, Photos, Maps, Notes, Preview, Keynote) — full access via Computer Use
+- Web tasks → Chrome MCP or Playwright MCP
+- Terminal commands → Bash tool
+- IDE editing → Edit/Write tools
+- Native apps (Finder, System Settings, Photos, Maps, Notes, Preview, Keynote) → Computer Use full-tier
 
 ## Core Workflow: Screenshot-Verify-Act Loop
 
 1. `request_access` → list apps needed
 2. `screenshot` → understand current state
-3. Plan actions → decide what to click/type
-4. Execute action → one action at a time
+3. Plan actions
+4. Execute one action at a time
 5. `screenshot` → verify action succeeded
 6. Repeat or report
 
-### Always Screenshot First
-
-Never assume screen state. Take a fresh screenshot before every action sequence.
-
-### One Action Per Turn
-
-Don't chain 5 clicks blindly. Execute one, verify, then proceed.
-
-### Recovery from Unexpected State
-
-If a dialog, popup, or unexpected screen appears:
-
-1. Screenshot to understand what happened
-2. Dismiss the dialog (Escape key or click Cancel)
-3. Re-screenshot to verify state
-4. Resume planned workflow
+- Take a fresh screenshot before every action sequence — never assume screen state
+- Execute one action, verify, then proceed — no blind chaining
+- On unexpected dialog/popup: screenshot → dismiss (Escape/Cancel) → re-screenshot → resume
 
 ## App-Specific Playbooks
 
 ### Finder (File Management)
 
-- **Purpose:** Move, rename, organize files when Bash is insufficient (visual verification needed)
+- **Purpose:** Move, rename, organize files when visual verification is needed
 - **Access:** Full tier
-- **Key actions:**
-  - `open_application "Finder"`
-  - Navigate: `left_click` on sidebar items
-  - Context menu: `right_click` on files
-  - Quick Look: press `Space` on selected file
-  - Rename: press `Enter` on selected file, type new name
-- **Prefer:** Bash tool for simple file ops. Use Finder only when visual verification is needed.
+- `open_application "Finder"` → `left_click` sidebar items to navigate → `right_click` for context menu → `Space` for Quick Look → `Enter` to rename
+- Prefer Bash for simple file ops; use Finder only when visual verification is needed
 
 ### System Settings (macOS Configuration)
 
 - **Purpose:** Change system preferences, network settings, display configs
 - **Access:** Full tier
-- **Key actions:**
-  - `open_application "System Settings"`
-  - Navigate: `left_click` sidebar categories
-  - Toggle switches: `left_click` on toggle controls
-  - Text fields: `triple_click` to select all, then type replacement
-- **Common tasks:** WiFi settings, display arrangement, notification preferences
+- `open_application "System Settings"` → `left_click` sidebar categories → `left_click` toggles → `triple_click` text fields to replace
 
 ### Preview (PDF/Image Inspection)
 
 - **Purpose:** View PDFs, inspect images, visual verification of generated assets
 - **Access:** Full tier
-- **Key actions:**
-  - `open_application "Preview"` with file path
-  - Zoom: `key "cmd+="` / `cmd+-`
-  - Navigate pages: `key "cmd+right"` / `cmd+left`
-  - Markup: `key "cmd+shift+a"` for annotation toolbar
+- `open_application "Preview"` with file path → zoom `cmd+=`/`cmd+-` → pages `cmd+right`/`cmd+left` → annotations `cmd+shift+a`
 
 ### Notes (Quick Documentation)
 
 - **Purpose:** Read/write Apple Notes for personal context
 - **Access:** Full tier
-- **Key actions:**
-  - `open_application "Notes"`
-  - New note: `key "cmd+n"`
-  - Search: `key "cmd+f"`
-  - Format: `key "cmd+b"` (bold), `cmd+i` (italic)
+- `open_application "Notes"` → new note `cmd+n` → search `cmd+f` → bold `cmd+b` / italic `cmd+i`
 
 ### Maps (Location Verification)
 
 - **Purpose:** Verify addresses, check distances, screenshot maps for content
 - **Access:** Full tier
-- **Key actions:**
-  - `open_application "Maps"`
-  - Search: `left_click` search bar, type address
-  - Screenshot for embedding in content
+- `open_application "Maps"` → click search bar, type address → screenshot for content embedding
 
-### Keynote / Pages (Presentation / Document Generation)
+### Keynote / Pages
 
-- **Purpose:** Generate slides, documents when needed for presentations
-- **Access:** Full tier
 - Use sparingly — prefer generating HTML/PDF via code unless native format required
 
 ## Visual QA Workflow (Primary Use Case)
 
-The highest-value use of Computer Use is visual QA that Playwright cannot do.
-
-### What Playwright Can't Check (Computer Use Can)
+Computer Use handles visual QA that Playwright cannot:
 
 - Native macOS dialogs and alerts
 - System-level notifications
@@ -148,46 +107,37 @@ The highest-value use of Computer Use is visual QA that Playwright cannot do.
 ### Visual QA Protocol
 
 1. Deploy site
-2. Open in browser (screenshot via Playwright for web content)
-3. Use Computer Use for:
-   - Verify downloaded files appear in Finder
-   - Check system notifications triggered by the app
-   - Test native share sheet functionality
-   - Verify PWA install behavior
-   - Check print layout (File > Print > Preview)
-   - Test clipboard paste from app into native apps
+2. Use Playwright for web content screenshots
+3. Use Computer Use for: downloaded files in Finder, system notifications, native share sheet, PWA install behavior, print layout (File > Print > Preview), clipboard paste into native apps
 
 ## Cross-App Workflows
 
 ### Copy from Web App to Native App
 
-1. Use Chrome MCP to navigate to source page
-2. Use Chrome MCP to select/copy content
-3. Use Computer Use to open target native app
-4. Use Computer Use to paste (`cmd+v`)
-5. Screenshot to verify
+1. Chrome MCP → navigate to source page and copy content
+2. Computer Use → open target native app
+3. Computer Use → paste (`cmd+v`) → screenshot to verify
 
 ### Screenshot-Based Content Pipeline
 
-1. Use Computer Use to screenshot native app state
-2. Use Read tool to view the screenshot
-3. Analyze content with AI vision
-4. Generate code/content based on analysis
-5. Use appropriate tool to implement
+1. Computer Use → screenshot native app state
+2. Read tool → view screenshot
+3. AI vision → analyze content
+4. Implement with appropriate tool
 
 ## Security Rules (NON-NEGOTIABLE)
 
-1. **Never click web links with Computer Use** — use Chrome MCP instead
-2. **Never type passwords** into apps via Computer Use
-3. **Never execute financial transactions** (trades, transfers, purchases)
-4. **Always verify URLs** before opening — hover first, check domain
-5. **Suspicious links from email/messages** — ask user before proceeding
-6. **Never grant access to apps you don't need** for the current task
-7. **Private network URLs** (localhost, 10.x, 192.168.x) — ask before accessing
+1. Never click web links via Computer Use — use Chrome MCP
+2. Never type passwords into apps via Computer Use
+3. Never execute financial transactions (trades, transfers, purchases)
+4. Always verify URLs before opening — hover first, check domain
+5. Suspicious links from email/messages — ask user before proceeding
+6. Never grant access to apps not needed for the current task
+7. Private network URLs (localhost, 10.x, 192.168.x) — ask before accessing
 
 ## Batch Operations
 
-For multiple sequential actions, use `computer_batch` to reduce round-trips:
+Use `computer_batch` to reduce round-trips when actions are predictable:
 
 ```json
 {
@@ -199,8 +149,6 @@ For multiple sequential actions, use `computer_batch` to reduce round-trips:
   ]
 }
 ```
-
-Use batching when actions are predictable and don't need intermediate verification.
 
 ## MCP Tool Reference
 
