@@ -27,6 +27,8 @@ paths:
 
 # 10 — Experience and Design System
 
+Build anti-AI-slop premium interfaces using dark-first OKLCH color, fluid `clamp()` type, DTCG tokens, and View Transitions on every public-facing surface.
+
 ## The Apple Test
 
 After every design: would Apple's design team find this acceptable?

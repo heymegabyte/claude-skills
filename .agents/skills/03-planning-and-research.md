@@ -22,6 +22,8 @@ paths:
 
 # 03 — Planning and Research
 
+Decompose work into parallel vertical slices using deep web research, competitor scanning, and technology evaluation.
+
 ## Deep research protocol
 
 Before any non-trivial implementation:

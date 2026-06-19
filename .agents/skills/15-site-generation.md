@@ -39,6 +39,8 @@ paths:
 
 # 15 — Site Generation
 
+Run the end-to-end AI website generation pipeline: research→media→Bolt artifact emission→R2 upload→D1 status for all business types.
+
 > **Model migration note (pass-78, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Generation pipeline unchanged.
 
 ## Submodules

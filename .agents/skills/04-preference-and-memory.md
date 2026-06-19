@@ -22,6 +22,8 @@ paths:
 
 # 04 — Preference and Memory
 
+Capture and evolve user preferences with confidence levels, maintaining a Voice of the Customer model scoped globally or per project.
+
 ## Auto-memory system
 
 Persistent file-based memory at `/Users/Apple/.claude/projects/<encoded-path>/memory/`. Write directly via Write tool.

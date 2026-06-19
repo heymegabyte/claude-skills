@@ -34,6 +34,8 @@ paths:
 
 # 13 — Observability and Growth
 
+Wire full-stack instrumentation from day one using tiered PostHog+Sentry+GA4 stacks, feature flags, PLG patterns, and incident auto-remediation.
+
 ## Instrumentation tiers
 
 Per `_kernel/standards.md#integrations`:

@@ -24,6 +24,8 @@ paths:
 
 # 11 — Motion and Interaction System
 
+Apply meaning-first CSS animations (scroll-driven, View Transitions, `@starting-style`) with mandatory `prefers-reduced-motion` on every animated surface.
+
 ## Motion serves one of three purposes
 
 1. **Feedback** — confirm user action (button press, form submit, save)

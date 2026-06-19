@@ -51,6 +51,8 @@ paths:
 
 # 07 — Quality and Verification
 
+Run the 5-level verification pyramid (static→unit→E2E→AI visual→post-deploy) with WCAG 2.2 AA and 8-gate quality enforcement on every change.
+
 ## 5-level pyramid (bottom to top)
 
 1. **Static** — TS strict + ESLint + oxlint + Prettier + knip (dead code)
