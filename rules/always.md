@@ -18,7 +18,12 @@ paths:
 - Meta desc 120-156 chars
 - One H1 in HTML shell (prerender)
 - Canonical
-- **`<head>` MUST be delivered server-side per-route, NEVER client-only.** On a SPA (React/Vite) served by a CF Worker, a client `PageHead`/Helmet that sets `<title>`/`<meta>`/`canonical` after hydration is INVISIBLE to Googlebot, ChatGPT, Perplexity, and social scrapers — they read the raw shell. If non-prerendered routes fall back to one `index.html`, every route ships the HOMEPAGE title + `canonical=/`, collapsing the whole site to one indexable URL. Fix: a Worker `HTMLRewriter` pass keyed on `getMeta(pathname)` rewriting title/desc/og/twitter/canonical/`<html lang>` for EVERY route (base + locale, one source of truth). Gate it with a RAW-HTTP spec (`request.get`, no JS) asserting the server shell — a post-hydration DOM check passes even when the shell is wrong. Reference incident: njsk.org pass-10 (site-wide `canonical=/` on all 32 routes).
+- **`<head>` MUST be delivered server-side per-route, NEVER client-only.**
+  - Client `PageHead`/Helmet (SPA, post-hydration) is INVISIBLE to Googlebot/ChatGPT/Perplexity/social scrapers — they read the raw shell.
+  - Non-prerendered routes falling back to one `index.html` ship the HOMEPAGE title + `canonical=/` everywhere → whole site collapses to one indexable URL.
+  - Fix: Worker `HTMLRewriter` keyed on `getMeta(pathname)` rewrites title/desc/og/twitter/canonical/`<html lang>` per route (base + locale, one source of truth).
+  - Gate: RAW-HTTP spec (`request.get`, no JS) asserting the server shell — a post-hydration DOM check passes even when the shell is wrong.
+  - Incident: njsk.org pass-10 (site-wide `canonical=/` on all 32 routes).
 - JSON-LD per page only when accurate. WebPage is floor; add Organization/BreadcrumbList/FAQPage/Person/Product/Service ONLY when describing real entities. Never pad.
 - FAQPage only when real Q&A exists. Don't fabricate.
 - OG 1200×630 ≤100KB **branded card** (NOT scraped photo)
@@ -37,13 +42,25 @@ paths:
   - **Allow (search/retrieval — keeps you cited in ChatGPT/Perplexity/AI Overviews)**: `OAI-SearchBot`, `Claude-SearchBot`, `Claude-User`, `PerplexityBot`
   - **Disallow (training-only — opt out of model training)**: `GPTBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `CCBot`, `Bytespider`
   - Explicit `Allow`/`Disallow` per UA — never default
-  - **Cloudflare gotcha**: the CF "AI Audit / Managed robots.txt" feature EDGE-INJECTS a `# BEGIN Cloudflare Managed content` block ABOVE your origin robots.txt (sets `ai-train=no` + `Disallow: /` for training bots). If your origin robots.txt ALLOWS those same bots, you ship contradictory duplicate `User-agent` groups → undefined crawler behavior + possible drop from AI answers. Reconcile the origin file to AGREE with the managed block (disallow training, allow search/retrieval) — or disable the managed feature in the dashboard. Always `curl` the LIVE robots.txt (not just the repo file) to catch the injected block. Reference incident: music.megabyte.space 2026-06-10.
+  - **Cloudflare gotcha**: CF "AI Audit / Managed robots.txt" EDGE-INJECTS a `# BEGIN Cloudflare Managed content` block ABOVE origin robots.txt (`ai-train=no` + `Disallow: /` for training bots).
+    - Origin ALLOWS the same bots → contradictory duplicate `User-agent` groups, undefined crawler behavior, possible drop from AI answers.
+    - Fix: reconcile origin to AGREE with the managed block (disallow training, allow search/retrieval), or disable the managed feature in the dashboard.
+    - Always `curl` the LIVE robots.txt (not the repo file) to catch the injected block.
+    - Incident: music.megabyte.space 2026-06-10.
 - `humans.txt`
 - `sitemap.xml` (every `<url>` has `<lastmod>`)
-  - **`<lastmod>` must reflect when the URL's CONTENT changed, NOT the build time.** Stamping `TODAY` on every URL on every build (the default a content generator falls into) tells Google the whole site changed today on every regeneration — Google then STOPS TRUSTING the field entirely (developers.google.com/search/blog/2023/06/sitemaps-lastmod-ping), forfeiting the crawl-priority signal. Same freshness-fabrication class as a JSON-LD `dateModified: TODAY` or a Google-News `publication_date` keyed on the rewrite date. Fix: a committed `{ url: { hash, lastmod } }` store — hash each page's source, PRESERVE the stored date while the hash is unchanged, bump to today only on a new/changed URL. Single-writer per URL (don't let two generators re-sign the same `loc` with different signatures → mutual clobber → back to always-today). Gate it so a raw `<lastmod>${TODAY}</lastmod>` inside a `<url>` can't reappear. Reference impl: brickcitylabor `scripts/lib/sitemap-lastmod.mjs`.
+  - **`<lastmod>` must reflect when the URL's CONTENT changed, NOT build time.**
+    - Stamping `TODAY` on every URL each build tells Google the whole site changed today → Google STOPS TRUSTING the field (developers.google.com/search/blog/2023/06/sitemaps-lastmod-ping), forfeiting crawl-priority. Same freshness-fabrication class as JSON-LD `dateModified: TODAY` or Google-News `publication_date` keyed on rewrite date.
+    - Fix: committed `{ url: { hash, lastmod } }` store — hash each page's source, PRESERVE stored date while hash unchanged, bump to today only on new/changed URL.
+    - Single-writer per URL — two generators re-signing the same `loc` mutually clobber back to always-today.
+    - Gate so a raw `<lastmod>${TODAY}</lastmod>` inside a `<url>` can't reappear.
+    - Reference impl: brickcitylabor `scripts/lib/sitemap-lastmod.mjs`.
 - `browserconfig.xml`
 - `.well-known/security.txt`
-  - **Cloudflare gotcha (same class as the robots.txt one above)**: CF's account-level **managed `security.txt`** edge-serves a single file across EVERY zone in the account (`server: cloudflare`, CF-injected `report-to`/`nel`, no `cf-cache-status`), SHADOWING any `public/.well-known/security.txt` asset — the repo file NEVER serves. A repo copy then silently drifts (stale contacts/expiry) and a future agent "fixes" a dead file. Always `curl` the LIVE security.txt; if CF-managed, edit the **account security.txt dashboard setting**, not the asset, and keep the repo copy reconciled (or delete it) so it can't contradict prod. Reference incident: pdf.megabyte.space 2026-06-12.
+  - **Cloudflare gotcha (same class as robots.txt above)**: CF account-level **managed `security.txt`** edge-serves one file across EVERY zone (`server: cloudflare`, CF-injected `report-to`/`nel`, no `cf-cache-status`), SHADOWING any `public/.well-known/security.txt` — the repo file NEVER serves.
+    - Repo copy then silently drifts (stale contacts/expiry) and a future agent "fixes" a dead file.
+    - Always `curl` the LIVE security.txt; if CF-managed, edit the **account security.txt dashboard setting**, not the asset; keep the repo copy reconciled or delete it.
+    - Incident: pdf.megabyte.space 2026-06-12.
 - `favicon.ico` + `favicon-16x16.png` + `favicon-32x32.png`
 - `apple-touch-icon.png` (180×180)
 - OG image
@@ -51,7 +68,10 @@ paths:
 
 ### Optional
 
-- `llms.txt` — <0.3% adoption, no major LLM crawler requests it. DX-only for Cursor/Claude Code, **not a build gate** — BUT Lighthouse's `agentic-browsing` category (Chrome DevTools 2026) now SCORES it: a missing/invalid `llms.txt` (no H1, no links) drops the category (seen 67→100 on music.megabyte.space 2026-06-10). For AI-native / catalog sites, ship a proper data-driven one (llmstxt.org: H1 + summary + linked sections, generated from data so it never drifts) — cheap win + on-theme. Verify by re-running `lighthouse_audit` (chrome-devtools MCP), not by guessing.
+- `llms.txt` — <0.3% adoption, no major LLM crawler requests it; DX-only for Cursor/Claude Code, **not a build gate**.
+  - BUT Lighthouse `agentic-browsing` (Chrome DevTools 2026) SCORES it: missing/invalid (no H1, no links) drops the category (67→100 on music.megabyte.space 2026-06-10).
+  - For AI-native/catalog sites, ship a data-driven one (llmstxt.org: H1 + summary + linked sections, generated from data so it never drifts).
+  - Verify by re-running `lighthouse_audit` (chrome-devtools MCP), not by guessing.
 
 ### Asset rules
 

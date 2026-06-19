@@ -21,17 +21,17 @@ Status: `[ ]` todo · `[~]` in progress · `[x]` done · `[skip]` keep as-is (lo
 - `[skip]` principles-incident-log.md (413) — historical record, do not compress
 - `[x]` website-build-doctrine.md (247→198, -20%) — iter 1
 - `[x]` secret-auto-provisioning.md (229→195, -15%) — iter 2
-- `[ ]` always.md (224) — HIGH: loaded every prompt, compress carefully
+- `[x]` always.md (224→244, +9% RESTRUCTURE) — iter 3; already compression-optimal, 5 mega-bullets → scannable sub-bullets, 0 facts dropped
 - `[x]` supreme-polish.md (211→181, -14%) — iter 2
 - `[x]` code-style.md (196→147, -25%) — iter 1
 - `[x]` agent-resilience-discipline.md (221→120, -46%) — iter 2
 - `[x]` webhook-as-skill-pattern.md (217→137, -37%) — iter 2
 - `[x]` mcp-namespace-discipline.md (215→140, -35%) — iter 2
 - `[x]` thin-source-amplification.md (182→166, -9%) — iter 1
-- `[ ]` lint-doctrine.md (179)
-- `[ ]` working-backwards.md (192)
+- `[x]` lint-doctrine.md (179→173, -3%) — iter 3
+- `[x]` working-backwards.md (194→137, -29%) — iter 3
 - `[ ]` root-cause-validator-findings.md (167)
-- `[ ]` data-residency-by-default.md (198)
+- `[x]` data-residency-by-default.md (199→175, -12%) — iter 3
 - `[ ]` agent-selection.md (165)
 - `[ ]` one-way-two-way-doors.md (173)
 - `[ ]` bash-matcher-guardrails.md (170)
@@ -39,15 +39,15 @@ Status: `[ ]` todo · `[~]` in progress · `[x]` done · `[skip]` keep as-is (lo
 - `[ ]` source-site-enhancement.md (142)
 - `[ ]` verification-loop.md (141)
 - `[ ]` validator-precision-discipline.md (141)
-- `[ ]` state-is-the-enemy.md (211)
+- `[x]` state-is-the-enemy.md (212→180, -15%) — iter 3
 - `[ ]` eval-mock-mode-discipline.md (177)
 - `[ ]` copy-writing.md (145)
 - `[ ]` backwards-compatibility-removal-cadence.md (206)
-- `[ ]` documentation-as-code.md (223)
-- `[ ]` hardware-aware-programming.md (222)
-- `[ ]` inverted-abstraction-pyramid.md (210)
-- `[ ]` production-observability-default-on.md (210)
-- `[ ]` structured-logging.md (207)
+- `[x]` documentation-as-code.md (224→167, -25%) — iter 3
+- `[x]` hardware-aware-programming.md (223→167, -25%) — iter 3
+- `[x]` inverted-abstraction-pyramid.md (211→167, -21%) — iter 3
+- `[x]` production-observability-default-on.md (210→190, -10%) — iter 3
+- `[x]` structured-logging.md (209→178, -15%) — iter 3
 - next batches: remaining 144 rules >120 lines, then numbered skill dirs, commands/, agents/
 
 ## 50-idea roadmap (research-grounded — integrate over the arc)
@@ -134,6 +134,13 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - **Wire `bin/audit-instruction-files.mjs` to lefthook** now the gate is green — first add inline-code-span skip + `<!-- validator-ignore -->` hatch (iter-1 known refinement).
 
 ## Iteration log
+
+### iter 3 — 2026-06-19
+
+- Compressed 9 rules: working-backwards (-29%), documentation-as-code (-25%), hardware-aware-programming (-25%), inverted-abstraction-pyramid (-21%), structured-logging (-15%), state-is-the-enemy (-15%), data-residency-by-default (-12%), production-observability-default-on (-10%), lint-doctrine (-3%). All facts/thresholds/code blocks preserved.
+- Restructured `always.md` (loaded every prompt): 5 wall-of-text mega-bullets → scannable nested sub-bullets. +9% lines but far more readable; 0 constraints/gates/incidents dropped (HTMLRewriter, sitemap-lastmod, robots/security.txt CF gotchas, llms.txt all intact). Already compression-optimal so readability was the win.
+- Gate stayed green throughout (15 pass · 0 fail). 19 rule files now done total.
+- Next batch: root-cause-validator-findings, agent-selection, one-way-two-way-doors, bash-matcher-guardrails, source-site-enhancement, verification-loop, validator-precision-discipline, eval-mock-mode-discipline, copy-writing, backwards-compatibility-removal-cadence.
 
 ### iter 2 — 2026-06-19
 

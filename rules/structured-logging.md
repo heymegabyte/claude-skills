@@ -23,8 +23,6 @@ Every log line is machine-parseable JSON. Freeform `console.log("some message")`
 
 ## Required fields
 
-Every log line MUST include at minimum:
-
 ```ts
 {
   level: "trace" | "debug" | "info" | "warn" | "error" | "fatal",
@@ -37,39 +35,33 @@ Every log line MUST include at minimum:
 }
 ```
 
-Optional fields included when present:
+Optional fields (include when present):
 
 ```ts
 {
-  durationMs?: number, // wall-clock time for the operation being logged
-  error?: {
-    message: string,
-    stack?: string,
-    code?: string,
-  },
+  durationMs?: number,
+  error?: { message: string, stack?: string, code?: string },
   userId?: string,     // only after redactPii() — never raw email/phone
-  path?: string,       // HTTP path
-  status?: number,     // HTTP status code
-  method?: string,     // HTTP method
+  path?: string,
+  status?: number,
+  method?: string,
 }
 ```
 
-## Log levels (Sentry severity mapping)
+## Log levels
 
-| Level  | Sentry severity | Use case                                                    |
-|--------|----------------|-------------------------------------------------------------|
-| trace  | debug          | Hot-path breadcrumbs, never in prod by default              |
-| debug  | debug          | Dev-only diagnostics, flag-gated off in production          |
-| info   | info           | Normal operations: requests, jobs, flag evaluations         |
-| warn   | warning        | Recoverable issues: retries, fallback paths, cache misses   |
-| error  | error          | Caught exceptions with full stack + context                 |
-| fatal  | fatal          | Unrecoverable: process death, data corruption, panic        |
+- **trace** — Sentry `debug`; hot-path breadcrumbs, never on by default in prod
+- **debug** — Sentry `debug`; dev-only diagnostics, flag-gated off in production
+- **info** — Sentry `info`; normal operations: requests, jobs, flag evaluations
+- **warn** — Sentry `warning`; recoverable issues: retries, fallback paths, cache misses
+- **error** — Sentry `error`; caught exceptions with full stack + context
+- **fatal** — Sentry `fatal`; unrecoverable: process death, data corruption, panic
 
 Production floor is `info`. Set `LOG_LEVEL=debug` env var to lower for a deploy.
 
 ## Worker-side implementation
 
-Workers Tracing OTLP captures `console.log` output as structured JSON automatically when the payload is valid JSON. Use `console.log(JSON.stringify({...}))` — never `console.info`/`console.warn` for structured entries (they are captured but bypass OTLP aggregation in some collector versions).
+Workers Tracing OTLP captures `console.log` output as structured JSON when the payload is valid JSON. Use `console.log(JSON.stringify({...}))` — never `console.info`/`console.warn` for structured entries (they bypass OTLP aggregation in some collector versions).
 
 ```ts
 // src/worker/lib/logger.ts
@@ -85,12 +77,7 @@ interface LogFields {
   [key: string]: unknown;
 }
 
-export function log(
-  level: LogLevel,
-  msg: string,
-  fields: LogFields,
-  err?: unknown,
-) {
+export function log(level: LogLevel, msg: string, fields: LogFields, err?: unknown) {
   const entry = {
     level,
     ts: Date.now(),
@@ -126,39 +113,25 @@ export const traceMiddleware = createMiddleware(async (c, next) => {
 });
 ```
 
-Register before all routes:
+Register before all routes: `app.use("*", traceMiddleware);`
 
-```ts
-app.use("*", traceMiddleware);
-```
-
-Access downstream:
-
-```ts
-const traceId = c.get("traceId");
-const requestId = c.get("requestId");
-```
+Access downstream: `const traceId = c.get("traceId");`
 
 ## PostHog event capture
 
-Every significant action emitted to PostHog MUST include `traceId` so events can be correlated with logs and Sentry traces:
+Every significant action emitted to PostHog MUST include `traceId` for cross-correlation with logs and Sentry traces:
 
 ```ts
 posthog.capture({
   distinctId: userId,
   event: "payment.completed",
-  properties: {
-    traceId,
-    requestId,
-    amount,
-    currency,
-  },
+  properties: { traceId, requestId, amount, currency },
 });
 ```
 
 ## PII handling
 
-Never log raw PII. Pass through `redactPii()` per `[[pii-handling-discipline]]` before including in any log field:
+Never log raw PII. Pass through `redactPii()` per `[[pii-handling-discipline]]`:
 
 ```ts
 // BAD
@@ -176,30 +149,26 @@ log("info", "user signed up", { ...base, email: redactPii(user.email) });
 - `console.log(JSON.stringify({ msg }))` — missing required fields
 - `console.error(err)` — not captured by OTLP as structured JSON
 - Logging raw `req.body` or `user.email` — PII leak
-- Logging in a hot loop without sampling — cost explosion; use `if (Math.random() < 0.01)` gate for trace-level hot paths
+- Logging in a hot loop without sampling — use `if (Math.random() < 0.01)` gate for trace-level hot paths
 - Different log shapes per handler — define `LogFields` type, derive all loggers from it
 
-## Workers Tracing OTLP shape
+## Workers Tracing OTLP field mapping
 
-Workers Tracing exports spans + logs via OTLP to Cloudflare's collector. The JSON console output becomes a log record under the current span automatically. Fields map:
-
-- `level` → `SeverityText` / `SeverityNumber`
-- `ts` → `TimeUnixNano`
-- `msg` → `Body`
-- Remaining fields → `Attributes`
+- **`level`** — `SeverityText` / `SeverityNumber`
+- **`ts`** — `TimeUnixNano`
+- **`msg`** — `Body`
+- **remaining fields** — `Attributes`
 
 No additional SDK configuration required — the Workers runtime handles export on request completion.
 
 ## Sentry severity mapping (numeric)
 
-| Level  | Sentry numeric |
-|--------|---------------|
-| trace  | 5             |
-| debug  | 7             |
-| info   | 9             |
-| warn   | 13            |
-| error  | 17            |
-| fatal  | 21            |
+- **trace** — 5
+- **debug** — 7
+- **info** — 9
+- **warn** — 13
+- **error** — 17
+- **fatal** — 21
 
 ## See also
 

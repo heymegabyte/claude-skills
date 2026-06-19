@@ -21,18 +21,13 @@ paths:
 
 # Production Observability Default-On
 
-Every Worker ships telemetry from line 1. There is no "add observability later" phase —
-later never arrives, and when something breaks you have no trace. Retrofitting PostHog,
-OTLP spans, and Sentry to an existing Worker costs 4-8× more than the initial scaffold
-because you are editing around live traffic, not a blank canvas.
+Every Worker ships telemetry from line 1. Retrofitting PostHog, OTLP spans, and Sentry to a live Worker costs 4-8× more than the initial scaffold.
 
-Observability is not a feature. It is the minimum viable Worker.
-
-## The four instrumentation pillars (all four, every Worker)
+## The four pillars (all four, every Worker)
 
 ### 1. Structured JSON logging
 
-Every `console.log` is a structured object, never a bare string. The log shape:
+Every `console.log` is a structured object, never a bare string.
 
 ```typescript
 interface WorkerLog {
@@ -45,7 +40,6 @@ interface WorkerLog {
   [extra: string]: unknown;
 }
 
-// Usage
 console.log(JSON.stringify({
   level: 'info',
   traceId,
@@ -57,13 +51,12 @@ console.log(JSON.stringify({
 }));
 ```
 
-Log strings are invisible to CF Workers Logpush and Axiom filters — structured JSON is the
-only format that survives the pipeline. Every `console.error` call in a production handler
-is a structured log with `level: 'error'`, never a bare `Error.message`.
+- Log strings are invisible to CF Workers Logpush and Axiom filters — structured JSON is the only format that survives the pipeline.
+- Every `console.error` in a production handler is a structured log with `level: 'error'`, never a bare `Error.message`.
 
 ### 2. PostHog capture on every significant action
 
-"Significant action" = any state change, any external call, any feature flag evaluation.
+**Significant action** = any state change, any external call, any feature flag evaluation.
 
 ```typescript
 // worker/lib/telemetry.ts
@@ -92,13 +85,12 @@ ctx.waitUntil(
 );
 ```
 
-Use `ctx.waitUntil()` for every PostHog call — never `await` it in the hot path.
-PostHog calls in the hot path add 30-80ms latency.
+- Use `ctx.waitUntil()` for every PostHog call — never `await` it in the hot path.
+- PostHog calls in the hot path add 30-80ms latency.
 
 ### 3. OTLP trace spans via workers-tracing-otlp
 
-Add the `workers-tracing-otlp` package to every new Worker. Configure via `wrangler.toml`
-observability block:
+Add `workers-tracing-otlp` to every new Worker. Configure `wrangler.toml`:
 
 ```toml
 [observability]
@@ -109,14 +101,13 @@ head_sampling_rate = 1
 enabled = true
 ```
 
-For custom spans (DB calls, AI calls, external fetches):
+Wrap every D1 query, AI call, and external fetch in a span:
 
 ```typescript
 import { trace } from '@opentelemetry/api';
 
 const tracer = trace.getTracer('my-worker', '1.0.0');
 
-// Wrap every D1 query and external fetch in a span
 const users = await tracer.startActiveSpan('d1.users.list', async (span) => {
   try {
     const result = await env.DB.prepare('SELECT * FROM users LIMIT ?').bind(50).all();
@@ -132,18 +123,12 @@ const users = await tracer.startActiveSpan('d1.users.list', async (span) => {
 });
 ```
 
-Every AI Gateway call, every D1 query, every R2 operation gets a span. These are the
-exact calls that cause latency spikes; without spans you cannot distinguish a slow D1
-query from a slow AI call.
+- Every AI Gateway call, every D1 query, every R2 operation gets a span — these are the exact calls that cause latency spikes.
 
 ### 4. Sentry for unhandled exceptions
 
 ```typescript
 import * as Sentry from '@sentry/cloudflare';
-
-// wrangler.toml entry:
-// [vars]
-// SENTRY_DSN = "https://..."
 
 export default Sentry.withSentry(
   (env: Env) => ({
@@ -159,12 +144,10 @@ export default Sentry.withSentry(
 );
 ```
 
-The `withSentry` wrapper catches every unhandled exception with full request context.
-Without it, `500 Internal Server Error` responses are invisible in CF dashboard.
+- `withSentry` catches every unhandled exception with full request context.
+- Without it, `500 Internal Server Error` responses are invisible in CF dashboard.
 
 ## Scaffold checklist (every new Worker)
-
-Before the first commit:
 
 - [ ] `posthog-node` in `package.json`
 - [ ] `@sentry/cloudflare` in `package.json`
@@ -177,34 +160,31 @@ Before the first commit:
 
 ## Observability tier routing
 
-Per the global stack rules (`CLAUDE.md` § Observability):
+Per `CLAUDE.md` § Observability:
 
-- **Solo SaaS / nonprofit / portfolio** → PostHog + Workers Tracing OTLP (2 vendors)
-- **Enterprise / regulated / multi-team** → add `@sentry/cloudflare` v9 + GA4/GTM + Axiom
-- **LLM-heavy (>10k AI calls/month)** → add AI Gateway to either tier
+- **Solo SaaS / nonprofit / portfolio** — PostHog + Workers Tracing OTLP (2 vendors max)
+- **Enterprise / regulated / multi-team** — add `@sentry/cloudflare` v9 + GA4/GTM + Axiom
+- **LLM-heavy (>10k AI calls/month)** — add AI Gateway to either tier
 
-Do NOT add all four tiers to a solo project "just in case." Vendor proliferation is its own
-observability problem.
+Do NOT add all four tiers to a solo project. Vendor proliferation is its own observability problem.
 
 ## Anti-patterns
 
 - `console.log('User created: ' + userId)` — bare string, not queryable
-- `await posthog.capture(...)` in hot path — adds latency, use `ctx.waitUntil`
-- PostHog only on "important" routes — every route is important once it breaks
-- Adding Sentry after the first production incident — too late, the trace is gone
+- `await posthog.capture(...)` in hot path — use `ctx.waitUntil`
+- PostHog only on "important" routes — every route matters once it breaks
+- Adding Sentry after the first production incident — the trace is already gone
 - `head_sampling_rate = 0.1` on a low-traffic Worker — sample at 1.0 until you have data
 - Skipping spans on D1/AI calls — those are the only calls slow enough to matter
 
 ## Drift detection
 
-If a Worker route file (`src/worker/routes/**`) has no `posthog.capture`, no structured
-log with `traceId`, or no Sentry wrapper on the handler export — that is observability
-drift. Fix in the same turn per `[[drift-detection]]`.
+If a Worker route file (`src/worker/routes/**`) has no `posthog.capture`, no structured log with `traceId`, or no Sentry wrapper — that is observability drift. Fix in the same turn per `[[drift-detection]]`.
 
 ## Cross-links
 
-- `[[verification-loop]]` — prod verification requires observable prod (you need the logs to verify)
-- `[[feature-flags]]` — every flag evaluation emits a PostHog capture; blind flag evals are unmonitorable
-- `[[zod-everywhere]]` — Zod parse failures in prod handlers emit structured error logs, never crashes
-- `[[fail-fast-build-fail-soft-prod]]` — observability is how "fail soft" is detectable; without it, degraded = silent
-- `[[state-is-the-enemy]]` — stateless Workers are easier to trace because there is no ambient state to confuse the trace
+- `[[verification-loop]]` — prod verification requires observable prod
+- `[[feature-flags]]` — every flag evaluation emits a PostHog capture
+- `[[zod-everywhere]]` — Zod parse failures emit structured error logs, never crashes
+- `[[fail-fast-build-fail-soft-prod]]` — observability is how "fail soft" is detectable
+- `[[state-is-the-enemy]]` — stateless Workers are easier to trace

@@ -22,17 +22,12 @@ paths:
 
 # State Is the Enemy — Push to DOs or Eliminate
 
-Stateful code in a Cloudflare Worker is the primary source of scaling and correctness
-bugs. A Worker isolate is a stateless function: it boots, serves a request, and may be
-evicted at any time. Module-level `let` and `const` that accumulate mutable state across
-requests are bugs that only manifest under concurrent load — and CF Workers run concurrent
-requests in the same isolate during warm periods.
+A Worker isolate boots, serves a request, and may be evicted at any time. Module-level `let`/`const` that accumulates mutable state across requests is a bug that only manifests under concurrent load — and CF Workers run concurrent requests in the same isolate during warm periods.
 
-The rule has two outcomes: if something must persist across requests, it lives in a
-Durable Object, D1, KV, or R2. If it does not need to persist, it is computed on demand
-and cached at the CDN layer — not in Worker memory.
+- If state must persist across requests → Durable Object, D1, KV, or R2.
+- If state does not need to persist → compute on demand, cache at CDN — not in Worker memory.
 
-## The three failure modes of Worker-scoped state
+## The three failure modes
 
 ### 1. Module-scope mutable variables
 
@@ -50,15 +45,14 @@ export default {
 }
 ```
 
-The `requestCount` increments for concurrent requests non-atomically. The `lastUser`
-is visible to the NEXT request before it is cleared. Under load, this is a data leak.
-
-Fix: eliminate both. Compute count from D1/KV if needed. Pass user as a local variable.
+- `requestCount` increments non-atomically under concurrency.
+- `lastUser` is visible to the next request — data leak under load.
+- **Fix:** eliminate both. Compute count from D1/KV. Pass user as a local variable.
 
 ### 2. In-memory cache with no isolation guarantee
 
 ```typescript
-// BUG: looks like a cache, actually a correctness hazard
+// BUG: correct in tests, broken under concurrent load
 const featureCache = new Map<string, boolean>();
 
 async function isEnabled(key: string, env: Env): Promise<boolean> {
@@ -69,12 +63,10 @@ async function isEnabled(key: string, env: Env): Promise<boolean> {
 }
 ```
 
-This works perfectly in tests and single-request scenarios. Under concurrent load, two
-requests populate the cache simultaneously with different values. After an isolate
-restart, the cache is empty and a thundering herd of D1 queries fires. After a flag
-toggle in D1, the old value is served until the isolate is evicted (could be hours).
-
-Fix: Use KV with a 60-second TTL as the caching layer, not a module-scope Map.
+- Two concurrent requests populate the cache simultaneously with different values.
+- After isolate restart, the cache is empty → thundering herd of D1 queries.
+- After a D1 flag toggle, the stale value is served until eviction (could be hours).
+- **Fix:** KV with a 60-second TTL.
 
 ```typescript
 async function isEnabled(key: string, env: Env): Promise<boolean> {
@@ -90,32 +82,17 @@ async function isEnabled(key: string, env: Env): Promise<boolean> {
 ### 3. Singleton that should be a Durable Object
 
 ```typescript
-// BUG: rate limiter in Worker memory is per-isolate, not per-tenant
+// BUG: per-isolate counter — user hitting 5 isolates gets 5×100 = 500 req/min
 const rateLimiter = new Map<string, { count: number; resetAt: number }>();
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now();
-  const state = rateLimiter.get(userId) ?? { count: 0, resetAt: now + 60_000 };
-  if (now > state.resetAt) state = { count: 0, resetAt: now + 60_000 };
-  state.count++;
-  rateLimiter.set(userId, state);
-  return state.count <= 100;
-}
 ```
 
-CF Workers run in multiple isolates across many machines. Each isolate has its own
-`rateLimiter` map. A user hitting 5 different isolates gets 5×100 = 500 requests/min.
-The rate limiter is broken by design.
-
-Fix: Use a Durable Object for per-user rate limiting.
+- **Fix:** Durable Object for per-user rate limiting.
 
 ```typescript
 // worker/do/rate-limiter.ts
 export class RateLimiter implements DurableObject {
   private state: DurableObjectState;
-  constructor(state: DurableObjectState) {
-    this.state = state;
-  }
+  constructor(state: DurableObjectState) { this.state = state; }
 
   async fetch(request: Request): Promise<Response> {
     const count = (await this.state.storage.get<number>('count')) ?? 0;
@@ -142,25 +119,21 @@ const res = await stub.fetch(request);
 if (res.status === 429) return new Response('Too many requests', { status: 429 });
 ```
 
-## What lives where (canonical routing table)
+## Canonical state routing
 
-| State type | Correct primitive | Wrong primitive |
-|---|---|---|
-| Per-user rate limit | Durable Object | Worker Map, Redis |
-| WebSocket session | Durable Object | Worker global |
-| Distributed lock | Durable Object | Worker boolean |
-| Feature flag value | KV (60s TTL) | Worker Map |
-| Per-request context | Local variable | Module-scope let |
-| User session / JWT | Cookie + D1 | Worker Map |
-| AI conversation history | D1 + DO | Worker array |
-| Tenant config | KV (60s TTL) | Worker object |
-| File/blob | R2 | Worker Buffer |
+- **Per-user rate limit** — Durable Object (not Worker Map, not Redis)
+- **WebSocket session** — Durable Object (not Worker global)
+- **Distributed lock** — Durable Object (not Worker boolean)
+- **Feature flag value** — KV (60s TTL) (not Worker Map)
+- **Per-request context** — local variable (not module-scope `let`)
+- **User session / JWT** — Cookie + D1 (not Worker Map)
+- **AI conversation history** — D1 + DO (not Worker array)
+- **Tenant config** — KV (60s TTL) (not Worker object)
+- **File/blob** — R2 (not Worker Buffer)
 
-## The stateless design checklist
+## Stateless design checklist (every Worker PR)
 
-Before every Worker PR:
-
-- [ ] No `let` or `var` at module scope that accumulates state across requests
+- [ ] No `let` or `var` at module scope accumulating state across requests
 - [ ] No `Map` / `Set` / `Array` at module scope used as a cache
 - [ ] Every cache goes through KV or CF Cache API, not Worker memory
 - [ ] Rate limiters implemented as DOs
@@ -177,12 +150,9 @@ const UserSchema = z.object({ id: z.string(), email: z.string().email() });
 const API_VERSION = 'v2';
 ```
 
-Zod schemas, `Set`s of config values, and immutable constants are safe at module scope.
-The rule applies to mutable state only.
+The rule applies to **mutable** state only.
 
-## Durable Objects are the correct CF primitive
-
-DOs give you:
+## Durable Objects capabilities
 
 - Per-entity serialized execution (no race conditions)
 - Transactional SQLite storage (`this.state.storage`)
@@ -190,9 +160,7 @@ DOs give you:
 - WebSocket hibernation for long-lived connections
 - Alarms for scheduled per-entity work
 
-Use them without apology. CF lock-in doctrine (`[[cloudflare-lock-in-is-leverage]]`)
-explicitly endorses deep DO usage. The alternative (Redis, external session stores, "just
-coordinate in D1") is slower, more expensive, and less correct.
+Use DOs without apology. `[[cloudflare-lock-in-is-leverage]]` explicitly endorses deep DO usage.
 
 ## Anti-patterns
 
@@ -200,13 +168,13 @@ coordinate in D1") is slower, more expensive, and less correct.
 - `let currentUser` at module scope "for performance"
 - Rate limiter as a Worker-scope counter (broken under multi-isolate deployment)
 - "We'll add DOs later when it becomes a problem" — the problem is invisible until prod breaks
-- Storing WebSocket session state in Worker memory (evicted = session lost)
-- Any `setInterval` / `setTimeout` at module scope (does not work in CF Workers anyway)
+- WebSocket session state in Worker memory (evicted = session lost)
+- `setInterval` / `setTimeout` at module scope (does not work in CF Workers)
 
 ## Cross-links
 
-- `[[cloudflare-lock-in-is-leverage]]` — DOs are the canonical CF stateful primitive; embrace them
+- `[[cloudflare-lock-in-is-leverage]]` — DOs are the canonical CF stateful primitive
 - `[[zod-everywhere]]` — stateless Workers validate all state at every boundary entry
-- `[[production-observability-default-on]]` — stateless Workers are trivially traceable; stateful ones produce confusing overlapping traces
-- `[[fail-fast-build-fail-soft-prod]]` — a Worker with stateful bugs fails softly in prod (wrong counts, stale caches) but never loudly; detect via observability
+- `[[production-observability-default-on]]` — stateless Workers produce clean traces; stateful ones produce confusing overlapping traces
+- `[[fail-fast-build-fail-soft-prod]]` — stateful bugs fail softly in prod (wrong counts, stale caches); detect via observability
 - `[[hono-api]]` — Hono middleware context (`c.set` / `c.get`) is request-scoped and safe; module scope is not
