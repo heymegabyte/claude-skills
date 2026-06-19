@@ -48,6 +48,16 @@ Status: `[ ]` todo · `[~]` in progress · `[x]` done · `[skip]` keep as-is (lo
 - `[x]` inverted-abstraction-pyramid.md (211→167, -21%) — iter 3
 - `[x]` production-observability-default-on.md (210→190, -10%) — iter 3
 - `[x]` structured-logging.md (209→178, -15%) — iter 3
+- `[x]` csp-trusted-types.md (403→402, code-dominant) — iter 5
+- `[x]` fail-fast-build-fail-soft-prod.md (251→241, -4%) — iter 5
+- `[x]` conditional-ci-gates.md (240→209, -13%) — iter 5
+- `[x]` right-to-deletion.md (349→348, code-dominant) — iter 5
+- `[x]` prompt-cache-strategy.md (284→281, code-dominant) — iter 5
+- `[x]` supply-chain-integrity.md (231→214, -7%) — iter 5
+- `[x]` refund-automation.md (287→284, code-dominant) — iter 5
+- `[x]` pii-handling-discipline.md (275→243, -12%) — iter 5
+- `[x]` email-deliverability-implementation.md (334→333, code-dominant) — iter 5
+- `[skip]` webhook-receiver-architecture.md (523) — code reference (progressive disclosure, not gutting)
 - next batches: remaining 144 rules >120 lines, then numbered skill dirs, commands/, agents/
 
 ## 50-idea roadmap (research-grounded — integrate over the arc)
@@ -134,6 +144,13 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - **Wire `bin/audit-instruction-files.mjs` to lefthook** now the gate is green — first add inline-code-span skip + `<!-- validator-ignore -->` hatch (iter-1 known refinement).
 
 ## Iteration log
+
+### iter 5 — 2026-06-19
+
+- Compressed 9 larger rules. Prose-heavy gains: conditional-ci-gates (-13%), pii-handling-discipline (-12%), supply-chain-integrity (-7%), fail-fast (-4%). Code-dominant files (csp-trusted-types, right-to-deletion, prompt-cache-strategy, refund-automation, email-deliverability-implementation) preserved verbatim per playbook — only surrounding prose tightened (~28-30% of prose lines).
+- **Inflection point**: remaining long rules are code-dominant reference files where the playbook mandates progressive disclosure, NOT gutting. Pure line-compression has hit diminishing returns (~0-1% on code-heavy files).
+- **Pivot for next iters**: shift from compression passes to integrating the 50-idea roadmap (highest-value un-shipped: #10 compression-regression guard, #11 stale-rule guard, #17 MoSCoW tier tags, #18 auto-TOC, #4 semantic dedup). Wire `bin/audit-instruction-files.mjs` into lefthook (refine inline-code-span skip first).
+- Gate green throughout (15 pass · 0 fail). 37 rule files done, 3 skipped.
 
 ### iter 4 — 2026-06-19
 

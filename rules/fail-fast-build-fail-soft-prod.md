@@ -23,10 +23,6 @@ paths:
 
 # Fail Fast in Build, Fail Soft in Prod
 
-Two different error philosophies apply in two different environments. Getting them backwards
-produces either silent prod breakage (failing fast in CI but swallowing errors in prod) or
-terrible user experience (throwing 500s at users when a graceful degradation was possible).
-
 ## The core rule
 
 | Context | Philosophy | Mechanism |
@@ -36,8 +32,7 @@ terrible user experience (throwing 500s at users when a graceful degradation was
 
 ## Build-time: fail fast
 
-In build scripts, test setup, code generation, and schema validation tooling — throw hard.
-The goal is to block the deploy before bad code reaches users.
+In build scripts, test setup, code generation, and schema validation tooling — throw hard. Block the deploy before bad code reaches users.
 
 ```typescript
 // scripts/validate-env.ts — CORRECT: throw in build tooling
@@ -75,10 +70,7 @@ if (!rows.success) {
 
 ## Production: fail soft
 
-In Worker request handlers, the user is waiting for a response. A 500 is the worst outcome:
-it is invisible to the user (no context), breaks the experience completely, and provides
-no signal to recover from. Graceful degradation keeps the user in a working product while
-the error is logged and tracked.
+A 500 is the worst outcome: invisible to the user, breaks the experience, provides no recovery signal. Graceful degradation keeps the user in a working product while the error is logged.
 
 ### Zod: safeParse with fallback
 
@@ -136,8 +128,8 @@ app.get('/dashboard', async (c) => {
 });
 ```
 
-The `X-Degraded` header surfaces degraded responses in observability without breaking the
-user experience. Log the analytics failure, but do not propagate it as a 500.
+- `X-Degraded` surfaces degraded responses in observability without breaking the user experience.
+- Log the non-critical failure; do not propagate it as a 500.
 
 ### Stale cache over error
 
@@ -191,8 +183,8 @@ app.post('/api/notifications/send', async (c) => {
 });
 ```
 
-202 Accepted is semantically correct: the work is accepted but not yet complete. This is
-far better than 500 (broken) or silently swallowing the error (lost message).
+- 202 Accepted: work is accepted but not yet complete — semantically correct.
+- Never 500 (broken) or silently swallow (lost message).
 
 ## The boundary table
 
@@ -210,10 +202,9 @@ process.exit(1)     ← build failures (CI blocks deploy)
 console.log+200     ← prod non-critical failures (user gets response)
 ```
 
-## The one exception: security-critical prod paths must throw
+## Exception: security-critical prod paths must throw
 
-Auth, payment, and data-integrity paths do NOT degrade gracefully. An auth failure that
-"degrades" to letting the user in is a security incident.
+Auth, payment, and data-integrity paths do NOT degrade gracefully — an auth failure that "degrades" to letting the user in is a security incident.
 
 ```typescript
 // CORRECT: auth path throws hard even in prod
@@ -229,23 +220,22 @@ app.use('*', async (c, next) => {
 });
 ```
 
-401/403 responses are not "hard failures" — they are correct prod behavior. The rule
-applies to infrastructure failures (DB down, email service timeout), not to intentional
-rejection logic.
+- 401/403 are correct prod behavior, not hard failures.
+- The rule applies to infrastructure failures (DB down, email timeout), not intentional rejection logic.
 
 ## Anti-patterns
 
-- `zod.parse()` in a prod request handler — one unexpected API response crashes all users
-- `try/catch { return 500 }` for a non-critical feature — show disabled UI instead
-- Swallowing errors silently (`catch (e) {}`) — degraded = logged, never invisible
-- `process.exit(1)` inside a Worker fetch handler — terminates the isolate abruptly
-- Treating all 500s as equivalent — track them in Sentry with full context
-- "We'll add error handling later" — graceful degradation is part of the feature spec
+- `zod.parse()` in a prod handler — one unexpected API response crashes all users.
+- `try/catch { return 500 }` for a non-critical feature — show disabled UI instead.
+- `catch (e) {}` silently — degraded = logged, never invisible.
+- `process.exit(1)` inside a Worker fetch handler — terminates the isolate abruptly.
+- Treating all 500s as equivalent — track in Sentry with full context.
+- Deferring error handling — graceful degradation is part of the feature spec.
 
 ## Cross-links
 
 - `[[zod-everywhere]]` — `parse` vs `safeParse` selection IS this rule in practice
 - `[[error-recovery]]` — retry logic and recovery patterns for queue consumers
 - `[[verification-loop]]` — build-time failure gates that enforce fail-fast
-- `[[production-observability-default-on]]` — fail-soft is only safe when you can observe degraded responses via `X-Degraded` header and structured logs
+- `[[production-observability-default-on]]` — fail-soft is only safe when `X-Degraded` and structured logs are observed
 - `[[state-is-the-enemy]]` — stateless Workers have simpler failure modes; stateful ones compound gracefully

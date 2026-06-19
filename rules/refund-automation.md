@@ -17,18 +17,16 @@ paths:
 
 # Refund Automation
 
-Every payment integration ships with automated refund and dispute handling from day one. A solo builder cannot staff a refund queue. Manual processes are a liability that accrues silently until a chargeback rate crosses 0.75% and the payment processor flags the account.
+No payment feature merges without automated refund + dispute paths wired up. A solo builder cannot staff a refund queue; manual queues accrue chargebacks silently until the processor flags the account at 0.75%.
 
-The rule: no payment feature merges without automated refund + dispute paths wired up.
+## Rules
 
-## The Rule
-
-- Stripe: Radar rule for auto-refund on high-risk (`risk_score > 75`) charges before they settle.
-- Stripe: `charge.dispute.created` webhook auto-accepts disputes under $25 (the cost of fighting is higher than the loss).
-- Stripe: subscription cancellation auto-refunds the prorated unused period when cancelled within 30 days of the billing cycle.
-- Square: `DISPUTE_CREATED` webhook auto-accepts disputes under $25 with the same threshold.
-- Both: D1 `payment_events` dedupe table prevents double-refund on webhook replay.
-- Both: Resend receipt issued automatically on refund within 30 seconds of webhook processing.
+- **Stripe Radar** — auto-refund charges with `risk_score > 75` before settlement.
+- **Stripe `charge.dispute.created`** — auto-accept disputes ≤ $25 (2500 cents); fighting costs more.
+- **Stripe subscription cancellation** — prorated refund for unused days when cancelled within 30 days; `cancel_at_period_end` outside that window.
+- **Square `DISPUTE_CREATED`** — auto-accept disputes ≤ $25, same threshold.
+- **Both rails** — D1 `payment_events` dedupe table prevents double-refund on webhook replay.
+- **Both rails** — Resend receipt issued within 30 seconds of webhook processing via `ctx.waitUntil()`.
 
 ## Correct Pattern — Stripe dispute auto-accept
 
@@ -211,7 +209,7 @@ export async function sendRefundReceipt(
 }
 ```
 
-## Anti-Pattern
+## Anti-Patterns
 
 ### No dispute handler
 
@@ -249,15 +247,15 @@ app.post('/webhooks/stripe', async (c) => {
 });
 ```
 
-## Practical Checklist
+## Checklist
 
 - `payment_events(event_id, source, processed_at)` D1 table with UNIQUE constraint on `(event_id, source)` exists before any webhook handler goes live.
-- Stripe Radar rules configured in the dashboard: auto-refund charges with `risk_score > 75` before settlement.
+- Stripe Radar rule configured: auto-refund `risk_score > 75` before settlement.
 - `charge.dispute.created` webhook registered and routed to handler.
-- Auto-accept threshold set to $25 (2500 cents) — review this annually against actual dispute volume.
-- Subscription cancellation path: prorated refund within 30-day window, `cancel_at_period_end` outside.
+- Auto-accept threshold: $25 (2500 cents) — review annually against dispute volume.
+- Subscription cancellation: prorated refund within 30 days, `cancel_at_period_end` outside.
 - Square `DISPUTE_CREATED` webhook wired if Square is the accept-money rail.
-- Refund receipt issued via Resend in `ctx.waitUntil()` — never blocking the API response.
+- Refund receipt via Resend in `ctx.waitUntil()` — never blocking the API response.
 - Resend from address passes `email-deliverability.md` gate (SPF+DKIM+DMARC).
 - `charge.refunded` and `payment.refund.updated` logged to D1 for audit trail.
 

@@ -23,31 +23,16 @@ paths:
 
 # PII Handling Discipline
 
-PII is NEVER stored plaintext in audit logs, event logs, or security event tables.
-Every audit row references personally identifiable information via cryptographic hash —
-SHA-256 with per-record salt where collision resistance matters — never by raw value.
-The audit row proves WHAT happened and WHEN without retaining WHO the person is in
-recoverable form.
+PII is **never** stored plaintext in audit logs, event logs, or security event tables. Every audit row references PII via SHA-256 hash — never by raw value.
 
-## The principle
+## Core Principles
 
-- **Log rows are not subject-of-record** — a `deletion_audit` row, a `login_attempts`
-  row, or a `security_events` row is evidence of an action, not a user profile. The
-  subject of the record (the user) has rights over their profile; the audit log's
-  existence is a legal obligation separate from those rights.
-- **Hash-then-store** — before inserting any audit or event row, hash the PII.
-  The hash is the log's only link to the identity.
-- **Irreversibility is the feature** — a SHA-256 hash of a lowercase email with a
-  per-record salt cannot be reversed without the salt AND the original value. This is
-  not a bug to work around; it is the compliance guarantee.
-- **Plaintext belongs only in active records** — the `users` table, `sessions` table,
-  and active profile rows are subject-of-record: they exist to serve the user and are
-  deleted on request. Audit logs are legal records: they exist to prove compliance and
-  survive deletion.
+- **Audit rows are not subject-of-record** — `deletion_audit`, `login_attempts`, `security_events` are legal evidence; the user has rights over their profile row, not the audit row.
+- **Hash-then-store** — hash PII before inserting any audit or event row.
+- **Irreversibility is the feature** — SHA-256 of lowercase email + per-record salt cannot be reversed without both the salt and original value.
+- **Plaintext belongs only in active subject-of-record rows** (`users`, `sessions`) — those are deleted on RTBF request. Audit logs survive deletion.
 
-## Surfaces this applies to
-
-Every row in these table categories MUST use hashed PII, never plaintext:
+## Surfaces Requiring Hashed PII
 
 | Table / surface | PII to hash |
 |---|---|
@@ -60,11 +45,11 @@ Every row in these table categories MUST use hashed PII, never plaintext:
 | `admin_action_log` | acting admin email → `email_sha256` |
 | `failed_auth_log` | attempted email → `email_sha256` |
 
-IP addresses are PII under GDPR. Hash them too when storing in audit logs.
+IP addresses are PII under GDPR — hash them too.
 
-## D1 schema patterns
+## D1 Schema Patterns
 
-### Column naming convention
+### Column naming
 
 ```sql
 -- CORRECT
@@ -121,10 +106,9 @@ CREATE TABLE IF NOT EXISTS security_events (
 );
 ```
 
-## Hashing implementation
+## Hashing Implementation
 
-Use a single shared utility in every Worker. Do not inline the hash logic at call sites —
-one implementation means one change point if the algorithm ever needs upgrading.
+Use the shared utility below — never inline hash logic at call sites.
 
 ```typescript
 // src/worker/lib/pii.ts
@@ -201,10 +185,9 @@ app.post('/auth/login', async (c) => {
 })
 ```
 
-## Where plaintext IS allowed
+## Where Plaintext Is Allowed
 
-Plaintext PII belongs only in **active subject-of-record rows**. These rows exist to
-serve the user and are deleted in full on a right-to-deletion request.
+Plaintext PII belongs only in **active subject-of-record rows** deleted in full on right-to-deletion.
 
 | Table | PII column | Reason |
 |---|---|---|
@@ -214,27 +197,18 @@ serve the user and are deleted in full on a right-to-deletion request.
 | `oauth_accounts` | `provider_user_id` | Opaque ID; not PII |
 | Resend / PostHog API calls | email in transit | Never persisted in D1 |
 
-**Never** store plaintext email in any table that survives a deletion cascade (see
-`right-to-deletion` cascade step order — `deletion_audit` is updated last, not deleted,
-specifically because it uses a hash).
+Never store plaintext email in any table that survives a deletion cascade — `deletion_audit` is updated last, not deleted, because it uses a hash.
 
-## Right-to-deletion compatibility
-
-Hashing audit rows makes RTBF automatically GDPR-compliant without deleting the audit row:
+## Right-to-Deletion Compatibility
 
 - GDPR Art. 17 requires deletion of personal data.
-- A SHA-256 hash of an email is not personal data under GDPR — it cannot be reverse-
-  engineered to identify the person without the original value (which is deleted from
-  `users`).
-- Therefore: the audit row MAY persist after deletion, satisfying Art. 5(2) accountability
-  while fully complying with Art. 17.
-- No special deletion step needed for audit tables. The cascade deletes the `users` row;
-  the audit rows' PII link becomes permanently unresolvable.
+- A SHA-256 hash is not personal data under GDPR — it cannot be reverse-engineered once the `users` row is deleted.
+- Audit rows **may persist** after deletion, satisfying Art. 5(2) accountability while complying with Art. 17.
+- No special deletion step needed for audit tables.
 
-## Audit log retention exception
+## Audit Log Retention
 
-Retain audit log rows (hashed) for **3 years** per GDPR Art. 5(2) accountability
-principle and standard EU privacy claim statute of limitations.
+Retain hashed audit rows for **3 years** per GDPR Art. 5(2) and EU privacy claim statute of limitations.
 
 ```sql
 -- Cron: delete audit rows older than 3 years (safe — hashed only)
@@ -244,30 +218,25 @@ DELETE FROM payment_events    WHERE created_at   < datetime('now', '-3 years');
 DELETE FROM deletion_audit    WHERE requested_at < datetime('now', '-3 years');
 ```
 
-Wire this as a CF Cron Trigger running monthly. It is safe to run because no PII was
-ever stored — only hashes, timestamps, and outcome codes.
+Wire as a CF Cron Trigger running monthly.
 
-## Drift detection
+## Drift Detection
 
-- `grep -rn 'email.*TEXT' drizzle/` → review every match; audit/event tables must use
-  `email_sha256`, not `email`. Active tables (`users`) are expected to have `email TEXT`.
-- `grep -rn "\.bind(email," src/worker/` in the context of INSERT/UPDATE on audit tables
-  → likely inserting plaintext; replace with `await hashEmail(email)`.
-- New event/audit tables added without `email_sha256` pattern = drift; fix in-turn per
-  `drift-detection`.
+- `grep -rn 'email.*TEXT' drizzle/` — audit/event tables must use `email_sha256`, not `email`; active tables (`users`) expect `email TEXT`.
+- `grep -rn "\.bind(email," src/worker/` in INSERT/UPDATE context on audit tables — likely inserting plaintext; replace with `await hashEmail(email)`.
+- New event/audit tables added without `email_sha256` pattern = drift; fix in-turn per `drift-detection`.
 
-## Anti-patterns
+## Anti-Patterns
 
-- `email TEXT NOT NULL` in an audit or event table — plaintext PII in a log row
-- Hashing without lowercasing first — `User@Example.com` and `user@example.com` produce
-  different hashes, creating duplicate audit identities
-- Using `btoa(email)` or base64 encoding — this is encoding, not hashing; trivially reversible
-- Storing IP address as plaintext in any table — IP is PII under GDPR
-- JSON `metadata` column containing raw email fields — scrub before inserting
+- `email TEXT NOT NULL` in an audit or event table.
+- Hashing without lowercasing first — `User@Example.com` and `user@example.com` produce different hashes, creating duplicate audit identities.
+- `btoa(email)` or base64 encoding — encoding, not hashing; trivially reversible.
+- Storing IP address as plaintext in any table.
+- JSON `metadata` column containing raw email fields — scrub before inserting.
 
 ## Cross-links
 
-- `[[right-to-deletion]]` — the deletion cascade; audit tables survive because they use hashes
+- `[[right-to-deletion]]` — deletion cascade; audit tables survive because they use hashes
 - `[[email-deliverability-implementation]]` — email in transit (Resend API calls); never persisted
 - `[[secret-provisioning]]` — `POSTHOG_PERSONAL_API_KEY`, `RESEND_API_KEY` env setup
 - `[[data-residency-by-default]]` — D1 read-replica placement for EU compliance

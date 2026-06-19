@@ -29,17 +29,11 @@ paths:
 
 # Supply-Chain Integrity
 
-npm packages are routinely compromised. In 2024-2026, high-profile incidents included
-`event-stream` (malicious code injected via maintainer transfer), `ua-parser-js` (hijacked
-to install a cryptominer), `node-ipc` (supply-chain protest code), and `polyfill.io` CDN
-compromise affecting 100k+ sites. The attack surface is every transitive dependency you
-install. This rule makes supply-chain hygiene automatic.
+npm packages are routinely compromised (`event-stream`, `ua-parser-js`, `node-ipc`, `polyfill.io` CDN — all 2024–2026). Every transitive dependency is attack surface.
 
 ## Install policy: scripts off by default
 
-Never run `npm install` without `--ignore-scripts` unless you have audited the `postinstall`
-chain. Lifecycle scripts (`preinstall`, `postinstall`, `prepare`) execute arbitrary code
-with the privileges of your shell.
+Never run `npm install` without `--ignore-scripts` unless you have audited the `postinstall` chain.
 
 ```bash
 # CORRECT — scripts disabled by default
@@ -54,12 +48,10 @@ npm install --foreground-scripts <specific-package>
 echo "ignore-scripts=true" >> .npmrc
 ```
 
-Re-enable scripts only for packages that explicitly need them (e.g., `esbuild`, `sharp`
-for native bindings). Document the exception in `.npmrc` inline comment.
+- Re-enable scripts only for packages that explicitly need them (e.g., `esbuild`, `sharp`).
+- Document every exception in `.npmrc` with an inline comment.
 
 ## Lockfile integrity
-
-Lockfiles are the ground truth for reproducibility. A tampered lockfile = supply-chain attack.
 
 ```bash
 # Verify lockfile integrity on CI (fail if lockfile was modified)
@@ -72,13 +64,11 @@ pnpm install --frozen-lockfile --ignore-scripts
 yarn install --immutable --ignore-scripts
 ```
 
-Commit `package-lock.json` (or `pnpm-lock.yaml`). Never `.gitignore` a lockfile. The
-lockfile is a security artifact — losing it loses reproducibility.
+- Commit `package-lock.json` (or `pnpm-lock.yaml`). Never `.gitignore` a lockfile.
 
 ## Commit signing
 
-Every commit to main must be signed. Unsigned commits can be forged by anyone with push
-access (e.g., a compromised CI token).
+Every commit to main must be signed. Unsigned commits can be forged by anyone with push access.
 
 ```bash
 # Enable signed commits globally
@@ -103,8 +93,7 @@ Verify in CI:
 
 ## SBOM generation
 
-Every release generates a Software Bill of Materials (CycloneDX format) from the lockfile.
-This is the audit trail for "what exactly shipped in this deploy."
+Every release generates a CycloneDX SBOM from the lockfile — the audit trail for "what exactly shipped."
 
 ```bash
 # Generate CycloneDX SBOM from package-lock.json
@@ -163,13 +152,9 @@ jobs:
           path: sbom.json
 ```
 
-Socket CLI catches things `npm audit` misses: malicious install scripts, protestware,
-typosquatting, dependency confusion attacks, and obfuscated code. It maintains a reputation
-database of package behavior.
+- Socket CLI catches what `npm audit` misses: malicious install scripts, protestware, typosquatting, dependency confusion attacks, obfuscated code.
 
 ## npm audit gate in PR
-
-`npm audit` severity thresholds:
 
 | Severity | Policy |
 |---|---|
@@ -187,13 +172,12 @@ npm audit --audit-level=moderate --ignore-scripts \
   || true  # NEVER use true silently — investigate first
 ```
 
-If a vulnerability has no fix, pin to the last clean version and open a tracked issue.
-Do not suppress with `--audit-level=none`.
+- If a vulnerability has no fix, pin to the last clean version and open a tracked issue. Never suppress with `--audit-level=none`.
 
 ## Publishing policy
 
-Only Brian's npm account publishes. 2FA required on the account. No automation token
-publishes critical packages without a human 2FA approval step.
+- Only Brian's npm account publishes. 2FA required (`auth-and-writes`).
+- No automation token publishes critical packages without a human 2FA approval step.
 
 ```bash
 # Verify 2FA is enforced
@@ -203,8 +187,7 @@ npm profile get 2fa  # should return: auth-and-writes
 npm login --auth-type=legacy  # CI: use NPM_TOKEN env var + OTP via 1Password automation
 ```
 
-Never publish packages with `files: []` omitted in `package.json` — this accidentally
-publishes `.env`, `secrets/`, and build artifacts. Always allowlist explicitly:
+- Always allowlist `files` in `package.json` — omitting it accidentally publishes `.env`, `secrets/`, and build artifacts.
 
 ```json
 {
@@ -215,17 +198,17 @@ publishes `.env`, `secrets/`, and build artifacts. Always allowlist explicitly:
 
 ## Anti-patterns
 
-- `npm install` without `--ignore-scripts` — one malicious `postinstall` = full shell access
-- Committing `node_modules/` — makes lockfile irrelevant; all supply-chain scanning skips it
-- Suppressing `npm audit` with `--audit-level=none` — silent vulnerabilities ship to prod
-- Using `latest` tag in `package.json` — unpinned; a compromised release auto-deploys
-- Sharing a single npm automation token across all projects — one compromised project = all projects
-- No SBOM = no audit trail = no forensics when an incident occurs
+- `npm install` without `--ignore-scripts` — one malicious `postinstall` = full shell access.
+- Committing `node_modules/` — makes lockfile irrelevant; all supply-chain scanning skips it.
+- Suppressing `npm audit` with `--audit-level=none` — silent vulnerabilities ship to prod.
+- Using `latest` tag in `package.json` — a compromised release auto-deploys.
+- Sharing a single npm automation token across all projects — one breach = all projects.
+- No SBOM = no audit trail = no forensics when an incident occurs.
 
 ## Cross-links
 
 - `[[lint-doctrine]]` — `npm audit` gate is part of the lint + CI gate stack
 - `[[secret-provisioning]]` — npm token is a secret; rotation cadence applies
 - `[[ci-cd-pipeline]]` — SBOM upload and audit gate belong in CI, not local dev
-- `[[autonomous-engineering]]` — new dependency additions are `review-recommended` tier; this rule explains why
-- `[[drift-detection]]` — an outdated lockfile with known-vulnerable packages is drift, fixed in-turn
+- `[[autonomous-engineering]]` — new dependency additions are `review-recommended` tier
+- `[[drift-detection]]` — outdated lockfile with known-vulnerable packages = drift, fixed in-turn
