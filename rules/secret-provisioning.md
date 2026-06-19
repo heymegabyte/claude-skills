@@ -43,7 +43,7 @@ Auto-fetch every required secret from `get-secret` and push it to the destinatio
 
 ## Canonical secret list (try every one on every CF/Vercel/Fly deploy — silently skip missing)
 
-- `RESEND_API_KEY`
+- `AWS_SES_ACCESS_KEY_ID` + `AWS_SES_SECRET_ACCESS_KEY` + `AWS_SES_REGION` + `SES_FROM_EMAIL` (Amazon SES — replaced Resend 2026-06-19)
 - `ANTHROPIC_API_KEY`
 - `OPENAI_API_KEY`
 - `GOOGLE_API_KEY`

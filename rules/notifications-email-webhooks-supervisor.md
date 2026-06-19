@@ -23,7 +23,7 @@ Novu is THE notification backbone for every emdash app — not a bolt-on, not a 
 
 - **Novu is the only notification layer.** No ad-hoc email sends, no scattered toast-only events, no per-feature notification tables. Every user-relevant event is a Novu workflow trigger.
 - **Integrate FULLY, not a widget:** ship the **inbox** (bell + unread count + grouped feed), the **notification center** (full history, filter, mark-read, archive), and **preferences** (per-channel, per-category opt-in/out). All three, every app.
-- **One trigger, three channels via clean adapters:** in-app (Novu Inbox), email (Resend/SendGrid as the Novu email provider, behind an adapter), push (web-push / FCM). App code triggers ONE workflow; Novu fans out per the user's channel preferences — swap a channel without touching product code.
+- **One trigger, three channels via clean adapters:** in-app (Novu Inbox), email (Amazon SES as the Novu email provider, behind an adapter; listmonk for bulk), push (web-push / FCM). App code triggers ONE workflow; Novu fans out per the user's channel preferences — swap a channel without touching product code.
 - **Tenant-aware always.** Every trigger carries `{ tenantId, userId, featureSlug }`; subscribers namespaced per tenant; zero cross-tenant leakage.
 - Toasts are for ephemeral feedback; the notification center is the durable record.
 
@@ -45,7 +45,7 @@ Wire a workflow at every meaningful state transition, not just errors:
 - **Triggers are typed + Zod-validated** — `notify(workflowId, { to, payload })` where `payload` is a Zod contract per `contract-first-ai`/`zod-everywhere`. No free-form payloads.
 - **Subscribers** synced on user create/update (id, email, phone, locale, tenant).
 - **Preferences** surfaced in app settings; Novu stores them; the app never hard-codes channel routing.
-- **Cloudflare-hostable** per `cloudflare-hostable-supervisor`: Novu Cloud or self-hosted; `NotifyService` is the adapter so the backend is swappable. Resend stays the email provider behind Novu.
+- **Cloudflare-hostable** per `cloudflare-hostable-supervisor`: Novu Cloud or self-hosted; `NotifyService` is the adapter so the backend is swappable. Amazon SES stays the email provider behind Novu (listmonk for bulk/newsletters).
 
 ## Tooling + when to use
 
@@ -54,7 +54,7 @@ Wire a workflow at every meaningful state transition, not just errors:
 - **postal-mime** — inbound email parsing.
 - **web-push** — browser push payloads (push channel when not via Novu's provider).
 - **react-email** — email templates ONLY in a React context (NOT inside the Angular app per `stack-selector`); Angular uses Novu templating / MJML.
-- **Resend** — transactional email ONLY behind the Novu email adapter per `secret-provisioning`.
+- **Amazon SES** — transactional email ONLY behind the Novu email adapter per `secret-provisioning`; **listmonk** (self-hosted) for newsletters via SES SMTP relay. Resend removed 2026-06-19.
 
 ## Inbound webhooks
 
@@ -63,7 +63,7 @@ Wire a workflow at every meaningful state transition, not just errors:
 ## Anti-patterns (build fail)
 
 - ❌ A feature emitting a user-relevant event but only `console.warn`/toast (no Novu workflow).
-- ❌ Direct Resend/SendGrid calls outside the Novu provider adapter.
+- ❌ Direct Amazon SES/SendGrid calls outside the Novu provider adapter.
 - ❌ A per-feature `notifications` table reinventing the inbox.
 - ❌ Untyped Novu payloads · cross-tenant subscriber bleed · notifications with no deep link / no "what to do next" per `auto-meta-work` § notifications.
 - ❌ react-email in an Angular app.
