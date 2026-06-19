@@ -23,6 +23,8 @@ paths:
 
 # Fail Fast in Build, Fail Soft in Prod
 
+Throw hard in build/CI/scripts; return typed error objects and graceful fallbacks in production Workers — never crash a live request.
+
 ## The core rule
 
 | Context | Philosophy | Mechanism |

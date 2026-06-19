@@ -12,6 +12,8 @@ paths:
 
 # Quality Thresholds
 
+Define minimum pass/fail thresholds for readability, performance, accessibility, SEO, and security that every shipped surface must clear.
+
 ## Readability
 
 - Flesch ≥ 60

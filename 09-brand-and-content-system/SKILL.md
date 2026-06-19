@@ -32,6 +32,8 @@ paths:
 
 # 09 — Brand and Content System
 
+Extract real brand assets and apply the full copy system (anti-slop, SEO, trust surfaces, GEO) to every website build surface.
+
 > **Model migration note (pass-77, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Brand extraction protocol unchanged.
 
 ## Brian's Brand Voice

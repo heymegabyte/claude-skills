@@ -12,6 +12,8 @@ paths:
 
 # Timeline Photo Authenticity
 
+Require real primary-sourced photos on every historical timeline entry; AI-generated or symbolic stand-ins destroy institutional trust and are a build fail.
+
 ## Mandate
 
 - Historical timelines (about/history/founder pages, museum-style scroll narratives, year-by-year scrolls, "Our Story" components) MUST use real, primary-sourced photographs for every entry that gets imagery.

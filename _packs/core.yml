@@ -68,3 +68,4 @@ members:
   - rules/working-backwards
   - rules/internal-skill-discovery
   - rules/multi-harness-portability
+  - rules/skill-authoring-contract

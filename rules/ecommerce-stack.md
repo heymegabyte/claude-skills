@@ -14,6 +14,8 @@ paths:
 
 # E-commerce Stack
 
+Mandate Medusa.js as the headless commerce backend for every e-commerce surface; hand-rolled cart/checkout tables are a build fail.
+
 ## Mandate
 
 - Every e-commerce site (product catalog + cart + checkout + orders + inventory) MUST use **Medusa.js** as the headless commerce backend

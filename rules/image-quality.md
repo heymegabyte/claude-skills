@@ -12,6 +12,8 @@ paths:
 
 # Image Sourcing + Generation Quality
 
+Require every shipped image to be a real primary-sourced photo or a cinematic AI-generated image indistinguishable from photography; no stock clip-art or obvious AI artifacts.
+
 ## Mandate
 
 Every image on every shipped page must be either:

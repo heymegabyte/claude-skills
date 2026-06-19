@@ -12,6 +12,8 @@ paths:
 
 # Hono API Rules
 
+Define Hono-on-Workers API patterns including RPC mode, WorkerEntrypoint bindings, Zod middleware, and structured error responses for every endpoint.
+
 ## Core patterns
 
 - Inline handlers for type inference (not separate controller files)

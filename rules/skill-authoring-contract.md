@@ -1,0 +1,108 @@
+---
+name: skill-authoring-contract
+priority: high
+pack: core
+triggers:
+  - "new skill"
+  - "SKILL.md"
+  - "authoring contract"
+  - "skill quality"
+paths:
+  - "NN-*/SKILL.md"
+  - "rules/*.md"
+---
+
+# Skill Authoring Contract
+
+Codifies the quality contract every SKILL.md and rules/*.md file must satisfy.
+Enforced by `bin/audit-skill-authoring.mjs`. Violations are drift — fix in-turn.
+
+## (a) Required structure: `## Spec` before `## Instructions`
+
+Every skill MUST open with a `## Spec` section (before any `## Instructions` section):
+
+```markdown
+## Spec
+
+- **name**: kebab-case slug matching frontmatter `name`
+- **trigger phrases**: comma-separated natural-language phrases that activate this skill
+- **acceptance criteria**: bullet list of measurable outcomes that define "done"
+```
+
+Rationale: the router selects skills from triggers; criteria drive the completeness check.
+Skills missing `## Spec` cannot be routed reliably and fail the completeness-checker agent.
+
+## (b) Behavior-anchored description template
+
+Every `description:` frontmatter value MUST follow this template:
+
+```
+{Gerund phrase summarizing what skill does}. Use when {trigger phrases}. Not when {exclusion cases}.
+```
+
+Examples:
+
+- `"Auditing NN-* SKILL.md files for quality. Use when checking authoring compliance or adding a skill. Not when reviewing non-skill markdown."`
+- `"Generating MCP servers from OpenAPI specs. Use when a new API joins the stack. Not when hand-rolling is faster than forge time."`
+
+Rules:
+
+- ≥30 chars, contains at least one gerund (`-ing` word) or the phrase `Use when`.
+- Must name the primary artifact or domain the skill acts on.
+- No filler: "helps with", "provides", "supports" → rewrite to active gerund.
+
+## (c) Optional `depends_on:` frontmatter — must stay acyclic
+
+Skills may declare upstream skill dependencies:
+
+```yaml
+depends_on:
+  - 01-operating-system
+  - rules/feature-flags
+```
+
+- **Acyclicity is a hard gate** — `bin/audit-skill-authoring.mjs --ci` exits 1 on any cycle.
+- Keep the graph a DAG; never let skill A depend on skill B that (transitively) depends on A.
+- `depends_on:` is optional. Most skills omit it; declare only when load-order matters.
+
+## (d) Eval-first: ≥3 cases before "stable"
+
+A skill is not `stable` until it has ≥3 eval cases co-located:
+
+- `NN-<slug>/evals/` directory containing ≥3 JSON eval case files, OR
+- `NN-<slug>/__eval__.json` with a `cases:` array of ≥3 entries.
+
+Until eval coverage exists the skill is advisory only (`stage: experimental`).
+`bin/audit-skill-authoring.mjs` flags skill dirs missing both as MEDIUM (advisory).
+
+Eval case minimum shape:
+
+```json
+{
+  "id": "unique-id",
+  "prompt": "User prompt that should activate the skill",
+  "expected_behavior": "What a passing response looks like",
+  "pass_criteria": ["criterion 1", "criterion 2"]
+}
+```
+
+## Audit command
+
+```bash
+node bin/audit-skill-authoring.mjs          # human-readable
+node bin/audit-skill-authoring.mjs --json   # machine-readable
+node bin/audit-skill-authoring.mjs --ci     # CI gate: exits 1 only on HIGH
+```
+
+Severity mapping:
+
+- **HIGH** — dependency cycle (blocks CI)
+- **MEDIUM** — description template violation, missing evals (advisory)
+
+## Cross-links
+
+- [[instruction-compression-playbook]] — token-efficient skill prose style
+- [[brian-preferences]] — file format, bullet discipline, ≤2 lines per bullet
+- [[validator-precision-discipline]] — keep audit false-positive rate near zero
+- [[drift-detection]] — authoring violations are drift, fixed in-turn
+- [[internal-skill-discovery]] — `metadata.internal: true` for OS-layer skills

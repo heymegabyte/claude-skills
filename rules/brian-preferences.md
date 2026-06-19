@@ -9,6 +9,8 @@ paths:
 
 # Brian's Preferences
 
+Defines Brian's communication style, output format expectations, and personal tool/vendor preferences that override defaults.
+
 ## Communication
 
 - "Hey" not "Hi". No preamble/postamble/hedging.

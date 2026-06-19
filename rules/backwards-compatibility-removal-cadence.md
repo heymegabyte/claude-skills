@@ -26,6 +26,8 @@ paths:
 
 # Backwards-Compatibility Removal Cadence
 
+Govern API, schema, and route removal using a four-stage Announce→Soft-warn→Hard-warn→Remove cadence with a 61-day minimum runway.
+
 ## Deprecation timeline (four stages)
 
 ```

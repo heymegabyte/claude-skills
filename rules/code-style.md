@@ -9,6 +9,8 @@ paths:
 
 # Code Style
 
+Enforce TS 5.9+ strict mode, Google TS Style, ESM-only imports, and Cloudflare Workers-compatible patterns across all TypeScript and Angular code.
+
 ## TypeScript (Google TS Style)
 
 - **TS 5.9+** — `strictInference: true`, `isolatedDeclarations: true`, `erasableSyntaxOnly` for Node 22 native TS.

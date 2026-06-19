@@ -14,6 +14,8 @@ paths:
 
 # Supreme Polish + 100-Ideas Audit
 
+Trigger a 100-point comprehensive audit and multi-agent polish sweep on the full project; fires on polish phrases or automatically every 5th prompt on mature projects.
+
 ## Trigger
 
 - Phrase: `pixel ?perfect|meta ?perfect|polish (everything|the whole|all)|audit (the whole|the entire|everything)|100 (ideas|features|improvements|upgrades|enhancements)|make it (perfect|amazing|beautiful)|everything well[- ]integrated|commonly forgotten|every step`

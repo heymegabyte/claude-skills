@@ -14,6 +14,8 @@ paths:
 
 # i18n by Community Demographics
 
+Auto-trigger locale mirrors and hreflang when a physical service area has ≥10% community share for a non-English language per ACS B16001 data.
+
 ## Rule
 
 - Auto-fires ONLY when ALL FOUR conditions are met:

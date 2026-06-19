@@ -13,6 +13,8 @@ paths:
 
 # Model Routing
 
+Select the correct Claude model tier (Opus/Sonnet/Haiku) by task complexity and cost; never use Opus for tasks Haiku can handle correctly.
+
 ## Opus 4.8 (`claude-opus-4-8`) — flagship
 
 - **Use for** — same surfaces as Opus 4.7 below; zero-cost upgrade (same $5/$25 per MTok pricing).

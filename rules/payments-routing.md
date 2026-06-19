@@ -14,6 +14,8 @@ paths:
 
 # Payments Routing
 
+Route payment integrations by project shape: Square for accepting money, Stripe Billing for SaaS recurring, Stripe Connect for contractor payouts.
+
 ## Core rule — decision tree, not absolutism
 
 - **Square = default for accepting money.** Stripe = default for sending money (payouts).

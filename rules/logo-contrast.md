@@ -10,6 +10,8 @@ paths:
 
 # Logo + Icon Contrast
 
+Pair every logo or icon with a background that gives WCAG-grade contrast against its dominant color; dark mark on dark surface is an automatic build fail.
+
 ## Core rule
 
 - Every logo, icon, monogram, or brand mark placed onto a UI surface MUST be paired with a background that gives WCAG-grade contrast against the mark's dominant color

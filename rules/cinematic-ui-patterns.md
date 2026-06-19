@@ -13,6 +13,8 @@ paths:
 
 # Cinematic UI Patterns
 
+Mandate `<app-rolling-counter>` for every numeric stat and `[appReveal]` fade-in for every section on all projectsites.dev surfaces; no static alternatives.
+
 ## Standing rule
 
 - Every numeric stat on every projectsites.dev surface (marketing, admin, generated sites, dashboards) renders through `<app-rolling-counter>` — NEVER a static text node

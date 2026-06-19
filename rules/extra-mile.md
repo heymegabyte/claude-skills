@@ -9,6 +9,8 @@ paths:
 
 # Extra Mile
 
+After every literal request, build the adjacent improvement a human developer would never think to add but that measurably raises the surface quality.
+
 ## Mandate
 
 - After completing the literal request, ask: "What would a human developer NEVER program but that would bring real value?" Then build it.

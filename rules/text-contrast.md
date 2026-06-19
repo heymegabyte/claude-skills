@@ -12,6 +12,8 @@ paths:
 
 # Text Contrast on Backgrounds
 
+Enforce dark-text-on-light and light-text-on-dark WCAG AA contrast for all text including runtime-injected colors; dark-on-dark is a build fail.
+
 ## Core rule
 
 - Dark surface → light text. Light surface → dark text.

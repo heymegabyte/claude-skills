@@ -11,6 +11,8 @@ paths:
 
 # Prompt Cache Optimization
 
+Structure prompts with deterministic skill load order and static prefixes first to maximize Anthropic prompt-cache hit rate and cut token costs 90%.
+
 ## Skill load order (deterministic)
 
 - Skills load: 01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16

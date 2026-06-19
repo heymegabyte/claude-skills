@@ -9,6 +9,8 @@ paths:
 
 # Auto Meta-Work
 
+Automatically improve error handling, JSDoc, observability wiring, and type coverage alongside every code change without being asked.
+
 ## Default behavior on every code prompt
 
 - Improve error handling (`try/catch` → `onError` → Sentry breadcrumbs)

@@ -12,6 +12,8 @@ paths:
 
 # Computer Use
 
+Select the fastest authorized automation path (MCP → Playwright → Chrome → Computer Use) and guard session-bound flows with explicit user confirmation.
+
 ## Efficiency priority (pick fastest path — ALL tiers fully authorized)
 
 1. Dedicated MCP

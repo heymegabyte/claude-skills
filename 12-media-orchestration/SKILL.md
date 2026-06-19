@@ -36,6 +36,8 @@ paths:
 
 # 12 — Media Orchestration
 
+Plan and generate all site media section-by-section: images (GPT Image 1.5), logos (Ideogram v3), video (Sora), OG cards, and compression pipeline.
+
 > **Model migration note (pass-77, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Media pipeline unchanged.
 
 ## Submodules

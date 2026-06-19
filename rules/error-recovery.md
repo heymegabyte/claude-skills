@@ -13,6 +13,8 @@ paths:
 
 # Error Recovery
 
+Classify failures (transient/code/config/deploy/data/auth) and apply the matching structured recovery path before escalating or asking the user.
+
 ## Failure classification
 
 - **Transient** (rate limit/timeout) — retry exponential backoff, max 3

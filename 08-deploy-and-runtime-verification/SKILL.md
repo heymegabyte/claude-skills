@@ -34,6 +34,8 @@ paths:
 
 # 08 — Deploy and Runtime Verification
 
+Enforce the mandatory typecheck→deploy→CDN-purge→prod-E2E→visual-verify loop after every code change; never mark done without a live PROD assertion.
+
 ## Mandatory deploy loop (every code change)
 
 1. Build + typecheck

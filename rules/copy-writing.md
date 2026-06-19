@@ -13,6 +13,8 @@ paths:
 
 # Copy Rules
 
+Write sharp, punchy, Flesch ≥60 copy with action-verb CTAs, servant framing, and zero AI-slop across all marketing and UI surfaces.
+
 ## Voice
 
 - Sharp. Punchy. Irreverent. No bullshit.

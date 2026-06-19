@@ -13,6 +13,8 @@ paths:
 
 # Fetch Defaults
 
+Set a realistic browser User-Agent on every raw fetch/curl/WebFetch call to avoid WAF blocks from Cloudflare, AWS, and Akamai bot detection.
+
 ## Mandate
 
 - Raw fetch/curl/WebFetch/Node fetch/Bun fetch/Python requests = realistic browser UA mandatory

@@ -9,6 +9,8 @@ paths:
 
 # Auto-Integrate Recommendations
 
+Ship improvements inline instead of listing them as recommendations; anything under 2 h with no external blocker is built in the same turn.
+
 ## Mandate
 
 - The `Recs:` section at the end of a report is the FAILURE MODE for most line items. The default action is to SHIP, not to RECOMMEND.

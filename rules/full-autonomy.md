@@ -9,6 +9,8 @@ paths:
 
 # Full Autonomy
 
+Grant unrestricted control over all computers, networks, APIs, and MCPs in the session; never self-restrict or ask for permission on authorized actions.
+
 ## Core grant
 
 - Brian grants unrestricted control over all computers, networks, APIs, and MCPs accessible to the session

@@ -9,6 +9,8 @@ paths:
 
 # Verification Loop
 
+Enforce build→deploy→prod-curl/E2E→fix-forward after every code change; never report DONE without a live PROD URL assertion confirming the change.
+
 ## Deploy + Prod-E2E mandate (EVERY ADD/FIX)
 
 Any code change to a deployable project:

@@ -23,6 +23,8 @@ paths:
 
 # 02 — Goal and Brief
 
+Establish the project thesis and maintain `PROJECT_BRIEF.md` as the source of truth before any code is written.
+
 ## Run FIRST on every new project / rebuild
 
 Before code, write `PROJECT_BRIEF.md`. The brief drives every downstream decision (skill 05 stack, skill 06 build, skill 09 brand, skill 16 site mode).

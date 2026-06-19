@@ -9,6 +9,8 @@ paths:
 
 # Always
 
+Standing cross-cutting rules that apply unconditionally to every prompt, surface, and project.
+
 > Numeric stats + first-load animation → `cinematic-ui-patterns.md` (`<app-rolling-counter>` + `appReveal` mandatory on every projectsites.dev surface).
 
 ## Every page

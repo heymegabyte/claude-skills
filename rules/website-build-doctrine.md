@@ -14,6 +14,8 @@ paths:
 
 # Website Build Doctrine
 
+Execute the mandatory Phase -1→Phase 8 build sequence: competitor research → context saturation → build → enrichment → AI-native spiral → ship; skipping any phase is a build fail.
+
 ## Phase -1 — Competitor Research (gate -1)
 
 Full protocol: `competitor-research.md`.

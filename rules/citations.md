@@ -12,6 +12,8 @@ paths:
 
 # Citations & Sources
 
+Require APA 7th inline citations for all quantitative claims on long-form surfaces; marketing surfaces link to `/sources` instead.
+
 ## Mandate (tiered by surface)
 
 - **Long-form** (blog posts, research pages, `/about`, `/financials`, `/annual-report`, `/press`) — every %, N, $, ratio, comparison, time-claim, "X% of users" MUST cite source inline `(Author, Year)` + entry in `references` array (APA 7th). Build gate applies.

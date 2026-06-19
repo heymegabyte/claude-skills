@@ -50,6 +50,8 @@ paths:
 
 # 06 — Build and Slice Loop
 
+Implement features in real vertical slices (UI→API→DB→tests→deploy) starting with the homepage; no placeholders, no stubs.
+
 ## Vertical-slice principle
 
 Every iteration ships ONE feature end-to-end through every layer (UI → API → DB → tests → deploy). Never half a feature across two passes.
