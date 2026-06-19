@@ -10,8 +10,6 @@ Two layers: universal features (every site gets these) + category-specific featu
 
 ## Universal Features (EVERY GENERATED SITE)
 
-These cost near-zero to add and dramatically increase value. Include ALL of these in every build.
-
 ### SEO & Discovery
 
 - **Sitemap.xml** — auto-generated from all pages, `lastmod` dates
@@ -69,7 +67,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Image lazy loading** — native `loading="lazy"` below fold, `fetchpriority="high"` on hero
 - **Blur placeholders** — CSS gradient or tiny base64 for images
 - **Preconnect hints** — for Google Fonts, analytics domains
-- **Print stylesheet** — `@media print` for contact/about pages (useful for directories)
+- **Print stylesheet** — `@media print` for contact/about pages
 
 ### UX Enhancements
 
@@ -81,14 +79,14 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 - **Skip to content link** — accessibility, hidden until focused
 - **Reduced motion** — `prefers-reduced-motion` disables all animations
 - **Focus visible outlines** — WCAG 2.4.11 Focus Appearance
-- **Before/after slider** — CSS clip-path drag comparison, touch-support, for contractors/salons/dental
+- **Before/after slider** — CSS clip-path drag comparison, touch-support
 - **Competitor comparison** — auto-generated from research data, `/why-choose-us` page
 - **Weather-aware hero** — outdoor businesses get dynamic hero based on local weather conditions
 
 ### Content Enrichment
 
 - **Blog/news section** — AI-generated 3-5 initial posts from research + scraped content, with RSS feed
-- **RSS feed** — `/feed.xml` or `/rss.xml`, auto-generated from blog posts (AI search crawlers consume this)
+- **RSS feed** — `/feed.xml` or `/rss.xml`, auto-generated from blog posts
 - **Reading time estimates** — on blog posts
 - **QR code** — SVG QR code for print materials linking to site URL (downloadable from about page)
 - **Multi-language** — detect via `Accept-Language`, translate key pages via Workers AI (if content justifies it)
@@ -104,7 +102,7 @@ These cost near-zero to add and dramatically increase value. Include ALL of thes
 ### Communication
 
 - **Live chat widget** — Chatwoot embed (self-hosted on Coolify) for businesses with support needs
-- **Notification bar** — dismissible announcement banner at top (for specials, events, COVID updates)
+- **Notification bar** — dismissible announcement banner at top (specials, events, COVID updates)
 - **Exit-intent email capture** — triggered on desktop mouse-leave, offers value (coupon, guide, consultation)
 
 ## Category→Feature Map

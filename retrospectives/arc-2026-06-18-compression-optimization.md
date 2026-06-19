@@ -145,6 +145,21 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 
 ## Iteration log
 
+### iter 9 — 2026-06-19 (more numbered skill dirs)
+
+- Compressed 9 more skill-dir/command files, ~3163→2330 lines (~833 cut), all 0 markdownlint errors, requirement counts verified equal:
+  - `07-quality-and-verification/build-breaking-rules.md` 448→343 (-23%, 18 reqs)
+  - `11-motion-and-interaction-system/build-breaking-rules.md` 442→318 (-28%, 16 reqs)
+  - `15-site-generation/research-pipeline.md` 363→262 (-28%)
+  - `12-media-orchestration/30-ideogram-methods.md` 315→231 (-27%)
+  - `15-site-generation/page-set-expansion.md` 376→278 (-26%)
+  - `15-site-generation/domain-features.md` 357→263 (-26%)
+  - `01-operating-system/architecture-thought-loop.md` 284→187 (-34%, all 30 points)
+  - `commands/migrate-to-hardened.md` 332→255 (-23%, all 8 steps + flags)
+  - `15-site-generation/small-business-mode.md` 246→193 (-22%)
+- Gate 17 pass · 0 fail. 53 instruction files compressed total.
+- Next: remaining mid-size NN-*/ + commands/ files (notebooklm-pipeline, pseo-templates, computer-use-automation, SKILL.md indexes, other commands/), then idea #4 semantic dedup.
+
 ### iter 8 — 2026-06-19 (expand coverage to numbered skill dirs)
 
 - Compression reached the numbered skill dirs (`NN-*/*.md`) — far larger prose than rules/. Compressed 7 checklist files, ~6700→5120 lines (~1580 cut):

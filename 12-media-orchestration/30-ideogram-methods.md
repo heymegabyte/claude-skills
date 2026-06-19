@@ -8,19 +8,7 @@ updated: "2026-05-11"
 
 Brand-coherent Ideogram v3 assets fan out across the entire site beyond `hero.png`.
 
-Each method has:
-
-- `slot id`
-- `dims`
-- `dpi`
-- `prompt template`
-- `negative prompt`
-- `style preset`
-- `format`
-- `output path`
-- `consumer component`
-- `fallback chain`
-- `cache key`
+Each method has: `slot id` · `dims` · `dpi` · `prompt template` · `negative prompt` · `style preset` · `format` · `output path` · `consumer component` · `fallback chain` · `cache key`
 
 Manifest lives at `src/data/ideogram/methods.ts` (typed catalog) + `public/_ideogram/manifest.json` (post-build asset registry).
 
@@ -61,33 +49,25 @@ Prompts use `{{token}}` substitution from `_brand.json` + page data.
 
 - **Use** — 16:9 cinematic illustration anchoring every top-level route hero
 - **Prompt** — *"editorial illustration of {{ROUTE_SUBJECT}} in {{CITY}}, cinematic lighting, {{BRAND_PALETTE}} color palette, painterly brush, soft golden hour, depth of field, no text"*
-- **Style** — REALISTIC
-- **Aspect** — 16:9
-- **Path** — `/images/ideogram/hero-{route}.webp`
-- **Consumer** — `<Hero variant="cinematic">`
-- **Fallback** — existing source-site hero
+- **Style** — REALISTIC · **Aspect** — 16:9 · **Path** — `/images/ideogram/hero-{route}.webp`
+- **Consumer** — `<Hero variant="cinematic">` · **Fallback** — existing source-site hero
 
 ### 2 — OG card per route
 
 - **Use** — 1200×630 designed social card with brand stripe + title overlay
 - **Prompt** — *"social media share card, deep {{BRAND_HEX}} gradient background, abstract organic shapes, subtle texture, leave clear negative space top-left for headline overlay, no text in image"*
-- **Aspect** — 16:9 (resized to 1200×630 post-gen)
-- **Consumer** — per-route metadata `og.image`
-- **Fallback** — shared default `og-default.png`
+- **Aspect** — 16:9 (resized to 1200×630 post-gen) · **Consumer** — per-route metadata `og.image` · **Fallback** — `og-default.png`
 
 ### 3 — Twitter / X card variant
 
-- **Use** — 1200×600 (sharper crop). Same base prompt as #2 with different seed for variation
-- **Path** — `/images/ideogram/twitter-{route}.png`
-- **Consumer** — per-route `twitter.image`
+- **Use** — 1200×600 (sharper crop); same base prompt as #2 with different seed
+- **Path** — `/images/ideogram/twitter-{route}.png` · **Consumer** — per-route `twitter.image`
 
 ### 4 — Section dividers
 
 - **Use** — 3:1 horizontal panoramic separators between major page sections
 - **Prompt** — *"thin horizontal banner, abstract topography map with {{BRAND_HEX}} contour lines on cream background, organic flow, no text, decorative"*
-- **Aspect** — 3:1
-- **Format** — svg-or-png
-- **Consumer** — `<SectionDivider>` between pricing/features/cta blocks
+- **Aspect** — 3:1 · **Format** — svg-or-png · **Consumer** — `<SectionDivider>` between pricing/features/cta blocks
 
 ### 5 — Parallax layer set
 
@@ -105,8 +85,7 @@ Prompts use `{{token}}` substitution from `_brand.json` + page data.
 
 - **Use** — 1:1 80×80 brand-tinted icons accompanying stat counters
 - **Prompt** — *"minimal line icon of {{STAT_SUBJECT}}, single-color {{BRAND_HEX}}, 1px stroke, geometric, centered on transparent background"*
-- **Format** — SVG
-- **Consumer** — `<StatBlock icon={...}>`
+- **Format** — SVG · **Consumer** — `<StatBlock icon={...}>`
 
 ### 8 — Testimonial frames
 
@@ -134,7 +113,7 @@ Prompts use `{{token}}` substitution from `_brand.json` + page data.
 
 ### 12 — Branded 404 mascot
 
-- **Use** — 1:1 friendly anthropomorphic mascot or icon greeting lost visitors
+- **Use** — 1:1 friendly anthropomorphic mascot greeting lost visitors
 - **Prompt** — *"friendly mascot illustration for 404 page of {{BRAND_NAME}}, holding 'lost' sign, in {{BRAND_PALETTE}}, hand-drawn, no rendered text on sign"*
 - **Consumer** — `<NotFound>` route
 
@@ -152,17 +131,15 @@ Prompts use `{{token}}` substitution from `_brand.json` + page data.
 
 ### 15 — Email signature header
 
-- **Use** — 4:1 thin banner suitable for transactional email header (Resend / Inngest templates)
+- **Use** — 4:1 thin banner for transactional email header (Resend / Inngest templates)
 - **Prompt** — *"thin email banner with {{BRAND_NAME}} wordmark area on left, abstract {{BRAND_HEX}} shapes on right, leave 30% left blank for logo overlay"*
-- **Output** — `/images/ideogram/email-header.png`
-- **Consumer** — Resend email templates
+- **Output** — `/images/ideogram/email-header.png` · **Consumer** — Resend email templates
 
 ### 16 — PDF cover (annual report / press kit)
 
 - **Use** — A4 portrait cover for downloadable PDFs
 - **Prompt** — *"editorial annual-report cover for {{BRAND_NAME}} {{YEAR}}, central illustration of {{MISSION_VISUAL}}, painterly, {{BRAND_PALETTE}}, leave top 30% clear for typography overlay"*
-- **Aspect** — 2:3
-- **Consumer** — Puppeteer/Playwright PDF generator
+- **Aspect** — 2:3 · **Consumer** — Puppeteer/Playwright PDF generator
 
 ### 17 — Magazine-spread asset (multi-image collage)
 
@@ -174,7 +151,7 @@ Prompts use `{{token}}` substitution from `_brand.json` + page data.
 
 - **Use** — 4×4 grid of die-cut style stickers for printed swag + Slack/Discord emoji sets
 - **Prompt** — *"sticker sheet of 16 die-cut stickers for {{BRAND_NAME}} community, {{BRAND_PALETTE}}, varied subjects: heart, hands, plate, sun, lightbulb, etc, white outline border"*
-- **Output** — `/images/ideogram/stickers.png` + post-process to individual transparent PNGs in `/public/images/ideogram/stickers/`
+- **Output** — `/images/ideogram/stickers.png` + post-process to individual PNGs in `/public/images/ideogram/stickers/`
 - **Consumer** — download page + Slack workspace emoji
 
 ### 19 — Loading-state illustrations
@@ -197,34 +174,32 @@ Prompts use `{{token}}` substitution from `_brand.json` + page data.
 
 ### 22 — Reduced-motion poster frames
 
-- **Use** — Static poster frames replacing motion video for users with `prefers-reduced-motion: reduce`
+- **Use** — Static poster frames replacing motion video for `prefers-reduced-motion: reduce` users
 - **Prompt** — *"single dramatic still frame of {{VIDEO_SCENE_SUBJECT}}, cinematic lighting, {{BRAND_PALETTE}}, painterly"*
 - **Consumer** — `<video poster={...} preload="metadata">` + CSS reduced-motion gate
 
 ### 23 — Logo lockups (horizontal + stacked + monogram)
 
-- **Use** — Three variants of the wordmark in different layouts
+- **Use** — Three wordmark variants in different layouts
 - **Prompt** — *"clean wordmark logo lockup for {{BRAND_NAME}}, {{LAYOUT_VARIANT}}, {{BRAND_HEX}} ink, vector style, transparent background, NO illustrative elements, typography only"*
-- **Style** — DESIGN
-- **Slots** — `logo-horizontal.svg` | `logo-stacked.svg` | `logo-monogram.svg`
-- **Consumer** — `<Header>`, `<Footer>`, favicon source
-- **Validate** — via real-favicongenerator API
+- **Style** — DESIGN · **Slots** — `logo-horizontal.svg` | `logo-stacked.svg` | `logo-monogram.svg`
+- **Consumer** — `<Header>`, `<Footer>`, favicon source · **Validate** — via real-favicongenerator API
 
 ### 24 — Maskable PWA icon + full favicon kit source
 
-- **Use** — Single 1024×1024 master icon with 10% safe-zone padding to feed `real-favicongenerator` (or ImageMagick fallback) for all 9 favicon outputs + maskable variant
+- **Use** — Single 1024×1024 master icon with 10% safe-zone padding to feed `real-favicongenerator` for all 9 favicon outputs + maskable variant
 - **Prompt** — *"app icon for {{BRAND_NAME}}, central monogram or symbol in {{BRAND_HEX}}, geometric, 10% safe-zone padding around edge, square 1:1, no text"*
 - **Consumer** — `site.webmanifest` `icons[]` + `apple-touch-icon` + `favicon.ico`
 
 ### 25 — Apple touch icon (180×180 polished)
 
-- **Use** — Higher-effort iOS home-screen icon (rendered separately from #24 master at higher quality + Apple's rounded-corner expectation)
+- **Use** — Higher-effort iOS home-screen icon (separate from #24 master, Apple rounded-corner expectation)
 - **Prompt** — *"iOS home screen app icon for {{BRAND_NAME}}, 180×180, central monogram on solid {{BRAND_HEX}}, no inset shadow (iOS applies it), no text"*
 - **Consumer** — `<link rel="apple-touch-icon">`
 
 ### 26 — Custom cursor glyph (desktop ≥1024px)
 
-- **Use** — 32×32 PNG cursor for desktop interactive zones (Brian's "click ripple only" rule — NO follow cursor, but a branded *resting* cursor is fine)
+- **Use** — 32×32 PNG cursor for desktop interactive zones (branded *resting* cursor only — NO follow cursor)
 - **Prompt** — *"minimalist cursor glyph, {{BRAND_HEX}} arrow with small heart accent, 32×32, transparent PNG, sharp pixel edges"*
 - **Consumer** — `body { cursor: url('/images/ideogram/cursor.png'), auto; }` inside `@media (min-width: 1024px) and (hover: hover)`
 
@@ -242,17 +217,15 @@ Prompts use `{{token}}` substitution from `_brand.json` + page data.
 
 ### 29 — Social-share variant per channel
 
-- **Use** — Distinct compositions tuned to each platform's UX (LinkedIn = professional, Instagram = vibrant square, TikTok = vertical 9:16 with motion-implied composition)
+- **Use** — Distinct compositions tuned to each platform (LinkedIn = professional, Instagram = vibrant square, TikTok = vertical 9:16)
 - **Slots per route** — `share-linkedin-{route}.png` (1200×627) | `share-instagram-{route}.png` (1080×1080) | `share-tiktok-{route}.png` (1080×1920)
 - **Consumer** — Postiz / Buffer / native share API
 
 ### 30 — Ticker / scroll-progress glyph
 
-- **Use** — Small repeating SVG element used as marquee scroll ticker + scroll-progress indicator bar at top of page
+- **Use** — Small repeating SVG element used as marquee scroll ticker + scroll-progress indicator bar
 - **Prompt** — *"small decorative SVG glyph 32×32 of {{BRAND_SYMBOL}}, single color {{BRAND_HEX}}, geometric, tiles seamlessly"*
-- **Style** — DESIGN
-- **Format** — SVG
-- **Consumer** — `<ScrollProgress>` + `<Ticker>` (marquee.css `@keyframes ticker`)
+- **Style** — DESIGN · **Format** — SVG · **Consumer** — `<ScrollProgress>` + `<Ticker>` (marquee.css `@keyframes ticker`)
 
 ## Catalog file (project-side)
 
@@ -295,19 +268,18 @@ Returns: { data: [{ url, prompt, resolution, is_image_safe, seed, style_type }] 
 
 ## Build gates
 
-- Manifest exists + every `IDEOGRAM_METHODS[i].outputPath` resolves to a real file in `public/` build output (asset-existence gate from always.md)
-- No slot has empty `prompt` after token resolution
-- **Methods #1, #2, #3, #12, #23, #24, #25** = MANDATORY (build fail if missing)
-- Others = strongly recommended
-- Delight-moment registry (`_iteration_log.json[current].delight_moments[]`) gets entries for #12 (404 mascot), #13 (confetti), #18 (sticker pack), #20 (Easter egg), #26 (custom cursor) when shipped
+- Manifest exists + every `IDEOGRAM_METHODS[i].outputPath` resolves to a real file in `public/` build output.
+- No slot has empty `prompt` after token resolution.
+- **Methods #1, #2, #3, #12, #23, #24, #25** = MANDATORY (build fail if missing).
+- Others = strongly recommended.
+- Delight-moment registry (`_iteration_log.json[current].delight_moments[]`) gets entries for #12, #13, #18, #20, #26 when shipped.
 
 ## Cost guardrail
 
-- **QUALITY** — ≈ $0.08 / image
-- **DEFAULT** — ≈ $0.04
-- **TURBO** — ≈ $0.02
-
-Catalog of 30 methods × 5-15 routes = 150-450 images. Use TURBO for variants (#3 twitter, #21 light/dark mirror, #29 social channel mirrors); QUALITY only for #1 hero, #16 PDF cover, #28 press kit. Budget: ~$10-20 per full site generation. Cache aggressively — re-runs of same prompt+seed return cached asset.
+- **QUALITY** — ≈ $0.08/image · **DEFAULT** — ≈ $0.04 · **TURBO** — ≈ $0.02
+- Catalog of 30 methods × 5-15 routes = 150-450 images.
+- Use TURBO for variants (#3 twitter, #21 light/dark mirror, #29 social channel mirrors); QUALITY only for #1 hero, #16 PDF cover, #28 press kit.
+- Budget: ~$10-20 per full site generation. Cache aggressively — same prompt+seed returns cached asset.
 
 ## Reference incident (2026-05-11 — njsk.org)
 

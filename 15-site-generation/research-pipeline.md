@@ -35,7 +35,7 @@ Google Places `nearbysearch` with same `type` within 5mi radius. Top 5 competito
 
 If business has existing website:
 
-- Crawl up to 50 pages (was 20 — content-rich sites need full migration)
+- Crawl up to 50 pages
 - For each: extract title, headings, body text, images (download to R2), nav structure, footer content, meta tags, schema.org data
 - Store as `_scraped_content.json` keyed by URL path
 
@@ -177,9 +177,9 @@ Sibling file to `_research.json`. APA 7th ed bibliography keyed by `refId`. Sche
 
 For every publication/paper/article/case-study item discovered in source crawl (academic CVs, faculty pages, "Selected Publications", `/portfolio` indexes, journal pages, ResearchGate scrapes), resolve a canonical external `deeplink_url` BEFORE rendering tile.
 
-Internal `/portfolio/<slug>` stub pages that just re-display the citation block are a duplicate-content failure (lonemountainglobal.com 2026-05-01 incident: 12 publication tiles all linked to internal stubs that contained nothing but the same citation re-rendered, when the actual academic article URLs existed and were valuable).
+Internal `/portfolio/<slug>` stub pages that re-display only the citation block are a duplicate-content failure (lonemountainglobal.com 2026-05-01 incident: 12 publication tiles linked to internal stubs containing nothing but re-rendered citations, when actual article URLs existed).
 
-**Build gate** — `validate-publication-deeplinks.mjs` (skill 15 quality-gates.md) fails on any publication tile without `deeplink_url` OR with `deeplink_url` pointing to internal route.
+**Build gate** — `validate-publication-deeplinks.mjs` (skill 15 quality-gates.md) fails on any publication tile without `deeplink_url` OR with `deeplink_url` pointing to an internal route.
 
 ### Discovery chain (try in order, stop on first 200-OK match)
 
@@ -264,7 +264,7 @@ The lonemountainglobal.com `Vian_CV_Long_4-2-2024.pdf` is the canonical case —
 
 ### Per-prompt context injection
 
-`_pdf_facts.json` is loaded into EVERY downstream content prompt (about-page, team-page, services-page, blog-post-generation, JSON-LD personSchema, FAQ generation) so the CV's structured facts back every assertion the rebuild makes about the person/org. Without this, the LLM hallucinates dates/positions and the fact-checker (skill 09 grammar-audit) flags inconsistencies.
+`_pdf_facts.json` is loaded into EVERY downstream content prompt (about-page, team-page, services-page, blog-post-generation, JSON-LD personSchema, FAQ generation) so CV-structured facts back every assertion the rebuild makes about the person/org. Without this, the LLM hallucinates dates/positions and the fact-checker (skill 09 grammar-audit) flags inconsistencies.
 
 **Validator** — `validate-pdf-facts.mjs` asserts every linked PDF in source has corresponding `_pdf_facts.json` entry before container build can start.
 
@@ -274,7 +274,7 @@ The lonemountainglobal.com `Vian_CV_Long_4-2-2024.pdf` is the canonical case —
 
 Rebuild prompts MUST emit a superset, never a subset, of source. Three parallel gap-detection passes run after `_research.json` lands, all feeding the build prompt.
 
-See [[source-site-enhancement]] § Union-Output Contract + [[monitor-orchestration]] Known-shortcoming #7 (monitor-fire on rebuild prompts) + [[page-set-expansion]] § Org-Type Canonical Floor + [[i18n-by-demographics]] § ACS B16001 Lookup.
+See [[source-site-enhancement]] § Union-Output Contract + [[monitor-orchestration]] Known-shortcoming #7 + [[page-set-expansion]] § Org-Type Canonical Floor + [[i18n-by-demographics]] § ACS B16001 Lookup.
 
 ### (a) ACS B16001 demographic lookup (locale gap) → `_locales.json`
 

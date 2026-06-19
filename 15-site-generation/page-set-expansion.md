@@ -50,7 +50,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 **Nonprofit reference incident (***njsk.org 2026-05-21***)**:
 
 - Source ships 8 unique non-blog routes
-- `njsk-org.manhattan.workers.dev` clone ships 8 keep + 14 standard + 10 jewels + 2 locales (`/es/*` + `/pt/*` per [[i18n-by-demographics]]) + 129 normalized blog slugs = ~210 routes from a single prompt
+- `njsk-org.manhattan.workers.dev` ships 8 keep + 14 standard + 10 jewels + 2 locales (`/es/*` + `/pt/*` per [[i18n-by-demographics]]) + 129 normalized blog slugs = ~210 routes from a single prompt
 - One-line prompt floor for nonprofit = NEVER less than the 14+10 standard+jewels above, regardless of source size
 
 ### SaaS / API / Platform / Dev-Tool
@@ -245,12 +245,9 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 
 ## Discovery Rule (***org-type ambiguous? default UP, not down***)
 
-When prompt is ambiguous about org type:
-
 - Infer via skill 02 + `_research.json.category` + domain TLD heuristics (`.church|.org|.foundation`→nonprofit, `.app|.io|.dev`→saas, `.law`→legal, `.health`→healthcare)
 - When still ambiguous, default to the LARGER standard+jewel set rather than the smaller one
-- Over-shipping pages is cheap (AI generates each in seconds + Workers serves them at edge for free)
-- Under-shipping is expensive (manual follow-up prompts to add what should have been default)
+- Over-shipping pages is cheap; under-shipping requires manual follow-up prompts
 
 ## Cross-Multiply with i18n (***page-set × locales = total route count***)
 
@@ -261,10 +258,10 @@ Every page in (standard ∪ jewels) ships per locale per [[i18n-by-demographics]
 
 ## Content Authority per Page (***never stub, never lorem***)
 
-- Every standard + jewel page ships REAL CONTENT, generated from researched sources, never placeholder
+- Every standard + jewel page ships REAL CONTENT generated from researched sources
 - Every quantitative claim cited per [[citations]] APA 7th ed inline + reference list
 - Every contact entity hyperlinked per [[always]] universal hyperlink mandate
-- AI-generated narrative content runs through anti-slop grep per [[copy-writing]] banned word list before deploy
+- AI-generated narrative runs through anti-slop grep per [[copy-writing]] banned word list before deploy
 
 ## Jewel Content Authoring Playbook (***per-page data source → typed-block content***)
 
@@ -279,13 +276,13 @@ And emits typed-block JSON:
 ### Nonprofit Jewel → Source Map
 
 - **`/financials`**
-  - Sources: Candid API Form 990 (free tier: `/v3/api/organizations/{ein}` returns revenue+expense+program-ratio) + Charity Navigator API badge + GuideStar Platinum + state AG charity registration
+  - Sources: Candid API Form 990 (free tier: `/v3/api/organizations/{ein}`) + Charity Navigator API badge + GuideStar Platinum + state AG charity registration
   - Content: Hero stat ("92% to programs"), 4-bar breakdown chart with `<CountUp>` animation, last-3-years revenue/expense table, Form 990 PDF download, accreditation badge row, donor protection statement
   - JSON-LD: Organization+NGO+FinancialProduct
 
 - **`/annual-report`**
-  - Sources: Prior-year 990 + Wayback past-year blog scrape + impact metric aggregation across blog corpus (meals served, volunteer hours, programs run) + board-chair photo+letter
-  - Content: Cover image (hero), board-chair letter (lead+paragraphs), 6-stat impact grid via `<CountUp>`, photo essay (4-8 images with captions), donor honor roll (named gifts), program highlights, financial summary card, downloadable PDF link
+  - Sources: Prior-year 990 + Wayback past-year blog scrape + impact metric aggregation across blog corpus + board-chair photo+letter
+  - Content: Cover image (hero), board-chair letter, 6-stat impact grid via `<CountUp>`, photo essay (4-8 images), donor honor roll, program highlights, financial summary card, downloadable PDF link
   - JSON-LD: Organization+Report
 
 - **`/planned-giving`**
@@ -300,7 +297,7 @@ And emits typed-block JSON:
 
 - **`/donate/{campaign-slug}`**
   - Sources: Consolidate scattered blog campaign mentions (e.g. njsk.org "convent repairs" + "clinic wall" + "stainless steel cabinets" → `/donate/refurbish`)
-  - Content: Capital campaign hero with thermometer (raised/goal) + photo gallery (current state + planned) + named gift opportunities table + match-grant callout + Stripe checkout embed + donor honor wall
+  - Content: Capital campaign hero with thermometer (raised/goal) + photo gallery + named gift opportunities table + match-grant callout + Stripe checkout embed + donor honor wall
   - JSON-LD: Organization+DonateAction+FundraisingEvent
 
 - **`/parish-toolkit`** (religious-affiliated)
@@ -310,12 +307,12 @@ And emits typed-block JSON:
 
 - **`/partners`**
   - Sources: Partner-org logo extraction via Clearbit Logo API + verified relationship descriptions from scraped blog mentions
-  - Content: Logo wall (grayscale → color on hover, NEVER lightboxed per always.md) grouped by partner-type (corporate sponsors | church partners | grant funders | govt contracts) + 1-sentence relationship description per logo
+  - Content: Logo wall (grayscale → color on hover) grouped by partner-type (corporate sponsors | church partners | grant funders | govt contracts) + 1-sentence relationship description per logo
   - JSON-LD: Organization+OrganizationRole
 
 - **`/press`**
   - Sources: Newspapers.com scrape + Wayback news section + Google News API + press contact + downloadable media kit
-  - Content: Article list (one card per mention: outlet logo + headline + date + 40-word paraphrase + outbound link) + press-kit downloadables (logos in 4 formats + headshots + brand guide PDF + key facts one-pager) + press contact `<MailLink>`
+  - Content: Article list (outlet logo + headline + date + 40-word paraphrase + outbound link) + press-kit downloadables (logos in 4 formats + headshots + brand guide PDF + key facts one-pager) + press contact `<MailLink>`
   - JSON-LD: NewsMediaOrganization+NewsArticle (per mention)
 
 - **`/testimonials`**
@@ -325,7 +322,7 @@ And emits typed-block JSON:
 
 - **`/transcript`**
   - Sources: Whisper API on every audio/video asset extracted by Agent-D media-walker + structured chapter markers
-  - Content: Per-asset transcript page with: original audio/video embed (with captions) + structured transcript blocks (timestamp + speaker + text) + auto-generated chapters + download VTT/SRT links
+  - Content: Per-asset transcript page with original audio/video embed (with captions) + structured transcript blocks (timestamp + speaker + text) + auto-generated chapters + download VTT/SRT links
   - JSON-LD: CreativeWork+AudioObject/VideoObject+Transcript
 
 - **`/alumni`**
