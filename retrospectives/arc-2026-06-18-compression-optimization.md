@@ -11,7 +11,7 @@ Recurring `/loop 20m` arc. Goal: compress every `~/.agentskills` instruction fil
 1. Read this tracker → pick next un-done batch from the file queue.
 2. Compress per the playbook (fan out to subagents for batches; verify with markdownlint).
 3. Implement the next-highest-value idea from the 50-idea roadmap not yet `[x]`.
-4. Update the queue + log below, commit + push.
+4. Update the queue + log below, commit + push. **Stage with `git add <content-dirs>` (rules commands NN-*/ agents), NOT `git add -u`** — `-u` silently skips untracked files (see iter 12 incident).
 5. Never recompress a `[x]` file. Never compress historical logs.
 
 ## File queue — prose-heavy rules (compression targets, biggest first)
@@ -144,6 +144,13 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - **Wire `bin/audit-instruction-files.mjs` to lefthook** now the gate is green — first add inline-code-span skip + `<!-- validator-ignore -->` hatch (iter-1 known refinement).
 
 ## Iteration log
+
+### iter 12 — 2026-06-19 (CRITICAL: 91 untracked files committed)
+
+- **Process bug found + fixed**: `git add -u` (used iters 1-11) stages only TRACKED modifications — it silently skipped 91 untracked instruction `.md` files. Result: compression work on iter 4-5 code-heavy rules (csp-trusted-types, right-to-deletion, prompt-cache-strategy, refund-automation, pii-handling, supply-chain-integrity, conditional-ci-gates) + 84 other legitimate skill/command files (34 commands/, 26 rules/, 12 05-arch/, …) were on disk but NEVER committed. On a clean clone they'd be missing; cross-links + pack memberships to them would break.
+- **Fix**: `git add` across all content dirs → 91 new files committed (`6e81117`), 0 markdownlint errors, gate 17 pass. Repo is now whole + durable. Methodology above updated to stage by dir, not `-u`.
+- Lesson for `[[prompt-as-training-signal]]`: verify `git status` shows no untracked content after each commit.
+- **Still need compression** (now tracked, reported sizes didn't persist as untracked): activation-funnel (325), migrate-to-hardened (299), llm-evals (472), og-card-pipeline (548), mcp-server-registry (432), http-server-on-workers (389). Next batch.
 
 ### iter 11 — 2026-06-19 (commands + SKILL indexes + skill dirs)
 
