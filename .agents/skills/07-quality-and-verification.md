@@ -13,6 +13,7 @@ compatibility:
 submodules:
   - accessibility-gate.md
   - adversarial-testing.md
+  - llm-evals.md
   - agentic-security.md
   - audio-video-sync.md
   - build-breaking-rules.md

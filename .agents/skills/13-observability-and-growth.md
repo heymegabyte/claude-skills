@@ -57,21 +57,18 @@ Per `_kernel/standards.md#integrations`:
 - `SENTRY_DSN` via `wrangler secret put`
 - Pattern: `withSentry(env => ({ dsn, tracesSampleRate: 1.0, sendDefaultPii: false }), worker)`
 - Breadcrumbs before risky ops; capture exception w/ context tags (`worker` | `route` | `userId`)
-- Release tracking via `SENTRY_RELEASE` env
-- Focus on exceptions; Workers Tracing handles I/O spans
+- Release tracking via `SENTRY_RELEASE` env; Workers Tracing handles I/O spans
 
 ## Workers Tracing (Tier 1 + Tier 2)
 
 - `[observability] enabled = true` in `wrangler.jsonc` — zero-config OTel I/O tracing
-- Free until Mar 1 2026 then billed
 - Export to Axiom (cheapest at edge), Honeycomb (BubbleUp), Grafana, Datadog via `@opentelemetry/exporter-trace-otlp-http`
 
 ## GA4 + GTM (Tier 2 only)
 
 - GTM container snippet (head script + noscript iframe after body)
 - CSP: `googletagmanager.com` + `google-analytics.com` + `analytics.google.com` + `region1.google-analytics.com`
-- Server-side tagging when privacy-critical (EU traffic)
-- Custom dimensions over custom events (cheaper, more queryable)
+- Server-side tagging when privacy-critical (EU traffic); custom dimensions over custom events
 
 ## AI Gateway (Tier 3)
 
@@ -83,16 +80,13 @@ Per `_kernel/standards.md#integrations`:
 
 - Webhook-first w/ idempotent processing (D1 dedupe table `payment_events(event_id, source, processed_at)` UNIQUE)
 - `Stripe-Signature` HMAC + 5-min replay window
-- Mint products + prices via MCP (idempotent via `lookup_key`)
-- Subscription state machine in D1
+- Mint products + prices via MCP (idempotent via `lookup_key`); subscription state machine in D1
 - `STRIPE_WEBHOOK_SECRET` via `POST /v1/webhook_endpoints`
 
 ## Square (accept-money default — per `rules/payments-routing.md`)
 
 - Square Web Payments SDK card form + Apple Pay + Google Pay + Cash App Pay
-- Square Subscriptions for recurring giving
-- `Square-Signature` HMAC-SHA256 w/ 6-hr replay window
-- Idempotency: `idempotency_key` UUID per request (24-hr dedupe)
+- `Square-Signature` HMAC-SHA256 w/ 6-hr replay window; `idempotency_key` UUID per request (24-hr dedupe)
 - Nonprofit verified-501c3 discount (2.6%+10¢ vs 3.5%+15¢)
 
 ## Listmonk (newsletter — self-hosted on Coolify)
@@ -122,7 +116,7 @@ Instrument each layer with PostHog events. Funnel visible in PostHog dashboard.
 - **Template** (`/templates/{type}`)
 - **Location** (`/{city}-{service}`)
 
-Each unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal links + 1+ outbound citation. Cap 200 pages per axis to avoid thin-content. Per `rules/copy-writing.md` § pSEO + `rules/thin-source-amplification.md`.
+Each: unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal links + 1+ outbound citation. Cap 200 pages per axis. Per `rules/copy-writing.md` § pSEO + `rules/thin-source-amplification.md`.
 
 ## GEO / AI search
 

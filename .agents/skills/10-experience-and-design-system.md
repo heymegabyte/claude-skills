@@ -31,10 +31,10 @@ paths:
 
 After every design: would Apple's design team find this acceptable?
 
-- Two elements compete: remove one
-- Crowded: whitespace
-- Busy type: reduce sizes, increase weight contrast
-- Final: effortless, inevitable
+- Two elements compete → remove one
+- Crowded → add whitespace
+- Busy type → reduce sizes, increase weight contrast
+- Final feel: effortless, inevitable
 
 ## CSS Patterns
 
@@ -42,8 +42,7 @@ After every design: would Apple's design team find this acceptable?
 - Border-radius 5px interactive, 10px containers (never 0, never pill)
 - Hero padding 40px · Max text 720px · Line-height 1.4
 - Letter-spacing: 0.4px labels, 0.5px nav, 1px titles, 1.4px CTAs
-- CTA uppercase always · Button 700 always
-- Reference: Linear, Notion, Stripe
+- CTA uppercase always · Button 700 always · Reference: Linear, Notion, Stripe
 
 ## Typography
 
@@ -85,14 +84,14 @@ After every design: would Apple's design team find this acceptable?
 }
 ```
 
-- Never `#000` (use `#060610` — pure black causes vibration/halation/eye strain) · Never `#fff` (use `#f0f0f5`)
+- Never `#000` (use `#060610`) · Never `#fff` (use `#f0f0f5`)
 - Cyan: primary CTAs · Blue: secondary · Gradients on buttons only · 6% borders · Subtle glow on primary interactive
 
 ### Dark-first
 
-- Elevation via lightness not shadows · base → surface 1 → surface 2 → surface 3
+- Elevation via lightness not shadows: base → surface 1 → surface 2 → surface 3
 - Status colors desaturate 10-20% from light-mode equivalents
-- Sans-serif fonts best in dark mode; use `-webkit-font-smoothing:antialiased`
+- Sans-serif fonts; use `-webkit-font-smoothing:antialiased`
 
 ### Theme
 
@@ -124,8 +123,7 @@ After every design: would Apple's design team find this acceptable?
 - Token: `$value` (required), `$type`, `$description`, `$deprecated`, `$extensions`
 - Types: color | dimension | duration | fontFamily | fontWeight | cubicBezier | number + composites (shadow, border, gradient, typography, transition)
 - Aliasing: `"$value": "{base.color}"` · `$ref` JSON Pointer · Group `$type` inheritance · `$root` for base + variants · `$extends` for deep merge
-- Full Display P3, OKLCH, CSS Color Module 4
-- Naming: no `$` prefix, no `{}` / `.` in names
+- Full Display P3, OKLCH, CSS Color Module 4; naming: no `$` prefix, no `{}` / `.` in names
 - Tools: Tokens Studio, Style Dictionary, Penpot, Figma
 
 ## AI-Ready Design Documentation
@@ -139,8 +137,7 @@ After every design: would Apple's design team find this acceptable?
 ## Layout
 
 - Container 1140px (wide 1400, narrow 720), padding `clamp(1rem,3vw,3rem)`
-- Sections `clamp(4rem,8vw,8rem)`, border between
-- Grid `auto-fit minmax(280px,1fr)`, 1fr at 768px
+- Sections `clamp(4rem,8vw,8rem)`, border between; grid `auto-fit minmax(280px,1fr)`, 1fr at 768px
 
 ### Patterns
 
@@ -148,9 +145,7 @@ After every design: would Apple's design team find this acceptable?
 
 ### SaaS
 
-- Single-CTA 13.5%
-- Hero / Proof / Features / Demo / Testimonials / Pricing / FAQ / CTA
-- Bento grid for feature showcases
+- Single-CTA 13.5%; Hero / Proof / Features / Demo / Testimonials / Pricing / FAQ / CTA; bento grid for feature showcases
 
 ## Components
 

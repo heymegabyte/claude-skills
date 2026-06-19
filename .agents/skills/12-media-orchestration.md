@@ -60,35 +60,31 @@ paths:
 - **Social** — Satori OG 1200×630
 - **Icons** — Ideogram v3 + processing
 
-Pre-gen: communication goal? Brand style? Dimensions? Format? Budget? Stock or generated?
+Pre-gen checklist: communication goal? Brand style? Dimensions? Format? Budget? Stock or generated?
 
 ## Visual Inspection (MANDATORY)
 
-Read every image before deploy. Check: blur, artifacts, watermarks, wrong colors, AI hallucinations, gibberish text. Failed = regenerate w/ improved prompt. Quality: 2× retina, no artifacts, brand palette, consistent style, no uncanny valley.
+Read every image before deploy. Check: blur, artifacts, watermarks, wrong colors, AI hallucinations, gibberish text. Fail = regenerate w/ improved prompt. Quality bar: 2× retina, no artifacts, brand palette, consistent style, no uncanny valley.
 
 ## Brian's Style
 
 - Space/cosmic — `#00E5FF` + `#7C3AED`, deep black (`#060610`)
 - Connections/dots — quantum, neural, constellation
-- "Ultra realistic" scenes
-- Transparent logos
-- Simpler always
+- "Ultra realistic" scenes; transparent logos; simpler always
 - Motifs — squirrels, turtles
 
 ## Image Generation
 
-- **GPT Image 1.5** preferred (best quality)
-- **GPT Image 1** for speed
-- **GPT Image 1-mini** for bulk/drafts
+- **GPT Image 1.5** preferred (best quality); **GPT Image 1** for speed; **GPT Image 1-mini** for bulk/drafts
 - Fallback: `scripts/image_gen.py`
-- Be specific, include colors, specify avoidances
+- Be specific: include colors, specify avoidances
 - Product screenshots: browser rendering via Playwright on live URL
 
 ## GPT Image 1.5 First Slot-Fill (CANONICAL — UNIVERSAL)
 
-GPT Image 1.5 (gpt-image-1.5 / gpt-image-1) is PRIMARY originator for every image slot the source-resolution chain didn't fill from real-entity sources (Places / uploads / scrape).
+GPT Image 1.5 is PRIMARY originator for every image slot the source-resolution chain didn't fill from real-entity sources (Places / uploads / scrape).
 
-- After real-entity sources exhaust, GPT Image 1.5 invoked BEFORE generic stock — per-slot prompt produces tighter topic match than any stock library
+- After real-entity sources exhaust, GPT Image 1.5 invoked BEFORE generic stock — per-slot prompt produces tighter topic match
 - Stock APIs run parallel speed-pass fallback (instant return if GPT Image 1.5 hangs >15s) but GPT Image 1.5 output preferred at curation
 - See skill 15 `media-acquisition` Media-Slot-Manifest + Fail-CLOSED auto-regenerate (5 attempts, prompt-refinement loop, $0.40 worst-case ceiling per slot)
 
@@ -115,52 +111,38 @@ Build orchestrator's `media_pipeline_orchestrator` sub-agent owns this loop. Sub
 
 ## Logo / Icon Generation
 
-- **Ideogram v3** for logos (best text rendering)
-- **Recraft V3** for vector-style icons
+- **Ideogram v3** for logos (best text rendering); **Recraft V3** for vector-style icons
 - Output: PNG transparent + SVG (if possible)
 - Process: bg removal → favicon set (16/32/180/192/512 + maskable)
 - Brand mark MUST be vector-clean — no AI artifacts on edges
 
 ## Video Generation
 
-- **Sora** for primary cinematic content
-- Veo for narrative stitching (7-8 × 8-sec clips → 60-sec arc)
-- HeyGen for explainer + spokesperson
-- All include captions VTT + transcript
-- `prefers-reduced-motion` → static poster fallback
+- **Sora** for primary cinematic content; Veo for narrative stitching (7-8 × 8-sec clips → 60-sec arc); HeyGen for explainer + spokesperson
+- All include captions VTT + transcript; `prefers-reduced-motion` → static poster fallback
 
 ## OG Image (1200×630)
 
-- Satori edge-rendered from template
-- Per-route unique
-- BRANDED CARD never raw photo
-- ≤100KB
-- Cached in KV 7d / R2 forever
+- Satori edge-rendered from template; per-route unique; BRANDED CARD never raw photo
+- ≤100KB; cached in KV 7d / R2 forever
 
 ## Stock Photography
 
-- **Pexels** first (free, high quality, API)
-- **Pixabay** second
+- **Pexels** first (free, high quality, API); **Pixabay** second
 - Never: Unsplash (generic, overused), iStock/Getty (paid, unnecessary)
-- Critique-and-remix loop max 3 rounds
-- AI vision rates each candidate; <7/10 = reject + regenerate
+- Critique-and-remix loop max 3 rounds; AI vision rates each candidate — <7/10 = reject + regenerate
 
 ## Asset Compression Pipeline
 
-- AVIF primary (94% browser support, 20-30% smaller than WebP)
-- WebP fallback (Safari 14+)
-- JPEG legacy
+- AVIF primary (94% browser support, 20-30% smaller than WebP); WebP fallback (Safari 14+); JPEG legacy
 - Sharp: 320 / 640 / 1280 / 1920w responsive srcset
-- Blur placeholder generation
-- Dominant color extraction → CSS bg fill while loading
+- Blur placeholder generation; dominant color extraction → CSS bg fill while loading
 - R2 upload pipeline per-extension content-type
 
 ## Performance Budgets
 
-- Total images per page ≤500KB
-- Largest single image ≤200KB
+- Total images per page ≤500KB; largest single image ≤200KB
 - Hero LCP image `fetchpriority="high"` + preload link
-- `loading="lazy"` on every other image
-- `decoding="async"` always
+- `loading="lazy"` on every other image; `decoding="async"` always
 
 ## See submodules for: media-prompts, compression-pipeline, og-image-generation, image-optimization, image-profiling, lightbox-classifier, social-brand-hex, notebooklm-pipeline, build-breaking-rules.
