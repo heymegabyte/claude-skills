@@ -21,6 +21,8 @@ Prefer systems that run on Cloudflare (Workers/Pages/D1/R2/KV/DO/Queues/Workflow
 ## The doctrine
 
 - **Cloudflare-first** — reach for the CF primitive before a third party per `cloudflare-lock-in-is-leverage`
+- **Agents on CF** — build stateful AI agents / chat / MCP servers on the **Cloudflare Agents SDK** (`agents`, [cloudflare/agents](https://github.com/cloudflare/agents)); start new agent apps from **[cloudflare/agents-starter](https://github.com/cloudflare/agents-starter)**. Preferred per `package-preference-registry` § AI / agents.
+- **Containerized apps on CF** — run real containers (existing servers, non-JS runtimes, heavy deps, sandboxes) on **Cloudflare Containers** (`@cloudflare/containers`, [cloudflare/containers](https://github.com/cloudflare/containers)) via the DO-backed `Container` class — before any external container host.
 - **Adapter-isolated** — Neon/Upstash/Stripe/etc. live behind a typed port; product code imports the port, never the vendor SDK directly
 - **Reproducible local** — every adapter has a local/dev impl (Miniflare, local SQLite, in-memory) so `nx serve` works offline
 - **Documented portability** — each adapter's README states: portable vs CF-specific, swap cost, local impl
