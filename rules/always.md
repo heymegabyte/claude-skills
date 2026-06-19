@@ -89,6 +89,15 @@ paths:
 - Custom hostname canonical when `primary_hostname` set (not default `*.projectsites.dev`)
 - For local businesses: `tel:` link in nav
 
+## Every contact page WITH a headquarters / physical address (REQUIRED)
+
+- **A full-width Google Maps widget is MANDATORY** on the contact page (or any page showing a HQ/address) whenever a physical address exists. Not optional.
+- The map MUST be **pointed at the exact address** (`?q=<urlencoded address>&output=embed` for the keyless Embed iframe, or a JS-API marker at the geocoded address).
+- The map MUST be **styled to the site** — not a raw default iframe: brand-framed container (rounded corners, brand border/shadow), brand-tinted overlay where it improves contrast, and a **floating branded info card overlaid on the map carrying the LOGO** + business name + full address + a "Get directions" CTA (`maps/dir/?api=1&destination=<address>`).
+- Keyless path (default): Google Maps Embed iframe (`google.com/maps?q=…&output=embed`) drops a pin at the address — pair with the floating logo card to satisfy "address + logo" without an API key. Key path (when richer marker needed): Maps JavaScript API `AdvancedMarkerElement` with the site logo as the marker glyph.
+- `loading="lazy"` + a `title` on the iframe; never block LCP with the map (place it below the fold).
+- Build-fail when a contact/HQ page renders an address but no embedded map.
+
 ## Every clickable entity
 
 ### Build-break (must link)
@@ -139,6 +148,11 @@ paths:
 - If already open, Cmd+K re-focuses + selects existing text
 - Esc closes → returns focus to trigger element (a11y)
 - Build gate: Playwright presses `Meta+K`, asserts `document.activeElement` matches chat/palette input — failure = build fail
+
+## Secrets — auto-populate everything self-generable
+
+- **Any missing secret you CAN generate, generate + set automatically — never ask, never Rec, never leave a placeholder.** HMAC/webhook/signing keys, session/CSRF/JWT secrets, salts, nonces, bypass tokens, your-own-service API keys → `openssl rand -base64 32` / `-hex 32` (or `crypto.randomUUID`), stored locally AND pushed to the deploy target, same turn.
+- Only exceptions: data-at-rest `*_ENCRYPTION_KEY` (auto-gen destroys persisted data — detect only) and vendor-minted third-party creds (Stripe/Resend/Clerk/OAuth). Full tiers + one-liners: `secret-auto-provisioning.md`.
 
 ## Post-work
 

@@ -16,9 +16,22 @@ Companion to `secret-provisioning.md`. Acquires NEW secrets via generation, API-
 
 ## Core mandate
 
+- **ALWAYS auto-populate every self-generable secret — never ask, never Rec, never leave a placeholder.** If a value can be produced with `openssl rand` (or `crypto.randomUUID`, `crypto.getRandomValues`, `wrangler secret put` piped from a generator, `head -c … /dev/urandom | base64`, etc.), GENERATE IT AND SET IT in the same turn you discover it's missing — locally (chezmoi/get-secret) AND pushed to the deploy target. This is a standing default, not an infra-only behavior. (Brian directive, 2026-06-19 — re-issued because self-generable secrets were still surfacing as manual Recs.)
 - Producible without human input → produce automatically.
 - Requires human → use highest tier available (API > Computer Use > manual deeplink).
 - Manual recs reserved for Tier 4 only (paid plans, KYC, no public API).
+
+### Self-generable secret classes (Tier 1 — auto-generate on sight)
+
+Any secret whose ONLY requirement is "be a high-entropy random value both sides agree on" is self-generable. Generate + store + push immediately:
+
+- **HMAC / webhook-signing keys** — `openssl rand -base64 32` (`*_WEBHOOK_SECRET`, `*_SIGNING_SECRET`, `UNSUBSCRIBE_HMAC_KEY`, `INTERNAL_BUILD_SECRET` pairs)
+- **Session / CSRF / JWT-signing secrets** — `openssl rand -base64 48` (`SESSION_SECRET`, `CSRF_SECRET`, `JWT_SIGNING_SECRET`)
+- **URL-safe nonces / salts / bypass tokens** — `openssl rand -hex 32` (`E2E_TEST_BYPASS_SECRET`, `*_SALT`, `*_NONCE`, cron-auth tokens)
+- **API keys YOU define for YOUR own services** — `openssl rand -hex 32` prefixed (`ADMIN_TOKEN`, internal `X-API-Key`)
+- **Random IDs** — `crypto.randomUUID()` / `uuidv7()` per `[[uuid-version-discipline]]`
+
+The ONLY secrets you do NOT auto-generate: (a) Tier 1.5 data-at-rest keys (`*_ENCRYPTION_KEY` — auto-generating mid-life destroys persisted data; detect-only), and (b) third-party credentials minted by a vendor (Stripe/Resend/Clerk API keys, OAuth client secrets) — those follow Tier 2/3/4.
 
 ## Tiers
 
