@@ -26,11 +26,6 @@ paths:
 
 # Backwards-Compatibility Removal Cadence
 
-Solo-builder doctrine allows aggressive cleanup — no design committees, no multi-team
-coordination. But no formalized cadence = drift. Dead routes and stale columns accumulate,
-maintenance burden compounds, and one day you DELETE the wrong thing. This rule formalizes
-the TTL pipeline from "still in use" to "safely gone."
-
 ## Deprecation timeline (four stages)
 
 ```
@@ -38,31 +33,27 @@ Announce → Soft-warn → Hard-warn → Remove
   Day 0      Day 1       Day 31      Day 61
 ```
 
-| Stage | Duration | What happens | Gate to advance |
-|---|---|---|---|
-| **Announce** | Day 0 | Entry in `CHANGELOG.md`, admin banner if UI-facing | — |
-| **Soft-warn** | 30 days | Warning log/header returned; feature still fully works | 30 days elapsed |
-| **Hard-warn** | 30 days | Warning logged + returned as response header; D1 query for last-used | 0 calls in last 7 days |
-| **Remove** | — | Code deleted, migration drops column, route returns 410 Gone | Drift gate passes |
+- **Announce** (Day 0) — Entry in `CHANGELOG.md`; admin banner if UI-facing. Gate: none.
+- **Soft-warn** (30 days) — Warning log/header returned; feature still fully works. Gate: 30 days elapsed.
+- **Hard-warn** (30 days) — Warning logged + returned as response header; D1 query for last-used. Gate: 0 calls in last 7 days.
+- **Remove** — Code deleted, migration drops column, route returns 410 Gone. Gate: drift gate passes.
 
-Default window is **30 days per stage = 60 days total**. Compress to 14 days when:
+Default window: **30 days per stage = 60 days total**.
 
-- Internal tooling only (no external callers)
-- Feature flag shows 0% rollout for 30+ days
-- D1 query confirms 0 calls in last 14 days
+Compress to **14 days** when ALL of:
 
-Never compress for payment routes, auth routes, or public API endpoints without customer
-confirmation.
+- Internal tooling only (no external callers).
+- Feature flag shows 0% rollout for 30+ days.
+- D1 query confirms 0 calls in last 14 days.
 
-## "90-day no-use" rule
+Never compress for payment routes, auth routes, or public API endpoints without customer confirmation.
 
-Any route, column, or feature flag with **zero authenticated calls in 90 days** is
-removal-eligible without announcement — it was already dead before you noticed. Confirm
-with a D1 query before removing:
+## 90-day no-use rule
+
+Any route, column, or feature flag with **zero authenticated calls in 90 days** is removal-eligible without Announce. Confirm with D1 before removing:
 
 ```sql
--- Find routes with zero traffic in last 90 days
--- (assumes PostHog events or Workers Tracing OTLP writes to D1 analytics)
+-- Routes with zero traffic in last 90 days
 SELECT route_path, MAX(last_called_at) as last_use
 FROM route_analytics
 WHERE last_called_at < datetime('now', '-90 days')
@@ -71,7 +62,7 @@ ORDER BY last_use ASC;
 ```
 
 ```sql
--- Find D1 columns never written in 90 days (proxy: check feature flag usage)
+-- Feature flags never written in 90 days
 SELECT key, updated_at
 FROM feature_flags
 WHERE stage IN ('stable', 'deprecated')
@@ -79,8 +70,7 @@ WHERE stage IN ('stable', 'deprecated')
   AND rollout_percent = 100;
 ```
 
-If the query returns rows, move them to Hard-warn immediately; they skipped Announce and
-Soft-warn because they were already effectively removed by disuse.
+If the query returns rows, move to Hard-warn immediately — they skipped Announce and Soft-warn by disuse.
 
 ## Soft-warn implementation
 
@@ -105,10 +95,9 @@ app.get('/api/v1/donations', async (c) => {
 });
 ```
 
-Log every deprecated-route call to D1 so the 90-day counter is accurate:
+Log every deprecated-route call to D1 so the 90-day counter stays accurate:
 
 ```typescript
-// Append to route handler after addDeprecationHeader
 ctx.waitUntil(
   env.DB.prepare(
     'INSERT OR REPLACE INTO route_analytics (route_path, last_called_at) VALUES (?, CURRENT_TIMESTAMP)'
@@ -118,10 +107,7 @@ ctx.waitUntil(
 
 ## Hard-warn stage: return 410 after sunset date
 
-When the sunset date passes, swap the handler to 410 Gone with a migration pointer:
-
 ```typescript
-// Hard-warn → Remove transition
 app.get('/api/v1/donations', (c) =>
   c.json(
     {
@@ -135,31 +121,22 @@ app.get('/api/v1/donations', (c) =>
 );
 ```
 
-Keep the 410 handler live for **30 additional days** after Remove stage so callers get an
-actionable error instead of a 404 that's hard to distinguish from a typo.
+Keep the 410 handler live for **30 additional days** after Remove so callers get an actionable error instead of a 404.
 
 ## Breaking-change semver discipline
 
-Semver bump rules for emdash projects:
+- **Add new optional field to existing response** — patch; no announce stage.
+- **Add new endpoint** — minor; no announce stage.
+- **Rename or remove required field** — major (v1→v2); full cadence required.
+- **Remove endpoint** — major (v1→v2); full cadence required.
+- **Change auth scheme** — major; customer confirmation required.
+- **Internal refactor, same API surface** — patch or none; no announce stage.
 
-| Change type | Version bump | Requires announce stage |
-|---|---|---|
-| Add new optional field to existing response | patch | No |
-| Add new endpoint | minor | No |
-| Rename or remove required field | **major (v1→v2)** | Yes — full cadence |
-| Remove endpoint | **major (v1→v2)** | Yes — full cadence |
-| Change auth scheme | **major** | Yes — customer confirmation |
-| Internal refactor, same API surface | patch or none | No |
-
-Solo builder anti-pattern: bumping major for every cleanup. Only bump major when the
-**external contract** (response shape, required params, auth, URL) breaks. Internal
-restructuring is never a major bump.
+Only bump major when the **external contract** (response shape, required params, auth, URL) breaks. Internal restructuring is never a major bump.
 
 ## migration-agent invocation
 
-For any removal affecting an external caller (public API, webhook endpoint, Clerk user
-attributes), spawn `migration-agent` per `[[autonomous-engineering]]` approval tier
-`review-recommended`:
+For any removal affecting an external caller (public API, webhook endpoint, Clerk user attributes), spawn `migration-agent` per `[[autonomous-engineering]]` approval tier `review-recommended`:
 
 ```
 Agent(migration-agent):
@@ -169,13 +146,9 @@ Agent(migration-agent):
    Cross-link: [[customer-facing-changelog]]."
 ```
 
-The migration agent runs the four-stage pipeline automatically, writes the changelog
-entry, and sets a calendar reminder for the hard-warn date.
-
 ## Changelog discipline
 
-Every deprecation announcement is a changelog entry per `[[customer-facing-changelog]]`.
-Minimum entry:
+Every Announce stage entry requires a changelog row per `[[customer-facing-changelog]]`. Minimum entry:
 
 ```markdown
 ### Deprecated: GET /api/v1/donations
@@ -187,21 +160,21 @@ The v1 donations endpoint returns a flat array. v2 returns a paginated object wi
 `data[]` instead of the top-level array.
 ```
 
-No silent removals. Ever. Even for "internal" routes — internal today, external tomorrow.
+No silent removals. Ever. Even for "internal" routes.
 
 ## Anti-patterns
 
-- Removing a column in the same migration that adds its replacement (violates `[[blast-radius-minimization]]`).
+- Removing a column in the same migration that adds its replacement — violates `[[blast-radius-minimization]]`.
 - Skipping the changelog entry because "nobody is using this."
 - Jumping from Announce directly to Remove without a warning period.
-- Setting Sunset header to a date 2 days out — 30 days minimum.
-- Treating a major refactor as a major semver bump when the API surface didn't change.
-- Removing a route that returns 404 with no 410 transition — callers can't distinguish removal from typo.
+- Setting Sunset header to a date <30 days out.
+- Bumping major for a refactor that didn't change the API surface.
+- Removing a route that returns 404 with no 410 transition.
 
 ## Cross-links
 
-- `[[drift-detection]]` — dead code is drift; this rule formalizes the removal path for drift found by that rule
-- `[[main-only-branch]]` — no feature branches means removal cadence lives in short-lived commits on main; use conventional commits `chore(deprecate):` prefix
-- `[[feature-flags]]` — a flag at rollout=0 for 30+ days is soft-deprecated; a flag at rollout=0 for 90+ days is hard-deprecated
-- `[[customer-facing-changelog]]` — every Announce stage entry requires a changelog row
-- `[[blast-radius-minimization]]` — additive schema changes + 30-day column removal lag = zero blast radius on removals
+- `[[drift-detection]]` — dead code is drift; this rule formalizes the removal path.
+- `[[main-only-branch]]` — use conventional commits `chore(deprecate):` prefix.
+- `[[feature-flags]]` — rollout=0 for 30+ days = soft-deprecated; 90+ days = hard-deprecated.
+- `[[customer-facing-changelog]]` — every Announce stage entry requires a changelog row.
+- `[[blast-radius-minimization]]` — additive schema changes + 30-day column removal lag = zero blast radius.

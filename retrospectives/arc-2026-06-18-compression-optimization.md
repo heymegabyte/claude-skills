@@ -30,19 +30,19 @@ Status: `[ ]` todo · `[~]` in progress · `[x]` done · `[skip]` keep as-is (lo
 - `[x]` thin-source-amplification.md (182→166, -9%) — iter 1
 - `[x]` lint-doctrine.md (179→173, -3%) — iter 3
 - `[x]` working-backwards.md (194→137, -29%) — iter 3
-- `[ ]` root-cause-validator-findings.md (167)
+- `[skip]` root-cause-validator-findings.md (167) — append-only RCA log, do not compress
 - `[x]` data-residency-by-default.md (199→175, -12%) — iter 3
-- `[ ]` agent-selection.md (165)
-- `[ ]` one-way-two-way-doors.md (173)
-- `[ ]` bash-matcher-guardrails.md (170)
+- `[x]` agent-selection.md (166→167, dense) — iter 4; taxonomy tables verbatim-required
+- `[x]` one-way-two-way-doors.md (176→148, -16%) — iter 4
+- `[x]` bash-matcher-guardrails.md (171→142, -17%) — iter 4
 - `[x]` auto-meta-work.md (145→139, -4%) — iter 1 (already near-pure bullets)
-- `[ ]` source-site-enhancement.md (142)
-- `[ ]` verification-loop.md (141)
-- `[ ]` validator-precision-discipline.md (141)
+- `[x]` source-site-enhancement.md (143→135, -6%) — iter 4
+- `[x]` verification-loop.md (142→132, -7%) — iter 4
+- `[x]` validator-precision-discipline.md (143→84, -41%) — iter 4
 - `[x]` state-is-the-enemy.md (212→180, -15%) — iter 3
-- `[ ]` eval-mock-mode-discipline.md (177)
-- `[ ]` copy-writing.md (145)
-- `[ ]` backwards-compatibility-removal-cadence.md (206)
+- `[x]` eval-mock-mode-discipline.md (189→165, -13%) — iter 4
+- `[x]` copy-writing.md (146→147, dense) — iter 4
+- `[x]` backwards-compatibility-removal-cadence.md (208→180, -13%) — iter 4
 - `[x]` documentation-as-code.md (224→167, -25%) — iter 3
 - `[x]` hardware-aware-programming.md (223→167, -25%) — iter 3
 - `[x]` inverted-abstraction-pyramid.md (211→167, -21%) — iter 3
@@ -134,6 +134,13 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - **Wire `bin/audit-instruction-files.mjs` to lefthook** now the gate is green — first add inline-code-span skip + `<!-- validator-ignore -->` hatch (iter-1 known refinement).
 
 ## Iteration log
+
+### iter 4 — 2026-06-19
+
+- Compressed 9 rules: validator-precision-discipline (-41%), bash-matcher-guardrails (-17%), one-way-two-way-doors (-16%), backwards-compatibility-removal-cadence (-13%), eval-mock-mode-discipline (-13%), verification-loop (-7%), source-site-enhancement (-6%); agent-selection + copy-writing already maximally dense (taxonomy/banned-word lists verbatim). All code blocks + thresholds + cross-links preserved.
+- Marked `root-cause-validator-findings.md` `[skip]` — append-only RCA log (same class as principles-incident-log).
+- Gate green throughout (15 pass · 0 fail). 28 rule files done, 2 skipped.
+- Next batch: remaining rules/*.md >120 lines (csp-trusted-types, email-deliverability-implementation, mcp-server-hardening, pii-handling-discipline, prompt-cache-strategy, refund-automation, right-to-deletion, fail-fast-build-fail-soft-prod, conditional-ci-gates, supply-chain-integrity, …).
 
 ### iter 3 — 2026-06-19
 

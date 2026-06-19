@@ -12,13 +12,13 @@ paths:
 
 # Agent Selection & Diversity
 
-Every parallel fan-out assigns each work unit to the most-specialized agent. Never default to generic `general-purpose`. Generic-worker overuse causes weak specialization, duplicated effort, shallow reviews — killed at decomposition AND final-review gate.
+Every parallel fan-out assigns each work unit to the most-specialized agent. Never default to `general-purpose`. Generic-worker overuse causes weak specialization, duplicated effort, shallow reviews — killed at decomposition AND final-review gate.
 
 ## Anti-generic mandate
 
-- NEVER spawn `general-purpose` when registered specialist can own task.
-- `general-purpose` allowed ONLY when task genuinely fits no specialist AND no registered agent maps. MUST be justified in Rejected-agent note.
-- Even when `general-purpose` chosen, it ALWAYS carries specialist brief (role + scope + non-goals + verification). Bare generic = build fail.
+- NEVER spawn `general-purpose` when a registered specialist can own the task.
+- `general-purpose` allowed ONLY when no specialist maps AND must be justified in Rejected-agent note.
+- Even when `general-purpose` is chosen, it ALWAYS carries a specialist brief (role + scope + non-goals + verification). Bare generic = build fail.
 - Three identical-shaped briefs across runs → promote to new reusable agent per `prompt-as-training-signal.md`.
 
 ## Classify before spawning
@@ -108,11 +108,13 @@ Emit BEFORE spawning:
 
 | Agent | Purpose | Scope | Non-goals | Deliverable | Verification |
 |---|---|---|---|---|---|
-| <agent> | <one line> | <files owned> | <what NOT to touch> | <artifact> | <gate> |
+| \<agent\> | \<one line\> | \<files owned\> | \<what NOT to touch\> | \<artifact\> | \<gate\> |
 
 **Rejected-agent note** (always present): `Specialists considered but not spawned: <Agent> / <Reason>`.
 
-Fan-out WIDTH for test-writing + feature/test-impl batches (sweet spot 3-4, hard ceiling 6, batch beyond 6) governed by `parallel-subagent-economy.md`. Spawned specialists run on `CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` default — EXCEPT security/architect/visual-qa/payment reviewers (explicit `model: opus`).
+- Fan-out WIDTH sweet spot 3-4, hard ceiling 6, batch beyond 6 — governed by `parallel-subagent-economy.md`.
+- Spawned specialists run on `CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` default.
+- Exceptions: security/architect/visual-qa/payment reviewers use explicit `model: opus`.
 
 ## Agent Diversity Review gate (KEYSTONE — final review)
 
@@ -149,9 +151,9 @@ Every spawned agent returns:
 Reviewers add:
 
 - **Pass/fail:** `PASS | FAIL | PASS WITH WARNINGS`
-- **Blocking issues:** <list or none>
-- **Non-blocking improvements:** <list or none>
-- **Global config improvements recommended:** <rule/skill/agent edit or none>
+- **Blocking issues:** \<list or none\>
+- **Non-blocking improvements:** \<list or none\>
+- **Global config improvements recommended:** \<rule/skill/agent edit or none\>
 
 ## Preference guardrails
 

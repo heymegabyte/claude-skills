@@ -20,11 +20,7 @@ paths:
 
 # Bash Matcher Guardrails
 
-Claude Code's hook system intercepts tool calls via event name + optional matcher.
-Getting either wrong silently no-ops the hook. This rule covers the correct pattern,
-the wired matchers, and every anti-pattern observed in the wild.
-
----
+Claude Code hooks intercept tool calls via event name + optional matcher. Wrong event name or matcher = silent no-op.
 
 ## Canonical pattern: `PreToolUse` with `Bash(<glob>)`
 
@@ -39,12 +35,10 @@ the wired matchers, and every anti-pattern observed in the wild.
 }
 ```
 
-- `PreToolUse` fires BEFORE Claude executes the tool — the hook can block or annotate.
+- `PreToolUse` fires BEFORE Claude executes — hook can block or annotate.
 - `PostToolUse` fires AFTER — suitable for side-effects (TDD enforcement, audit logging).
 - `matcher` is a glob applied to `tool_name(tool_input)`. For Bash: `Bash(<command glob>)`.
-- The trailing `*` in `Bash(git commit*)` matches `git commit -m "…"`, `git commit --amend`, etc.
-
----
+- Trailing `*` in `Bash(git commit*)` matches `git commit -m "…"`, `git commit --amend`, etc.
 
 ## Currently wired matchers (from `~/.claude/settings.json`)
 
@@ -62,36 +56,26 @@ the wired matchers, and every anti-pattern observed in the wild.
 | `SessionStart` | _(none)_ | `session-start-reminders.py` | SUPREME-rule reminder |
 | `SessionStart` | _(none)_ | `session-start-router.py` | Session start routing |
 
----
-
 ## Glob syntax reference
 
-- `Bash(git commit*)` — matches any `git commit ...` invocation
-- `Bash(rm -rf*)` — matches `rm -rf /path`, `rm -rf .`
-- `Bash(npm publish*)` — matches `npm publish`, `npm publish --access public`
-- `Bash(wrangler deploy*)` — matches `wrangler deploy`, `wrangler deploy --env production`
-- `Bash(git push --force*)` — matches force pushes (narrower than `git push*`)
-- `Write|Edit|MultiEdit` — pipe-separated list, no spaces; matches any of the three write tools
+- `Bash(git commit*)` — any `git commit ...` invocation
+- `Bash(rm -rf*)` — `rm -rf /path`, `rm -rf .`
+- `Bash(npm publish*)` — `npm publish`, `npm publish --access public`
+- `Bash(wrangler deploy*)` — `wrangler deploy`, `wrangler deploy --env production`
+- `Bash(git push --force*)` — force pushes (narrower than `git push*`)
+- `Write|Edit|MultiEdit` — pipe-separated, no spaces; matches any of the three write tools
 - `Bash|WebFetch|WebSearch|mcp__.*` — pipe-separated + regex; `mcp__.*` matches ALL MCP tools
+- Glob is matched against the full string `ToolName(input)`. For Bash, `input` = the entire shell command string.
 
-The glob is matched against the full string `ToolName(input)`. For Bash, `input` is the
-entire shell command string passed to the tool.
+## Matcher selection
 
----
-
-## When to use Bash matcher vs Write/Edit/MultiEdit matcher
-
-| Use case | Correct matcher | Wrong choice |
-|---|---|---|
-| Intercept a shell command (git, wrangler, rm) | `Bash(git commit*)` | `PreCommit` (does not exist) |
-| Intercept file writes (new files) | `Write` | `Bash(*)` |
-| Intercept file edits in-place | `Edit\|MultiEdit` | `Bash(*)` |
-| Intercept ANY file mutation | `Write\|Edit\|MultiEdit` | `Bash(*)` |
-| Intercept ANY tool | _(no matcher — omit field)_ | `Bash(*)` |
-| Intercept deploy commands | `Bash(wrangler deploy*)` | `PostDeploy` (does not exist) |
-| Intercept ALL bash (broad guard) | _(no matcher — omit field, match `Bash`)_ | `Bash(*)` |
-
----
+- Shell command (git, wrangler, rm) → `Bash(git commit*)` not `PreCommit` (does not exist)
+- New file writes → `Write` not `Bash(*)`
+- In-place file edits → `Edit|MultiEdit` not `Bash(*)`
+- ANY file mutation → `Write|Edit|MultiEdit`
+- ANY tool → omit matcher field entirely
+- Deploy commands → `Bash(wrangler deploy*)` not `PostDeploy` (does not exist)
+- Broad bash guard → omit matcher, match `Bash`
 
 ## Anti-patterns
 
@@ -100,71 +84,59 @@ entire shell command string passed to the tool.
 These event names DO NOT EXIST in Claude Code's schema:
 
 ```
-PreCommit      ← WRONG — does not exist
-PostCommit     ← WRONG — does not exist
-PostMerge      ← WRONG — does not exist
-PrePush        ← WRONG — does not exist
-PostDeploy     ← WRONG — does not exist
-PreDeploy      ← WRONG — does not exist
+PreCommit      ← WRONG
+PostCommit     ← WRONG
+PostMerge      ← WRONG
+PrePush        ← WRONG
+PostDeploy     ← WRONG
+PreDeploy      ← WRONG
 ```
 
-The valid closed enum is:
-`SessionStart | UserPromptSubmit | PreToolUse | PostToolUse | Stop | Notification`
+Valid closed enum: `SessionStart | UserPromptSubmit | PreToolUse | PostToolUse | Stop | Notification`
 
-A hook wired under `PreCommit` loads without error but NEVER fires. The failure is silent.
-The canonical pattern for git commit interception is `PreToolUse` + `Bash(git commit*)`.
+A hook wired under `PreCommit` loads without error but NEVER fires. Use `PreToolUse` + `Bash(git commit*)`.
 
-### 2. Over-broad matcher blocks everything
+### 2. Over-broad matcher
 
 ```json
-{ "matcher": "Bash(*)" }   ← blocks EVERY shell command — permission prompt storm
+{ "matcher": "Bash(*)" }
 ```
 
-Prefer the narrowest glob that captures your intent. Scope to the specific command prefix.
+Blocks EVERY shell command — permission prompt storm. Scope to the specific command prefix.
 
-### 3. Under-specific matcher (no trailing wildcard)
+### 3. Missing trailing wildcard
 
 ```json
-{ "matcher": "Bash(git commit)" }   ← matches ONLY the bare string "git commit"
+{ "matcher": "Bash(git commit)" }
 ```
 
-A commit with a message `git commit -m "fix: typo"` won't match. Always use `*` suffix
-unless you intentionally want an exact match.
+Matches ONLY the bare string `"git commit"`. A commit with `-m "fix: typo"` won't match. Always use `*` suffix unless exact match is intentional.
 
 ### 4. Spaces in pipe-separated matchers
 
 ```json
-{ "matcher": "Write | Edit | MultiEdit" }   ← spaces break the parser
-{ "matcher": "Write|Edit|MultiEdit" }       ← correct
+{ "matcher": "Write | Edit | MultiEdit" }
 ```
 
----
+Spaces break the parser. Correct: `Write|Edit|MultiEdit`.
 
 ## Planned future matchers (not yet wired)
 
 | Matcher | Hook purpose |
 |---|---|
-| `Bash(wrangler deploy*)` | Verify deploy is to correct environment, log deploy events |
-| `Bash(rm -rf*)` | Confirm destructive recursive deletes, prevent accidental repo wipe |
-| `Bash(git push --force*)` | Block force pushes to main, surface warning |
-| `Bash(npm publish*)` | Pre-publish checklist: version bump, changelog entry, tests green |
-| `Bash(git reset --hard*)` | Warn on destructive resets, require confirmation |
-
----
+| `Bash(wrangler deploy*)` | Verify deploy environment, log deploy events |
+| `Bash(rm -rf*)` | Confirm destructive recursive deletes |
+| `Bash(git push --force*)` | Block force pushes to main |
+| `Bash(npm publish*)` | Pre-publish checklist: version bump, changelog, tests green |
+| `Bash(git reset --hard*)` | Warn on destructive resets |
 
 ## Incident reference
 
-During a loop iteration, an agent attempted to wire a `PreCommit` hook for
-`customer-changelog-precommit.py`. The hook loaded without error but never fired because
-`PreCommit` is not a valid Claude Code event name. The error was caught in-situ and
-corrected to `PreToolUse` + `Bash(git commit*)`. The lesson extracted here is principle 17 in
-`rules/principles-incident-log.md`; the hook now fires correctly on every commit.
-
----
+An agent wired `PreCommit` for `customer-changelog-precommit.py`. Hook loaded without error but never fired. Corrected to `PreToolUse` + `Bash(git commit*)`. Documented as principle 17 in `rules/principles-incident-log.md`.
 
 ## See also
 
 - `[[ai-agent-security]]` — agent permission tiers; hooks are enforcement, not suggestion
-- `[[autonomous-engineering]]` — hooks live at the "deterministic enforcement" layer (hooks > rules > skills > prompts)
-- `[[secret-provisioning]]` — hooks that touch secrets must use `get-secret`, never inline
+- `[[autonomous-engineering]]` — hooks live at "deterministic enforcement" layer (hooks > rules > skills > prompts)
+- `[[secret-provisioning]]` — hooks touching secrets must use `get-secret`, never inline
 - `[[agent-permission-discipline]]` — complementary permission/allow-list patterns
