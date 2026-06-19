@@ -1,0 +1,305 @@
+{
+  "label": "arc-2026-06-18-end",
+  "date": "2026-06-18",
+  "summary": {
+    "present": 37,
+    "partial": 0,
+    "missing": 0,
+    "total": 37,
+    "checklist_present": 30,
+    "self_observed_present": 7
+  },
+  "milestone": "End-of-arc baseline after doctrinal-extraction arc (iters 1–13) and bug-fixing arc (iters 14–18). All 30 checklist principles present (30/30 closed by working-backwards.md). 7 self-observed principles extracted from arc incidents: loop-driven-development (#A1), loop-arc-economics (#A2), root-cause-validator-findings (#A3 / Principle #21), eval-mock-mode-discipline (#A4 / Principle #22), mcp-error-semantics (#A5 / Principle #23), portable-audit-discipline (#A6), validator-precision-discipline (#A7). Count: 37 PRESENT, 0 partial, 0 missing.",
+  "prior_baseline": "30-30-true-saturated-2026-06-18.json",
+  "drift_from_prior": {
+    "gained": [
+      "loop-driven-development",
+      "loop-arc-economics",
+      "root-cause-validator-findings",
+      "eval-mock-mode-discipline",
+      "mcp-error-semantics",
+      "portable-audit-discipline",
+      "validator-precision-discipline"
+    ],
+    "lost": [],
+    "summary": "7 principles gained since prior baseline (30-30-true-saturated-2026-06-18.json on 2026-06-18). 0 principles lost."
+  },
+  "principles": [
+    {
+      "id": 1,
+      "name": "One-way vs two-way doors",
+      "status": "present",
+      "rule_file": "one-way-two-way-doors",
+      "category": "checklist"
+    },
+    {
+      "id": 2,
+      "name": "Disagree-and-commit",
+      "status": "present",
+      "rule_file": "autonomous-engineering",
+      "category": "checklist"
+    },
+    {
+      "id": 3,
+      "name": "Working backwards",
+      "status": "present",
+      "rule_file": "working-backwards",
+      "category": "checklist"
+    },
+    {
+      "id": 4,
+      "name": "Two-pizza team sizing",
+      "status": "present",
+      "rule_file": "solo-builder-doctrine",
+      "category": "checklist"
+    },
+    {
+      "id": 5,
+      "name": "Error budget",
+      "status": "present",
+      "rule_file": "error-budget",
+      "category": "checklist"
+    },
+    {
+      "id": 6,
+      "name": "Toil elimination",
+      "status": "present",
+      "rule_file": "solo-rituals-eliminated",
+      "category": "checklist"
+    },
+    {
+      "id": 7,
+      "name": "Blast radius minimization",
+      "status": "present",
+      "rule_file": "blast-radius-minimization",
+      "category": "checklist"
+    },
+    {
+      "id": 8,
+      "name": "Fail fast in build, fail soft in prod",
+      "status": "present",
+      "rule_file": "fail-fast-build-fail-soft-prod",
+      "category": "checklist"
+    },
+    {
+      "id": 9,
+      "name": "Hardware-aware programming",
+      "status": "present",
+      "rule_file": "hardware-aware-programming",
+      "category": "checklist"
+    },
+    {
+      "id": 10,
+      "name": "TTFR as north-star UX metric",
+      "status": "present",
+      "rule_file": "ttfr-north-star",
+      "category": "checklist"
+    },
+    {
+      "id": 11,
+      "name": "Sync UI, async backing",
+      "status": "present",
+      "rule_file": "sync-ui-async-backing",
+      "category": "checklist"
+    },
+    {
+      "id": 12,
+      "name": "State is the enemy",
+      "status": "present",
+      "rule_file": "state-is-the-enemy",
+      "category": "checklist"
+    },
+    {
+      "id": 13,
+      "name": "Data residency by default",
+      "status": "present",
+      "rule_file": "data-residency-by-default",
+      "category": "checklist"
+    },
+    {
+      "id": 14,
+      "name": "Backwards-compatibility removal cadence",
+      "status": "present",
+      "rule_file": "backwards-compatibility-removal-cadence",
+      "category": "checklist"
+    },
+    {
+      "id": 15,
+      "name": "Production observability default-on",
+      "status": "present",
+      "rule_file": "production-observability-default-on",
+      "category": "checklist"
+    },
+    {
+      "id": 16,
+      "name": "Structured logging",
+      "status": "present",
+      "rule_file": "structured-logging",
+      "category": "checklist"
+    },
+    {
+      "id": 17,
+      "name": "Cost-per-request accountability",
+      "status": "present",
+      "rule_file": "cost-per-request-accountability",
+      "category": "checklist"
+    },
+    {
+      "id": 18,
+      "name": "Vendor risk tiering",
+      "status": "present",
+      "rule_file": "vendor-risk-tiering",
+      "category": "checklist"
+    },
+    {
+      "id": 19,
+      "name": "Least privilege by default",
+      "status": "present",
+      "rule_file": "agent-permission-discipline",
+      "category": "checklist"
+    },
+    {
+      "id": 20,
+      "name": "Secret rotation discipline",
+      "status": "present",
+      "rule_file": "secret-provisioning",
+      "category": "checklist"
+    },
+    {
+      "id": 21,
+      "name": "Supply-chain integrity",
+      "status": "present",
+      "rule_file": "supply-chain-integrity",
+      "category": "checklist"
+    },
+    {
+      "id": 22,
+      "name": "Contract-first AI",
+      "status": "present",
+      "rule_file": "contract-first-ai",
+      "category": "checklist"
+    },
+    {
+      "id": 23,
+      "name": "Evals before tuning",
+      "status": "present",
+      "rule_file": "evals",
+      "category": "checklist"
+    },
+    {
+      "id": 24,
+      "name": "LLM-as-judge calibration",
+      "status": "present",
+      "rule_file": "evals",
+      "category": "checklist"
+    },
+    {
+      "id": 25,
+      "name": "Documentation-as-code",
+      "status": "present",
+      "rule_file": "documentation-as-code",
+      "category": "checklist"
+    },
+    {
+      "id": 26,
+      "name": "Customer-facing changelog discipline",
+      "status": "present",
+      "rule_file": "customer-facing-changelog",
+      "category": "checklist"
+    },
+    {
+      "id": 27,
+      "name": "Inverted abstraction pyramid",
+      "status": "present",
+      "rule_file": "feature-module-architecture",
+      "category": "checklist"
+    },
+    {
+      "id": 28,
+      "name": "Rituals eliminated",
+      "status": "present",
+      "rule_file": "solo-rituals-eliminated",
+      "category": "checklist"
+    },
+    {
+      "id": 29,
+      "name": "Prompt-as-training-signal",
+      "status": "present",
+      "rule_file": "prompt-as-training-signal",
+      "category": "checklist"
+    },
+    {
+      "id": 30,
+      "name": "Refund automation",
+      "status": "present",
+      "rule_file": "refund-automation",
+      "category": "checklist"
+    },
+    {
+      "id": "A1",
+      "name": "Loop-driven development",
+      "status": "present",
+      "rule_file": "loop-driven-development",
+      "category": "self-observed",
+      "extracted_from": "arc-2026-06-18-doctrinal-extraction (iter 6)",
+      "notes": "When to run /loop, arc lifecycle, retrospective cadence, doctrinal-extraction sweep pattern"
+    },
+    {
+      "id": "A2",
+      "name": "Loop arc economics",
+      "status": "present",
+      "rule_file": "loop-arc-economics",
+      "category": "self-observed",
+      "extracted_from": "arc-2026-06-18-doctrinal-extraction (iter 6)",
+      "notes": "Cost model for loop iterations; per-iteration value curve; when to lengthen vs delete"
+    },
+    {
+      "id": "A3",
+      "name": "Root-cause validator findings before acting (Principle #21)",
+      "status": "present",
+      "rule_file": "root-cause-validator-findings",
+      "category": "self-observed",
+      "extracted_from": "arc-2026-06-18-bug-fixing (iter 16)",
+      "incident": "1,134 github-mcp false-positive violations from if(false) dead-code regex; fixed validator, not source",
+      "notes": "Sample 5–10 findings before treating validator output as ground truth; fix in the right layer"
+    },
+    {
+      "id": "A4",
+      "name": "Eval mock-mode discipline (Principle #22)",
+      "status": "present",
+      "rule_file": "eval-mock-mode-discipline",
+      "category": "self-observed",
+      "extracted_from": "arc-2026-06-18-bug-fixing (iter 18)",
+      "incident": "4 of 5 MCP eval tests silently fell through to live API calls due to bare fetch() bypassing mock interceptor",
+      "notes": "CI always runs --mock-only; missing mock_response = skip not fail; httpFetch wrapper mandatory in forged servers"
+    },
+    {
+      "id": "A5",
+      "name": "MCP error semantics — isError on non-2xx (Principle #23)",
+      "status": "present",
+      "rule_file": "mcp-error-semantics",
+      "category": "self-observed",
+      "extracted_from": "arc-2026-06-18-bug-fixing (iter 17–18)",
+      "incident": "166 resend-mcp + 555 stripe-mcp + 26 posthog-mcp call sites returned isError:false for HTTP 4xx/5xx; Claude read errors as successes",
+      "notes": "isError:true for ANY non-2xx; canonical 5-step handler pattern; mcpOk/mcpHttpError/mcpCaughtError utility in template/utils/"
+    },
+    {
+      "id": "A6",
+      "name": "Portable audit discipline",
+      "status": "present",
+      "rule_file": "portable-audit-discipline",
+      "category": "self-observed",
+      "extracted_from": "arc-2026-06-18-bug-fixing (iter 18)",
+      "notes": "Audit commands must be portable across projects; no hard-coded paths; JSON output for diffing; --dry-run flag"
+    },
+    {
+      "id": "A7",
+      "name": "Validator precision discipline",
+      "status": "present",
+      "rule_file": "validator-precision-discipline",
+      "category": "self-observed",
+      "extracted_from": "arc-2026-06-18-bug-fixing (iter 16)",
+      "notes": "Validators must not match dead code or test fixtures; two-pass scan (find definitions, then filter live callers); document false-positive classes"
+    }
+  ]
+}

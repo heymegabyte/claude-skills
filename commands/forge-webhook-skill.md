@@ -1,0 +1,466 @@
+---
+description: Scaffold a complete webhook receiver for any provider from an AsyncAPI YAML spec or a JSON event-type list
+argument-hint: <provider> <spec-url-or-path>
+allowed-tools: Bash, Read, Write, Edit, Glob, WebFetch
+---
+
+Auto-forge a hardened webhook receiver skill for `<provider>` from an AsyncAPI YAML spec or JSON event-type list. Generates signature-verified Hono routes, Zod schemas, D1 idempotency + audit, typed handler stubs, E2E fixtures, a SKILL.md, and `.env.template`.
+
+## Usage
+
+```
+/forge-webhook-skill stripe https://raw.githubusercontent.com/stripe/openapi/master/openapi/async_api.yaml
+/forge-webhook-skill github ./specs/github-webhooks.json
+/forge-webhook-skill resend '["email.sent","email.bounced","email.complained"]'
+/forge-webhook-skill twilio ./specs/twilio-events.json
+/forge-webhook-skill square https://developer.squareup.com/reference/square_2024-01-18_async.yaml
+```
+
+## Input formats accepted
+
+**AsyncAPI YAML spec** — parse `channels[*].messages[*].payload` for event schemas + `x-event-type` for the type string.
+
+**JSON event-type list** — flat array of strings:
+
+```json
+["payment_intent.succeeded", "payment_intent.payment_failed", "customer.subscription.deleted"]
+```
+
+**JSON event-type map** — keyed object with optional per-event payload shape:
+
+```json
+{
+  "payment_intent.succeeded": { "description": "Payment captured", "idField": "id" },
+  "invoice.paid": { "description": "Invoice settled", "idField": "id" }
+}
+```
+
+Bare inline JSON string → parse directly. URL → fetch. File path → read.
+
+---
+
+## Signature scheme registry (built-in, no lookup needed)
+
+| Provider | Header | Algorithm | Verification function |
+|---|---|---|---|
+| `stripe` | `stripe-signature` | HMAC-SHA256 + timestamp replay check | `stripe.webhooks.constructEventAsync(rawBody, sig, secret)` via `stripe` npm |
+| `github` | `x-hub-signature-256` | HMAC-SHA256 of raw body | `timingSafeEqual(computedHmac, receivedHmac)` |
+| `square` | `x-square-hmacsha256-signature` | HMAC-SHA256 of URL + raw body | `timingSafeEqual(...)` |
+| `resend` | `svix-id`, `svix-timestamp`, `svix-signature` | Svix webhook verification | `new Webhook(secret).verify(rawBody, headers)` via `svix` npm |
+| `twilio` | `x-twilio-signature` | HMAC-SHA256 of full URL + sorted params | `twilio.validateRequest(authToken, sig, url, params)` via `twilio` npm |
+| `clerk` | `svix-id`, `svix-timestamp`, `svix-signature` | Svix (same as resend) | `new Webhook(secret).verify(rawBody, headers)` |
+| `sendgrid` | `x-twilio-email-event-webhook-signature` | ECDSA P-256 (not HMAC) | `ecPublicKeyVerify(rawBody, sig, publicKey)` |
+| `shopify` | `x-shopify-hmac-sha256` | HMAC-SHA256 | `timingSafeEqual(...)` |
+| `linear` | `linear-signature` | HMAC-SHA256 | `timingSafeEqual(...)` |
+| `svix` (generic) | `svix-id`, `svix-timestamp`, `svix-signature` | Svix | `new Webhook(secret).verify(rawBody, headers)` |
+| `<unknown>` | warn + scaffold stub | n/a | generate `// TODO: verify <provider> signature` stub |
+
+---
+
+## What gets generated
+
+For provider `stripe` with events `["payment_intent.succeeded", "customer.subscription.deleted"]`:
+
+```
+src/worker/routes/webhook-stripe.ts          ← Hono route: verify → idempotency → dispatch
+src/worker/webhooks/stripe/schemas.ts        ← Zod schemas per event type
+src/worker/webhooks/stripe/handlers.ts       ← Typed handler stubs (one fn per event_type)
+src/worker/webhooks/stripe/index.ts          ← Re-exports + event union type
+e2e/webhooks/stripe/valid-signature.spec.ts  ← Playwright test: valid sig → 200
+e2e/webhooks/stripe/invalid-signature.spec.ts← Playwright test: bad sig → 401
+e2e/webhooks/stripe/replay-attack.spec.ts    ← Replay outside 5min window → 200 (idempotent)
+e2e/webhooks/stripe/fixtures/               ← JSON payloads: one per event type
+skills/stripe-webhooks/SKILL.md             ← Skill manifest for the integration
+.env.template                               ← STRIPE_WEBHOOK_SECRET=whsec_... entry (append-safe)
+```
+
+---
+
+## Execution steps
+
+Parse the spec, then emit all files in order:
+
+### Step 1 — Resolve spec
+
+```bash
+PROVIDER="${ARGUMENTS%% *}"
+SPEC="${ARGUMENTS#* }"
+
+# Detect input type
+if [[ "$SPEC" == http* ]]; then
+  RAW=$(curl -sL "$SPEC")
+elif [[ "$SPEC" == /* || "$SPEC" == ./* ]]; then
+  RAW=$(cat "$SPEC")
+else
+  RAW="$SPEC"   # inline JSON
+fi
+echo "$RAW"
+```
+
+Parse `$RAW`:
+
+- YAML (starts with `asyncapi:`) → extract `channels[*].messages[*]`, collect `x-event-type` + `payload` schema
+- JSON array → each string is an `event_type` with no payload schema (emit `z.record(z.unknown())` placeholder)
+- JSON object → each key is `event_type`, value is metadata (`description`, `idField`)
+
+### Step 2 — Write `src/worker/routes/webhook-{provider}.ts`
+
+Template (fill `PROVIDER`, `SIG_SCHEME`, `ENV_VAR`, `EVENT_TYPES`):
+
+```typescript
+/**
+ * Webhook receiver: {PROVIDER}
+ * Signature scheme: {SIG_SCHEME}
+ * Generated by /forge-webhook-skill {PROVIDER}
+ *
+ * Core invariants (from [[webhook-receiver-architecture]]):
+ *   1. Verify signature BEFORE any DB write
+ *   2. Idempotency check BEFORE processing — UNIQUE (provider, event_id) → 200 on dup
+ *   3. Respond 200/204 fast — push work to ctx.waitUntil()
+ *   4. Dead-letter unknown event_type to R2
+ *   5. Never log raw payload — log payload_hash (SHA-256 hex) only
+ */
+import { Hono } from 'hono'
+import { z } from 'zod'
+import { dispatch{PROVIDER_PASCAL}Event } from '../webhooks/{provider}/handlers'
+import { {PROVIDER_PASCAL}EventSchema } from '../webhooks/{provider}/schemas'
+
+export const {provider}WebhookRoute = new Hono<{ Bindings: Env }>()
+
+{provider}WebhookRoute.post('/', async (c) => {
+  const rawBody = await c.req.text()
+  const sigHeader = c.req.header('{SIG_HEADER}') ?? ''
+
+  // ── 1. Signature verification ─────────────────────────────────────────────
+  const secret = c.env.{ENV_VAR}
+  const verified = await verify{PROVIDER_PASCAL}Signature(rawBody, sigHeader, secret)
+  if (!verified) {
+    return c.json({ error: 'Invalid signature' }, 401)
+  }
+
+  // ── 2. Parse payload ──────────────────────────────────────────────────────
+  let payload: unknown
+  try {
+    payload = JSON.parse(rawBody)
+  } catch {
+    return c.json({ error: 'Invalid JSON' }, 400)
+  }
+
+  const parsed = {PROVIDER_PASCAL}EventSchema.safeParse(payload)
+  if (!parsed.success) {
+    return c.json({ error: 'Schema mismatch', details: parsed.error.flatten() }, 422)
+  }
+
+  const event = parsed.data
+  const eventId = event.{ID_FIELD} ?? crypto.randomUUID()
+  const payloadHash = await sha256Hex(rawBody)
+
+  // ── 3. Idempotency ────────────────────────────────────────────────────────
+  const existing = await c.env.DB.prepare(
+    `SELECT id, status FROM webhook_events WHERE provider = ? AND event_id = ?`
+  ).bind('{provider}', eventId).first<{ id: string; status: string }>()
+
+  if (existing) {
+    return c.json({ ok: true, idempotent: true, id: existing.id }, 200)
+  }
+
+  // ── 4. Audit record (pending) ─────────────────────────────────────────────
+  const recordId = crypto.randomUUID()
+  await c.env.DB.prepare(`
+    INSERT INTO webhook_events (id, provider, event_id, event_type, signature, payload_hash, received_at, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')
+  `).bind(recordId, '{provider}', eventId, event.type ?? event.event_type ?? 'unknown',
+          sigHeader.slice(0, 256), payloadHash, Date.now()).run()
+
+  // ── 5. Dispatch async ─────────────────────────────────────────────────────
+  c.executionCtx.waitUntil(
+    dispatch{PROVIDER_PASCAL}Event(event, recordId, c.env)
+      .then(() =>
+        c.env.DB.prepare(`UPDATE webhook_events SET status='processed', processed_at=? WHERE id=?`)
+          .bind(Date.now(), recordId).run()
+      )
+      .catch(async (err: Error) => {
+        await c.env.DB.prepare(`UPDATE webhook_events SET status='dead_lettered', error=? WHERE id=?`)
+          .bind(err.message.slice(0, 500), recordId).run()
+        // DLQ to R2
+        await c.env.R2?.put(
+          `dlq/{provider}/${recordId}.json`,
+          JSON.stringify({ error: err.message, payloadHash, receivedAt: Date.now() })
+        )
+      })
+  )
+
+  return c.json({ ok: true, id: recordId }, 200)
+})
+
+// ── Signature verification (provider-specific) ────────────────────────────────
+{SIGNATURE_VERIFICATION_IMPL}
+
+// ── SHA-256 helper ────────────────────────────────────────────────────────────
+async function sha256Hex(input: string): Promise<string> {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input))
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+```
+
+Emit the correct `verify{PROVIDER_PASCAL}Signature` implementation per the signature scheme registry.
+
+For Stripe:
+
+```typescript
+import Stripe from 'stripe'
+async function verifyStripeSignature(rawBody: string, sigHeader: string, secret: string): Promise<boolean> {
+  try {
+    const stripe = new Stripe(secret, { apiVersion: '2024-11-20.acacia' })
+    await stripe.webhooks.constructEventAsync(rawBody, sigHeader, secret)
+    return true
+  } catch { return false }
+}
+```
+
+For GitHub / Square / generic HMAC:
+
+```typescript
+async function verifyGitHubSignature(rawBody: string, sigHeader: string, secret: string): Promise<boolean> {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  const computed = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(rawBody))
+  const computedHex = 'sha256=' + Array.from(new Uint8Array(computed)).map(b => b.toString(16).padStart(2, '0')).join('')
+  const a = new TextEncoder().encode(computedHex)
+  const b = new TextEncoder().encode(sigHeader)
+  if (a.length !== b.length) return false
+  return crypto.subtle.timingSafeEqual ? crypto.subtle.timingSafeEqual(a, b) : a.every((v, i) => v === b[i])
+}
+```
+
+For Svix (Resend / Clerk):
+
+```typescript
+import { Webhook } from 'svix'
+async function verifyResendSignature(rawBody: string, headers: Record<string, string>, secret: string): Promise<boolean> {
+  try {
+    new Webhook(secret).verify(rawBody, headers); return true
+  } catch { return false }
+}
+```
+
+### Step 3 — Write `src/worker/webhooks/{provider}/schemas.ts`
+
+For each event type, emit a named Zod schema. Pull field shapes from AsyncAPI payload if available; otherwise emit a typed placeholder:
+
+```typescript
+import { z } from 'zod'
+
+// Union discriminant: event_type field name varies by provider
+// Stripe: "type" | GitHub: "action" (outer) | Twilio: "EventType" | Square: "type"
+export const {PROVIDER_PASCAL}EventSchema = z.discriminatedUnion('type', [
+  // payment_intent.succeeded
+  z.object({
+    type: z.literal('payment_intent.succeeded'),
+    id: z.string(),
+    // TODO: expand from https://stripe.com/docs/api/payment_intents/object
+    data: z.object({ object: z.record(z.unknown()) }),
+    created: z.number(),
+    livemode: z.boolean(),
+  }),
+  // customer.subscription.deleted
+  z.object({
+    type: z.literal('customer.subscription.deleted'),
+    id: z.string(),
+    data: z.object({ object: z.record(z.unknown()) }),
+    created: z.number(),
+    livemode: z.boolean(),
+  }),
+  // Catchall for unrecognised event types (dead-lettered by dispatcher)
+  z.object({
+    type: z.string(),
+    id: z.string().optional(),
+    data: z.unknown().optional(),
+  }),
+])
+
+export type {PROVIDER_PASCAL}Event = z.infer<typeof {PROVIDER_PASCAL}EventSchema>
+```
+
+When the provider uses a different discriminant key (GitHub: no top-level `type` → use `z.object` union; Twilio: `EventType`), adapt accordingly.
+
+### Step 4 — Write `src/worker/webhooks/{provider}/handlers.ts`
+
+One exported async function per event type, plus a dispatch router:
+
+```typescript
+import type { Env } from '../../types'
+import type { {PROVIDER_PASCAL}Event } from './schemas'
+
+/**
+ * Dispatch a verified, deduplicated {PROVIDER} event to the correct handler.
+ * Called inside ctx.waitUntil() — never blocks the HTTP response.
+ */
+export async function dispatch{PROVIDER_PASCAL}Event(
+  event: {PROVIDER_PASCAL}Event,
+  recordId: string,
+  env: Env
+): Promise<void> {
+  switch (event.type) {
+    case 'payment_intent.succeeded':
+      return handle{PROVIDER_PASCAL}PaymentIntentSucceeded(event, env)
+    case 'customer.subscription.deleted':
+      return handle{PROVIDER_PASCAL}CustomerSubscriptionDeleted(event, env)
+    default:
+      // Unknown event types are dead-lettered by the route handler — no throw needed
+      console.warn(`[{provider}] unhandled event_type: ${(event as { type: string }).type} (record ${recordId})`)
+  }
+}
+
+/**
+ * payment_intent.succeeded
+ *
+ * Fired when a PaymentIntent transitions to succeeded state.
+ * Stripe docs: https://stripe.com/docs/api/events/types#event_types-payment_intent.succeeded
+ *
+ * TODO: Provision the feature/product the customer paid for.
+ * Common actions:
+ *   - Upsert subscription row in D1
+ *   - Send receipt email via Resend
+ *   - Emit PostHog event('payment_succeeded', { amount, currency })
+ */
+async function handle{PROVIDER_PASCAL}PaymentIntentSucceeded(event: Extract<{PROVIDER_PASCAL}Event, { type: 'payment_intent.succeeded' }>, env: Env): Promise<void> {
+  // TODO: implement
+  void event; void env
+}
+
+/**
+ * customer.subscription.deleted
+ *
+ * Fired when a Stripe subscription is cancelled (immediately or at period end).
+ * Stripe docs: https://stripe.com/docs/api/events/types#event_types-customer.subscription.deleted
+ *
+ * TODO: Revoke access and send offboarding email.
+ */
+async function handle{PROVIDER_PASCAL}CustomerSubscriptionDeleted(event: Extract<{PROVIDER_PASCAL}Event, { type: 'customer.subscription.deleted' }>, env: Env): Promise<void> {
+  // TODO: implement
+  void event; void env
+}
+```
+
+### Step 5 — Write E2E fixtures + specs
+
+`e2e/webhooks/{provider}/fixtures/{event_type}.json` — real-looking payload per event type (use public docs examples where known; otherwise generate plausible shape).
+
+`e2e/webhooks/{provider}/valid-signature.spec.ts`:
+
+```typescript
+import { test, expect } from '@playwright/test'
+import crypto from 'node:crypto'
+
+const PROD_URL = process.env.PROD_URL ?? 'http://localhost:8787'
+const SECRET = process.env.{ENV_VAR} ?? 'test-secret'
+
+test('{provider} webhook — valid signature returns 200', async ({ request }) => {
+  const payload = JSON.stringify(require('./fixtures/payment_intent.succeeded.json'))
+  const sig = computeSig(payload, SECRET)   // provider-specific helper below
+
+  const res = await request.post(`${PROD_URL}/webhooks/{provider}`, {
+    data: payload,
+    headers: { 'Content-Type': 'application/json', '{SIG_HEADER}': sig },
+  })
+  expect(res.status()).toBe(200)
+  const body = await res.json()
+  expect(body.ok).toBe(true)
+})
+
+test('{provider} webhook — idempotent re-delivery returns 200', async ({ request }) => {
+  const payload = JSON.stringify(require('./fixtures/payment_intent.succeeded.json'))
+  const sig = computeSig(payload, SECRET)
+  const headers = { 'Content-Type': 'application/json', '{SIG_HEADER}': sig }
+  // Second delivery of same event_id
+  await request.post(`${PROD_URL}/webhooks/{provider}`, { data: payload, headers })
+  const res = await request.post(`${PROD_URL}/webhooks/{provider}`, { data: payload, headers })
+  expect(res.status()).toBe(200)
+  const body = await res.json()
+  expect(body.idempotent).toBe(true)
+})
+```
+
+`e2e/webhooks/{provider}/invalid-signature.spec.ts`:
+
+```typescript
+test('{provider} webhook — invalid signature returns 401', async ({ request }) => {
+  const payload = JSON.stringify(require('./fixtures/payment_intent.succeeded.json'))
+  const res = await request.post(`${PROD_URL}/webhooks/{provider}`, {
+    data: payload,
+    headers: { 'Content-Type': 'application/json', '{SIG_HEADER}': 'sha256=badhash' },
+  })
+  expect(res.status()).toBe(401)
+})
+```
+
+### Step 6 — Write `skills/{provider}-webhooks/SKILL.md`
+
+```markdown
+---
+name: "{provider}-webhooks"
+description: "Hardened webhook receiver for {PROVIDER}. Verifies {SIG_SCHEME} signatures, deduplicates via D1, async-dispatches typed event handlers."
+triggers:
+  - "{provider} webhook"
+  - "{provider} event"
+pack: "backend"
+---
+
+# {PROVIDER} Webhook Integration
+
+Receiver at `POST /webhooks/{provider}`.
+
+## Events handled
+
+{EVENT_LIST_BULLETS}
+
+## Architecture
+
+- Signature: {SIG_SCHEME} via `{ENV_VAR}` env var
+- Idempotency: D1 `webhook_events` UNIQUE (provider, event_id)
+- Async dispatch: `ctx.waitUntil()` — 200 returned before handlers run
+- DLQ: R2 `dlq/{provider}/<id>.json` on unhandled errors
+
+## Cross-links
+
+- `[[webhook-receiver-architecture]]` — canonical pattern
+- `[[webhook-as-skill-pattern]]` — doctrine
+- `[[secret-provisioning]]` — for `{ENV_VAR}`
+- `[[verification-loop]]` — deploy + prod E2E gate
+```
+
+### Step 7 — Append `.env.template`
+
+Append (never overwrite):
+
+```
+# {PROVIDER} Webhook Secret
+# Get from: {SECRET_SOURCE_URL}
+{ENV_VAR}=
+```
+
+Secret source URLs by provider:
+
+- Stripe: `https://dashboard.stripe.com/webhooks`
+- GitHub: App settings → Webhooks
+- Resend: `https://resend.com/webhooks`
+- Twilio: Console → Messaging → Webhooks
+- Square: `https://developer.squareup.com/apps` → Webhooks
+
+---
+
+## After generation
+
+1. **Report file tree** — `find src/worker/webhooks/{provider} e2e/webhooks/{provider} skills/{provider}-webhooks -type f | sort`
+2. **Verify handler count** — confirm one handler stub per event type
+3. **Spot-check schema** — verify discriminated union covers all event types in `schemas.ts`
+4. **Remind** — set `{ENV_VAR}` in `wrangler.jsonc` secrets + `.dev.vars` before `wrangler dev`
+5. **Offer enrichment** — ask which 2-3 handler stubs to flesh out with real business logic now
+
+## Anti-patterns
+
+- Do NOT hand-roll signature verification — use the registry above
+- Do NOT block the HTTP response on handler logic — always `ctx.waitUntil()`
+- Do NOT log raw payloads — log `payload_hash` only
+- Do NOT skip the idempotency check — Stripe/Square/GitHub all retry on timeout
+- Do NOT add provider secrets to source code — always `c.env.{ENV_VAR}`

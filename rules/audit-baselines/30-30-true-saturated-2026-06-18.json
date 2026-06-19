@@ -1,0 +1,195 @@
+{
+  "label": "30-30-true-saturated",
+  "date": "2026-06-18",
+  "summary": {
+    "present": 30,
+    "partial": 0,
+    "missing": 0,
+    "total": 30
+  },
+  "milestone": "All 30 checklist principles now have standalone rule files. Gap closed by writing rules/working-backwards.md (principle #3, 'Working backwards'). Prior baseline (30-30-saturated-2026-06-18.json) was 29/30.",
+  "principles": [
+    {
+      "id": 1,
+      "name": "One-way vs two-way doors",
+      "status": "present",
+      "rule_file": "one-way-two-way-doors"
+    },
+    {
+      "id": 2,
+      "name": "Disagree-and-commit",
+      "status": "present",
+      "rule_file": "autonomous-engineering"
+    },
+    {
+      "id": 3,
+      "name": "Working backwards",
+      "status": "present",
+      "rule_file": "working-backwards",
+      "closed_by": "rules/working-backwards.md written 2026-06-18",
+      "was_missing_in": "30-30-saturated-2026-06-18.json"
+    },
+    {
+      "id": 4,
+      "name": "Two-pizza team sizing",
+      "status": "present",
+      "rule_file": "solo-builder-doctrine"
+    },
+    {
+      "id": 5,
+      "name": "Error budget",
+      "status": "present",
+      "rule_file": "error-budget"
+    },
+    {
+      "id": 6,
+      "name": "Toil elimination",
+      "status": "present",
+      "rule_file": "solo-rituals-eliminated"
+    },
+    {
+      "id": 7,
+      "name": "Blast radius minimization",
+      "status": "present",
+      "rule_file": "blast-radius-minimization"
+    },
+    {
+      "id": 8,
+      "name": "Fail fast in build, fail soft in prod",
+      "status": "present",
+      "rule_file": "fail-fast-build-fail-soft-prod"
+    },
+    {
+      "id": 9,
+      "name": "Hardware-aware programming",
+      "status": "present",
+      "rule_file": "hardware-aware-programming"
+    },
+    {
+      "id": 10,
+      "name": "TTFR as north-star UX metric",
+      "status": "present",
+      "rule_file": "ttfr-north-star"
+    },
+    {
+      "id": 11,
+      "name": "Sync UI, async backing",
+      "status": "present",
+      "rule_file": "sync-ui-async-backing"
+    },
+    {
+      "id": 12,
+      "name": "State is the enemy",
+      "status": "present",
+      "rule_file": "state-is-the-enemy"
+    },
+    {
+      "id": 13,
+      "name": "Data residency by default",
+      "status": "present",
+      "rule_file": "data-residency-by-default"
+    },
+    {
+      "id": 14,
+      "name": "Backwards-compatibility removal cadence",
+      "status": "present",
+      "rule_file": "backwards-compatibility-removal-cadence"
+    },
+    {
+      "id": 15,
+      "name": "Production observability default-on",
+      "status": "present",
+      "rule_file": "production-observability-default-on"
+    },
+    {
+      "id": 16,
+      "name": "Structured logging",
+      "status": "present",
+      "rule_file": "structured-logging"
+    },
+    {
+      "id": 17,
+      "name": "Cost-per-request accountability",
+      "status": "present",
+      "rule_file": "cost-per-request-accountability"
+    },
+    {
+      "id": 18,
+      "name": "Vendor risk tiering",
+      "status": "present",
+      "rule_file": "vendor-risk-tiering"
+    },
+    {
+      "id": 19,
+      "name": "Least privilege by default",
+      "status": "present",
+      "rule_file": "agent-permission-discipline"
+    },
+    {
+      "id": 20,
+      "name": "Secret rotation discipline",
+      "status": "present",
+      "rule_file": "secret-provisioning"
+    },
+    {
+      "id": 21,
+      "name": "Supply-chain integrity",
+      "status": "present",
+      "rule_file": "supply-chain-integrity"
+    },
+    {
+      "id": 22,
+      "name": "Contract-first AI",
+      "status": "present",
+      "rule_file": "contract-first-ai"
+    },
+    {
+      "id": 23,
+      "name": "Evals before tuning",
+      "status": "present",
+      "rule_file": "evals"
+    },
+    {
+      "id": 24,
+      "name": "LLM-as-judge calibration",
+      "status": "present",
+      "rule_file": "evals"
+    },
+    {
+      "id": 25,
+      "name": "Documentation-as-code",
+      "status": "present",
+      "rule_file": "documentation-as-code"
+    },
+    {
+      "id": 26,
+      "name": "Customer-facing changelog discipline",
+      "status": "present",
+      "rule_file": "customer-facing-changelog"
+    },
+    {
+      "id": 27,
+      "name": "Inverted abstraction pyramid",
+      "status": "present",
+      "rule_file": "feature-module-architecture"
+    },
+    {
+      "id": 28,
+      "name": "Rituals eliminated",
+      "status": "present",
+      "rule_file": "solo-rituals-eliminated"
+    },
+    {
+      "id": 29,
+      "name": "Prompt-as-training-signal",
+      "status": "present",
+      "rule_file": "prompt-as-training-signal"
+    },
+    {
+      "id": 30,
+      "name": "Refund automation",
+      "status": "present",
+      "rule_file": "refund-automation"
+    }
+  ]
+}
