@@ -75,10 +75,10 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - `[x]` 7. Cross-link INTEGRITY validator — `bin/audit-crosslinks.mjs` wired as blocking lint gate 16 (every `[[slug]]` resolves; 0 broken). PageRank/promote-isolated half still open.
 - `[ ]` 8. Progressive-disclosure enforcer — fail reference chains >1 deep
 - `[ ]` 9. Vocabulary canonicalizer — `_glossary.json` synonym→canonical, find/replace hook
-- `[ ]` 10. Compression regression guard — fail commits growing a file >20% w/o `## Why this grew`
+- `[x]` 10. Compression-regression guard — `bin/check-compression-regression.mjs` wired as blocking lint gate 17 (>20% growth vs HEAD w/o `## Why this grew`/`<!-- grow-ok -->` fails). 0 violations.
 - `[ ]` 11. Stale-rule guard — frontmatter `last_verified`, fail if >365d
 - `[ ]` 12. Llms.txt auto-generator — synth `/llms.txt` from all descriptions (already have llms.txt — keep fresh)
-- `[ ]` 13. Trigger-phrase collision resolver — inverted index, flag ≥2 shared triggers
+- `[x]` 13. Trigger-phrase collision auditor — `bin/audit-trigger-collisions.mjs` (advisory, NOT blocking: router loads ALL matching rules, so shared triggers are usually intentional). 29 collisions surfaced for review; `rebuild`/`sentry` flagged as genuinely worth disambiguating.
 - `[ ]` 14. Gerund-naming linter — skill `name` must be gerund form
 - `[ ]` 15. Perplexity line scorer — small LM flags <5-perplexity filler lines
 
@@ -144,6 +144,13 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - **Wire `bin/audit-instruction-files.mjs` to lefthook** now the gate is green — first add inline-code-span skip + `<!-- validator-ignore -->` hatch (iter-1 known refinement).
 
 ## Iteration log
+
+### iter 7 — 2026-06-19 (tooling integration)
+
+- Built + wired `bin/check-compression-regression.mjs` (idea #10) as **blocking lint gate 17**: any `rules/*.md` growing >20% vs git HEAD without `## Why this grew` / `<!-- grow-ok -->` fails the build. 0 violations (arc has been shrinking files). Locks in compression gains permanently.
+- Built `bin/audit-trigger-collisions.mjs` (idea #13): inverted index of all 505 distinct triggers across 124 files → 29 collisions. **Kept advisory, NOT blocking** — Brian's router loads ALL matching rules, so shared triggers (`logging` across 3 observability rules, `rollback` across 3 recovery files) are intentional, not bugs. Per validator-precision-discipline a 29-finding HIGH gate would cry wolf. Genuinely worth disambiguating: `rebuild` (3 site-build contexts), `sentry`/`tracing`/`observability` (rule vs skill 13).
+- Gate now 17 pass · 0 fail. Both new tools documented.
+- Next: idea #4 semantic dedup (needs embeddings — eval if doable node-only), #11 stale-rule guard, #18 auto-TOC for files >100 lines, #8 progressive-disclosure enforcer.
 
 ### iter 6 — 2026-06-19 (PIVOT: compression → tooling integration)
 
