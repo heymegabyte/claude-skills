@@ -46,14 +46,16 @@ PostToolUse hook `router-reconcile-on-skill-write.py` was wired the same turn.
 (numbered submodule directory; excludes `SKILL.md` which describes a category, not a slug)
 
 **Logic:**
+
 1. Parse the modified file path from stdin JSON (`tool_input.file_path`)
 2. Extract `category_dir` (e.g., `05-architecture-and-stack`) and `slug` (e.g., `cf-auto-provision`)
 3. Search `_router.md` for `` `slug` `` — if found, no-op
-4. If not found: locate the category's line in the Category Map and append `, `slug`` to its slug list
+4. If not found: locate the category's line in the Category Map and append `,`slug`` to its slug list
 5. If no category line exists: insert a new Category Map entry
 6. Write the updated `_router.md` back to disk
 
 **Output to stderr:**
+
 - `router-reconcile: registered orphan {slug} in {category_dir}` — slug was missing, now added
 - `router-reconcile: no action needed ({slug})` — slug was already present
 - `router-reconcile: skipping SKILL.md in {category_dir}` — SKILL.md writes are intentionally skipped
@@ -120,6 +122,7 @@ The hook is registered under `PostToolUse` alongside `enforce-tdd-e2e.py`:
 ## Verification
 
 After wiring:
+
 ```bash
 # Confirm hook is executable
 ls -la ~/.claude/hooks/router-reconcile-on-skill-write.py

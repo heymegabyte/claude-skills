@@ -1,0 +1,4 @@
+name: compliance
+description: Data-subject rights + regulatory compliance (GDPR/CCPA)
+members:
+  - rules/right-to-deletion

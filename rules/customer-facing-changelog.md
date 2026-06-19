@@ -37,6 +37,7 @@ This is NOT the git commit log. It is written for the person using the product.
 ```
 
 Rules:
+
 - Date heading `## YYYY-MM-DD` groups same-day entries
 - Prefix tag: `New:` / `Changed:` / `Fixed:` / `Breaking:` / `Deprecated:`
 - 1–2 sentences, user-outcome language: "You can now…", "X loads faster…", not "feat: add csv_export"
@@ -52,6 +53,7 @@ Rules:
 ## Trigger: when to write an entry
 
 Write an entry the **same turn** you ship any of:
+
 - A new UI surface the user can interact with
 - A new API endpoint or a breaking change to an existing one
 - A behavior change (different default, new validation, changed error message)
@@ -60,6 +62,7 @@ Write an entry the **same turn** you ship any of:
 - A bug fix that users reported or would notice
 
 Do NOT write an entry for:
+
 - Internal refactors with no user-visible change
 - Dependency version bumps with no behavioral change
 - Test or CI changes

@@ -2,6 +2,7 @@
 name: performance-profiler
 description: Runs Lighthouse audits, analyzes Core Web Vitals, suggests specific fixes with file:line references. Targets LCP<=2.5s, CLS<=0.1, INP<=200ms.
 tools: Read, Bash, Glob, Grep, mcp__playwright__*
+allowed-tools: Read Glob Grep Bash(npx:*) Bash(curl:*) mcp__playwright__*
 disallowedTools: Write, Edit
 model: sonnet
 permissionMode: plan

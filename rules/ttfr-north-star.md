@@ -29,6 +29,7 @@ paths:
 Every frontend change is measured against one number: **time from navigation start to first contentful paint on a cold cache, throttled 3G, mid-range Android.**
 
 Targets:
+
 - **LCP ≤ 2.0s** (cinematic — the cinematic-ui-patterns hard gate)
 - **FCP ≤ 1.2s**
 - **INP ≤ 100ms** (cinematic) / ≤ 200ms (absolute hard gate)

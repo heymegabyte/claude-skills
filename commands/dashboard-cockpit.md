@@ -3,6 +3,9 @@ description: Repeatable pass upgrading an Angular admin dashboard into a compact
 argument-hint: [dashboard path or feature]
 ---
 
+<!-- <SUBAGENT-STOP>: skip this skill when running inside a subagent. Meta-skills must not leak into spawned subagent contexts. Source: obra/superpowers `using-superpowers` skill. -->
+<SUBAGENT-STOP/>
+
 Upgrade an Angular admin dashboard into a polished compact **black-and-cyan dev-cockpit PWA**. Repeatable — rerun to push density + polish one step further. Doctrine via cross-link, never duplicated: [[angular-nx-monorepo]] · [[rxjs-first-angular]] · [[frontend-stack]] · [[cinematic-ui-patterns]] · [[text-contrast]] · [[agent-selection]] · [[e2e-tdd-organization]] · [[verification-loop]].
 
 **Purpose** — turn a working Angular admin into a dense, gorgeous, fully-i18n, PWA-packaged developer cockpit with zero full page reloads.

@@ -183,6 +183,7 @@ The rule applies to mutable state only.
 ## Durable Objects are the correct CF primitive
 
 DOs give you:
+
 - Per-entity serialized execution (no race conditions)
 - Transactional SQLite storage (`this.state.storage`)
 - Global singleton per ID (not per-isolate)

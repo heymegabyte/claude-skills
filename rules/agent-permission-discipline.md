@@ -122,6 +122,7 @@ Then a "judge" agent reviews all three deliberations and picks the strongest arg
 ## Migration discipline
 
 Don't bulk-rewrite all 18 agents at once. Order:
+
 1. **First**: security-reviewer + completeness-checker + deploy-verifier (verification agents — highest leverage)
 2. **Second**: dependency-auditor + accessibility-auditor + cost-estimator (read-only audit agents)
 3. **Third**: code-simplifier + migration-agent + test-writer (impl agents — temp 0.2-0.3)

@@ -1,0 +1,4 @@
+name: security
+description: Browser + app security hardening — CSP, Trusted Types, headers
+members:
+  - rules/csp-trusted-types

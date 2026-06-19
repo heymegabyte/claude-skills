@@ -2,6 +2,7 @@
 name: accessibility-auditor
 description: Dedicated axe-core + Playwright accessibility agent. Navigates pages, runs WCAG 2.2 AA audits at 6 breakpoints, reports violations with fix suggestions, verifies remediation.
 tools: Bash, Read, Glob, Grep, mcp__playwright__*
+allowed-tools: Read Glob Grep Bash(npx:*) Bash(node:*) mcp__playwright__*
 disallowedTools: Write, Edit
 model: haiku
 permissionMode: plan

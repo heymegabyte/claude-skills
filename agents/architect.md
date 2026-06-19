@@ -2,6 +2,7 @@
 name: architect
 description: Pre-implementation architecture agent. Analyzes project structure, generates repo-map, designs task graph, identifies architectural seams and parallel workstreams.
 tools: Read, Glob, Grep, Bash
+allowed-tools: Read Glob Grep Bash(git:*) Bash(find:*) Bash(ls:*) Bash(cat:*) Bash(wc:*)
 disallowedTools: Write, Edit
 model: opus
 model_fallback: claude-sonnet-4-6

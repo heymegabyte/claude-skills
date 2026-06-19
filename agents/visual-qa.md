@@ -2,6 +2,7 @@
 name: visual-qa
 description: Visual quality assurance agent. Screenshots pages at all breakpoints, uses AI vision to detect layout breaks, misalignment, text overflow, broken images, and design inconsistencies.
 tools: Read, Bash, mcp__playwright__*
+allowed-tools: Read Bash(npx:*) mcp__playwright__*
 disallowedTools: Write, Edit
 model: opus
 model_fallback: claude-sonnet-4-6

@@ -2,6 +2,7 @@
 name: cost-estimator
 description: Estimates Cloudflare Workers costs before deploying. Reads wrangler.toml, counts D1 tables/rows, estimates KV/R2 usage, calculates monthly cost, warns on free tier limits.
 tools: Read, Bash, Grep, Glob
+allowed-tools: Read Grep Glob Bash(cat:*) Bash(wc:*) Bash(find:*) Bash(wrangler:*)
 disallowedTools: Write, Edit
 model: haiku
 permissionMode: plan

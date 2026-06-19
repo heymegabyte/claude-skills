@@ -2,6 +2,7 @@
 name: migration-agent
 description: Drizzle schema migration agent. Generates migrations from schema diffs, validates against D1/SQLite, tests rollbacks, ensures zero-downtime compatibility.
 tools: Read, Bash, Glob, Grep, Write, Edit
+allowed-tools: Read Glob Grep Write Edit Bash(npx:*) Bash(wrangler:*) Bash(pnpm:*) Bash(sqlite3:*)
 model: sonnet
 permissionMode: default
 maxTurns: 20

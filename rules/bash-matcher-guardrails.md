@@ -157,8 +157,8 @@ unless you intentionally want an exact match.
 During a loop iteration, an agent attempted to wire a `PreCommit` hook for
 `customer-changelog-precommit.py`. The hook loaded without error but never fired because
 `PreCommit` is not a valid Claude Code event name. The error was caught in-situ and
-corrected to `PreToolUse` + `Bash(git commit*)`. The lesson extracted here is principle
-#17 in `rules/principles-incident-log.md` and the hook now fires correctly on every commit.
+corrected to `PreToolUse` + `Bash(git commit*)`. The lesson extracted here is principle 17 in
+`rules/principles-incident-log.md`; the hook now fires correctly on every commit.
 
 ---
 

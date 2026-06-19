@@ -1,0 +1,4 @@
+name: documents
+description: Document processing — parse, extract, generate (PDF/DOCX/XLSX)
+members:
+  - 18-document-processing

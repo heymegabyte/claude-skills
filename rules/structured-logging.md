@@ -127,11 +127,13 @@ export const traceMiddleware = createMiddleware(async (c, next) => {
 ```
 
 Register before all routes:
+
 ```ts
 app.use("*", traceMiddleware);
 ```
 
 Access downstream:
+
 ```ts
 const traceId = c.get("traceId");
 const requestId = c.get("requestId");

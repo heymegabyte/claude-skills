@@ -46,6 +46,7 @@ Announce → Soft-warn → Hard-warn → Remove
 | **Remove** | — | Code deleted, migration drops column, route returns 410 Gone | Drift gate passes |
 
 Default window is **30 days per stage = 60 days total**. Compress to 14 days when:
+
 - Internal tooling only (no external callers)
 - Feature flag shows 0% rollout for 30+ days
 - D1 query confirms 0 calls in last 14 days

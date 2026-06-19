@@ -725,20 +725,28 @@ function buildHandlerStr(op, baseUrl, harden = false) {
   const destructiveGate = isDestructive
     ? `      // Destructive tool gate\n` +
       `      if (!process.env['ALLOW_DESTRUCTIVE'] && !(process.env['DESTRUCTIVE_ALLOWLIST'] ?? '').split(',').includes(${JSON.stringify(opId)})) {\n` +
-      `        return { isError: true, content: [{ type: 'text' as const, text: JSON.stringify({ code: 'DESTRUCTIVE_BLOCKED', message: 'Set ALLOW_DESTRUCTIVE=true or add to DESTRUCTIVE_ALLOWLIST to enable this tool.' }) }] };\n` +
+      `        return mcpSizeLimitError('Destructive tool', 'DESTRUCTIVE_BLOCKED — set ALLOW_DESTRUCTIVE=true or add to DESTRUCTIVE_ALLOWLIST');\n` +
       `      }\n`
     : '';
 
-  // Resource limits (harden only)
+  // Resource limits + Zod validation (harden only — uses helper functions)
   const argsCheck = harden
-    ? `      if (JSON.stringify(request.params.arguments ?? {}).length > 65536) {\n` +
-      `        return { isError: true, content: [{ type: 'text' as const, text: JSON.stringify({ code: 'ARGS_TOO_LARGE', message: 'Input exceeds 64KB limit.' }) }] };\n` +
+    ? `      if (JSON.stringify(request.params.arguments ?? {}).length > 65_536) {\n` +
+      `        return mcpSizeLimitError('Input', '64KB');\n` +
       `      }\n`
     : '';
 
+  // Zod parse: harden uses safeParse + mcpValidationError; base uses .parse() (throws)
+  const zodParse = harden
+    ? `      const _parsed = ${schemaName}.safeParse(request.params.arguments ?? {});\n` +
+      `      if (!_parsed.success) return mcpValidationError(_parsed.error.message);\n` +
+      `      const input = _parsed.data;`
+    : `      const input = ${schemaName}.parse(request.params.arguments ?? {});`;
+
+  // Fetch block — harden uses helpers; base uses inline pattern with res.ok check
   const fetchCall = harden
-    ? `        const timeoutId = setTimeout(() => controller.abort(), 30_000);\n` +
-      `        const controller = new AbortController();\n` +
+    ? `        const controller = new AbortController();\n` +
+      `        const timeoutId = setTimeout(() => controller.abort(), 30_000);\n` +
       `        const res = await fetch(url, {\n` +
       `          method: ${JSON.stringify(method.toUpperCase())},\n` +
       `          signal: controller.signal,\n` +
@@ -750,10 +758,10 @@ function buildHandlerStr(op, baseUrl, harden = false) {
       `        });\n` +
       `        clearTimeout(timeoutId);\n` +
       `        const rawText = await res.text();\n` +
-      `        if (rawText.length > 1_048_576) {\n` +
-      `          return { isError: true, content: [{ type: 'text' as const, text: JSON.stringify({ code: 'RESPONSE_TOO_LARGE', message: 'Response exceeds 1MB limit.' }) }] };\n` +
-      `        }\n` +
-      `        const data = res.status === 204 ? {} : JSON.parse(rawText || '{}');\n`
+      `        if (rawText.length > 1_048_576) return mcpSizeLimitError('Response', '1MB');\n` +
+      `        const data = res.status === 204 ? {} : JSON.parse(rawText || '{}');\n` +
+      `        if (!res.ok) return mcpHttpError(res.status, data);\n` +
+      `        return mcpOk(data);\n`
     : `        const res = await fetch(url, {\n` +
       `          method: ${JSON.stringify(method.toUpperCase())},\n` +
       `          headers: {\n` +
@@ -762,35 +770,38 @@ function buildHandlerStr(op, baseUrl, harden = false) {
       `          },\n` +
       `          ${hasBody ? `body: JSON.stringify(bodyPayload),` : ''}\n` +
       `        });\n` +
-      `        const data = res.status === 204 ? {} : await res.json().catch(() => ({}));\n`;
+      `        const data = res.status === 204 ? {} : await res.json().catch(() => ({}));\n` +
+      `        if (!res.ok) return { isError: true as const, content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] };\n` +
+      `        return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] };\n`;
+
+  // catch block — harden uses mcpCaughtError helper; base uses inline literal
+  const catchBlock = harden
+    ? `        return mcpCaughtError(err);`
+    : `        return { isError: true, content: [{ type: 'text' as const, text: JSON.stringify({ code: 'FETCH_ERROR', message: String(err) }) }] };`;
 
   const dangerousTag = isDestructive ? `    /** @dangerous */\n` : '';
 
   return `${dangerousTag}    if (request.params.name === ${JSON.stringify(opId)}) {
-${argsCheck}      const input = ${schemaName}.parse(request.params.arguments ?? {});
+${argsCheck}${zodParse}
       let url = ${JSON.stringify(baseUrl + path)};
 ${pathReplaceLines ? pathReplaceLines + '\n' : ''}${qsLines ? qsLines + '\n' : ''}${bodyPayload ? bodyPayload + '\n' : ''}${destructiveGate}      try {
-${fetchCall}        return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] };
-      } catch (err) {
-        return { isError: true, content: [{ type: 'text' as const, text: JSON.stringify({ code: 'FETCH_ERROR', message: String(err) }) }] };
+${fetchCall}      } catch (err) {
+        ${catchBlock}
       }
     }`;
 }
 
 /** Render mcp-server/index.ts for stdio transport */
 function renderStdioIndexTs(name, ops, baseUrl, harden = false) {
-  const schemaImports = ops
-    .map((op) => {
-      const opId = op.op.operationId ?? `${op.method}-${slugify(op.path)}`;
-      return `${titlify(opId).replace(/\s+/g, '')}InputSchema`;
-    })
-    .join(',\n  ');
-
   const zodSchemas = ops.map((op) => buildZodSchemaStr(op)).join('\n\n');
   const toolDefs = ops.map((op) => buildToolDef(op));
   const handlerBranches = ops.map((op) => buildHandlerStr(op, baseUrl, harden)).join('\n\n');
 
-  return `// Auto-generated by forge-skill-from-openapi --target=mcp-server --transport=stdio
+  const hardenImport = harden
+    ? `import { mcpOk, mcpHttpError, mcpCaughtError, mcpValidationError, mcpSizeLimitError } from './mcp-error-response.js';\n`
+    : '';
+
+  return `// Auto-generated by forge-skill-from-openapi --target=mcp-server --transport=stdio${harden ? ' --harden' : ''}
 // API: ${name}
 // DO NOT EDIT — re-run forge to regenerate
 
@@ -798,6 +809,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+${hardenImport}
 
 // ── Zod input schemas (one per operation) ────────────────────────────────────
 
@@ -848,7 +860,11 @@ function renderHttpIndexTs(name, ops, baseUrl, harden = false) {
   const toolDefs = ops.map((op) => buildToolDef(op));
   const handlerBranches = ops.map((op) => buildHandlerStr(op, baseUrl, harden)).join('\n\n');
 
-  return `// Auto-generated by forge-skill-from-openapi --target=mcp-server --transport=http
+  const hardenImport = harden
+    ? `import { mcpOk, mcpHttpError, mcpCaughtError, mcpValidationError, mcpSizeLimitError } from './mcp-error-response.js';\n`
+    : '';
+
+  return `// Auto-generated by forge-skill-from-openapi --target=mcp-server --transport=http${harden ? ' --harden' : ''}
 // API: ${name} — CF Workers HTTP transport (StreamableHTTP)
 // DO NOT EDIT — re-run forge to regenerate
 
@@ -856,6 +872,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
+${hardenImport}
 
 // ── CF Worker env type ────────────────────────────────────────────────────────
 
@@ -1250,6 +1267,18 @@ async function generateMcpServer(spec, flags, outputDir, allOps, baseUrl, transp
   const name = flags.name ?? apiName;
   const harden = flags.harden === true || flags.harden === '';
 
+  // Copy mcp-error-response.ts helper when hardening (zero-dep, inline in src/)
+  if (harden) {
+    const helperSrc = join(dirname(fileURLToPath(import.meta.url)), '..', 'template', 'utils', 'mcp-error-response.ts');
+    if (existsSync(helperSrc)) {
+      const helperContent = await readFile(helperSrc, 'utf8');
+      await writeFile(join(srcDir, 'mcp-error-response.ts'), helperContent, 'utf8');
+      console.log(`   mcp-server/src/mcp-error-response.ts — helper copied`);
+    } else {
+      console.warn(`   WARN: mcp-error-response.ts not found at ${helperSrc} — helper not copied`);
+    }
+  }
+
   // index.ts
   const indexTs =
     transport === 'http'
@@ -1291,11 +1320,13 @@ async function generateMcpServer(spec, flags, outputDir, allOps, baseUrl, transp
 
   if (harden) {
     console.log(`   Hardening: ENABLED`);
+    console.log(`   - src/mcp-error-response.ts (correct isError semantics — mcpOk/mcpHttpError/mcpCaughtError/mcpValidationError/mcpSizeLimitError)`);
     console.log(`   - src/rate-limiter.ts (sliding-window DO)`);
     console.log(`   - src/audit-log.ts (D1 audit trail)`);
     console.log(`   - src/scrub-pii.ts (secret redaction)`);
     console.log(`   - migrations/0001_mcp_tool_calls.sql`);
     console.log(`   - .strict() on all Zod schemas`);
+    console.log(`   - safeParse + mcpValidationError (Zod validation before fetch)`);
     console.log(`   - @dangerous tags on destructive tools`);
     console.log(`   - Resource limits (64KB args / 1MB response / 30s timeout)`);
   }

@@ -2,6 +2,7 @@
 name: security-reviewer
 description: OWASP Top 10 security auditor. Reviews for injection flaws, secrets exposure, auth bypasses, CSP issues, and vulnerable dependencies. Read-only — never modifies code.
 tools: Read, Grep, Glob, Bash
+allowed-tools: Read Grep Glob Bash(git:*) Bash(grep:*) Bash(rg:*) Bash(find:*) Bash(npm:audit) Bash(npm:ls) Bash(pnpm:audit)
 disallowedTools: Write, Edit
 model: opus
 model_fallback: claude-sonnet-4-6

@@ -1,6 +1,6 @@
 {
   "name": "claude-skills",
-  "description": "16-category autonomous product-building OS with 18 agents for 32+ AI coding tools. One-line prompts to production on Cloudflare Workers. 100+ reference docs, 32 platform variants, output styles, monitors.",
+  "description": "19-category solo-SaaS-founder platform — autonomous engineering OS, 18+ agents, 117 doctrine rules, 20+ slash commands, production forge script, LLM eval harness, MCP registry, DO agent scaffolding, RAG pipeline, multi-tenant subdomain provisioning, full-document processing (DOCX/XLSX/PDF/PPTX), and 32 AI-tool platform variants. One-line prompts to deployed Cloudflare Workers products.",
   "version": "7.2.1",
   "author": {
     "name": "Brian Zalewski",
@@ -41,7 +41,10 @@
     "13-observability-and-growth",
     "14-independent-idea-engine",
     "15-site-generation",
-    "16-cinematic-website-prime-directive"
+    "16-cinematic-website-prime-directive",
+    "17-non-engineering-verticals",
+    "18-document-processing",
+    "19-mcp-authoring"
   ],
   "outputStyles": ["output-styles/emdash-concise.md"],
   "monitors": "monitors/monitors.json",

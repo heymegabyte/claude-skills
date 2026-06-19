@@ -1,0 +1,47 @@
+{
+  // markdownlint-cli2 reads rule config from .markdownlint.jsonc automatically;
+  // this file supplies the cli2-only `ignores` globs (cli2 does NOT read .markdownlintignore).
+  "ignores": [
+    "node_modules",
+    "**/node_modules/**",
+    "**/_archived/**",
+    "**/backups/**",
+    "**/_competitors/**",
+    "file-history/**",
+    "projects/**",
+    "sessions/**",
+    "tasks/**",
+    "shell-snapshots/**",
+    "session-env/**",
+    "paste-cache/**",
+    ".lint-history/**",
+    // Generated cross-platform mirror dirs — auto-normalized in sync-cross-platform job
+    ".cursor/**",
+    ".windsurf/**",
+    ".amazonq/**",
+    ".augment/**",
+    ".aiassistant/**",
+    ".kilo/**",
+    ".roo/**",
+    ".continue/**",
+    ".junie/**",
+    ".devin/**",
+    ".openhands/**",
+    ".agents/**",
+    ".trae/**",
+    ".tabnine/**",
+    ".kiro/**",
+    ".void/**",
+    ".bolt/**",
+    ".clinerules/**",
+    ".rules/**",
+    ".emdash/**",
+    ".goose/**",
+    // Forge-generated MCP servers + scaffolding templates — not hand-authored
+    "mcp-servers/**",
+    "templates/**",
+    "template/**",
+    // Forge-generated API skills (commands/types from OpenAPI) — regenerated, not hand-authored
+    "skills/**",
+  ],
+}

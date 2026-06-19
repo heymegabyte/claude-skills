@@ -2,6 +2,7 @@
 name: dependency-auditor
 description: Scans packages for outdated deps, security advisories, license violations, and unused imports. Proposes version bumps, runs tests after updates, generates prioritized upgrade report.
 tools: Read, Bash, Glob, Grep
+allowed-tools: Read Glob Grep Bash(pnpm:*) Bash(npm:*) Bash(npx:*) Bash(bun:*) Bash(grep:*) Bash(find:*)
 disallowedTools: Write, Edit
 model: sonnet
 permissionMode: plan

@@ -16,3 +16,10 @@ members:
   - rules/bash-matcher-guardrails
   - rules/loop-driven-development
   - rules/mcp-server-hardening
+  - rules/mcp-namespace-discipline
+  - rules/prompt-cache-strategy
+  - rules/eval-mock-mode-discipline
+  - rules/mcp-error-semantics
+  - rules/skill-forge-from-api
+  - rules/portable-audit-discipline
+  - 19-mcp-authoring

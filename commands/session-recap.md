@@ -5,6 +5,9 @@ argument-hint: "[filter] [--json]"
 user-invocable: true
 ---
 
+<!-- <SUBAGENT-STOP>: skip this skill when running inside a subagent. Meta-skills must not leak into spawned subagent contexts. Source: obra/superpowers `using-superpowers` skill. -->
+<SUBAGENT-STOP/>
+
 # /session-recap
 
 One-keystroke context restoration. When you open a fresh Claude Code session or hand off context to another agent, `/session-recap` returns the canonical CHANGELOG slice you need.

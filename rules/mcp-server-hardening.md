@@ -79,6 +79,7 @@ async function checkRateLimit(env: Env, toolName: string, userId: string): Promi
 | default (unclassified) | 60s | 60 |
 
 Add `MCP_RATE_LIMITER` to `wrangler.toml`:
+
 ```toml
 [[durable_objects.bindings]]
 name = "MCP_RATE_LIMITER"
@@ -150,6 +151,7 @@ const scrubbedResult = redactPii(toolResult);      // before logging response pr
 ```
 
 Fields automatically redacted by `redactPii()` (from `scrub-pii.ts`):
+
 - Credit card patterns, SSN, API keys, bearer tokens, password-like fields, email addresses, phone numbers
 - Any key matching `/^(token|secret|key|password|auth|bearer|ssn|cc_number|card)/i`
 
@@ -234,6 +236,7 @@ if (!parsed.success) {
 ## 6. Tool documentation requirements
 
 Every generated tool MUST have:
+
 - **1-line description** — present in `server.tool('name', 'description here', schema, handler)`
 - **`@dangerous` JSDoc tag** — required on any destructive tool's handler function
 

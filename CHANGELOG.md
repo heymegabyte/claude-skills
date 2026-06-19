@@ -1,5 +1,94 @@
 # Skills System Changelog
 
+## [Unreleased] — 2026-06-18 — Integration arc: skills 17–19, 20+ commands, 15 doctrines, eval harness, MCP forge
+
+### What this unlocks for you
+
+Every capability below is live in `~/.claude/plugins/heymegabyte-claude-skills` and
+active in every Claude Code session. Nothing to configure.
+
+---
+
+### 3 new skill categories
+
+- **Skill 17 — Non-Engineering Verticals** — C-suite personas, finance domain, compliance OS,
+  PM domain. The OS now covers every function of a company, not just engineering.
+- **Skill 18 — Document Processing** — DOCX/XLSX read-write, PDF generation + parsing,
+  PPTX generation. Eliminates every "export to PDF" manual step.
+- **Skill 19 — MCP Authoring** — HTTP MCP servers on CF Workers, stdio server templates,
+  OpenAPI→MCP forger. Publish a production MCP in one command.
+
+### 5 new slash commands (scaffolders)
+
+- `/saas` — full SaaS scaffold on CF Workers from a single command; wires auth, DB, billing, email, jobs
+- `/forge-from-openapi` — typed Hono routes + Zod schemas from any OpenAPI spec
+- `/forge-webhook-handler` — production webhook receiver: verify signature → queue → idempotent handler
+- `/generate-prp` — draft a Product Requirements Prompt from a feature description
+- `/execute-prp` — execute a PRP file end-to-end: plan → implement → test → ship
+
+### 5 new slash commands (ops + visibility)
+
+- `/run-evals` — LLM eval harness with schema-validated results, rubrics, regression tracking
+- `/audit-doctrine` — scan the active doctrine set for gaps, conflicts, and stale rules
+- `/audit-mcp-fleet` — catalog, health-check, and version-pin every MCP in your harness
+- `/dashboard-cockpit` — single-pane health view: CI, deploys, cost, D1 health, agent queue
+- `/drift-check` — detect and surface all drift classes in one pass
+
+### Production forge
+
+- `bin/forge-skill-from-openapi.mjs` — 42K production script that generates a full SKILL.md +
+  command scaffold from any OpenAPI spec. Run once, get a publish-ready skill.
+
+### LLM eval harness
+
+- `/run-evals` surfaces schema-validated rubric scores with regression tracking per AI-heavy
+  behavior. Evals are now a hard gate, not a nice-to-have.
+
+### 5 new PreToolUse hooks
+
+- Agent permission discipline enforced before destructive tool calls (Write, Bash, Edit on
+  sensitive paths). Blocks before damage, never after.
+
+### MCP server registry
+
+- `/audit-mcp-fleet` catalogs every MCP, runs health checks, detects version drift, and
+  pins known-good versions to `settings.json`. No more silent MCP rot.
+
+### 15 new doctrinal principles
+
+Each is a `rules/*.md` enforced by the lint suite and referenced from CLAUDE.md:
+
+1. `state-is-the-enemy` — every piece of stateful logic is a liability; prefer pure functions + event sourcing
+2. `fail-fast-build-fail-soft-prod` — type errors / test failures abort at build; prod degrades gracefully
+3. `ttfr-north-star` — Time-To-First-Response is the primary UX metric; stream, skeleton, defer
+4. `sync-ui-async-backing` — UI shows sync; backing writes are async with optimistic rollback
+5. `cost-per-request-accountability` — every Worker route knows its D1/KV/AI cost before shipping
+6. `inverted-abstraction-pyramid` — concrete code first, abstraction only after 3 real callers
+7. `one-way-two-way-doors` — classify every decision before making it; one-way doors get approval
+8. `vendor-risk-tiering` — 4-tier vendor classification; tier-1 replacements planned quarterly
+9. `data-residency-by-default` — EU data never leaves EU; CF region-lock baked into D1 + R2 config
+10. `right-to-deletion` — every data schema ships with a `deleteUser(id)` function tested to zero
+11. `refund-automation` — Stripe refund webhook → auto-process → Resend receipt; zero manual ops
+12. `documentation-as-code` — docs live adjacent to code, tested via link-check + freshness gates
+13. `production-observability-default-on` — PostHog + Workers Tracing wired before first deploy, not after
+14. `hardware-aware-programming` — CF Workers 128MB RAM / 50ms CPU limits are architecture constraints
+15. `webhook-receiver-architecture` — canonical 5-step pattern: verify → ack 200 → queue → process → audit
+
+### Architecture submodules (skill 05)
+
+- **DO agent scaffolding** — Durable Objects as stateful AI agents, wired to MCP registry
+- **RAG pipeline** — Vectorize + D1 hybrid search with chunking, embedding, rerank
+- **Multi-tenant subdomain provisioning** — CF custom hostnames + per-tenant D1 namespace
+
+### Metadata + positioning
+
+- `plugin.json` updated: description reflects full 19-category scope
+- `marketplace.json` updated: categories expanded, tags added (mcp, evals, forge, rag, multi-tenant)
+- `README.md` hero + category table updated; "What's New" section added
+- `marketplace-submissions/` added: ready-to-PR packets for 3 registries
+
+---
+
 ## 2026-06-10 — pass-102 — `npm run health` ops alias for single-command system snapshot
 
 ### Closes pass-100/101 milestone cluster with an ops-ergonomic surface

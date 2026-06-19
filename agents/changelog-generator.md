@@ -2,6 +2,7 @@
 name: changelog-generator
 description: Auto-generates changelogs from conventional commits. Parses git log since last tag, groups by type, writes user-outcome-focused CHANGELOG.md entries.
 tools: Read, Bash, Grep, Write, Edit
+allowed-tools: Read Grep Write Edit Bash(git:*)
 model: haiku
 permissionMode: default
 maxTurns: 10

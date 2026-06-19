@@ -28,18 +28,22 @@ Every third-party service used in a project is classified at integration time. T
 ## The two tiers
 
 ### Load-bearing
+
 Replacing this vendor requires a **multi-week migration** touching data, auth contracts, or core infrastructure. Examples: Cloudflare (Workers, D1, R2, Durable Objects), Clerk (auth), Stripe (billing/payouts), Square (POS payments), Resend (transactional email).
 
 **Overhead for load-bearing vendors:**
+
 - Documented replacement plan in `ARCHITECTURE.md` (≤1 paragraph: "to replace X, we would Y in Z weeks")
 - Secret rotation schedule ≤ 90 days (per `secret-provisioning`)
 - Abstraction layer wrapping the vendor surface — no raw SDK calls scattered across 30 files
 - No single-point-of-failure usage: at least one tested fallback path or degraded-mode behavior
 
 ### Replaceable
+
 Equivalent alternatives exist and migration would take **days**, not weeks. Examples: PostHog (→ Plausible / Amplitude), Sentry (→ Axiom / BugSnag), Upstash (→ CF KV directly), Inngest (→ CF Queues + Workflows).
 
 **Overhead for replaceable vendors:**
+
 - None. Use the SDK directly, no abstraction layer required.
 - Swap decision is autonomous per `autonomous-engineering` — no approval needed.
 

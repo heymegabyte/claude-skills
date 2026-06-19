@@ -2,6 +2,7 @@
 name: completeness-checker
 description: Post-implementation verification agent. Runs Feature Completeness Engine, Zero Recommendations Gate, and visual verification. Only declares DONE when genuinely complete.
 tools: Read, Bash, Glob, Grep, mcp__playwright__*
+allowed-tools: Read Glob Grep Bash(grep:*) Bash(npx:*) Bash(git:*) mcp__playwright__*
 disallowedTools: Write, Edit
 model: opus
 model_fallback: claude-sonnet-4-6

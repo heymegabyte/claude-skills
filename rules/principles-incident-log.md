@@ -238,6 +238,7 @@ Concretely: `worker/middleware/auth.ts` stays thin and generic. `worker/features
 ## Standalone Rule Candidates (All 15 Are Y)
 
 All 15 principles above are marked **Y** for extraction into standalone rule files. Priority order for follow-up extraction:
+
 1. `production-observability-default-on.md`
 2. `state-is-the-enemy.md`
 3. `fail-fast-build-fail-soft-prod.md`
@@ -287,6 +288,7 @@ never fired. The error was caught in-situ and corrected to `PreToolUse` +
 `rules/bash-matcher-guardrails.md` the same session it was discovered.
 
 **Validation steps before wiring any hook:**
+
 1. Confirm the event name is in the closed enum above.
 2. If intercepting a shell command, use `PreToolUse` + `Bash(<command glob>*)`.
 3. Test by running the triggering action and confirming the hook's side-effect fires.
@@ -308,6 +310,7 @@ The root failure mode is accumulation lag: orphans don't break anything today, b
 **Reference incident (2026-06-18):** `/audit-router --fix` found 51 orphan skills (0 stale). All 51 were registered in a single pass. PostToolUse hook `router-reconcile-on-skill-write.py` was wired the same turn to prevent recurrence. Matcher: `Write|Edit|MultiEdit` on paths matching `heymegabyte-claude-skills/[0-9]+-*/**.md`.
 
 **The hook (wired 2026-06-18):**
+
 - File: `~/.claude/hooks/router-reconcile-on-skill-write.py`
 - Event: `PostToolUse`, matcher: `Write|Edit|MultiEdit`
 - Logic: parse modified path → extract category dir + slug → check `_router.md` for backtick-wrapped slug → if absent, append to the category line
@@ -346,6 +349,7 @@ analysis. The first `Write` should fire as early as possible in the agent's life
 > file 1 is preserved — the retry agent picks up from file 2."
 
 **Anti-patterns:**
+
 - `MultiEdit` all files in one call (all-or-nothing; drop = 0 files written)
 - Research loop → batch write at end (drop during research = 0 files written)
 - Waiting for tests/verification before writing the source file
@@ -354,3 +358,60 @@ analysis. The first `Write` should fire as early as possible in the agent's life
 - **[[parallel-subagent-economy]]** — sub-agents should write primary deliverable first; fleet-wide write batching is the same failure mode at scale
 - **[[error-recovery]]** — recovery patterns after failures; this rule structures work so recovery is incremental
 - Ship as standalone rule? **Y — extracted as `rules/agent-resilience-discipline.md`**
+
+---
+
+## 20. Working Backwards (Press Release Before Code)
+
+Write the user-outcome description first. Code second. Before any feature that adds a
+user-visible surface (new route, command, dashboard widget, public API endpoint), write
+a 1-page Amazon-style press release: headline + problem + solution + founder quote +
+customer quote + CTA. If you can't write an exciting press release, the feature is
+mis-scoped — and you caught that at prose cost, not implementation cost.
+
+The Bezos quote in full: "If a press release won't excite your customers, rethink the
+feature — don't implement it." The forcing function is the value: articulating
+customer outcome BEFORE implementation catches over-engineering (adding infrastructure
+the user won't notice) and under-shipping (building the primitive without the surface).
+
+**Reference incident (2026-06-18):** Audit baseline `30-30-saturated-2026-06-18.json`
+revealed 29/30 principles present. Principle #3 ("Working backwards") was the sole gap
+in a 30-principle checklist audit. The rule was written the same session the gap was
+discovered. Milestone baseline `30-30-true-saturated-2026-06-18.json` confirms 30/30.
+
+- **[[02-goal-and-brief]]** — product-level thesis is the press release for the whole product
+- **[[14-independent-idea-engine]]** — press release is the filter between idea and task
+- **[[autonomous-engineering]]** — approval tiers govern whether to ship; press release governs what to ship
+- **[[one-way-two-way-doors]]** — mandatory before one-way door feature decisions
+- **[[customer-facing-changelog]]** — solution section of press release becomes the changelog entry
+- Ship as standalone rule? **Y — extracted as `rules/working-backwards.md`**
+
+---
+
+## 21. Root-Cause Validator Findings Before Applying Fixes
+
+When an automated validator surfaces findings, the FIRST question is **"is the validator
+correct?"** — not "how do I make the finding go away?" Apply `[[verification-loop]]` rigor
+to the validator itself before treating its output as source-of-truth. A validator that
+produces false positives under certain code patterns will cause you to modify source code
+that was correct, adding noise, dead code, or regressions in the name of "fixing" it.
+
+Concretely: before touching a source file based on a validator error, check whether (a)
+the flagged code is actually reachable, (b) the validator's detection regex or AST pattern
+handles the pattern correctly, and (c) the "fix" changes observable behavior or only
+appeases the tool.
+
+**Reference incident (2026-06-18 / Task #61).** `bin/validate-mcp-tools.mjs` reported
+1,134 orphaned handlers in github-mcp. The recommended fix would have wrapped each in
+additional `if (false)` guards — adding dead code on top of already-pruned dead code.
+Diagnosis: the handlers were ALREADY inside `if (false)` guard blocks; the validator's
+regex matched `request.params.name === "..."` without checking whether the surrounding
+context was dead code. Fix went into the validator (two-pass scan that skips lines
+containing `if (false`), not the source. Result: 1,134 false-positive violations → 0 with
+the corrected validator, and github-mcp source was never touched.
+
+- **[[verification-loop]]** — inspect → plan → implement → validate → repair; validate the validator the same way you validate code
+- **[[error-recovery]]** — first hypothesis is not always correct; false-positive detections are a class of incorrect hypothesis
+- **[[drift-detection]]** — a validator that fires false positives creates drift pressure toward incorrect "fixes"
+- **[[autonomous-engineering]]** — fixing source based on unvalidated tooling output is approval-tier "review-recommended" at minimum
+- Ship as standalone rule? **Y — `rules/root-cause-validator-findings.md`**

@@ -2,6 +2,7 @@
 name: content-writer
 description: Marketing copy, blog posts, and SEO content writer using Emdash brand voice. Flesch>=60, active voice, sharp and punchy — zero AI slop.
 tools: Read, Grep, Glob, WebSearch, WebFetch
+allowed-tools: Read Grep Glob WebSearch WebFetch
 disallowedTools: Write, Edit
 model: haiku
 permissionMode: default

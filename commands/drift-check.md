@@ -3,6 +3,9 @@ description: Run the drift-detection checklist (incl. agent-drift signals); repo
 argument-hint: [scope, optional]
 ---
 
+<!-- <SUBAGENT-STOP>: skip this skill when running inside a subagent. Meta-skills must not leak into spawned subagent contexts. Source: obra/superpowers `using-superpowers` skill. -->
+<SUBAGENT-STOP/>
+
 Run the drift-detection checklist per [[drift-detection]].
 
 **Purpose** — surface and fix architecture/feature/agent drift before it compounds.

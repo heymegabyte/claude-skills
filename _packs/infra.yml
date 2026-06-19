@@ -6,3 +6,4 @@ members:
   - 08-deploy-and-runtime-verification
   - rules/computer-use-safety
   - rules/email-deliverability
+  - rules/email-deliverability-implementation

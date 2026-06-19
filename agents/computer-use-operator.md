@@ -2,6 +2,7 @@
 name: computer-use-operator
 description: Desktop automation specialist. Controls native macOS apps via Computer Use MCP. Handles Finder, System Settings, Preview, Notes, and cross-app workflows.
 tools: Read, Bash, mcp__computer-use__*
+allowed-tools: Read Bash(ls:*) Bash(find:*) mcp__computer-use__*
 disallowedTools: Write, Edit
 model: sonnet
 permissionMode: bypassPermissions

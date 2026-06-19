@@ -109,6 +109,7 @@ them to run `wrangler d1 info` to check.
 ## When US is correct
 
 US jurisdiction is appropriate when:
+
 - All users are explicitly US-based and the product is US-only by design
 - The workload is subject to US government data requirements (FedRAMP, ITAR, CMMC)
 - The product is a US healthcare product subject to HIPAA (US datacenter agreements)

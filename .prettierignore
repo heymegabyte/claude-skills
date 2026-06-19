@@ -29,3 +29,6 @@ paste-cache/
 .kiro/
 .void/
 .bolt/
+
+# Forge-generated MCP servers — not hand-maintained
+mcp-servers/

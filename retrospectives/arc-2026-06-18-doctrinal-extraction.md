@@ -140,6 +140,7 @@ All 4 wired in `~/.claude/settings.json` hooks block (previously 1 hook: `enforc
 ### Skill 17 — Non-Engineering Verticals (`17-non-engineering-verticals/`)
 
 Four documents covering non-code domains:
+
 - `c-suite-personas.md` — executive stakeholder modeling for pitches and product decisions
 - `compliance-os.md` — GDPR/CCPA/SOC2/HIPAA compliance checklist patterns
 - `finance-domain.md` — accounting primitives, revenue recognition, D1 schema patterns for billing
@@ -148,6 +149,7 @@ Four documents covering non-code domains:
 ### Skill 18 — Document Processing (`18-document-processing/`)
 
 Four documents covering document ingestion and generation:
+
 - `pdf-parsing.md` — Workers AI + `pdf-parse` extraction; table detection; structured output
 - `pdf-generation.md` — `@react-pdf/renderer` on Workers; per-visitor PDF generation pattern
 - `docx-xlsx.md` — `docx` + `exceljs` generation; streaming to R2; download endpoint pattern
@@ -156,6 +158,7 @@ Four documents covering document ingestion and generation:
 ### Skill 19 — MCP Authoring (`19-mcp-authoring/`)
 
 Three documents covering MCP server construction:
+
 - `forge-mcp-from-openapi.md` — end-to-end recipe: spec download → forge → prune → harden → deploy
 - `stdio-server-template.md` — copy-paste scaffold for a `@modelcontextprotocol/sdk` stdio server
 - `http-server-on-workers.md` — SSE transport pattern on CF Workers; auth, CORS, streaming

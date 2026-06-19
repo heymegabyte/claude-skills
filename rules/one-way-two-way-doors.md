@@ -36,6 +36,7 @@ A decision you can undo in hours to days without impacting real users or requiri
 coordinated migration. The cost of slowing down on a two-way door is pure waste — move fast.
 
 Examples:
+
 - Adding a new D1 column (non-nullable with a default)
 - Adding a new Hono route
 - Wrapping a feature behind a feature flag (`enabled=0`)
@@ -54,6 +55,7 @@ announcement, or more than a sprint of work. Slow down. Write the self-argument.
 with explicit intent.
 
 Examples:
+
 - Dropping a D1 column (data loss)
 - Choosing an auth provider (Clerk → migration = weeks)
 - Defining a public API surface (consumers depend on it immediately)

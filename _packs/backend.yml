@@ -21,3 +21,6 @@ members:
   - rules/collaboration-sync-supervisor
   - rules/hardware-aware-programming
   - rules/pii-handling-discipline
+  - rules/inverted-abstraction-pyramid
+  - rules/webhook-as-skill-pattern
+  - rules/webhook-receiver-architecture

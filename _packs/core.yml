@@ -56,3 +56,15 @@ members:
   - rules/sync-ui-async-backing
   - rules/ttfr-north-star
   - rules/vendor-risk-tiering
+  - rules/conditional-ci-gates
+  - rules/file-target-disambiguation
+  - rules/loop-arc-economics
+  - rules/mcp-auth-options
+  - rules/oauth2-provider-discipline
+  - rules/principle-stability-monitoring
+  - rules/root-cause-validator-findings
+  - rules/template-utility-conventions
+  - rules/uuid-version-discipline
+  - rules/working-backwards
+  - rules/internal-skill-discovery
+  - rules/multi-harness-portability

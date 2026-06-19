@@ -12,41 +12,39 @@ paths:
 
 # Secret Auto-Provisioning
 
-Companion to `secret-provisioning.md`. That rule pushes existing secrets; this rule acquires new ones via generation, API-mint, Computer Use, or manual flow. Every "set this secret" Rec = failure.
+Companion to `secret-provisioning.md`. Acquires NEW secrets via generation, API-mint, Computer Use, or manual flow. Every "set this secret" Rec = failure.
 
 ## Core mandate
 
 - Producible without human input → produce automatically.
-- Requires human → acquire via highest tier available (API > Computer Use > manual deeplink).
+- Requires human → use highest tier available (API > Computer Use > manual deeplink).
 - Manual recs reserved for Tier 4 only (paid plans, KYC, no public API).
 
-## Tiered acquisition
+## Tiers
 
-### Tier 1 — Generate locally (openssl, no network)
+### Tier 1 — Generate locally (no network)
 
-HMAC, nonces, encryption keys. Script generates, age-encrypts via chezmoi, stores under `~/.local/share/chezmoi/home/.chezmoitemplates/secrets-{hostname}/<KEY>`. No human-in-loop.
+Generates and age-encrypts via chezmoi → `~/.local/share/chezmoi/home/.chezmoitemplates/secrets-{hostname}/<KEY>`.
 
-- Pattern: `openssl rand -base64 32` (HMAC/signing) | `openssl rand -hex 32` (URL-safe nonces)
-- Examples: `WEEKLY_DIGEST_SECRET`, `SALE_WEBHOOK_SECRET`, `JWT_SIGNING_SECRET`, `SESSION_SECRET`, `CSRF_SECRET`
-- Rotation: secrets only for signing outbound tokens (rotation = old tokens invalidate, no data loss) auto-rotate freely. `--rotate-tier1` flag opt-in.
+- `openssl rand -base64 32` — HMAC/signing keys.
+- `openssl rand -hex 32` — URL-safe nonces.
+- Examples: `WEEKLY_DIGEST_SECRET`, `SALE_WEBHOOK_SECRET`, `JWT_SIGNING_SECRET`, `SESSION_SECRET`, `CSRF_SECRET`.
+- Signing-only secrets auto-rotate (`--rotate-tier1` opt-in); rotation invalidates old tokens, no data loss.
 
-### Tier 1.5 — Data-at-rest secrets (NEVER auto-generate)
+### Tier 1.5 — Data-at-rest (NEVER auto-generate)
 
-- `MCP_ENCRYPTION_KEY` — encrypts MCP OAuth tokens in D1; rotation requires re-OAuth
-- `*_ENCRYPTION_KEY` / `*_AT_REST_KEY` — anything decrypting persisted data
-- `INTERNAL_BUILD_SECRET` / paired HMAC — mismatch breaks integration
-- Behavior: detect-only. Surface one-time mint when absent EVERYWHERE (chezmoi AND deploy target). Once minted, fold into `secret-provisioning.md` sync forever.
+- `MCP_ENCRYPTION_KEY` — encrypts MCP OAuth tokens in D1; rotation requires re-OAuth.
+- `*_ENCRYPTION_KEY` / `*_AT_REST_KEY` — decrypts persisted data.
+- `INTERNAL_BUILD_SECRET` / paired HMAC — mismatch breaks integration.
+- Detect-only. Surface one-time mint when absent in BOTH chezmoi AND deploy target. Then fold into `secret-provisioning.md` sync.
 
 ### Tier 2 — API-provision via parent credential
 
-Use high-trust parent to mint scoped, least-privilege secrets via vendor REST API. No browser, no human, fully automated.
+**Cloudflare scoped tokens** (parent: `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL`):
 
-**Cloudflare scoped tokens** (mint via global API key):
-
-- Parent: `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL` (global, chezmoi)
-- Minted: `CF_API_TOKEN` w/ `User → Tokens : Edit`
-- Endpoint: `POST https://api.cloudflare.com/client/v4/user/tokens`
-- Permission groups (enumerate at `GET /user/tokens/permission_groups`):
+- `POST https://api.cloudflare.com/client/v4/user/tokens`
+- Enumerate groups: `GET /user/tokens/permission_groups`
+- Permission group IDs:
   - `e086da7e2179491d91ee5f35b3ca210a` Workers Scripts Write
   - `f7f0eda5697f475c90846e879bab8666` Workers KV Write
   - `09b2857d1c31407795e75e3fed8617a1` D1 Write
@@ -58,172 +56,140 @@ Use high-trust parent to mint scoped, least-privilege secrets via vendor REST AP
   - `05880cd1bdc24d8bae0be2136972816b` Workers Tail Read
   - `b89a480218d04ceb98b4fe57ca29dc1f` Account Analytics Read
   - `e17beae8b8cb423a99b1730f21238bed` Cache Purge (zone-scoped)
-- Naming: `{project}-{env}-scoped-{YYYYMMDD}`. Store as `CF_API_TOKEN_SCOPED`, swap into Worker secret after smoke-test.
+- Name pattern: `{project}-{env}-scoped-{YYYYMMDD}`. Store as `CF_API_TOKEN_SCOPED`; smoke-test before swap.
 
 **Cloudflare Access service tokens**:
 
-- Endpoint: `POST /accounts/{accountId}/access/service_tokens`
-- Minted: `CF_ACCESS_CLIENT_ID` + `CF_ACCESS_CLIENT_SECRET` (bypasses bot protection for container builds)
-- Rotate 90d; tag w/ `duration: "8760h"` (1y max).
+- `POST /accounts/{accountId}/access/service_tokens` → `CF_ACCESS_CLIENT_ID` + `CF_ACCESS_CLIENT_SECRET`.
+- Rotate 90d; tag `duration: "8760h"` (1y max).
 
-**Stripe** (idempotent product/price/meter):
+**Stripe** (parent: `STRIPE_SECRET_KEY`):
 
-- Parent: `STRIPE_SECRET_KEY` (chezmoi)
-- Idempotency: `lookup_key` — search via `GET /v1/prices?lookup_keys[]=...` before create
-- Auto-minted: `STRIPE_USAGE_PRICE_IDS` (JSON map meter-backed metered prices, post-2025-03-31 API requires `recurring[meter]`), `STRIPE_PRICE_CREDITS_*` (one-time credit packs), `STRIPE_WEBHOOK_SECRET` (`POST /v1/webhook_endpoints` returns `whsec_*`, push to deploy target)
-- Meters first: `POST /v1/billing/meters` per metric; prices reference `recurring[meter]=mtr_*`
-- NEVER auto-mint: `STRIPE_CONNECT_CLIENT_ID` (requires OAuth app reg → Tier 3)
+- Idempotency: `GET /v1/prices?lookup_keys[]=...` before create.
+- Auto-mint: `STRIPE_USAGE_PRICE_IDS` (post-2025-03-31 requires `recurring[meter]`), `STRIPE_PRICE_CREDITS_*`, `STRIPE_WEBHOOK_SECRET` (`POST /v1/webhook_endpoints` → `whsec_*`).
+- Meters first: `POST /v1/billing/meters`; prices reference `recurring[meter]=mtr_*`.
+- NEVER auto-mint `STRIPE_CONNECT_CLIENT_ID` → Tier 3.
 
-**Anthropic Admin API**:
+**Anthropic Admin API** (parent: `ANTHROPIC_ADMIN_KEY`):
 
-- Parent: org-admin key (`ANTHROPIC_ADMIN_KEY` if stored, else manual)
-- Endpoint: `POST https://api.anthropic.com/v1/organizations/api_keys`
-- Mints: project-scoped `ANTHROPIC_API_KEY` w/ workspace + role + budget
-- Use: per-project key isolation for cost-attribution + revocation
+- `POST https://api.anthropic.com/v1/organizations/api_keys` → project-scoped `ANTHROPIC_API_KEY` w/ workspace + role + budget.
 
-**OpenAI Admin API**:
+**OpenAI Admin API** (parent: org-admin key):
 
-- Parent: org-admin key
-- Endpoint: `POST https://api.openai.com/v1/organization/projects/{project_id}/api_keys`
-- Mints: project-scoped `OPENAI_API_KEY`
+- `POST https://api.openai.com/v1/organization/projects/{project_id}/api_keys` → `OPENAI_API_KEY`.
 
-**GitHub fine-grained PAT (via gh CLI)**:
+**GitHub fine-grained PAT** (parent: `gh auth login`):
 
-- Parent: `gh auth login` session
-- Installation tokens: `gh api -X POST /users/{user}/installations/{id}/access_tokens` (60min TTL, auto-rotate)
-- Classic PAT still requires browser → Tier 3
+- Installation tokens: `gh api -X POST /users/{user}/installations/{id}/access_tokens` (60min TTL, auto-rotate).
+- Classic PAT requires browser → Tier 3.
 
-**Resend / SendGrid sending domains**:
+**Resend domains** (parent: `RESEND_API_KEY`):
 
-- Parent: `RESEND_API_KEY` (chezmoi)
-- Endpoint: `POST https://api.resend.com/domains` returns DNS records → add via CF API (chain!)
-- Auto-create sending domain + auto-add DNS records via CF zone API in same script
+- `POST https://api.resend.com/domains` → DNS records → add via CF zone API in same script.
 
 ### Tier 3 — Computer Use (OAuth-app registration)
 
-For providers without OAuth-app-management APIs. Launch `mcp__desktop-control__computer` to drive user's REAL Chrome (Chrome MCP / Playwright MCP have zero cookies, can't complete OAuth app reg).
+Use `mcp__desktop-control__computer` on user's REAL Chrome. Playwright/Chrome MCP have zero cookies — cannot complete OAuth app registration.
 
-- Mailchimp: `https://us1.admin.mailchimp.com/account/oauth2/` → "Register App" → redirect URI `https://{project}/api/mcp/mailchimp/callback`
+- Mailchimp: `https://us1.admin.mailchimp.com/account/oauth2/` → Register App → redirect URI `https://{project}/api/mcp/mailchimp/callback`
 - HubSpot: `https://developers.hubspot.com/get-started` → Create App → Auth → scopes
 - Stripe Connect OAuth: `https://dashboard.stripe.com/settings/connect/onboarding-options/oauth` → enable + redirect URI
 - Google OAuth: `https://console.cloud.google.com/apis/credentials` → Create Credentials → OAuth client ID
-- GA4 service account + JSON key: walkthrough → download → grant Viewer in GA4 Admin
+- GA4 service account: walkthrough → download JSON key → grant Viewer in GA4 Admin
 - Microsoft Clarity: `https://clarity.microsoft.com/projects/new?name={domain}&url=...`
 - Plausible: `https://plausible.io/sites/new?domain={domain}`
 
-Computer Use primitives (per `computer-use-safety.md`):
+Steps (per `computer-use-safety.md`): screenshot before acting → chain via `computer_batch` → read tier for browsers → scrape client_id + client_secret from DOM, age-encrypt, store → verify OAuth `/authorize` returns 200.
 
-1. Screenshot before acting
-2. Chain via `computer_batch`
-3. Read tier for browsers
-4. After OAuth app: scrape client_id + client_secret from DOM, age-encrypt, store
-5. Verify by hitting OAuth `/authorize` URL — 200 = working
-
-Opt-in: `--computer-use` flag on script. Not auto-fired.
+Opt-in: `--computer-use` flag. Not auto-fired.
 
 ### Tier 4 — Manual (paid plans, KYC, reseller approval)
 
-Surface w/ deeplinked URLs + reason. Never autopilot.
+Surface deeplinked URL + reason. Never autopilot.
 
-- `TRUSTPILOT_API_KEY` — paid Trustpilot Business
-- `OPENSRS_USERNAME` / `OPENSRS_API_KEY` — reseller approval (~1 day)
-- `DOMAINR_API_KEY` — RapidAPI subscription
-- `STRIPE_CONNECT_CLIENT_ID` — Connect platform enablement (brand review)
-- `APPLE_DEVELOPER_*` — Apple Dev Program ($99/yr + review)
-- `GOOGLE_PLAY_*` — Google Play Console ($25 + review)
-- `CHECKR_API_KEY` — **sales-gated**. Direct-signup accounts get NO self-serve API key (no "Create API Key" button anywhere in dashboard). Request via `https://checkr.com/contact-us` → Sales → 1-3 business day credentialing call → Developers tab unlocks. Self-serve alternatives if shipping now: `PERSONA_API_KEY` (`https://withpersona.com`) or `ONFIDO_API_TOKEN` (`https://onfido.com`) — both grant sandbox keys at signup.
+- `TRUSTPILOT_API_KEY` — paid Business plan.
+- `OPENSRS_USERNAME` / `OPENSRS_API_KEY` — reseller approval (~1 day).
+- `DOMAINR_API_KEY` — RapidAPI subscription.
+- `STRIPE_CONNECT_CLIENT_ID` — Connect platform brand review.
+- `APPLE_DEVELOPER_*` — $99/yr + review.
+- `GOOGLE_PLAY_*` — $25 + review.
+- `CHECKR_API_KEY` — **sales-gated**: no self-serve "Create Key" button. Request via `https://checkr.com/contact-us` → Sales → 1-3 business day call. Alternatives: `PERSONA_API_KEY` (`https://withpersona.com`) or `ONFIDO_API_TOKEN` (`https://onfido.com`).
 
-## Vendor-onboarding gating reality
+## Vendor gating reality
 
-Some vendors LOOK self-serve but gate API access behind a sales call. Symptom: logged in, dashboard shows no "API Keys" / "Developer Settings" / "Create Key" button anywhere. Don't keep searching — it's not hidden, it's gated.
+Symptom of gated API: logged in, no "API Keys" / "Developer Settings" / "Create Key" button anywhere — it's gated, not hidden.
 
-| Vendor | Self-serve API? | Alt if blocked |
-|--|--|--|
-| Stripe | ✅ instant | n/a |
-| Twilio | ✅ instant | n/a |
-| Resend | ✅ instant | n/a |
-| Anthropic | ✅ instant | n/a |
-| OpenAI | ✅ instant | n/a |
-| Cloudflare | ✅ instant | n/a |
-| Checkr | ❌ sales call | Persona, Onfido |
-| Plaid | ⚠️ tier-gated (Sandbox=instant, Development=approval, Production=approval) | — |
-| Trustpilot | ❌ paid only | reviews.io |
-| Mailchimp | ✅ instant (Marketing API) | — |
-| Stripe Connect | ⚠️ brand review for platform | — |
-| Apple Developer | ❌ $99/yr + manual review | — |
+- Self-serve instant: Stripe, Twilio, Resend, Anthropic, OpenAI, Cloudflare, Mailchimp (Marketing API).
+- `Checkr` — sales call; alternatives: Persona, Onfido.
+- `Plaid` — Sandbox instant; Development + Production require approval.
+- `Trustpilot` — paid only; alternative: reviews.io.
+- `Stripe Connect` — brand review for platform enablement.
+- `Apple Developer` — $99/yr + manual review.
 
-Update this list as each vendor's reality surfaces (per `prompt-as-training-signal` §6).
+Update as vendor reality surfaces (per `prompt-as-training-signal` §6).
 
 ## Security model
 
-### Least-privilege scoped tokens > global keys
-
-- Default: Tier 2 always mints scoped. Global keys ONLY for bootstrapping.
+- Tier 2 always mints scoped. Global keys ONLY for bootstrapping.
 - CF: never put `CLOUDFLARE_API_KEY` + `CLOUDFLARE_EMAIL` on Worker. Worker gets scoped `CF_API_TOKEN`. Global lives in chezmoi + GitHub Actions OIDC.
-- GitHub Actions: OIDC + `cloudflare/wrangler-action@v3` instead of long-lived tokens in repo secrets.
+- GitHub Actions: OIDC + `cloudflare/wrangler-action@v3` instead of long-lived repo secrets.
 
 ### Rotation cadence
 
-- Tier 1 generated: 90d (HMAC), 30d (session)
-- Tier 2 scoped tokens: 90d (CF, Stripe webhook), 60d (Access service tokens)
-- Tier 1.5 at-rest: never rotate without re-encryption job
-- Anthropic/OpenAI project keys: per project lifecycle (per-deploy if budget allows)
+- Tier 1: 90d (HMAC), 30d (session).
+- Tier 2: 90d (CF, Stripe webhook), 60d (Access service tokens).
+- Tier 1.5: never rotate without re-encryption job.
+- Anthropic/OpenAI project keys: per project lifecycle.
 
 ### Storage hierarchy
 
-1. **chezmoi** (age-encrypted at rest, `~/.local/share/chezmoi/home/.chezmoitemplates/secrets-{hostname}/`)
-2. **CF Worker secrets** (encrypted, exposed at `env.KEY`)
-3. **GitHub Actions secrets** (OIDC + CI-only credentials only)
-4. NEVER: env files in repo, `.env.local` checked in, secret-bearing screenshots/logs
+1. **chezmoi** — age-encrypted at rest, `~/.local/share/chezmoi/home/.chezmoitemplates/secrets-{hostname}/`.
+2. **CF Worker secrets** — encrypted, exposed at `env.KEY`.
+3. **GitHub Actions secrets** — OIDC + CI-only credentials only.
+4. NEVER: env files in repo, `.env.local` checked in, secret-bearing screenshots/logs.
 
-### Secret-redacting logs
+### Log redaction
 
-- Provisioning script MUST redact before printing
-- Prefixed creds: `${value.slice(0, 7)}…${value.slice(-3)}` (`sk_live…XYZ`)
-- Unprefixed: print `(len=N)` only
+- Prefixed creds: `${value.slice(0, 7)}…${value.slice(-3)}`.
+- Unprefixed: print `(len=N)` only.
 
 ### Audit trail
 
-- Tag every minted token in vendor metadata: `metadata.managed_by = "projectsites"` + `metadata.minted_at` + `metadata.minter_host`
-- Vendor dashboards (CF token list, Stripe products, Resend domains) = audit log
-- `provision-secrets.mjs --audit` lists every managed-by-projectsites token across vendors
+- Tag every minted token: `metadata.managed_by = "projectsites"`, `metadata.minted_at`, `metadata.minter_host`.
+- `provision-secrets.mjs --audit` lists every managed token across vendors.
 
-## Integrations
+## Trigger points
 
-### Trigger points
+- **`predeploy`** npm script — Tier 1 + Tier 2 always run; Tier 3/4 surfaced.
+- **CI** — Tier 1 + Tier 2 with `--push`, then `wrangler deploy`.
+- **`/provision`** slash command — interactive.
+- **`npx create-emdash-app`** — full provisioning before first commit.
 
-- **Pre-deploy** (`predeploy` npm script) — Tier 1 + Tier 2 always run; Tier 3/4 surfaced
-- **CI workflow** — Tier 1 + Tier 2 run w/ explicit `--push`, then `wrangler deploy`
-- **`/provision`** slash command — interactive
-- **New project scaffold** — `npx create-emdash-app` runs full provisioning before first commit
+## Chained provisioning
 
-### Chained provisioning
+- Stripe webhook → `STRIPE_WEBHOOK_SECRET` → push to Worker → deploy → verify callback.
+- Resend domain → DNS records → CF zone API → wait for verification → mark `verified`.
+- CF scoped token → push to Worker → swap `wrangler.toml [vars]` → smoke-test `/v4/user/tokens/verify` → reject if scope-mismatched.
 
-- Stripe webhook → mints `STRIPE_WEBHOOK_SECRET` → push to Worker → deploy → fire Stripe event → verify callback
-- Resend sending domain → returns DNS records → CF API adds to zone → wait for verification → mark `verified`
-- CF scoped token mint → push to Worker → swap in `wrangler.toml [vars]` → smoke-test against `/v4/user/tokens/verify` → reject if scope-mismatched
+## Idempotency contract
 
-### Idempotency contract
-
-- Every Tier 1 + Tier 2 safe to re-run forever
-- chezmoi: `tryGetSecret(key) ?? mint()`
-- Vendor: `GET ?lookup_keys=` (Stripe), `GET /tokens?name=` (CF), `GET /domains?domain=` (Resend) before POST
-- Failed runs leave no orphans (rollback created products if mid-flow)
+- Tier 1 + Tier 2 safe to re-run forever.
+- chezmoi: `tryGetSecret(key) ?? mint()`.
+- Vendor pre-check: `GET ?lookup_keys=` (Stripe), `GET /tokens?name=` (CF), `GET /domains?domain=` (Resend) before POST.
+- Failed runs leave no orphans (rollback created products if mid-flow).
 
 ## Reusable helper
 
-- `scripts/lib/secrets.mjs` exports: `tryGetSecret`, `storeSecret`, `generateBase64Secret`, `generateHexSecret`, `ensureGeneratedSecret`, `ensureCloudflareAuth`, `mintCloudflareScopedToken`, `ensureStripeMeter`, `ensureStripePrice`, `pushSecretToWorker`, `syncSecretsToWorker`, `COMMON_SECRETS[]`
-- `scripts/provision-secrets.mjs` orchestrates all four tiers
-- Reference impl: `apps/project-sites/scripts/{lib/secrets.mjs,provision-secrets.mjs}`
-- Copy verbatim into every new emdash project; wire into `predeploy`
+- `scripts/lib/secrets.mjs` exports: `tryGetSecret`, `storeSecret`, `generateBase64Secret`, `generateHexSecret`, `ensureGeneratedSecret`, `ensureCloudflareAuth`, `mintCloudflareScopedToken`, `ensureStripeMeter`, `ensureStripePrice`, `pushSecretToWorker`, `syncSecretsToWorker`, `COMMON_SECRETS[]`.
+- `scripts/provision-secrets.mjs` orchestrates all four tiers.
+- Reference impl: `apps/project-sites/scripts/{lib/secrets.mjs,provision-secrets.mjs}`.
+- Wire into `predeploy` in every new emdash project.
 
-## Anti-friction
-
-Every "set this secret manually" rec = code smell. Before surfacing:
+## Anti-friction decision tree
 
 1. Tier 1? Generate.
-2. Tier 2? Use parent cred to mint.
-3. Tier 3? Spawn Computer Use if `--computer-use` flag, else surface deeplinked URL + form-prefilled redirect URI.
-4. Tier 4? Surface w/ deeplinked URL + reason + estimated wall time.
+2. Tier 2? Mint via parent cred.
+3. Tier 3? Spawn Computer Use if `--computer-use`, else surface deeplinked URL + prefilled redirect URI.
+4. Tier 4? Surface deeplinked URL + reason + estimated wall time.
 
-If rec doesn't specify tier, rec itself is the gap.
+If rec doesn't specify tier, the rec itself is the gap.

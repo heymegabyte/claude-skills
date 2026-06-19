@@ -3,6 +3,9 @@ description: Run a learning pass after a major run; fold reusable lessons into g
 argument-hint: [what the run revealed, optional]
 ---
 
+<!-- <SUBAGENT-STOP>: skip this skill when running inside a subagent. Meta-skills must not leak into spawned subagent contexts. Source: obra/superpowers `using-superpowers` skill. -->
+<SUBAGENT-STOP/>
+
 Run a post-run learning pass per [[prompt-as-training-signal]].
 
 **Purpose** — convert a finished major run into durable, reusable improvements to global config.
