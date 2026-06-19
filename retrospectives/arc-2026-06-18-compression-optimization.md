@@ -71,7 +71,7 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - `[x]` 3. Filler-word blocklist — shipped `bin/audit-instruction-files.mjs` CHECK 3 (iter 1, HIGH/CI)
 - `[x]` 4. Near-duplicate detector — `bin/audit-near-duplicates.mjs` (node-only 3-gram shingle Jaccard, no embeddings; advisory). Result: corpus tightly differentiated (max Jaccard 0.053) — NO merges needed; `prompt-cache`/`prompt-cache-strategy` confirmed complementary not duplicate.
 - `[ ]` 5. Contradiction detector — pairwise LLM judge on near-similar rules → `_contradiction-log.md`
-- `[ ]` 6. Description retrieval scorer — embed description vs synthetic trigger queries, score <0.7 fails
+- `[x]` 6. Skill-discoverability auditor — `bin/audit-skill-discoverability.mjs` (lexical proxy, no embeddings; advisory). 0 HIGH (no-triggers); 43 no-summary + 11 thin/echo-trigger MEDIUMs surfaced.
 - `[x]` 7. Cross-link INTEGRITY validator — `bin/audit-crosslinks.mjs` wired as blocking lint gate 16 (every `[[slug]]` resolves; 0 broken). PageRank/promote-isolated half still open.
 - `[ ]` 8. Progressive-disclosure enforcer — fail reference chains >1 deep
 - `[ ]` 9. Vocabulary canonicalizer — `_glossary.json` synonym→canonical, find/replace hook
@@ -144,6 +144,13 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - **Wire `bin/audit-instruction-files.mjs` to lefthook** now the gate is green — first add inline-code-span skip + `<!-- validator-ignore -->` hatch (iter-1 known refinement).
 
 ## Iteration log
+
+### iter 14 — 2026-06-19 (idea #6 + SATURATION ASSESSMENT)
+
+- Built `bin/audit-skill-discoverability.mjs` (idea #6): flags rules/skills that route poorly. **0 HIGH findings** — every trigger-less file is correctly `paths: ["*"]` always-load. 43 `no-summary` + 11 thin/echo-trigger MEDIUMs (stylistic, advisory).
+- **Arc saturation reached.** Evidence: (a) compression complete — iters 13-14 found only code-heavy or already-done files; (b) the audits now return CLEAN (near-dup 0, discoverability 0 HIGH, trigger-collisions only intentional) — they confirm health rather than find issues; (c) compression commits net-shrank (iter10 +394/-907, iter11 +226/-283) but recent fires are additive tooling of decreasing marginal value.
+- **Recommendation surfaced to user**: lengthen the `/loop 20m` cron to daily or stop it. The compression mandate is DONE; remaining 50-idea items need infra not available node-only (embeddings, runtime activation logs) or are marginal.
+- Gate 17 pass · 0 fail. 9 of 50 ideas shipped (#1,2,3,4,6,7,10,13,16); 6 tools total, 3 wired as gates.
 
 ### iter 13 — 2026-06-19 (idea #4 + final prose files)
 
