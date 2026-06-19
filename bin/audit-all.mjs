@@ -53,7 +53,8 @@ const AUDITS = [
   { script: 'audit-contradictions.mjs',       label: 'contradictions' },
   { script: 'audit-near-duplicates.mjs',      label: 'near-duplicates' },
   { script: 'audit-trigger-collisions.mjs',   label: 'trigger-collisions' },
-  { script: 'audit-skill-discoverability.mjs', label: 'skill-discoverability' },
+  { script: 'audit-skill-discoverability.mjs',
+  'audit-path-scope.mjs', label: 'skill-discoverability' },
 ];
 
 // ---------------------------------------------------------------------------
