@@ -18,23 +18,18 @@ paths:
 - Update stale docs
 - Run parallel w/ feature work via background agent — default, not extra
 
-## Analytics auto-provision (TIERED — match stack to project tier)
-
-Default: don't bolt on all five. Cost + complexity + cookie banners matter.
+## Analytics auto-provision (TIERED)
 
 ### Tier 1 — Solo SaaS / nonprofit / local / portfolio
 
-- Pick TWO max:
-  - **PostHog** — product analytics + error tracking + session replay + feature flags
-  - **Workers Tracing** — free OTel I/O spans (KV/R2/D1/DO/fetch), zero-config
+- Pick TWO max: **PostHog** + **Workers Tracing**
 - Skip **Sentry** (PostHog covers errors + replay)
-- Skip **GA4** (PostHog covers analytics w/ better privacy posture: `persistence:'memory'`)
+- Skip **GA4** (PostHog covers analytics; use `persistence:'memory'`)
 - Skip **AI Gateway** unless LLM calls exceed 10k/mo
 
 ### Tier 2 — Enterprise / regulated / multi-team SaaS
 
 - Full stack: **Sentry + PostHog + GA4 + Workers Tracing + AI Gateway**
-- Auditability + compliance justify cost + complexity
 - Every action: GA4 event + PostHog event + Sentry breadcrumb + Workers Trace span + AI Gateway log
 
 ### Tier 3 — AI-heavy product (>10k LLM calls/mo)
@@ -48,7 +43,7 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
    - Project via `mcp__sentry__create_project` (org:`megabyte-labs`, team:`megabyte-labs`, platform:`javascript`)
    - `SENTRY_DSN` via `wrangler secret put`
    - Pattern: `import { withSentry } from '@sentry/cloudflare'; export default withSentry(env => ({ dsn, tracesSampleRate: 1.0, sendDefaultPii: false }), worker);`
-   - OIDC, not static DSN secrets
+   - Use OIDC, not static DSN secrets
    - Focus on exceptions; Workers Tracing handles I/O spans
 
 2. **PostHog**
@@ -63,15 +58,14 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
 
 4. **Workers Tracing (OTLP)**
    - `[observability] enabled = true` in `wrangler.jsonc` — zero-config OTel tracing of every I/O
-   - Free until Mar 1 2026 then billed
-   - Export to Axiom (cheapest at edge volumes), Honeycomb (BubbleUp anomaly), Grafana, Datadog via `@opentelemetry/exporter-trace-otlp-http`
+   - Export to Axiom / Honeycomb / Grafana / Datadog via `@opentelemetry/exporter-trace-otlp-http`
 
 5. **AI Gateway**
    - Every LLM call routes through binding (`env.AI.run()` auto-routes)
    - Direct Anthropic: `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/anthropic/v1/messages`
    - For logging, caching, rate-limit, fallback
    - **Per-request `cacheKey` + `cacheTtl`** on Worker binding for fine-grained LLM-call dedupe — pass stable hash of prompt+ctx; 30-70% hit rate on repeated surfaces (FAQ-gen, metadata-extract, classify). Source: Cloudflare. (2026). *AI Gateway Worker binding methods*. `developers.cloudflare.com/ai-gateway/integrations/worker-binding-methods/`
-   - **`env.AI.gateway().patchLog(id, {score, feedback, metadata})`** wires post-call eval scores back to the specific gateway log entry → closes the eval loop online (not just offline CI). Use with `evals.md` § three-tier grading.
+   - **`env.AI.gateway().patchLog(id, {score, feedback, metadata})`** wires post-call eval scores back to the specific gateway log entry → closes the eval loop online per `evals.md` § three-tier grading
    - **Async batch via `env.AI.run(model, { queueRequest: true, messages: [...] })`** for Llama 3.3 70B + BGE embeddings — ~5-10× throughput on bulk content gen (pSEO render, page-prerender, doc-embedding). Source: Cloudflare. (2026). *Workers AI improvements*. `blog.cloudflare.com/workers-ai-improvements/`
 
 ## Security scan — OWASP Top 10:2025
@@ -126,13 +120,13 @@ Default: don't bolt on all five. Cost + complexity + cookie banners matter.
 
 ## Template Scan (megabytespace/saas-starter — EVERY PROMPT)
 
-- After implementing any code change, scan: "Would saas-starter have saved time here?"
+- After any code change, ask: "Would saas-starter have saved time here?"
 - If yes → push improvement to `megabytespace/saas-starter` same prompt
-- Template must always reflect current best practices: same stack, same `.claude/` config, same standards as any Emdash project
+- Template must reflect current best practices: same stack, same `.claude/` config, same standards as any Emdash project
 - **Bindings**: D1 (read-replicas) + KV + CACHE + R2 (IA lifecycle) + AI + Hyperdrive + Vectorize + Queue + DO (SQLite) + Container + Assets
 - **Stubs**:
   - Clerk auth (M2M JWT)
-  - **Square Web Payments SDK for accepting** (donations + POS + subscriptions + tap-to-pay — DEFAULT for ALL inbound money)
+  - Square Web Payments SDK for accepting (donations + POS + subscriptions + tap-to-pay — DEFAULT for ALL inbound money)
   - Stripe Connect Express stub for payouts ONLY (vendor/contractor/volunteer reimbursement, marketplace splits — NEVER for accepting end-user money)
   - Inngest workflows
   - Workflows v2 step-based jobs

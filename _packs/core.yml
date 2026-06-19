@@ -15,6 +15,7 @@ members:
   - rules/main-only-branch
   - rules/no-staging-doctrine
   - rules/code-style
+  - rules/instruction-compression-playbook
   - rules/error-recovery
   - rules/auto-meta-work
   - rules/agent-selection
