@@ -37,41 +37,41 @@ Hover / focus / active swaps to official brand hex:
 - **Reddit** — `#FF4500`
 - **Snap** — `#FFFC00`
 
-Encode as `social-brand-hex.json` map shipped in template — never hardcode generic accent. See `social-brand-hex.md`.
+Encode as `social-brand-hex.json` shipped in template — never hardcode generic accent. See `social-brand-hex.md`.
 
 ## Every site (small text contrast — ***WCAG AAA FOR SMALL TEXT***)
 
-- Any text ≤14px MUST contrast ≥7:1 vs its background (WCAG AAA for small text)
-- Body small text muted ONLY at full WCAG-AA (≥4.5:1)
-- **Forbidden:** muted-foreground on muted-background pairing for small text
-- **Build gate:** visual-qa samples computed-style of `font-size ≤ 14px` elements + bg, fails if contrast <7:1
+- Text ≤14px MUST contrast ≥7:1 vs background (WCAG AAA).
+- Body small muted text: minimum WCAG-AA (≥4.5:1).
+- **Forbidden**: muted-foreground on muted-background for small text.
+- **Build gate**: visual-qa samples computed-style of `font-size ≤ 14px` + bg, fails if contrast <7:1.
 
-**Reference incident:** the /services small-print incident on lone-mountain-global-3 (2026-05-01) — small descriptive text rendered too close to bg color, illegible — drove this rule.
+**Reference incident**: /services small-print on lone-mountain-global-3 (2026-05-01).
 
 ## Every logo render (***LOGO-VS-CONTAINER CONTRAST — UNIVERSAL — BUILD-BREAKING***)
 
-- Every logo render (header, footer, hero, modal, splash, mobile menu, sidebar) MUST contrast its container background by ≥4.5:1 measured on the logo's dominant chroma (NOT the transparent pixels)
+- Every logo render (header, footer, hero, modal, splash, mobile menu, sidebar) MUST contrast its container background ≥4.5:1 measured on the logo's dominant chroma (NOT transparent pixels).
 
 ### Forbidden pairings
 
-- White-text-logo on white / cream bg
-- Dark-text-logo on dark / navy bg
+- White-text-logo on white/cream bg
+- Dark-text-logo on dark/navy bg
 - Low-saturation-logo on same-hue bg
 
 ### Resolution
 
-- Header AND footer themes are CHOSEN AFTER logo luminance scan (skill 09 `logo-luminance-drives-theme`)
-- When dual-theme site (light header + dark footer or vice versa) needs the SAME logo, ship TWO logo files (`brand-mark-light.svg` for dark bg, `brand-mark-dark.svg` for light bg) and CSS `picture` / `<source media>` swaps based on container
+- Header AND footer themes chosen AFTER logo luminance scan (skill 09 `logo-luminance-drives-theme`).
+- Dual-theme site: ship TWO logo files (`brand-mark-light.svg` for dark bg, `brand-mark-dark.svg` for light bg) with CSS `<picture>/<source media>` swaps.
 
 ### Validator (`validate-logo-contrast.mjs`)
 
 GPT Image 2 vision samples logo bbox + container computed bg at 6bp, fails if contrast <4.5:1.
 
-**Reference incident:** the lone-mountain-global-3 (2026-05-01) header rendered white-text-logo on white bg (invisible) AND footer rendered dark-text-logo on dark bg (invisible) — both invisible — drove this rule.
+**Reference incident**: lone-mountain-global-3 (2026-05-01) white-text-logo on white bg AND dark-text-logo on dark bg — both invisible.
 
 ## Every hero (***HERO TEXT CONTRAST SCRIM — UNIVERSAL — BUILD-BREAKING***)
 
-Hero / page-banner backgrounds (image, video, gradient) MUST guarantee ≥4.5:1 contrast for ALL hero text via mandatory scrim overlay.
+Hero / page-banner backgrounds MUST guarantee ≥4.5:1 contrast for ALL hero text via mandatory scrim.
 
 ### Pattern
 
@@ -80,7 +80,7 @@ Hero / page-banner backgrounds (image, video, gradient) MUST guarantee ≥4.5:1 
 .hero > .hero-content { position:relative; z-index:2 }
 ```
 
-For dark text on light / bright bg, invert to white-overlay.
+For dark text on light bg, invert to white-overlay.
 
 ### Scrim opacity tuned per bg luminance
 
@@ -90,80 +90,76 @@ For dark text on light / bright bg, invert to white-overlay.
 
 ### Companion
 
-- `text-shadow: 0 1px 3px rgba(0,0,0,.5)` on hero h1 + subhead as belt-and-suspenders
-- NEVER ship hero text directly on raw image without scrim
+- `text-shadow: 0 1px 3px rgba(0,0,0,.5)` on hero h1 + subhead as belt-and-suspenders.
+- NEVER ship hero text on raw image without scrim.
 
 ### Validator
 
 visual-qa samples hero text + computed-bg-after-scrim at 6bp, fails if contrast <4.5:1.
 
-**Reference incident:** the lone-mountain-global-3 (2026-05-01) hero rendered text on insufficiently-darkened bg drove this rule.
+**Reference incident**: lone-mountain-global-3 (2026-05-01) hero text on insufficiently-darkened bg.
 
-## Every nav / header / footer logo render (***LOGO TRANSPARENT-BG VARIANT — UNIVERSAL — BUILD-BREAKING — extends "Every logo render"***)
+## Every nav / header / footer logo render (***LOGO TRANSPARENT-BG VARIANT — UNIVERSAL — BUILD-BREAKING***)
 
-When source logo PNG / JPG has a baked-in solid background (white card, colored stripe, gradient bar) AND the rebuild's nav / header / footer surface DIFFERS from that baked bg, the build MUST produce a transparent-bg logo variant before render.
+When source logo PNG/JPG has a baked-in solid background AND the rebuild surface DIFFERS from that baked bg, produce a transparent-bg logo variant before render.
 
 ### Pipeline
 
-1. Detect source logo bg via Sharp `getDominantColor` + edge-pixel sample at 5px inset — if ≥80% of border pixels share a single hue, logo has baked bg
-2. Auto-strip via `sharp(logo).removeAlpha().threshold(...)` OR remove.bg API (`REMOVEBG_API_KEY`) for hard cases (anti-aliased edges, drop shadows, gradient bgs)
-3. Ship `brand-mark-transparent.png` + `brand-mark-transparent.svg` (when SVG available) alongside `brand-mark.png`
-4. `<picture><source srcset="brand-mark-transparent.png" media="(--surface-bg: transparent)"><img src="brand-mark.png"></picture>` with CSS `--surface-bg` custom property set per surface
+1. Detect baked bg via Sharp `getDominantColor` + edge-pixel sample at 5px inset — ≥80% border pixels sharing one hue = baked bg.
+2. Auto-strip via `sharp(logo).removeAlpha().threshold(...)` OR remove.bg API (`REMOVEBG_API_KEY`) for hard cases.
+3. Ship `brand-mark-transparent.png` + `brand-mark-transparent.svg` alongside `brand-mark.png`.
+4. `<picture><source srcset="brand-mark-transparent.png" media="(--surface-bg: transparent)"><img src="brand-mark.png"></picture>` with CSS `--surface-bg` per surface.
 
 ### Context rules
 
 - Header on white nav → transparent variant
 - Header on dark hero → dark-bg variant
 - Footer on dark band → light-text variant
-- Three files, three contexts, never one PNG fighting all three
 
 ### Validator (`validate-logo-transparent-variant.mjs`)
 
-For every site whose source logo has detected baked bg, assert `public/brand-mark-transparent.png` exists AND header `<img>` references transparent variant when nav bg-luminance differs from logo baked-bg luminance by ≥0.3.
+For every site with detected baked bg: assert `public/brand-mark-transparent.png` exists AND header `<img>` references transparent variant when nav bg-luminance differs from logo baked-bg luminance by ≥0.3.
 
-**Reference incident:** njsk.org rebuild (2026-05-02) shipped white-card-bg logo on white nav (logo box visibly clashed with nav surface) — drove this rule.
+**Reference incident**: njsk.org rebuild (2026-05-02) white-card-bg logo on white nav.
 
 ## Every X (formerly Twitter) reference (***X-NOT-TWITTER + LATEST X ICON — UNIVERSAL — BUILD-BREAKING***)
 
-EVERY mention / icon / aria-label / alt-text / social-row tile referencing the social network formerly known as Twitter MUST use the current "X" branding (text="X", icon=current X logo SVG, brand color=`#000` with cyan / magenta dual-shadow on hover per "Every social link" rule).
+Every mention / icon / aria-label / alt-text referencing the network formerly known as Twitter MUST use "X" branding (text="X", icon=current X logo SVG, brand color=`#000` with cyan/magenta dual-shadow).
 
-### Forbidden text strings in dist/ HTML + ARIA
+### Forbidden text in dist/ HTML + ARIA
 
-- "Twitter" (except in historical context like "formerly Twitter")
-- "Tweet" (except as past-tense verb in dated content)
-- "@" mentions style
+- "Twitter" (except "formerly Twitter" historical context)
+- "Tweet" (except as past-tense in dated content)
 
 ### Forbidden icons
 
-- The blue Twitter bird SVG (path data with `tw-bird` etc.)
-- `simple-icons:twitter`
-- `lucide-twitter`
+- Twitter bird SVG; `simple-icons:twitter`; `lucide-twitter`
 
 ### Required
 
-- `simple-icons:x` OR custom inline SVG of the X mark
+- `simple-icons:x` OR custom inline:
 
   ```html
   <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
   ```
 
-- `aria-label` MUST be "X (formerly Twitter)" on first mention (for screen readers + SEO context) then plain "X" on repeat
+- `aria-label` MUST be "X (formerly Twitter)" on first mention, plain "X" on repeat.
 
 ### Validator (`validate-x-not-twitter.mjs`)
 
-Grep dist/ for `\bTwitter\b`, `tweet`, `tw-bird`, blue twitter-bird SVG path; fail on any match outside whitelisted contexts (`<time datetime>` in archived blog posts, dated quotes, "formerly Twitter" parenthetical).
+Grep dist/ for `\bTwitter\b`, `tweet`, `tw-bird`, blue twitter-bird SVG path; fail outside whitelisted contexts.
 
-**Reference incident:** nyfoldingbox.com rebuild (2026-05-02) shipped Twitter-bird icon + "Follow us on Twitter" copy — drove this rule.
+**Reference incident**: nyfoldingbox.com (2026-05-02) shipped Twitter-bird icon + "Follow us on Twitter."
 
 ## Every bio mentioning notable institutions
 
 BU | Harvard | MIT | Stanford | Oxford | Cambridge | Yale | Princeton | Columbia | UPenn | Cornell | Brown | Dartmouth | Caltech | UChicago | Northwestern | Duke | JHU | UMich | UCLA | UCB | CMU | T20 — credentials row with high-res transparent-PNG institution logos.
 
-**Fetch chain:** Logo.dev → Wikipedia Commons SVG → Brandfetch.
+**Fetch chain**: Logo.dev → Wikipedia Commons SVG → Brandfetch.
 
 ## Every section with multiple CTAs (***PRIMARY vs SECONDARY VISUAL DISTINCTION — UNIVERSAL — BUILD-BREAKING***)
 
-Every content section MUST have AT MOST one primary CTA (filled button, high-contrast, brand-accent background, white text) and optionally one secondary CTA (outlined button, transparent / ghost style, accent border + accent text). NEVER two primary CTAs in the same visual space — they compete, confuse hierarchy, and reduce click-through on both.
+Each section: AT MOST one primary CTA (filled, high-contrast, brand-accent bg, white text) + optionally one secondary CTA (outlined/ghost). NEVER two primary CTAs in the same visual space.
 
 ### Design tokens
 
@@ -172,345 +168,263 @@ Every content section MUST have AT MOST one primary CTA (filled button, high-con
 
 ### Rules
 
-- Hover states both required (per 4-state interactive rule)
-- Icon `→` or `↗` on primary CTA; no icon on secondary
-- **Mobile stacking** — CTAs in a flex row wrap to column on `<576px` — primary always comes first (top) when stacked
-- **Special** — hero section MAY have a video / tour secondary action rendered as `<button role="button" aria-label="Watch overview video">▶ Watch 2-min overview</button>` styled as ghost / secondary
+- Hover states required on both (per 4-state interactive rule).
+- Icon `→` or `↗` on primary; no icon on secondary.
+- **Mobile stacking**: flex row wraps to column on `<576px`; primary always first (top).
+- **Hero exception**: video/tour secondary may be `<button role="button" aria-label="Watch overview video">▶ Watch 2-min overview</button>` ghost-styled.
 
 ### Validator (`validate-cta-hierarchy.mjs`)
 
-For each `<section>`, count elements matching `[class*="btn-primary"]`, `[data-variant="primary"]` — assert count ≤1; assert any second CTA in same section has distinct visual weight (border-only or text-link style).
+Per `<section>`: count `[class*="btn-primary"]`, `[data-variant="primary"]` — assert count ≤1; assert second CTA has distinct visual weight.
 
-**Reference incident:** nyfoldingbox homepage every section had two identically-styled "GET STARTED" + "LEARN MORE" buttons — same size, same weight, same color — zero hierarchy — drove this rule.
+**Reference incident**: nyfoldingbox — every section had two identically-styled "GET STARTED" + "LEARN MORE" buttons.
 
 ## Every testimonial (***COMPLETE ATTRIBUTION — UNIVERSAL — BUILD-BREAKING***)
 
-Every testimonial / review / quote rendered on the site MUST include:
+Every testimonial MUST include:
 
-1. `<blockquote>` semantic element with `cite` attribute set to the source URL when available
-2. `<cite>` element wrapping — person first + last name (MANDATORY), their job title / role (MANDATORY), their company / organization name (MANDATORY when a business context exists — NOT optional)
-3. **Avatar** — source photo ≥40×40px → GPT Image 1.5 representative headshot → initials monogram badge (bg = brand-accent, text = bg-primary, 2 initials from name)
-4. **Date of testimonial** (year minimum: "2024") when derivable from source
-5. **Star rating** (1-5) when source had one
+1. `<blockquote>` with `cite` attribute (source URL when available).
+2. `<cite>`: person first + last name (MANDATORY), job title/role (MANDATORY), company/org (MANDATORY when business context exists).
+3. **Avatar**: source photo ≥40×40px → GPT Image 1.5 headshot → initials monogram (bg=brand-accent, text=bg-primary).
+4. **Date** (year minimum: "2024") when derivable.
+5. **Star rating** (1-5) when source had one.
 
 ### NEVER anonymous testimonials
 
 - `"— Happy Customer"` — FORBIDDEN
 - `"— Anonymous"` — FORBIDDEN
 - `"— Satisfied Client"` — FORBIDDEN
-
-If source quote lacks attribution, use `"[Name withheld by request] · Verified customer · 2024"` pattern.
+- Fallback: `"[Name withheld by request] · Verified customer · 2024"`.
 
 ### Validator (`validate-testimonial-attribution.mjs`)
 
-Every `<blockquote>` must contain `<cite>` with length >10 AND cite text must NOT match regex `/(anonymous|happy customer|satisfied client|a customer)/i`.
+Every `<blockquote>` must contain `<cite>` with length >10 AND cite text must NOT match `/(anonymous|happy customer|satisfied client|a customer)/i`.
 
-**Reference incident:** nyfoldingbox source testimonials had partial attribution ("— Mike, NJ") — rebuild stripped even that, showing bare quotes — drove this rule.
+**Reference incident**: nyfoldingbox source had partial attribution ("— Mike, NJ") — rebuild stripped even that.
 
 ## Every external link in body content (***OPENS NEW TAB + EXTERNAL INDICATOR — UNIVERSAL — BUILD-BREAKING***)
 
-Every `<a href>` pointing to an external domain (not `window.location.hostname`) in body content (article body, service descriptions, about page prose, publication lists) MUST:
+Every `<a href>` pointing to an external domain in body content MUST:
 
-1. `target="_blank"` so the user's reading context is preserved
-2. `rel="noopener noreferrer"` (security — prevents `window.opener` exploitation, privacy — strips referrer)
-3. Small external-link indicator icon AFTER the link text (never before) — SVG 12×12 `<span aria-hidden="true" class="ext-link-icon">↗</span>` OR the `simple-icons:externallink` icon — so users know the link leaves the site before clicking
-4. `aria-label="[link text] (opens in new tab)"` on the `<a>` element so screen readers announce the behavior
+1. `target="_blank"` to preserve reading context.
+2. `rel="noopener noreferrer"` (security + privacy).
+3. External-link indicator AFTER link text — `<span aria-hidden="true" class="ext-link-icon">↗</span>` 12×12.
+4. `aria-label="[link text] (opens in new tab)"` on the `<a>`.
 
-### Exception
-
-Navigation links in header / footer to known sister sites (same organization's other properties) — these may open in same tab.
-
-### Build gate
-
-Grep dist/ HTML for `<a href="http` without `target="_blank"` in `<main>`, `<article>`, `<section data-content>` — any match = fail.
+**Exception**: nav links to known sister sites (same org) may open in same tab.
 
 ### Validator (`validate-external-links.mjs`)
 
 Every `<a>` with external href in content area has `target="_blank"` AND `rel` contains `noopener` AND sibling `<span class="ext-link-icon">` exists.
 
-**Reference incident:** both sites linked publications / journals in body text that opened in same tab — navigating away from publications page with no back-context — drove this rule.
+**Reference incident**: both sites linked publications in body text that opened same tab.
 
 ## Every Schema.org `@type` selection (***BUSINESS-CLASS GATING — UNIVERSAL — BUILD-BREAKING***)
 
-`LocalBusiness` (and its subtypes: Restaurant, Dentist, MedicalBusiness, Store, AutoRepair, BeautySalon, HealthClub, etc.) MUST be reserved for businesses where customers physically visit a fixed-address premises for the primary service.
+`LocalBusiness` (and subtypes) MUST be reserved for businesses where customers physically visit a fixed-address premises.
 
 ### Allowlist for `@type=LocalBusiness`
 
-- Storefront retail
-- Restaurant / cafe / bar
-- Medical / dental / veterinary clinic
-- Salon / spa / barbershop
-- Gym / yoga studio
-- Auto repair / dealership
-- Hotel / lodging
-- Attorneys / CPAs with walk-in office
-- Real estate brokerage with walk-in office
+Storefront retail | Restaurant/cafe/bar | Medical/dental/vet clinic | Salon/spa/barbershop | Gym/yoga studio | Auto repair/dealership | Hotel/lodging | Attorneys/CPAs with walk-in | Real estate brokerage with walk-in.
 
-Everything else (consulting practice, advocacy non-profit, professional services rendered remotely, software / SaaS company, agency, online retailer, research institute, foundation, association) MUST use `@type=Organization` (or its subtypes: NGO for non-profit, Corporation, EducationalOrganization, GovernmentOrganization).
+Everything else MUST use `@type=Organization` (or subtypes: NGO, Corporation, EducationalOrganization, GovernmentOrganization).
 
 ### Implementation
 
-- Build prompts MUST classify business class BEFORE schema render (skill 02 founder / business inference)
-- Output `_research.json.business_class` ∈ `storefront | restaurant | medical | salon | gym | auto-repair | hotel | legal-walkin | real-estate-walkin | organization | nonprofit | saas | portfolio | agency | research | foundation`
-- Template helper `buildBusinessJsonLd({ businessClass })` (`src/lib/businessSchema.ts`) emits the correct `@type` from the class — never inline `@type: 'LocalBusiness'` in page source
+- Classify `_research.json.business_class` ∈ `storefront | restaurant | medical | salon | gym | auto-repair | hotel | legal-walkin | real-estate-walkin | organization | nonprofit | saas | portfolio | agency | research | foundation` BEFORE schema render.
+- `buildBusinessJsonLd({ businessClass })` in `src/lib/businessSchema.ts` emits correct `@type` — never inline `@type: 'LocalBusiness'`.
 
 ### Validator (`validate-schema-type.mjs`)
 
-Grep dist HTML for `"@type":"LocalBusiness"` (or its subtypes) — assert `_research.json.business_class` is in the local-business allowlist; otherwise = fail.
+Grep dist HTML for `"@type":"LocalBusiness"` — assert `_research.json.business_class` is in local-business allowlist; else fail.
 
-**Reference incident:** lonemountainglobal.projectsites.dev (2026-05-07) — global health consulting practice rendered as `@type=LocalBusiness` with no street address (advocacy work happens in WHO offices, hospitals, ministries, conferences across continents) — the wrong schema type signals to Google + AI search that this is a walk-in business, suppresses authority signal, fails E-E-A-T. Drove this rule.
+**Reference incident**: lonemountainglobal (2026-05-07) global health consulting practice rendered as `LocalBusiness` with no street address.
 
-## Every site with named founder / principal (***PERSON JSON-LD — UNIVERSAL — BUILD-BREAKING — applies to consulting, portfolio, professional services, founder-led SaaS, non-profits with named director***)
+## Every site with named founder / principal (***PERSON JSON-LD — UNIVERSAL — BUILD-BREAKING***)
 
-Every site that names an individual as founder / principal / lead / director / author on the homepage or `/about` MUST emit a `Person` JSON-LD entry on the page where they are named, with:
+Every site naming an individual as founder/principal/lead/director/author on homepage or `/about` MUST emit `Person` JSON-LD on that page:
 
-- `name` (MANDATORY)
-- `jobTitle` (MANDATORY)
-- `worksFor: { '@type': 'Organization', name }` (MANDATORY when an org is named)
-- `url` (the person's page or external profile)
-- `image` (headshot when available)
-- `alumniOf` (when education credentials are stated)
-- `sameAs` (LinkedIn, ORCID, Google Scholar, Wikipedia, X/twitter, GitHub, Mastodon — every public profile findable via web research)
-- `description` (2-3 sentence bio)
-- `knowsAbout` (their stated specialties as keyword array)
+- `name` (MANDATORY), `jobTitle` (MANDATORY), `worksFor: { '@type': 'Organization', name }` (MANDATORY when org named)
+- `url`, `image`, `alumniOf`, `sameAs` (LinkedIn, ORCID, Google Scholar, Wikipedia, X, GitHub, Mastodon), `description`, `knowsAbout`
 
-### Required for every named individual
-
-Founder, co-founder, executive director, principal, partner, sole proprietor, author of a portfolio.
-
-Template ships `<PersonJsonLd>` component — never hand-write Person JSON-LD inline.
+Use `<PersonJsonLd>` component — never hand-write Person JSON-LD inline.
 
 ### Validator (`validate-person-jsonld.mjs`)
 
-For every dist HTML page that renders an `<h1>` / `<h2>` containing a person's name (proper-noun First + Last detected via NER) accompanied by a job title within 100 characters, assert at least one `<script type="application/ld+json">` block of `@type=Person` with matching `name`. Missing = fail.
+For every dist page rendering `<h1>`/`<h2>` containing a person's name + job title within 100 characters: assert ≥1 `<script type="application/ld+json">` block of `@type=Person` with matching `name`. Missing = fail.
 
-**Reference incident:** lonemountainglobal — homepage named the founder as global health expert with 30+ years, but emitted zero Person JSON-LD; AI search engines + Google Knowledge Graph had no structured signal connecting the org to the principal.
+**Reference incident**: lonemountainglobal — founder named as global health expert with 30+ years, zero Person JSON-LD emitted.
 
-## Every publication / article / news render (***SCHOLARLY ARTICLE OR ARTICLE JSON-LD — UNIVERSAL — BUILD-BREAKING***)
+## Every publication / article / news render (***ARTICLE JSON-LD — UNIVERSAL — BUILD-BREAKING***)
 
-Every publication, journal article, blog post, news item, white paper, or thought-leadership piece rendered on the site MUST emit:
+Every publication, article, blog post, news item, white paper MUST emit one of:
 
-- `@type=ScholarlyArticle` (peer-reviewed or academic)
-- OR `@type=BlogPosting` (blog)
-- OR `@type=NewsArticle` (news)
-- OR `@type=Article` (default fallback)
+- `@type=ScholarlyArticle` (peer-reviewed) | `@type=BlogPosting` | `@type=NewsArticle` | `@type=Article`
 
-JSON-LD with:
+With: `headline`, `url`, `datePublished` (ISO 8601), `dateModified`, `author: [{ @type: Person, name, url? }]`, `publisher: { @type: Organization, name, logo? }`, `mainEntityOfPage`, `inLanguage`, `keywords`, `citation: [{ @type: CreativeWork, name, url }]`.
 
-- `headline`
-- `url`
-- `datePublished` (ISO 8601)
-- `dateModified`
-- `author: [{ @type: Person, name, url? }]`
-- `publisher: { @type: Organization, name, logo? }`
-- `mainEntityOfPage: { @type: WebPage, @id: url }`
-- `inLanguage`
-- `keywords` (when available)
-- `citation: [{ @type: CreativeWork, name, url }]` for every external source cited (boosts AI-citation rate per Brewer 2024)
-
-Template ships `<ArticleJsonLd>` component covering all four type variants.
+Use `<ArticleJsonLd>` component covering all four type variants.
 
 ### Validator (`validate-article-jsonld.mjs`)
 
-Every route matching `/blog/*`, `/publications/*`, `/news/*`, `/research/*`, `/articles/*`, `/papers/*`, `/case-studies/*` MUST emit one of the four article types in JSON-LD; missing = fail; missing `author` + `datePublished` + `publisher` = fail.
+Every route matching `/blog/*`, `/publications/*`, `/news/*`, `/research/*`, `/articles/*`, `/papers/*`, `/case-studies/*` MUST emit one of the four article JSON-LD types; missing `author` + `datePublished` + `publisher` = fail.
 
-**Reference:** lonemountainglobal listed publications inline on /about with no per-publication JSON-LD; AI search citation rate from such pages drops below 30% per Brewer (2024).
+**Reference**: lonemountainglobal listed publications inline on /about with no per-publication JSON-LD.
 
-## Every page on a research-bearing site (***STYLIZED APA REFERENCES — UNIVERSAL — BUILD-BREAKING — applies to non-profits, professional services, research/advocacy orgs, founder-led portfolios, news/blog/publication routes, every multi-page institutional site***)
+## Every page on a research-bearing site (***STYLIZED APA REFERENCES — UNIVERSAL — BUILD-BREAKING***)
 
-Almost every page (≥80% of routes) on a generated site MUST surface 3-10 APA-7th-ed references rendered through the shared `<PageReferences refs={...} />` component AND ≥1 inline `<Citation refId="...">claim text</Citation>` superscript link per page section that makes a quantitative / factual claim.
-
-### Drive
-
-- Research-grade authority signal
-- AI-search citation lift (16% → 54% per Brewer 2024)
-- E-E-A-T compliance
-- Defends against the rebuild "looking AI-generated" smell
+≥80% of routes MUST surface 3-10 APA-7th-ed references via `<PageReferences refs={...} />` AND ≥1 inline `<Citation refId="...">` per section making a quantitative/factual claim.
 
 ### Pipeline per page
 
-1. BEFORE rewriting copy, spawn a focused research agent that mines 5-10 APA-cited claims from peer-reviewed / .gov / .edu / primary sources matching the page's topic
-2. Write `src/data/citations/<slug>.ts` exporting `{ id, apa, url, type }` reference array
-3. Inject `<Citation refId>` superscript markers around each quantitative claim in the page body
-4. Render `<PageReferences slug="<slug>" />` at the bottom of the page (above footer) — stylized with hanging-indent, monospace refId chip, hover-reveal abstract excerpt, copy-citation button per ref
+1. Before rewriting copy, spawn a research agent mining 5-10 APA-cited claims from peer-reviewed/.gov/.edu/primary sources.
+2. Write `src/data/citations/<slug>.ts` exporting `{ id, apa, url, type }`.
+3. Inject `<Citation refId>` markers around each quantitative claim.
+4. Render `<PageReferences slug="<slug>" />` above footer.
 
 ### Exemptions (allowed to skip)
 
-- Pure transactional routes (`/checkout`, `/cart`, `/login`, `/signup`)
-- Interactive tools (`/contact` form, `/admin`)
-- Pure-listing pages whose sub-routes carry citations (`/blog` index — its children carry them)
-
-### Required pages
-
-Home, about, services, donate, we-need, volunteer, faq, team, annual-report, financials, testimonials, press, blog-post — basically every page with substantive prose or claims.
+Pure transactional routes (`/checkout`, `/cart`, `/login`, `/signup`), interactive tools (`/contact`, `/admin`), pure-listing pages whose children carry citations.
 
 ### Page-level minimums
 
 - Home — 3+ refs
-- About — 8+ refs (history-heavy)
+- About — 8+ refs
 - Services — 5+ refs
-- Donate — 5+ refs (donation tax law + impact research)
-- Financials / annual-report — 5+ refs (sector benchmarks)
-- Press — 3+ refs (media kit credibility)
-- FAQ — 5+ refs (each statistical answer cited)
+- Donate — 5+ refs
+- Financials/annual-report — 5+ refs
+- Press — 3+ refs
+- FAQ — 5+ refs
 
 ### Stylized rendering REQUIRED — never a bare `<ol>` of plain text
 
-Mandatory visual treatment:
-
 - Monospace refId chip (e.g. `[smith24]` in `var(--font-mono)`)
 - APA-correct hanging indent (4ch)
-- Italic journal / book titles
-- Hover state expands to show 1-line abstract (preserved from research JSON)
-- Copy-link button per ref using `navigator.clipboard.writeText(apa)`
-- Accordion collapse on mobile
-- Intersection-observer fade-in
+- Italic journal/book titles
+- Hover expands to 1-line abstract
+- Copy-link button per ref (`navigator.clipboard.writeText(apa)`)
+- Accordion collapse on mobile; IntersectionObserver fade-in
 
-Component lives at `src/components/page-references.tsx` (shipped in template).
+Component: `src/components/page-references.tsx` (shipped in template).
 
 ### Validator (`validate-stylized-citations.mjs`)
 
-For every route in `_routes.json` NOT in the exemption list, assert ≥3 entries in `src/data/citations/<slug>.ts` AND ≥1 `<Citation` JSX call in the page source AND `<PageReferences` rendered.
+For every non-exempt route: assert ≥3 entries in `src/data/citations/<slug>.ts` AND ≥1 `<Citation` JSX call AND `<PageReferences` rendered.
 
-**Reference incident:** njsk.org first audit pass (2026-05-11) shipped 14 newly-rewritten pages with claims like "97 cents on the dollar," "23.4% of Newark residents live below poverty line," "1 in 4 children goes to bed hungry" — every number unsourced — passing the eye test but failing E-E-A-T + AI-citation tests.
+**Reference incident**: njsk.org first audit (2026-05-11) — 14 pages with unsourced quantitative claims ("97 cents on the dollar", "23.4% poverty rate", "1 in 4 children").
 
-**Brian:** *"audit and completely improve every single URL with parallel agents by leveraging heavy web research and leveraging gorgeous + beautiful + stylized APA references on as many pages as possible, in fact, almost all pages."* Drove this rule.
-
-**Companion:** `rules/citations.md` (universal APA format) + skill 03-planning-and-research (research agent template).
+**Companion**: `rules/citations.md` + skill 03-planning-and-research.
 
 ## Every site with analytics (***COOKIE CONSENT BANNER — UNIVERSAL — BUILD-BREAKING — GDPR + CCPA***)
 
-Every site that loads third-party analytics (GA4, PostHog, GTM, Hotjar, Meta Pixel, etc.) MUST render a cookie consent banner on first visit:
+Every site loading third-party analytics MUST render a cookie consent banner on first visit:
 
-1. Renders as a bottom-bar or bottom-corner modal — NEVER full-screen block
-2. Minimum message — "We use analytics to improve your experience. [Accept All] [Manage Preferences] [Reject Non-Essential]" — all three options visible (GDPR Article 7 requires as-easy-to-withdraw-as-to-give consent)
-3. Clicking "Accept All" sets `localStorage.setItem('cookie-consent', 'all')` and initializes analytics
-4. Clicking "Reject Non-Essential" sets `localStorage.setItem('cookie-consent', 'essential-only')` and blocks all analytics from loading (NEVER load GA4 / PostHog before consent in EU)
-5. Banner NEVER auto-dismissed (user must make a choice)
-6. Banner NEVER shows again after a choice is stored
-7. "Manage Preferences" opens a modal with per-category toggles (Analytics, Marketing, Functional) with descriptions
+1. Bottom-bar or bottom-corner modal — NEVER full-screen block.
+2. Minimum message: "We use analytics to improve your experience. [Accept All] [Manage Preferences] [Reject Non-Essential]" — all three options visible.
+3. "Accept All" → `localStorage.setItem('cookie-consent', 'all')` + initialize analytics.
+4. "Reject Non-Essential" → `localStorage.setItem('cookie-consent', 'essential-only')` + block all analytics (NEVER load GA4/PostHog before consent in EU).
+5. Banner NEVER auto-dismissed; NEVER shown again after a choice is stored.
+6. "Manage Preferences" opens modal with per-category toggles (Analytics, Marketing, Functional).
 
-### Implementation
-
-`src/lib/consent.ts` template module — checks localStorage on load, conditionally initializes analytics only when consent is `'all'` or relevant category enabled. PostHog uses `persistence: 'localStorage'` (cookie-free, no consent required in some jurisdictions — still behind consent gate for GDPR).
+`src/lib/consent.ts` template module checks localStorage on load, conditionally initializes analytics.
 
 ### Validator (`validate-cookie-consent.mjs`)
 
 Playwright clears localStorage, loads homepage, asserts `[data-cookie-banner]` visible within 2s AND has ≥2 interactive choice buttons.
 
-**Reference incident:** both sites loaded PostHog + GTM on first load before any consent — GDPR violation for EU visitors — drove this rule.
+**Reference incident**: both sites loaded PostHog + GTM before any consent — GDPR violation.
 
 ## Every site rebuild (***BRAND FIDELITY #1 — LOGO PIXEL-MATCH VALIDATOR — UNIVERSAL — BUILD-BREAKING***)
 
-Source-site logo extraction MUST produce a logo asset whose perceptual hash (pHash) differs ≤8 from the original — proven match by visual signature, not human spot-check.
-
-### Pipeline
-
-Wayback + live source crawl → find largest logo asset → SVG-preferred → transparent PNG fallback → upload to R2 `assets/brand/logo.{svg,png}`.
+Source-site logo extraction MUST produce an asset whose perceptual hash (pHash) differs ≤8 from the original.
 
 ### Validator (`validate-logo-fidelity.mjs`)
 
-Compute pHash of source `_brand.json.logo.source_url` vs dist `assets/brand/logo.*`, fail if Hamming distance >8. Regenerate via Ideogram v3 ONLY when source logo is unrecoverable (404, redirect-loop, <64px) AND record `_brand.json.warnings: ["logo_regenerated_no_source"]`.
+Compute pHash of `_brand.json.logo.source_url` vs dist `assets/brand/logo.*`, fail if Hamming distance >8. Regenerate via Ideogram v3 ONLY when source is unrecoverable (404, redirect-loop, <64px); record `_brand.json.warnings: ["logo_regenerated_no_source"]`.
 
-**Reference:** prompt-improvements brainstorm rec #17 (2026-05-10) — LMG iter-4 regression: pipeline shipped Ideogram-regenerated logo while source SVG was 200-OK; fidelity = legitimacy.
+**Reference**: rec #17 (2026-05-10) — LMG iter-4 shipped Ideogram-regenerated logo while source SVG was 200-OK.
 
-## Every site rebuild (***BRAND FIDELITY #2 — FONT-FAMILY EXTRACTION FROM SOURCE COMPUTED-STYLE — UNIVERSAL — BUILD-BREAKING***)
+## Every site rebuild (***BRAND FIDELITY #2 — FONT-FAMILY EXTRACTION — UNIVERSAL — BUILD-BREAKING***)
 
-Source-site computed-style sniff via Playwright MUST extract actual body + headline font-family stacks — NOT inferred from category or guessed by LLM.
+Playwright MUST sniff source-site computed-style (`getComputedStyle(h1)` + `body`) — NOT inferred from category or guessed.
 
-### Pipeline
-
-Playwright loads source URL → `getComputedStyle(document.querySelector('h1'))` + `body` → write `_brand.json.fonts: { headline, body, mono?, sources: [google|adobe|self-hosted] }`.
-
-Headline + body MUST match source within Google Fonts catalog OR self-hosted woff2.
+Write `_brand.json.fonts: { headline, body, mono?, sources: [google|adobe|self-hosted] }`.
 
 ### Validator (`validate-font-fidelity.mjs`)
 
-Grep dist `<link href="https://fonts.googleapis.com/css2?family=...">` against `_brand.json.fonts.{headline,body}`, fail on missing or mismatched.
+Grep dist `<link href="https://fonts.googleapis.com/css2?family=...">` against `_brand.json.fonts.{headline,body}`, fail on missing or mismatch.
 
-**Reference:** prompt-improvements brainstorm rec #18 (2026-05-10) — LMG iter-4 regression: source uses Poppins + Hind, pipeline shipped Inter + Roboto.
+**Reference**: rec #18 (2026-05-10) — LMG iter-4 source uses Poppins+Hind, pipeline shipped Inter+Roboto.
 
-## Every site rebuild (***BRAND FIDELITY #3 — PRIMARY + SECONDARY COLOR EXTRACTION FROM LOGO + HERO — UNIVERSAL — BUILD-BREAKING***)
+## Every site rebuild (***BRAND FIDELITY #3 — COLOR EXTRACTION — UNIVERSAL — BUILD-BREAKING***)
 
-Brand color extraction MUST run TWO passes:
+Run TWO passes:
 
-1. GPT Image 2 vision call against source homepage screenshot → returns `primary, secondary, accent, bg_dark, bg_light` hex array
-2. `node-vibrant` / `Vibrant.js` color-thief on extracted logo PNG → returns palette
+1. GPT Image 2 vision on source homepage screenshot → `primary, secondary, accent, bg_dark, bg_light` hex array.
+2. `node-vibrant`/`Vibrant.js` on extracted logo PNG → palette.
 
-**Merge:** vision-pass wins for primary / accent; vibrant wins for backgrounds. Result written to `_brand.json.colors.{primary,secondary,accent,bg,fg,muted}`.
+**Merge**: vision-pass wins for primary/accent; vibrant wins for backgrounds. Write to `_brand.json.colors.{primary,secondary,accent,bg,fg,muted}`.
 
 ### Validator (`validate-brand-colors.mjs`)
 
-Assert `_brand.json.colors.primary` differs ≤ΔE 5 from source-site primary (per CIE Lab) AND no color is hand-guessed.
+Assert `_brand.json.colors.primary` differs ≤ΔE 5 from source-site primary (CIE Lab) AND no color is hand-guessed.
 
-**Reference:** prompt-improvements brainstorm rec #19 (2026-05-10) — njsk.org burgundy incident (LLM guessed `#1e3a8a` blue from "Catholic" category, actual `#6b1d2e` burgundy).
+**Reference**: rec #19 (2026-05-10) — njsk.org burgundy incident (LLM guessed `#1e3a8a` blue, actual `#6b1d2e` burgundy).
 
 ## Every site rebuild (***BRAND FIDELITY #4 — CONTENT CORPUS DELTA — UNIVERSAL — BUILD-BREAKING***)
 
-Source-site content corpus (all body text per page) MUST be preserved with delta ≤15% — measured by Jaccard similarity of token-bag per route.
+Source content corpus MUST be preserved with delta ≤15% — Jaccard similarity of token-bag per route.
 
-### Rules
-
-- Build cannot rewrite >15% of source paragraphs except (a) banned-word substitution per copy-writing rules, (b) explicit user-requested rewrite
-
-### Pipeline
-
-Squarespace / Wix / WP crawl → strip nav + footer chrome → token-bag per route → write `_content_corpus.json.{path → tokens[]}`.
+Build cannot rewrite >15% of source paragraphs except (a) banned-word substitution per copy-writing rules, (b) explicit user-requested rewrite.
 
 ### Validator (`validate-content-fidelity.mjs`)
 
-For each rebuilt route, compute Jaccard against `_content_corpus.json[path]`, fail if <0.85.
+Per rebuilt route, compute Jaccard against `_content_corpus.json[path]`, fail if <0.85.
 
-**Reference:** prompt-improvements brainstorm rec #20 (2026-05-10) — LMG iter-4 regression: rewrote 40% of "About" page in pipeline voice, lost authentic founder language.
+**Reference**: rec #20 (2026-05-10) — LMG iter-4 rewrote 40% of "About" page, lost authentic founder language.
 
 ## Every site rebuild (***BRAND FIDELITY #5 — INTERNAL ROUTE STRUCTURE PARITY — UNIVERSAL — BUILD-BREAKING***)
 
-Source-site internal route map MUST be preserved 1:1 in rebuild — every source URL becomes a real rendered route OR a 301 in `_redirects`.
-
-### Pipeline
+Every source URL becomes a real rendered route OR a 301 in `_redirects`.
 
 Deep-crawl source via sitemap.xml + recursive link discovery → write `_routes.json.{ source_path, rebuild_path, status: 200|301, redirect_target? }`.
 
 ### Validator (`validate-route-parity.mjs`)
 
-Every entry in `_routes.json` resolves to a 200-OK rebuild HTML file OR appears in `_redirects` with target also 200-OK.
+Every `_routes.json` entry resolves to a 200-OK rebuild HTML file OR appears in `_redirects` with target also 200-OK.
 
-**Reference:** prompt-improvements brainstorm rec #21 (2026-05-10) — broken links from missing routes = SEO equity loss.
+**Reference**: rec #21 (2026-05-10) — broken links from missing routes = SEO equity loss.
 
 ## Every site rebuild (***BRAND FIDELITY #6 — TONE-OF-VOICE VECTOR MATCH — UNIVERSAL — BUILD-BREAKING***)
 
-Source-site copy MUST be vectorized (OpenAI `text-embedding-3-small`) per page; rebuild copy embedding MUST match source within cosine ≥0.78 — proves rebuild speaks in source's voice, not pipeline's generic voice.
+Source copy MUST be vectorized (OpenAI `text-embedding-3-small`) per page; rebuild copy embedding MUST match source within cosine ≥0.78.
 
-### Pipeline
-
-Source crawl → embed body text per route → write `_voice_embeddings.json`. After rebuild: embed rebuild body text per route → compare.
+Source crawl → embed body text per route → `_voice_embeddings.json`. After rebuild: embed rebuild body text → compare.
 
 ### Validator (`validate-voice-fidelity.mjs`)
 
 Fail any route with cosine <0.78 against its source counterpart.
 
-**Reference:** prompt-improvements brainstorm rec #22 (2026-05-10) — LMG iter-4: rebuild reads like SaaS landing page, source reads like founder essay; voice = brand.
+**Reference**: rec #22 (2026-05-10) — LMG iter-4 rebuild reads like SaaS landing page, source reads like founder essay.
 
 ## Every site rebuild (***BRAND FIDELITY #7 — HERO IMAGE/VIDEO SOURCE-FIRST PRIORITY — UNIVERSAL — BUILD-BREAKING***)
 
-Every rebuild hero (image OR video) MUST attempt source-site reuse FIRST — only fall back to Sora / GPT Image 1.5 / Pexels when source hero is unrecoverable.
+Rebuild hero MUST attempt source-site reuse FIRST — fall back to Sora/GPT Image 1.5/Pexels only when source is unrecoverable.
 
-### Pipeline
-
-Crawl source hero → R2 self-host → place in `<picture>` / `<video>` hero slot. Source preserved at original aspect + composition; pipeline upgrades quality (upscale, sharpen, recompress to WebP / AVIF) but does NOT replace subject.
+Source hero: R2 self-host → `<picture>`/`<video>` slot. Upgrades quality (upscale, sharpen, recompress) but does NOT replace subject.
 
 ### Validator (`validate-hero-source-first.mjs`)
 
-If source hero exists (`_media_extraction.json.hero_url` resolves 200), assert rebuild hero file is derived from same source (matching pHash or extracted from same URL).
+If `_media_extraction.json.hero_url` resolves 200, assert rebuild hero file is derived from same source (matching pHash or from same URL).
 
-**Reference:** prompt-improvements brainstorm rec #23 (2026-05-10) — Mission Doctrine cinematic floor + brand fidelity together.
+**Reference**: rec #23 (2026-05-10) — Mission Doctrine cinematic floor + brand fidelity together.
 
-## Every site rebuild (***BRAND FIDELITY #8 — DESIGN-TOKEN DIFF AS BUILD-OUTPUT ARTIFACT — UNIVERSAL — BUILD-BREAKING***)
+## Every site rebuild (***BRAND FIDELITY #8 — DESIGN-TOKEN DIFF ARTIFACT — UNIVERSAL — BUILD-BREAKING***)
 
-Every rebuild MUST emit `_brand_diff.json` capturing per-token comparison: source-extracted vs rebuild-shipped (logo pHash, font family, color hex, typescale, spacing scale, radius). Diff surfaced in iteration log under `delight_moments[]` is NOT acceptable — diff MUST be in its own artifact, machine-readable, ready for human review.
+Every rebuild MUST emit `_brand_diff.json`: per-token comparison source-extracted vs rebuild-shipped (logo pHash, font family, color hex, typescale, spacing scale, radius).
 
 ### Validator (`validate-brand-diff.mjs`)
 
-Assert `_brand_diff.json` exists + has fields `{logo_hash_distance, font_match, color_delta_e_max, token_delta_count}` AND a human-readable summary line per token.
+Assert `_brand_diff.json` exists with fields `{logo_hash_distance, font_match, color_delta_e_max, token_delta_count}` AND a human-readable summary line per token.
 
-**Reference:** prompt-improvements brainstorm rec #24 (2026-05-10) — auditability prevents silent regression.
+**Reference**: rec #24 (2026-05-10) — auditability prevents silent regression.

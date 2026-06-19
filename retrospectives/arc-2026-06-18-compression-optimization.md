@@ -145,6 +145,20 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 
 ## Iteration log
 
+### iter 8 — 2026-06-19 (expand coverage to numbered skill dirs)
+
+- Compression reached the numbered skill dirs (`NN-*/*.md`) — far larger prose than rules/. Compressed 7 checklist files, ~6700→5120 lines (~1580 cut):
+  - `15-site-generation/build-breaking-rules.md` 2179→1684 (-23%, 66 sections preserved)
+  - `12-media-orchestration/build-breaking-rules.md` 898→507 (-44%, 36 reqs)
+  - `10-experience-and-design-system/build-breaking-rules.md` 646→376 (-42%, 33 reqs)
+  - `15-site-generation/template-system.md` 942→805 (-15%)
+  - `15-site-generation/media-acquisition.md` 820→683 (-17%)
+  - `15-site-generation/quality-gates.md` 700→635 (-9%)
+  - `09-brand-and-content-system/build-breaking-rules.md` 516→430 (-17%)
+- All 0 markdownlint errors; distinct-requirement counts verified equal before/after (no rule dropped); code blocks + thresholds + cross-links preserved.
+- Gate 17 pass · 0 fail. 44 instruction files compressed total (37 rules + 7 skill-dir files).
+- Next: remaining NN-*/ files (quality-gates other dirs, research-pipeline, domain-features, 30-ideogram-methods, notebooklm-pipeline, pseo-templates, architecture-thought-loop, small-business-mode), then commands/, then idea #4 semantic dedup.
+
 ### iter 7 — 2026-06-19 (tooling integration)
 
 - Built + wired `bin/check-compression-regression.mjs` (idea #10) as **blocking lint gate 17**: any `rules/*.md` growing >20% vs git HEAD without `## Why this grew` / `<!-- grow-ok -->` fails the build. 0 violations (arc has been shrinking files). Locks in compression gains permanently.
