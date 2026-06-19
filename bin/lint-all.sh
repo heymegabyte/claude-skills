@@ -172,6 +172,10 @@ logHeader "15. skill-submodules"
 runGate "skill-submodules" "check-skill-submodules" \
   bash "$SKILLS_ROOT/bin/check-skill-submodules.sh"
 
+logHeader "16. crosslinks"
+runGate "crosslinks" "audit-crosslinks --ci" \
+  node "$SKILLS_ROOT/bin/audit-crosslinks.mjs" --ci
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.

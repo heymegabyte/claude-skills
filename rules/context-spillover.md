@@ -65,7 +65,7 @@ For every file you edited or every feature surface you touched, check three adja
 - Check the feature inventory `e2e/FEATURES.md` — does the new feature need a row? Add it.
 - Does it deserve a `docs/<feature>.md`? Write it.
 - Does `CLAUDE.md` need a routes/components mention? Add it.
-- Does the new feature have parallel-runner-ready specs per ``e2e-tdd-organization``? Make sure.
+- Does the new feature have parallel-runner-ready specs per ``e2e-tdd-organization``? Add them.
 
 ## Cost discipline
 

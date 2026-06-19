@@ -7,6 +7,10 @@
  *
  * Zero external dependencies — uses only node:fs, node:path, node:url.
  *
+ * ## Escape hatch
+ * Add `<!-- validator-ignore -->` (all checks) or `<!-- validator-ignore: filler -->` /
+ * `<!-- validator-ignore: hedge -->` to any prose line to suppress that check for that line.
+ *
  * @example
  * # Human-readable report
  * node bin/audit-instruction-files.mjs
@@ -21,7 +25,7 @@
  * node bin/audit-instruction-files.mjs --json --ci
  */
 
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -137,6 +141,64 @@ function buildCodeMask(lines) {
 }
 
 // ---------------------------------------------------------------------------
+// Inline-code stripping
+// ---------------------------------------------------------------------------
+
+/**
+ * Strips all inline-code spans (text between single backticks) from a prose line
+ * so that filler/hedge words that appear only inside backtick spans are not flagged.
+ * Double-backtick spans (`` ` `` style) are also removed.
+ *
+ * @param {string} line - Raw prose line.
+ * @returns {string} Line with all inline-code spans replaced by empty string.
+ * @example
+ * stripInlineCode('- `make sure` → non-negotiable')
+ * // → '-  → non-negotiable'
+ * stripInlineCode('See ``e2e-tdd-organization`` for details')
+ * // → 'See  for details'
+ */
+function stripInlineCode(line) {
+  // Remove double-backtick spans first (greedy over single-tick spans)
+  let result = line.replace(/``[^`]*``/g, '');
+  // Then remove single-backtick spans
+  result = result.replace(/`[^`]*`/g, '');
+  return result;
+}
+
+// ---------------------------------------------------------------------------
+// Escape-hatch parsing
+// ---------------------------------------------------------------------------
+
+/**
+ * Returns the set of check kinds that a line has opted out of via HTML comment.
+ * `<!-- validator-ignore -->` suppresses all checks.
+ * `<!-- validator-ignore: filler -->` suppresses filler only.
+ * `<!-- validator-ignore: hedge -->` suppresses hedge only.
+ *
+ * @param {string} line - Raw prose line.
+ * @returns {Set<'filler'|'hedge'|'all'>} Set of suppressed check kinds.
+ * @example
+ * getIgnoreKinds('some text <!-- validator-ignore: filler -->')
+ * // → Set { 'filler' }
+ * getIgnoreKinds('some text <!-- validator-ignore -->')
+ * // → Set { 'all' }
+ */
+function getIgnoreKinds(line) {
+  const kinds = new Set();
+  const match = line.match(/<!--\s*validator-ignore(?::\s*([\w,\s]+))?\s*-->/);
+  if (!match) return kinds;
+  if (!match[1]) {
+    kinds.add('all');
+    return kinds;
+  }
+  for (const part of match[1].split(',')) {
+    const k = part.trim().toLowerCase();
+    if (k === 'filler' || k === 'hedge') kinds.add(k);
+  }
+  return kinds;
+}
+
+// ---------------------------------------------------------------------------
 // CHECK 1 — Token/size budget
 // ---------------------------------------------------------------------------
 
@@ -173,7 +235,8 @@ function checkBudget(absPath, lines, codeMask) {
 // ---------------------------------------------------------------------------
 
 /**
- * Scans non-code lines for hedge words.
+ * Scans non-code lines for hedge words. Strips inline-code spans before matching
+ * and respects `<!-- validator-ignore -->` / `<!-- validator-ignore: hedge -->` escapes.
  *
  * @param {string} absPath
  * @param {string[]} lines
@@ -186,8 +249,16 @@ function checkHedges(absPath, lines, codeMask) {
   for (let i = 0; i < lines.length; i++) {
     if (codeMask[i]) continue;
     const text = lines[i];
+
+    // Escape hatch
+    const ignoreKinds = getIgnoreKinds(text);
+    if (ignoreKinds.has('all') || ignoreKinds.has('hedge')) continue;
+
+    // Strip inline-code spans before matching
+    const stripped = stripInlineCode(text);
+
     for (const pattern of HEDGE_PATTERNS) {
-      const match = pattern.exec(text);
+      const match = pattern.exec(stripped);
       if (match) {
         hits.push({ file: rel, line: i + 1, text, word: match[0], confidence: 'MEDIUM' });
         break; // one hit per line per file pass
@@ -202,7 +273,8 @@ function checkHedges(absPath, lines, codeMask) {
 // ---------------------------------------------------------------------------
 
 /**
- * Scans non-code lines for filler phrases.
+ * Scans non-code lines for filler phrases. Strips inline-code spans before matching
+ * and respects `<!-- validator-ignore -->` / `<!-- validator-ignore: filler -->` escapes.
  *
  * @param {string} absPath
  * @param {string[]} lines
@@ -214,10 +286,19 @@ function checkFiller(absPath, lines, codeMask) {
   const hits = [];
   for (let i = 0; i < lines.length; i++) {
     if (codeMask[i]) continue;
-    const lower = lines[i].toLowerCase();
+    const text = lines[i];
+
+    // Escape hatch
+    const ignoreKinds = getIgnoreKinds(text);
+    if (ignoreKinds.has('all') || ignoreKinds.has('filler')) continue;
+
+    // Strip inline-code spans before matching
+    const stripped = stripInlineCode(text);
+    const lower = stripped.toLowerCase();
+
     for (const phrase of FILLER_PHRASES) {
       if (lower.includes(phrase)) {
-        hits.push({ file: rel, line: i + 1, text: lines[i], phrase, confidence: 'HIGH' });
+        hits.push({ file: rel, line: i + 1, text, phrase, confidence: 'HIGH' });
         break; // one hit per line per file pass
       }
     }

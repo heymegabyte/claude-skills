@@ -31,10 +31,10 @@ Cross-links: `[[brian-preferences]]` `[[always]]` `[[drift-detection]]` `[[repo-
 ## Core rules (MUST)
 
 1. **Description carries activation** — frontmatter `description`/`triggers` load every session; body is lazy. Spend 80% of effort here: what it does + exact trigger phrases, ≤1024 chars.
-2. **Imperative over prose** — "Make sure tests pass" → `Run tests before marking done`. Commands are ~60% shorter and unambiguous.
+2. **Imperative over prose** — "Make sure tests pass" → `Run tests before marking done`. Commands are ~60% shorter and unambiguous. <!-- validator-ignore: filler -->
 3. **Atomic rules** — one rule per bullet, one idea per sentence. Never `and` two actions into one line; the model satisfies whichever token is most salient.
 4. **Structure over paragraphs** — bullets transmit ~3× constraints per token vs prose. Headers are positional anchors for recall.
-5. **Delete filler** — strip near-zero-information tokens: "please", "make sure", "be careful", "remember to", "try to", "ideally", "as appropriate", "in order to".
+5. **Delete filler** — strip near-zero-information tokens: "please", "make sure", "be careful", "remember to", "try to", "ideally", "as appropriate", "in order to". <!-- validator-ignore: filler -->
 6. **One canonical per concept** — no parallel truths. Duplicate rule across files → keep one, others cross-link. Conflicting rules are the #1 instruction-failure mode.
 7. **Consistent vocabulary** — one term per concept globally (pick `handler` OR `route`, never both). Consistency removes disambiguation tokens.
 8. **Cut what Claude knows** — never explain what a PDF/HMAC/webhook *is*. Omitting known context is free compression.
@@ -67,7 +67,7 @@ Cross-links: `[[brian-preferences]]` `[[always]]` `[[drift-detection]]` `[[repo-
 
 - ✗ *"Handle errors well in the API."*
 - ✓ `[MUST] If a fetch() throws or returns 4xx-5xx, the handler shall return { isError: true, content: [{ type:'text', text: JSON.stringify({code,message}) }] }.`
-- ✗ *"Make sure the description field is good."*
+- ✗ *"Make sure the description field is good."* <!-- validator-ignore: filler -->
 - ✓ `The description shall: (1) third person, (2) state what it does, (3) ≥3 trigger phrases, (4) ≤1024 chars.`
 
 ## Do / Don't
@@ -85,6 +85,11 @@ Cross-links: `[[brian-preferences]]` `[[always]]` `[[drift-detection]]` `[[repo-
 - Don't delete a constraint to hit a line target — meaning beats brevity.
 - Don't introduce markdown tables for simple key→value maps — use `- **key** — value` (per `[[brian-preferences]]`).
 - Don't grow a file >20% without a `## Why this grew` note.
+
+## Wired validators (run on every commit)
+
+- `bin/audit-crosslinks.mjs` — every `[[slug]]` must resolve to a rule/command/skill/numbered-dir `.md`. Blocking gate 16 in `bin/lint-all.sh` (`--ci` exits 1 on any broken link). Skips fenced + inline code.
+- `bin/audit-instruction-files.mjs` — token-budget + EARS/hedge + filler audit (`--json`/`--ci`). Manual/pre-commit tool; strips inline-code spans, honors `<!-- validator-ignore: filler|hedge -->`. Not a blocking gate (long code-reference files legitimately exceed the line budget).
 
 ## See
 

@@ -28,7 +28,7 @@ Every user prompt is a training signal. Most are also evidence that the previous
   - If it's domain-specific → append to the skill that owns that domain
   - If it's a Brian habit → append to `rules/brian-preferences.md`
 
-### 2. "Make sure to _**" / "Always**_" / "Never ___"
+### 2. "Make sure to _**" / "Always**_" / "Never ___" <!-- validator-ignore: filler -->
 
 - **What it means:** a hard rule the user expects to be respected, not a request.
 - **Where to write it:** `rules/always.md` (if universal) OR the relevant rule file. Phrasing: declarative, build-fail if violated.

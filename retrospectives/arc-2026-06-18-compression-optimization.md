@@ -72,7 +72,7 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - `[ ]` 4. Semantic dedup engine — embed rules, cluster cos-sim >0.85, surface merge candidates
 - `[ ]` 5. Contradiction detector — pairwise LLM judge on near-similar rules → `_contradiction-log.md`
 - `[ ]` 6. Description retrieval scorer — embed description vs synthetic trigger queries, score <0.7 fails
-- `[ ]` 7. Cross-link density / PageRank — isolated files = delete candidates; hubs = promote
+- `[x]` 7. Cross-link INTEGRITY validator — `bin/audit-crosslinks.mjs` wired as blocking lint gate 16 (every `[[slug]]` resolves; 0 broken). PageRank/promote-isolated half still open.
 - `[ ]` 8. Progressive-disclosure enforcer — fail reference chains >1 deep
 - `[ ]` 9. Vocabulary canonicalizer — `_glossary.json` synonym→canonical, find/replace hook
 - `[ ]` 10. Compression regression guard — fail commits growing a file >20% w/o `## Why this grew`
@@ -144,6 +144,14 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - **Wire `bin/audit-instruction-files.mjs` to lefthook** now the gate is green — first add inline-code-span skip + `<!-- validator-ignore -->` hatch (iter-1 known refinement).
 
 ## Iteration log
+
+### iter 6 — 2026-06-19 (PIVOT: compression → tooling integration)
+
+- Built + wired `bin/audit-crosslinks.mjs` (idea #7): validates every `[[slug]]` resolves to a rule/command/skill/numbered-dir `.md`. Resolution across all 5 target types; skips fenced + inline code. **Wired as blocking lint gate 16** — 0 broken links across the corpus (initial 45 → all false positives once full resolution added; cross-link graph is healthy).
+- Refined `bin/audit-instruction-files.mjs`: strip inline-code spans before filler/hedge matching + `<!-- validator-ignore: filler|hedge -->` hatch. Filler false positives 8→0. Fixed 3 real filler findings (context-spillover, forge-with-test-scaffold-pattern, monitor-orchestration).
+- Documented both validators in `instruction-compression-playbook.md`.
+- Gate now 16 pass · 0 fail (added crosslinks). Compression phase complete (37 rules done); arc now in tooling-integration phase.
+- Next: idea #10 compression-regression guard, #11 stale-rule guard, #13 trigger-phrase collision, #4 semantic dedup.
 
 ### iter 5 — 2026-06-19
 
