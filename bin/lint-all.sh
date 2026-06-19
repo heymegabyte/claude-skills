@@ -230,6 +230,11 @@ if [ "$JSON" = "0" ]; then
     cat "$INFO_BUF" >&2
   fi
   rm -f "$INFO_BUF"
+
+  if [ "$QUIET" != "1" ]; then
+    printf '\n━━━ ℹ audit-all (advisory — never gates)\n' >&2
+    node "$SKILLS_ROOT/bin/audit-all.mjs" >&2 || true
+  fi
 fi
 
 EXIT=0

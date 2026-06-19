@@ -20,7 +20,7 @@ A one-read orientation guide for new agents and contributors.
 | `business` | Non-engineering verticals — finance, legal, ops, compliance domains | 1 |
 | `compliance` | Data-subject rights + regulatory compliance (GDPR/CCPA) | 1 |
 | `content` | Copy + brand voice + citations + anti-slop | 6 |
-| `core` | Always-loaded essentials | 68 |
+| `core` | Always-loaded essentials | 69 |
 | `design` | Cinematic visual + motion + WCAG 2 | 8 |
 | `documents` | Document processing — parse, extract, generate (PDF/DOCX/XLSX) | 1 |
 | `ecommerce` | Medusa | 3 |
@@ -66,7 +66,7 @@ A one-read orientation guide for new agents and contributors.
 
 ## Rules
 
-146 rules in `rules/`.
+147 rules in `rules/`.
 
 ### Pack: ai
 
@@ -203,6 +203,7 @@ A one-read orientation guide for new agents and contributors.
 - `internal-skill-discovery`
 - `multi-harness-portability`
 - `skill-authoring-contract`
+- `projectsites-cloudflare-first`
 
 ### Pack: design
 
@@ -373,8 +374,9 @@ A one-read orientation guide for new agents and contributors.
 
 ## Validators
 
-61 scripts in `bin/` (validators + build tools).
+65 scripts in `bin/` (validators + build tools).
 
+- `bin/audit-all.mjs` — Runs every advisory audit script in the repo and prints a ONE-LINE summary
 - `bin/audit-contradictions.mjs` — Advisory only — no LLM. Heuristic: extract imperative lines from each rule file,
 - `bin/audit-crosslink-graph.mjs` — Builds the \[\[slug\]\] cross-link graph over rules/ (resolving slugs the same
 - `bin/audit-crosslinks.mjs` — Scans every `rules/*.md`, `commands/*.md`, and numbered-skill SKILL.md files
@@ -399,7 +401,10 @@ A one-read orientation guide for new agents and contributors.
 - `bin/check-skill-required-fields.sh` — Catches the "added a new skill dir but forgot required metadata" class
 - `bin/check-skill-submodules.sh` — Parallels publish.yml's "Check SKILL.md submodule alignment" step but as a
 - `bin/forge-skill-from-openapi.mjs` — Auto-generates Claude Code skills from an OpenAPI 3.0/3.1 spec
+- `bin/gc-claude-home.mjs` — Targets the unbounded-growth dirs found during the 2026-06-19 audit:
 - `bin/gen-architecture-map.mjs` — Generates docs/ARCHITECTURE.md — an auto-generated, regenerate-on-demand map
+- `bin/gen-harness-manifests.mjs` — Generates companion harness manifests from the canonical agentskills source of truth
+- `bin/gen-mcp-registry.mjs` — (no description)
 - `bin/install-hooks.sh` — Per rules/lint-doctrine.md § Codified incidents (pass-52 pipeline-exit-masking entry)
 - `bin/install-lint-stack.sh` — Source of truth: rules/lint-doctrine.md
 - `bin/lint-all.sh` — Per rules/lint-doctrine.md + rules/uniform-json-output.md
@@ -441,14 +446,16 @@ A one-read orientation guide for new agents and contributors.
 
 ## Hooks
 
-12 hooks wired in `~/.claude/hooks/`.
+14 hooks wired in `~/.claude/hooks/`.
 
 - `config-protection.py` — Config files that should not be silently mutated by agents
 - `customer-changelog-precommit.py` — Globs EXCLUDED even if they match a user-visible parent
+- `destructive-bash-guard.py` — WARN mode (default): stderr warning + exit 0. Flip to True ONLY after confirming
 - `enforce-tdd-e2e.py` — Source globs → expected spec dir prefix
 - `opus-quota-check.sh` — Opus quota probe — exit 0 if Opus available, 1 if fallback required
 - `pretooluse-router.py` — (no description)
 - `router-reconcile-on-skill-write.py` — Pattern: numbered submodule directory
+- `secret-scan-prewrite.py` — WARN mode (default): stderr warning + exit 0. Flip to True ONLY after confirming
 - `session-start-reminders.py` — (no description)
 - `session-start-router.py` — (no description)
 - `skill-security-auditor.py` — Patterns that indicate FAIL-level risk

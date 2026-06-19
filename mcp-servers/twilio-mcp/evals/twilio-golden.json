@@ -1,0 +1,160 @@
+{
+  "server": "twilio-mcp",
+  "_comment": "Golden tests for the twilio-mcp MCP server. Run via /run-mcp-evals twilio-mcp [--ci] [--mock-only] [--live-only]. Scoring tiers: exact-match | exact-match-keys | exact-match-keys+id-pattern-regex | error-shape | schema-valid | llm-judge:<rubric>. See commands/run-mcp-evals.md § Step 4. Mock-mode: when mock_response is present the harness returns it instead of calling the live API (no API key needed). See rules/eval-mock-mode-discipline.md. NOTE: This server covers the Twilio Messaging Services API (brand registration, service management, phone numbers) — not direct message send/receive. Tool names are PascalCase per the forge output.",
+  "tests": [
+    {
+      "id": "list-tools-presence",
+      "_comment": "__meta_ prefix = MCP list_tools call, no tool invocation. Validates the server advertises the expected surface. Always safe to run live — no API key needed for list_tools.",
+      "tool": "__meta_list_tools",
+      "expected_tool_count_min": 30,
+      "expected_tool_names_include": [
+        "CreateService",
+        "FetchService",
+        "DeleteService",
+        "ListPhoneNumber",
+        "CreateBrandRegistrations"
+      ],
+      "scoring": "__meta_list_tools"
+    },
+    {
+      "id": "create-messaging-service-happy-path",
+      "_comment": "Happy path: create a Twilio Messaging Service. Twilio returns HTTP 201 with the service object. mock_response simulates the 201 body so CI can verify the MCP server proxies the shape without a real TWILIO_API_KEY.",
+      "tool": "CreateService",
+      "input": {
+        "FriendlyName": "MCP Eval Test Service"
+      },
+      "mock_response": {
+        "status": 201,
+        "body": {
+          "sid": "MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "account_sid": "ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "friendly_name": "MCP Eval Test Service",
+          "date_created": "2026-06-18T00:00:00Z",
+          "date_updated": "2026-06-18T00:00:00Z",
+          "inbound_request_url": null,
+          "inbound_method": "POST",
+          "fallback_url": null,
+          "fallback_method": "POST",
+          "status_callback": null,
+          "sticky_sender": true,
+          "mms_converter": true,
+          "smart_encoding": true,
+          "scan_message_content": "disabled",
+          "fallback_to_long_code": true,
+          "area_code_geomatch": true,
+          "synchronous_validation": false,
+          "validity_period": 14400,
+          "url": "https://messaging.twilio.com/v1/Services/MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "expected": {
+        "sid": "MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "friendly_name": "MCP Eval Test Service"
+      },
+      "scoring": "exact-match-keys"
+    },
+    {
+      "id": "fetch-messaging-service-happy-path",
+      "_comment": "Happy path: fetch an existing Twilio Messaging Service by SID. mock_response returns the full service object shape so CI can verify the GET path without a real SID.",
+      "tool": "FetchService",
+      "input": {
+        "Sid": "MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "sid": "MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "account_sid": "ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "friendly_name": "MCP Eval Test Service",
+          "date_created": "2026-06-18T00:00:00Z",
+          "date_updated": "2026-06-18T00:00:00Z",
+          "inbound_request_url": null,
+          "inbound_method": "POST",
+          "fallback_url": null,
+          "fallback_method": "POST",
+          "status_callback": null,
+          "sticky_sender": true,
+          "validity_period": 14400,
+          "url": "https://messaging.twilio.com/v1/Services/MGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "expected_schema": {
+        "type": "object",
+        "required": ["sid", "account_sid", "friendly_name", "date_created", "date_updated", "url"],
+        "properties": {
+          "sid":           { "type": "string", "pattern": "^MG[a-f0-9]{32}$" },
+          "account_sid":   { "type": "string", "pattern": "^AC[a-f0-9]{32}$" },
+          "friendly_name": { "type": "string" },
+          "date_created":  { "type": "string" },
+          "date_updated":  { "type": "string" },
+          "url":           { "type": "string" }
+        }
+      },
+      "scoring": "schema-valid"
+    },
+    {
+      "id": "delete-messaging-service-not-found-error",
+      "_comment": "Error path: delete a Messaging Service SID that does not exist. Twilio returns HTTP 404 with a standard error envelope. mock_response simulates the 404 so CI can assert isError:true fires (post-Task #70 patch).",
+      "tool": "DeleteService",
+      "input": {
+        "Sid": "MGnonexistent000000000000000000000"
+      },
+      "mock_response": {
+        "status": 404,
+        "body": {
+          "code": 20404,
+          "message": "The requested resource /Services/MGnonexistent000000000000000000000 was not found",
+          "more_info": "https://www.twilio.com/docs/errors/20404",
+          "status": 404
+        }
+      },
+      "expected": {
+        "isError": true
+      },
+      "expected_message_contains": "not found",
+      "scoring": "error-shape"
+    },
+    {
+      "id": "create-brand-registration-schema-valid",
+      "_comment": "Schema validation: create a brand registration. mock_response returns a realistic Twilio brand registration object so CI can verify the schema gate passes without a real account.",
+      "tool": "CreateBrandRegistrations",
+      "input": {
+        "CustomerProfileBundleSid": "BUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "A2PProfileBundleSid": "BUbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "mock_response": {
+        "status": 201,
+        "body": {
+          "sid": "BNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "account_sid": "ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "customer_profile_bundle_sid": "BUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "a2p_profile_bundle_sid": "BUbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "date_created": "2026-06-18T00:00:00Z",
+          "date_updated": "2026-06-18T00:00:00Z",
+          "brand_type": "STANDARD",
+          "status": "PENDING",
+          "tcr_id": null,
+          "failure_reason": null,
+          "url": "https://messaging.twilio.com/v1/a2p/BrandRegistrations/BNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "mock": false,
+          "skip_automatic_sec_vet": false,
+          "identity_status": "UNVERIFIED",
+          "russell_3000": false
+        }
+      },
+      "expected_schema": {
+        "type": "object",
+        "required": ["sid", "account_sid", "status", "brand_type", "date_created", "url"],
+        "properties": {
+          "sid":         { "type": "string" },
+          "account_sid": { "type": "string" },
+          "status":      { "type": "string", "enum": ["PENDING", "APPROVED", "FAILED", "IN_REVIEW", "DELETED"] },
+          "brand_type":  { "type": "string" },
+          "date_created":{ "type": "string" },
+          "url":         { "type": "string" }
+        }
+      },
+      "scoring": "schema-valid"
+    }
+  ]
+}

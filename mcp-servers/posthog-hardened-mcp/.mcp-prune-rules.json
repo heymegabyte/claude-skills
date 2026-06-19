@@ -1,0 +1,19 @@
+{
+  "strategy": "name",
+  "keep": [
+    "^environments_dashboards_list$",
+    "^environments_events_list$",
+    "^environments_insights_list$",
+    "^environments_insights_create$",
+    "^environments_persons_list$",
+    "^environments_query_create$",
+    "^cohorts_create$",
+    "^experiments_list$",
+    "^experiments_create$",
+    "^feature_flags_list$",
+    "^feature_flags_create$",
+    "^feature_flags_retrieve$",
+    "^feature_flags_update$"
+  ],
+  "_comment": "Curated 13-tool allowlist for posthog-hardened-mcp. posthog-mcp was already pre-filtered to these 13 from the full PostHog OpenAPI spec. Reverse with: /prune-mcp-tools --reverse"
+}

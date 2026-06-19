@@ -1,0 +1,85 @@
+{
+  "_generated_by": "bin/gen-harness-manifests.mjs — do not edit directly",
+  "name": "heymegabyte-skills",
+  "version": "7.2.1",
+  "locale": "zh-CN",
+  "fallback_locale": "en",
+  "skills": [
+    {
+      "path": "../01-operating-system/SKILL.md",
+      "id": "operating-system"
+    },
+    {
+      "path": "../02-goal-and-brief/SKILL.md",
+      "id": "goal-and-brief"
+    },
+    {
+      "path": "../03-planning-and-research/SKILL.md",
+      "id": "planning-and-research"
+    },
+    {
+      "path": "../04-preference-and-memory/SKILL.md",
+      "id": "preference-and-memory"
+    },
+    {
+      "path": "../05-architecture-and-stack/SKILL.md",
+      "id": "architecture-and-stack"
+    },
+    {
+      "path": "../06-build-and-slice-loop/SKILL.md",
+      "id": "build-and-slice-loop"
+    },
+    {
+      "path": "../07-quality-and-verification/SKILL.md",
+      "id": "quality-and-verification"
+    },
+    {
+      "path": "../08-deploy-and-runtime-verification/SKILL.md",
+      "id": "deploy-and-runtime-verification"
+    },
+    {
+      "path": "../09-brand-and-content-system/SKILL.md",
+      "id": "brand-and-content-system"
+    },
+    {
+      "path": "../10-experience-and-design-system/SKILL.md",
+      "id": "experience-and-design-system"
+    },
+    {
+      "path": "../11-motion-and-interaction-system/SKILL.md",
+      "id": "motion-and-interaction-system"
+    },
+    {
+      "path": "../12-media-orchestration/SKILL.md",
+      "id": "media-orchestration"
+    },
+    {
+      "path": "../13-observability-and-growth/SKILL.md",
+      "id": "observability-and-growth"
+    },
+    {
+      "path": "../14-independent-idea-engine/SKILL.md",
+      "id": "independent-idea-engine"
+    },
+    {
+      "path": "../15-site-generation/SKILL.md",
+      "id": "site-generation"
+    },
+    {
+      "path": "../16-cinematic-website-prime-directive/SKILL.md",
+      "id": "cinematic-website-prime-directive"
+    },
+    {
+      "path": "../17-non-engineering-verticals/SKILL.md",
+      "id": "non-engineering-verticals"
+    },
+    {
+      "path": "../18-document-processing/SKILL.md",
+      "id": "document-processing"
+    },
+    {
+      "path": "../19-mcp-authoring/SKILL.md",
+      "id": "mcp-authoring"
+    }
+  ]
+}

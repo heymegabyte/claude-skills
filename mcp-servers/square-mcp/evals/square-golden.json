@@ -1,0 +1,190 @@
+{
+  "server": "square-mcp",
+  "_comment": "Golden tests for the square-mcp MCP server. Run via /run-mcp-evals square-mcp [--ci] [--mock-only] [--live-only]. Scoring tiers: exact-match | exact-match-keys | exact-match-keys+id-pattern-regex | error-shape | schema-valid | llm-judge:<rubric>. See commands/run-mcp-evals.md § Step 4. Mock-mode: when mock_response is present the harness returns it instead of calling the live API (no API key needed). See rules/eval-mock-mode-discipline.md.",
+  "tests": [
+    {
+      "id": "list-tools-presence",
+      "_comment": "__meta_ prefix = MCP list_tools call, no tool invocation. Validates the server advertises the expected surface. Always safe to run live — no API key needed for list_tools.",
+      "tool": "__meta_list_tools",
+      "expected_tool_count_min": 40,
+      "expected_tool_names_include": [
+        "ListCustomers",
+        "CreateCustomer",
+        "DeleteCustomer",
+        "CreatePayment",
+        "ListPayments"
+      ],
+      "scoring": "__meta_list_tools"
+    },
+    {
+      "id": "list-customers-happy-path",
+      "_comment": "Happy path: list Square customers. mock_response returns the standard Square list-customers envelope with one customer. Live run requires SQUARE_ACCESS_TOKEN.",
+      "tool": "ListCustomers",
+      "input": {
+        "limit": 10
+      },
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "customers": [
+            {
+              "id": "JDKYHBWT1D4F8MFH63DBMEN8Y4",
+              "created_at": "2026-01-15T10:00:00Z",
+              "updated_at": "2026-06-18T00:00:00Z",
+              "given_name": "Jane",
+              "family_name": "Doe",
+              "email_address": "jane.doe@example.com",
+              "phone_number": "+12025551234",
+              "reference_id": "ref-001",
+              "note": "Loyal customer",
+              "preferences": { "email_unsubscribed": false },
+              "creation_source": "THIRD_PARTY",
+              "version": 1
+            }
+          ],
+          "cursor": null
+        }
+      },
+      "expected": {
+        "customers": [
+          {
+            "id": "JDKYHBWT1D4F8MFH63DBMEN8Y4",
+            "given_name": "Jane",
+            "family_name": "Doe"
+          }
+        ]
+      },
+      "scoring": "exact-match-keys"
+    },
+    {
+      "id": "create-payment-happy-path",
+      "_comment": "Happy path: create a Square payment. Square returns HTTP 200 with a payment envelope (note: Square uses 200 not 201 for CreatePayment). mock_response simulates a completed payment.",
+      "tool": "CreatePayment",
+      "input": {
+        "body": {
+          "source_id": "cnon:card-nonce-ok",
+          "idempotency_key": "eval-harness-idem-key-001",
+          "amount_money": {
+            "amount": 1000,
+            "currency": "USD"
+          },
+          "location_id": "L1234567890"
+        }
+      },
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "payment": {
+            "id": "GQTFp1ZlXdpoW4o6eGiZhbjosiDFf",
+            "created_at": "2026-06-18T00:00:00Z",
+            "updated_at": "2026-06-18T00:00:00Z",
+            "amount_money": {
+              "amount": 1000,
+              "currency": "USD"
+            },
+            "status": "COMPLETED",
+            "source_type": "CARD",
+            "location_id": "L1234567890",
+            "order_id": "pyoZHhYBMFg1NqATZHCNCKioBKQ",
+            "receipt_url": "https://squareup.com/receipt/preview/GQTFp1ZlXdpoW4o6eGiZhbjosiDFf",
+            "total_money": {
+              "amount": 1000,
+              "currency": "USD"
+            },
+            "card_details": {
+              "status": "CAPTURED",
+              "card": {
+                "card_brand": "VISA",
+                "last_4": "4242",
+                "exp_month": 12,
+                "exp_year": 2027
+              }
+            },
+            "version_token": "FPjyLtdSYkMT7V3aYK0aYXTfMQOM3IH0OcaMMxgLaNM6o"
+          }
+        }
+      },
+      "expected": {
+        "payment": {
+          "status": "COMPLETED",
+          "amount_money": {
+            "amount": 1000,
+            "currency": "USD"
+          }
+        }
+      },
+      "scoring": "exact-match-keys"
+    },
+    {
+      "id": "delete-customer-not-found-error",
+      "_comment": "Error path: delete a customer that does not exist. Square returns HTTP 404 with an errors array. mock_response simulates this so CI can assert isError:true fires (post-Task #70 patch).",
+      "tool": "DeleteCustomer",
+      "input": {
+        "customer_id": "NONEXISTENT_CUSTOMER_ID_XYZ"
+      },
+      "mock_response": {
+        "status": 404,
+        "body": {
+          "errors": [
+            {
+              "category": "INVALID_REQUEST_ERROR",
+              "code": "NOT_FOUND",
+              "detail": "Customer with ID `NONEXISTENT_CUSTOMER_ID_XYZ` not found.",
+              "field": "customer_id"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "isError": true
+      },
+      "expected_message_contains": "NOT_FOUND",
+      "scoring": "error-shape"
+    },
+    {
+      "id": "retrieve-customer-schema-valid",
+      "_comment": "Schema validation: retrieve a customer by ID returns the Square customer object. mock_response returns a realistic customer so CI can verify shape compliance without a real access token.",
+      "tool": "RetrieveCustomer",
+      "input": {
+        "customer_id": "JDKYHBWT1D4F8MFH63DBMEN8Y4"
+      },
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "customer": {
+            "id": "JDKYHBWT1D4F8MFH63DBMEN8Y4",
+            "created_at": "2026-01-15T10:00:00Z",
+            "updated_at": "2026-06-18T00:00:00Z",
+            "given_name": "Jane",
+            "family_name": "Doe",
+            "email_address": "jane.doe@example.com",
+            "phone_number": "+12025551234",
+            "preferences": { "email_unsubscribed": false },
+            "creation_source": "THIRD_PARTY",
+            "version": 1
+          }
+        }
+      },
+      "expected_schema": {
+        "type": "object",
+        "required": ["customer"],
+        "properties": {
+          "customer": {
+            "type": "object",
+            "required": ["id", "created_at", "updated_at", "version"],
+            "properties": {
+              "id":            { "type": "string" },
+              "created_at":    { "type": "string" },
+              "updated_at":    { "type": "string" },
+              "given_name":    { "type": "string" },
+              "family_name":   { "type": "string" },
+              "email_address": { "type": "string" },
+              "version":       { "type": "integer" }
+            }
+          }
+        }
+      },
+      "scoring": "schema-valid"
+    }
+  ]
+}

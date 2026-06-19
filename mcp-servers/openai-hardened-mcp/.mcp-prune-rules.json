@@ -1,0 +1,20 @@
+{
+  "description": "Prune rules for OpenAI hardened MCP server — 12 essential tools from ~242",
+  "pruned_at": "2026-06-18",
+  "original_tool_count": 242,
+  "pruned_tool_count": 12,
+  "allowlist": [
+    "createChatCompletion",
+    "createCompletion",
+    "createEmbedding",
+    "createImage",
+    "createModeration",
+    "listModels",
+    "retrieveModel",
+    "createFile",
+    "listFiles",
+    "deleteFile",
+    "createFineTuningJob",
+    "listPaginatedFineTuningJobs"
+  ]
+}

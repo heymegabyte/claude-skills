@@ -1,0 +1,88 @@
+{
+  "server": "resend-mcp",
+  "_comment": "Golden tests for the resend-mcp MCP server. Run via /run-mcp-evals resend [--ci]. Scoring tiers: exact-match | exact-match-keys | exact-match-keys+id-pattern-regex | error-shape | schema-valid | llm-judge:<rubric>. See commands/run-mcp-evals.md § Step 4.",
+  "tests": [
+    {
+      "id": "list-tools-presence",
+      "_comment": "__meta_ prefix = MCP list_tools call, no tool invocation. Validates the server advertises the expected surface.",
+      "tool": "__meta_list_tools",
+      "expected_tool_count_min": 10,
+      "expected_tool_names_include": [
+        "post-emails",
+        "get-emails-email-id",
+        "get-audiences",
+        "post-contacts",
+        "delete-contacts-id"
+      ],
+      "scoring": "__meta_list_tools"
+    },
+    {
+      "id": "send-email-happy-path",
+      "_comment": "Happy path: send an email. The API returns { id, object } on success. We can't match the real ID so we use a regex pattern on the id field.",
+      "tool": "post-emails",
+      "input": {
+        "body": {
+          "from": "test@example.com",
+          "to": ["you@example.com"],
+          "subject": "MCP Eval Test",
+          "html": "<p>Hello from the eval harness</p>"
+        }
+      },
+      "expected": {
+        "object": "email",
+        "id_pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      },
+      "scoring": "exact-match-keys+id-pattern-regex",
+      "_notes": "In test environments, API_KEY is empty so the real API returns 401. Wire a mock HTTP intercept or set API_KEY to a Resend test key for live pass."
+    },
+    {
+      "id": "send-email-missing-from-error",
+      "_comment": "Error path: omit required 'from' field. Resend returns HTTP 422 with a validation error shape. The MCP server should surface isError:true.",
+      "tool": "post-emails",
+      "input": {
+        "body": {
+          "to": ["you@example.com"],
+          "subject": "Missing from"
+        }
+      },
+      "expected": {
+        "isError": true,
+        "code": "validation_error"
+      },
+      "expected_message_contains": "from",
+      "scoring": "error-shape"
+    },
+    {
+      "id": "get-email-by-id-schema-valid",
+      "_comment": "Schema validation: retrieve a known email. We don't assert exact field values — just that the response shape matches the Resend email object schema.",
+      "tool": "get-emails-email-id",
+      "input": {
+        "email_id": "00000000-0000-0000-0000-000000000001"
+      },
+      "expected_schema": {
+        "type": "object",
+        "required": ["id", "object", "created_at", "subject", "from", "to"],
+        "properties": {
+          "id":         { "type": "string" },
+          "object":     { "type": "string", "enum": ["email"] },
+          "created_at": { "type": "string" },
+          "subject":    { "type": "string" },
+          "from":       { "type": "string" },
+          "to":         { "type": "array",  "items": { "type": "string" } }
+        }
+      },
+      "scoring": "schema-valid"
+    },
+    {
+      "id": "list-audiences-exact-shape",
+      "_comment": "Exact-match-keys: list audiences returns { object, data }. We check the envelope keys without caring about data contents (it's an empty array in test mode).",
+      "tool": "get-audiences",
+      "input": {},
+      "expected": {
+        "object": "list",
+        "data": []
+      },
+      "scoring": "exact-match-keys"
+    }
+  ]
+}

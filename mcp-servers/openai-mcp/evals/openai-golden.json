@@ -1,0 +1,186 @@
+{
+  "server": "openai-mcp",
+  "_comment": "Golden tests for the openai-mcp MCP server. Run via /run-mcp-evals openai-mcp [--ci] [--mock-only] [--live-only]. Scoring tiers: exact-match | exact-match-keys | exact-match-keys+id-pattern-regex | error-shape | schema-valid | llm-judge:<rubric>. See commands/run-mcp-evals.md § Step 4. Mock-mode: when mock_response is present the harness returns it instead of calling the live API (no API key needed). See rules/eval-mock-mode-discipline.md.",
+  "tests": [
+    {
+      "id": "list-tools-presence",
+      "_comment": "__meta_ prefix = MCP list_tools call, no tool invocation. Validates the server advertises the expected surface. Always safe to run live — no API key needed for list_tools.",
+      "tool": "__meta_list_tools",
+      "expected_tool_count_min": 10,
+      "expected_tool_names_include": [
+        "createChatCompletion",
+        "listModels",
+        "createEmbedding",
+        "deleteFile",
+        "createImage"
+      ],
+      "scoring": "__meta_list_tools"
+    },
+    {
+      "id": "create-chat-completion-happy-path",
+      "_comment": "Happy path: create a chat completion. mock_response returns the standard OpenAI chat completion envelope with one choice. Live run requires OPENAI_API_KEY.",
+      "tool": "createChatCompletion",
+      "input": {
+        "body": {
+          "model": "gpt-4o",
+          "messages": [
+            { "role": "user", "content": "Say 'eval harness ok' and nothing else." }
+          ],
+          "max_tokens": 10,
+          "temperature": 0
+        }
+      },
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "id": "chatcmpl-eval000000000000000000000",
+          "object": "chat.completion",
+          "created": 1750000000,
+          "model": "gpt-4o-2024-08-06",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "eval harness ok"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 18,
+            "completion_tokens": 4,
+            "total_tokens": 22
+          },
+          "system_fingerprint": "fp_eval000000"
+        }
+      },
+      "expected": {
+        "object": "chat.completion",
+        "choices": [
+          {
+            "message": {
+              "role": "assistant",
+              "content": "eval harness ok"
+            },
+            "finish_reason": "stop"
+          }
+        ]
+      },
+      "scoring": "exact-match-keys"
+    },
+    {
+      "id": "list-models-happy-path",
+      "_comment": "Happy path: list available OpenAI models. mock_response returns the standard models list envelope with two entries so CI can verify the MCP server proxies the data array correctly.",
+      "tool": "listModels",
+      "input": {},
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "object": "list",
+          "data": [
+            {
+              "id": "gpt-4o",
+              "object": "model",
+              "created": 1715367049,
+              "owned_by": "system"
+            },
+            {
+              "id": "gpt-4o-mini",
+              "object": "model",
+              "created": 1721172717,
+              "owned_by": "system"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "object": "list"
+      },
+      "scoring": "exact-match-keys"
+    },
+    {
+      "id": "create-embedding-schema-valid",
+      "_comment": "Schema validation: create an embedding. mock_response returns the standard embedding envelope so CI can verify the response shape without spending tokens or a real API key.",
+      "tool": "createEmbedding",
+      "input": {
+        "body": {
+          "model": "text-embedding-3-small",
+          "input": "MCP eval harness embedding test"
+        }
+      },
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "object": "list",
+          "data": [
+            {
+              "object": "embedding",
+              "index": 0,
+              "embedding": [0.0023064255, -0.009327292, 0.015797347]
+            }
+          ],
+          "model": "text-embedding-3-small",
+          "usage": {
+            "prompt_tokens": 6,
+            "total_tokens": 6
+          }
+        }
+      },
+      "expected_schema": {
+        "type": "object",
+        "required": ["object", "data", "model", "usage"],
+        "properties": {
+          "object": { "type": "string", "enum": ["list"] },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["object", "index", "embedding"],
+              "properties": {
+                "object":    { "type": "string", "enum": ["embedding"] },
+                "index":     { "type": "integer" },
+                "embedding": { "type": "array", "items": { "type": "number" } }
+              }
+            }
+          },
+          "model": { "type": "string" },
+          "usage": {
+            "type": "object",
+            "required": ["prompt_tokens", "total_tokens"],
+            "properties": {
+              "prompt_tokens": { "type": "integer" },
+              "total_tokens":  { "type": "integer" }
+            }
+          }
+        }
+      },
+      "scoring": "schema-valid"
+    },
+    {
+      "id": "delete-file-not-found-error",
+      "_comment": "Error path: delete a file ID that does not exist. OpenAI returns HTTP 404 with a standard error envelope. mock_response simulates this so CI can assert isError:true fires (post-Task #70 patch).",
+      "tool": "deleteFile",
+      "input": {
+        "file_id": "file-nonexistent000000000000"
+      },
+      "mock_response": {
+        "status": 404,
+        "body": {
+          "error": {
+            "message": "No such File object: 'file-nonexistent000000000000'",
+            "type": "invalid_request_error",
+            "param": "id",
+            "code": null
+          }
+        }
+      },
+      "expected": {
+        "isError": true
+      },
+      "expected_message_contains": "No such File",
+      "scoring": "error-shape"
+    }
+  ]
+}

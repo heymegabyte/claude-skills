@@ -1,0 +1,158 @@
+{
+  "server": "github-mcp",
+  "_comment": "Golden tests for the github-mcp MCP server. Run via /run-mcp-evals github-mcp [--ci] [--mock-only] [--live-only]. Scoring tiers: exact-match | exact-match-keys | exact-match-keys+id-pattern-regex | error-shape | schema-valid | llm-judge:<rubric>. See commands/run-mcp-evals.md § Step 4. Mock-mode: when mock_response is present the harness returns it instead of calling the live API (no API key needed). See rules/eval-mock-mode-discipline.md.",
+  "tests": [
+    {
+      "id": "list-tools-presence",
+      "_comment": "__meta_ prefix = MCP list_tools call, no tool invocation. Validates the server advertises the expected surface. Always safe to run live — no API key needed for list_tools.",
+      "tool": "__meta_list_tools",
+      "expected_tool_count_min": 30,
+      "expected_tool_names_include": [
+        "users/get-by-username",
+        "issues/create",
+        "repos/delete",
+        "pulls/list",
+        "repos/get-content"
+      ],
+      "scoring": "__meta_list_tools"
+    },
+    {
+      "id": "get-user-by-username-happy-path",
+      "_comment": "Happy path: fetch a GitHub user by username. mock_response returns the realistic GitHub user object shape. Live run requires GITHUB_TOKEN.",
+      "tool": "users/get-by-username",
+      "input": {
+        "username": "octocat"
+      },
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "login": "octocat",
+          "id": 1,
+          "node_id": "MDQ6VXNlcjE=",
+          "avatar_url": "https://github.com/images/error/octocat_happy.gif",
+          "html_url": "https://github.com/octocat",
+          "type": "User",
+          "name": "The Octocat",
+          "company": "GitHub",
+          "blog": "https://github.com/blog",
+          "location": "San Francisco",
+          "email": null,
+          "public_repos": 8,
+          "public_gists": 8,
+          "followers": 9000,
+          "following": 9,
+          "created_at": "2011-01-25T18:44:36Z",
+          "updated_at": "2022-05-06T00:00:00Z"
+        }
+      },
+      "expected": {
+        "login": "octocat",
+        "id": 1,
+        "type": "User"
+      },
+      "scoring": "exact-match-keys"
+    },
+    {
+      "id": "create-issue-happy-path",
+      "_comment": "Happy path: create a GitHub issue. GitHub returns HTTP 201 with the created issue shape. mock_response simulates this so CI can verify the MCP server proxies the 201 body correctly.",
+      "tool": "issues/create",
+      "input": {
+        "owner": "octocat",
+        "repo": "Hello-World",
+        "title": "MCP Eval Test Issue",
+        "body": "Created by the eval harness to verify issue creation flow."
+      },
+      "mock_response": {
+        "status": 201,
+        "body": {
+          "id": 1,
+          "number": 42,
+          "title": "MCP Eval Test Issue",
+          "body": "Created by the eval harness to verify issue creation flow.",
+          "state": "open",
+          "html_url": "https://github.com/octocat/Hello-World/issues/42",
+          "user": {
+            "login": "octocat",
+            "id": 1
+          },
+          "labels": [],
+          "created_at": "2026-06-18T00:00:00Z",
+          "updated_at": "2026-06-18T00:00:00Z"
+        }
+      },
+      "expected": {
+        "number": 42,
+        "title": "MCP Eval Test Issue",
+        "state": "open"
+      },
+      "scoring": "exact-match-keys"
+    },
+    {
+      "id": "delete-repo-unauthorized-error",
+      "_comment": "Error path: attempt to delete a repo without a valid token. GitHub returns HTTP 401. mock_response simulates the 401 so CI can assert isError:true fires (post-Task #70 patch). See rules/eval-mock-mode-discipline.md.",
+      "tool": "repos/delete",
+      "input": {
+        "owner": "some-org",
+        "repo": "protected-repo"
+      },
+      "mock_response": {
+        "status": 401,
+        "body": {
+          "message": "Requires authentication",
+          "documentation_url": "https://docs.github.com/rest/repos/repos#delete-a-repository",
+          "status": "401"
+        }
+      },
+      "expected": {
+        "isError": true
+      },
+      "expected_message_contains": "authentication",
+      "scoring": "error-shape"
+    },
+    {
+      "id": "list-pulls-schema-valid",
+      "_comment": "Schema validation: list pull requests returns an array of PR objects. mock_response returns one PR so CI can validate the MCP server passes the response array shape without a real repo.",
+      "tool": "pulls/list",
+      "input": {
+        "owner": "octocat",
+        "repo": "Hello-World",
+        "state": "open"
+      },
+      "mock_response": {
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "number": 7,
+            "state": "open",
+            "title": "Amazing new feature",
+            "html_url": "https://github.com/octocat/Hello-World/pull/7",
+            "user": { "login": "octocat", "id": 1 },
+            "head": { "ref": "feature-branch", "sha": "abc123" },
+            "base": { "ref": "main", "sha": "def456" },
+            "created_at": "2026-06-18T00:00:00Z",
+            "updated_at": "2026-06-18T00:00:00Z"
+          }
+        ]
+      },
+      "expected_schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "number", "state", "title", "html_url", "user", "head", "base"],
+          "properties": {
+            "id":       { "type": "integer" },
+            "number":   { "type": "integer" },
+            "state":    { "type": "string", "enum": ["open", "closed"] },
+            "title":    { "type": "string" },
+            "html_url": { "type": "string" },
+            "user":     { "type": "object", "required": ["login"] },
+            "head":     { "type": "object", "required": ["ref", "sha"] },
+            "base":     { "type": "object", "required": ["ref", "sha"] }
+          }
+        }
+      },
+      "scoring": "schema-valid"
+    }
+  ]
+}
