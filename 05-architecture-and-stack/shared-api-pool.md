@@ -47,7 +47,7 @@ Active project `.env.local` (check `$CLAUDE_ENV_FILE` when set)
 - `BASETEN_API_KEY` — model hosting
 - `CARTESIA_API_KEY` — voice AI
 
-**Missing (sign up):** `GROQ_API_KEY` (fastest, free 30rpm) | `TOGETHER_API_KEY` ($5 free) | `FIREWORKS_AI_API_KEY` ($1 free) | `COHERE_API_KEY` (free embeddings) | `STABILITY_API_KEY` (25 free/day) | `PERPLEXITY_API_KEY` | `FAL_AI_API_KEY` | `ASSEMBLYAI_API_KEY` ($50 free) | `LUMA_API_KEY` | `SUNO_API_KEY`
+**Missing:** `GROQ_API_KEY` (fastest, free 30rpm) | `TOGETHER_API_KEY` ($5 free) | `FIREWORKS_AI_API_KEY` ($1 free) | `COHERE_API_KEY` (free embeddings) | `STABILITY_API_KEY` (25 free/day) | `PERPLEXITY_API_KEY` | `FAL_AI_API_KEY` | `ASSEMBLYAI_API_KEY` ($50 free) | `LUMA_API_KEY` | `SUNO_API_KEY`
 
 ### Communication (12 keys)
 
@@ -152,8 +152,7 @@ Cloudflare | GitHub | Playwright | Stripe | Slack | Airtable | Figma | Google Ca
 ## Self-Hosted Services (Proxmox/Coolify, 70+ containers)
 
 - Services follow pattern `{service}.megabyte.space` behind CF Tunnels + Authentik SSO
-- 70+ containers managed via Coolify
-- All URLs discoverable via Coolify API or `~/.config/emdash/` config
+- 70+ containers managed via Coolify; all URLs discoverable via Coolify API or `~/.config/emdash/`
 
 ## Integration Protocol
 
@@ -170,7 +169,7 @@ For EVERY new project:
 ## Full API Catalog
 
 - 150+ APIs with free tiers, env vars, MCP availability, and code examples — `~/.claude/research/api-library.md`
-- Sideload this file when choosing which APIs to integrate — `Read ~/.claude/research/api-library.md`
+- Sideload when choosing which APIs to integrate: `Read ~/.claude/research/api-library.md`
 
 ## Key Discovery Order
 
@@ -178,4 +177,4 @@ For EVERY new project:
 2. Check shared pool at rare-chefs `.env.local`
 3. Run `get-secret KEY` (chezmoi+age)
 4. Check `~/.config/emdash/` tokens
-5. If not found → sign up (most have free tiers) → `chezmoi add --encrypt`
+5. Not found → sign up (most have free tiers) → `chezmoi add --encrypt`

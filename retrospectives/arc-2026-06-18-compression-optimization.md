@@ -145,6 +145,21 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 
 ## Iteration log
 
+### iter 11 — 2026-06-19 (commands + SKILL indexes + skill dirs)
+
+- Compressed 16 more files (~600 lines cut net), all 0 markdownlint errors, SKILL.md frontmatter intact:
+  - `15-site-generation/non-technical-owner-onboarding.md` 173→116 (-33%)
+  - `05-architecture-and-stack/shared-api-pool.md` 182→128 (-30%, 185 keys preserved)
+  - `07-quality-and-verification/visual-inspection-loop.md` 296→209 (-29%)
+  - `13-observability-and-growth/activation-funnel.md` 328→237 (-28%)
+  - `15-site-generation/template-improvements-100.md` 173→130 (-25%, 100 ideas)
+  - `commands/deploy-forged-mcp.md` 226→176 (-22%)
+  - `commands/audit-prune-completeness.md` 219→182 (-17%)
+  - `12-media-orchestration/SKILL.md` 167→148 (-11%), `commands/forge-stack-pack.md` 289→257 (-11%)
+  - `commands/audit-tool-surface.md`, `audit-cron-arc.md`, `audit-doctrine.md`, 4 SKILL indexes (13/16/10/12), `forge-webhook-skill.md` — modest/code-dominant, preserved.
+- Gate 17 pass · 0 fail. 81 instruction files compressed total.
+- Next: remaining commands/ + agents/ + smaller NN-*/ files; then idea #4 semantic dedup.
+
 ### iter 10 — 2026-06-19 (more skill dirs + SKILL indexes)
 
 - Compressed 12 more files (~900 lines cut), all 0 markdownlint errors, SKILL.md frontmatter intact:

@@ -18,25 +18,18 @@ See `~/.claude/rules/visual-inspection.md` — supreme dual-vision doctrine. Thi
 
 ### Claude Vision (PRIMARY, FREE on Max 20x)
 
-- Sonnet 4.6 image input via `~/.claude/.credentials.json` OAuth
-- Fires per-slice + per-section + per-route + per-iteration + 6bp
-- No marginal cost
+- Sonnet 4.6 via `~/.claude/.credentials.json` OAuth
+- Fires per-slice + per-section + per-route + per-iteration + 6bp; no marginal cost
 - Subject only to Max 20x 5hr / weekly rate windows
 
 ### GPT Image 2 vision (JUDGE, METERED, $0.50/build cap)
 
-Reserved for highest-value checkpoints:
-
-- Hero / ATF
-- Brand-fidelity vs source
-- Final pre-publish gate
-- Arbitration when Claude Vision <8 OR Claude + a11y-tree disagree
-- Most-critical user-facing surfaces
+Reserved for: hero/ATF, brand-fidelity vs source, final pre-publish gate, arbitration when Claude Vision <8 or Claude + a11y-tree disagree.
 
 ### Consensus
 
 - Both ≥8/10 → ship
-- One <8 → fix → re-run
+- Either <8 → fix → re-run
 - Persistent disagreement → third pass (Computer-Use screenshot + checklist)
 - Never override <8 with self-judgment
 
@@ -55,45 +48,45 @@ ZERO marginal cost. 6bp × N routes × every iteration — uncapped within Max 2
 - ~$0.10 final pre-publish 6bp homepage
 - ~$0.15 reserve for arbitration
 
-Beyond cap → escalate to memory pin + ship with carryover, never silently overspend.
+Beyond cap → escalate to memory pin + ship with carryover; never silently overspend.
 
 ### Build tiers
 
-- **Cost-sensitive** (free-tier, paid-floor) — Claude Vision ONLY, GPT Image 2 vision reserved for single final pre-publish call on homepage
+- **Cost-sensitive** (free-tier, paid-floor) — Claude Vision ONLY; GPT Image 2 vision for single final pre-publish call on homepage
 - **Brand-critical** (paying client, founder portfolio, flagship SaaS) — full $0.50 GPT Image 2 vision budget + Claude Vision at every checkpoint
 
-**Decision:** code in `external_llm.ts` checks `site.pricing_tier` + `vision_budget_remaining_cents` before each GPT Image 2 vision call. Auto-degrade to Claude Vision when budget exhausted.
+`external_llm.ts` checks `site.pricing_tier` + `vision_budget_remaining_cents` before each GPT Image 2 vision call; auto-degrades to Claude Vision when budget exhausted.
 
 ## Where Dual-Vision Fires
 
-- **Per-slice (skill 06)** — Claude Vision YES (2bp: 375+1280) | GPT Image 2 vision NO — trigger: after slice deploys to preview
-- **Per-section (skill 15)** — Claude Vision YES (1bp: 1280) | GPT Image 2 vision NO — trigger: after section renders
-- **Per-route 6bp (skill 15)** — Claude Vision YES (6bp full) | GPT Image 2 vision NO (unless route=homepage) — trigger: after route assembles
-- **Iteration diff (skill 15)** — Claude Vision YES (compare prev + current screenshots) | GPT Image 2 vision NO — trigger: progressive rebuild loop
-- **Brand-fidelity vs source** — Claude Vision YES (auxiliary) | GPT Image 2 vision YES (primary judge) — trigger: once per build, hero/ATF
-- **Hero / ATF final** — Claude Vision YES | GPT Image 2 vision YES (judge) — trigger: pre-publish gate
-- **Final pre-publish homepage 6bp** — Claude Vision YES (every route) | GPT Image 2 vision YES (homepage only) — trigger: last gate before mark-published
-- **Disagreement arbitration** — GPT Image 2 vision YES (tiebreaker) — trigger: when Claude <8 or Claude + a11y disagree
+- **Per-slice (skill 06)** — Claude Vision YES (2bp: 375+1280) | GPT Image 2 vision NO — after slice deploys to preview
+- **Per-section (skill 15)** — Claude Vision YES (1bp: 1280) | GPT Image 2 vision NO — after section renders
+- **Per-route 6bp (skill 15)** — Claude Vision YES (6bp full) | GPT Image 2 vision NO (unless route=homepage) — after route assembles
+- **Iteration diff (skill 15)** — Claude Vision YES (compare prev + current) | GPT Image 2 vision NO — progressive rebuild loop
+- **Brand-fidelity vs source** — Claude Vision YES (auxiliary) | GPT Image 2 vision YES (primary judge) — once per build, hero/ATF
+- **Hero / ATF final** — Claude Vision YES | GPT Image 2 vision YES (judge) — pre-publish gate
+- **Final pre-publish homepage 6bp** — Claude Vision YES (every route) | GPT Image 2 vision YES (homepage only)
+- **Disagreement arbitration** — GPT Image 2 vision YES (tiebreaker) — when Claude <8 or Claude + a11y disagree
 
 ## Tier-1 → Tier-2 → Tier-3 Order (***ALWAYS THIS ORDER***)
 
-1. **Tier 1 (FREE, FAST)** — Playwright a11y tree 6bp + axe-core scan + DOM-walker contrast (computed-bg ancestry) + computed-style overflow check. Catches ~80% of issues with zero token spend. Run FIRST every time.
-2. **Tier 2 (FREE on Max 20x)** — Claude Vision on screenshots Tier 1 cannot resolve — aesthetics, brand match, hierarchy, motion presence, hero impact, "does it feel cinematic?"
-3. **Tier 3 (METERED, CAPPED)** — GPT Image 2 vision on critical checkpoints + arbitration. Reserve budget for what Tier 1+2 cannot resolve.
+1. **Tier 1 (FREE, FAST)** — Playwright a11y tree 6bp + axe-core scan + DOM-walker contrast + computed-style overflow. Catches ~80% of issues with zero token spend.
+2. **Tier 2 (FREE on Max 20x)** — Claude Vision on screenshots Tier 1 cannot resolve (aesthetics, brand, hierarchy, motion, cinematic feel).
+3. **Tier 3 (METERED, CAPPED)** — GPT Image 2 vision on critical checkpoints + arbitration.
 
 ## Loop (3-round max, $0.50 GPT Image 2 vision cap)
 
 1. Deploy to production / staging
 2. Tier 1 — Playwright a11y tree + axe-core + DOM-walker (FREE) ALL pages 6bp
-3. Fix functional / a11y / contrast issues from step 2
-4. Tier 2 — Claude Vision on ALL pages 6bp (FREE) — score + evidence per breakpoint
-5. Fix issues scoring <8 from Claude Vision
+3. Fix functional / a11y / contrast issues
+4. Tier 2 — Claude Vision ALL pages 6bp (FREE) — score + evidence per breakpoint
+5. Fix issues scoring <8
 6. Re-deploy + purge
 7. Round 2: repeat Tier 1 → Tier 2 to verify fixes
 8. Round 3 (if still <8): Tier 3 — GPT Image 2 vision arbiter on remaining surfaces + final pre-publish call
-9. After round 3: report carryover to `_iteration_log.json`, ship (progressive rebuild catches next iteration)
+9. After round 3: report carryover to `_iteration_log.json`, ship
 
-**Per round budget check:** track GPT Image 2 vision spend in cents. When `vision_budget_remaining_cents < 10` → skip GPT Image 2 vision, ship with Claude Vision verdict.
+**Per round:** track GPT Image 2 vision spend in cents; when `vision_budget_remaining_cents < 10` → skip GPT Image 2 vision, ship with Claude Vision verdict.
 
 ## Screenshot Capture Template (Dual-Vision)
 
@@ -131,7 +124,7 @@ async function captureAllScreenshots(page: Page, pages: string[], outputDir: str
 
 ## Claude Vision Call (PRIMARY — FREE on Max 20x)
 
-Uses Anthropic Messages API with image content blocks. Auth via OAuth token (`~/.claude/.credentials.json.claudeAiOauth.accessToken`), NOT API key.
+Auth via OAuth token (`~/.claude/.credentials.json.claudeAiOauth.accessToken`), NOT API key.
 
 ```typescript
 async function claudeVisionCritique(screenshotPath: string, context: { route: string; breakpoint: string; brand?: BrandJson }): Promise<DualVisionResult> {
@@ -162,7 +155,7 @@ async function claudeVisionCritique(screenshotPath: string, context: { route: st
 }
 ```
 
-**Fallback:** if OAuth refresh fails OR running outside Max 20x — `claude-sonnet-4-6` via API key — log `auth_mode=api-key` to D1 audit, alert.
+**Fallback:** OAuth refresh fails OR outside Max 20x → `claude-sonnet-4-6` via API key; log `auth_mode=api-key` to D1 audit, alert.
 
 ## GPT Image 2 vision Call (JUDGE — METERED, $0.50 cap)
 
@@ -268,28 +261,19 @@ Return JSON: { score, cinematic_floor, latest_tech_flex, brand_fidelity, hero_im
 
 ## When Vision vs Accessibility Tree
 
-- **Does it look good?** — Claude Vision YES (free) | GPT Image 2 vision YES (judge) | a11y Tree NO
-- **Layout broken?** — Claude Vision YES (free) | GPT Image 2 vision YES (judge) | a11y Tree NO
-- **Color on-brand?** — Claude Vision YES (free) | GPT Image 2 vision YES (final) | a11y Tree NO
-- **Brand-fidelity vs source?** — Claude Vision YES (auxiliary) | GPT Image 2 vision YES (primary) | a11y Tree NO
-- **Hero ATF impact?** — Claude Vision YES (every iter) | GPT Image 2 vision YES (final) | a11y Tree NO
-- **Visual hierarchy?** — Claude Vision YES (every iter) | GPT Image 2 vision YES (final) | a11y Tree NO
-- **Cinematic floor (motion)?** — Claude Vision YES (every iter) | GPT Image 2 vision YES (final) | a11y Tree NO
-- **Latest tech flex?** — Claude Vision YES (every iter) | GPT Image 2 vision YES (final) | a11y Tree NO
-- **Button works?** — Claude Vision NO | GPT Image 2 vision NO | a11y Tree YES (Stagehand)
-- **Screen reader usable?** — Claude Vision NO | GPT Image 2 vision NO | a11y Tree YES (axe-core)
-- **Form submits?** — Claude Vision NO | GPT Image 2 vision NO | a11y Tree YES (Stagehand)
+- **Does it look good / layout broken / color on-brand / brand-fidelity / hero ATF / hierarchy / cinematic / latest tech?** — Claude Vision YES (free) | GPT Image 2 vision YES (judge/final) | a11y Tree NO
+- **Button works / screen reader usable / form submits?** — Claude Vision NO | GPT Image 2 vision NO | a11y Tree YES (axe-core / Stagehand)
 - **Apple-approved aesthetics?** — Claude Vision YES (free, gate) | GPT Image 2 vision YES (final judge) | a11y Tree NO
 
-**Use ALL.** Tier 1 a11y tree (free, fast) → Tier 2 Claude Vision (free on Max 20x, every iter) → Tier 3 GPT Image 2 vision (metered, capped, judge).
+**Use ALL.** Tier 1 a11y tree (free, fast) → Tier 2 Claude Vision (free on Max 20x) → Tier 3 GPT Image 2 vision (metered, capped, judge).
 
 ## Auth Path
 
-- **Container / spawned-CLI Claude Vision** — Max 20x OAuth (NEVER API key — see `auth-spawned-claude.md`). Log `auth_mode` to D1 every call. API-key fallback alert.
+- **Container / spawned-CLI Claude Vision** — Max 20x OAuth (NEVER API key — see `auth-spawned-claude.md`). Log `auth_mode` to D1 every call; API-key fallback alert.
 - **GPT Image 2 vision** — always API key (`OPENAI_API_KEY`). Log `cost_cents` per call.
 
 ## Reference Incidents
 
-- **2026-05-09 LMG brand-fidelity regression** — code review said OK, vision DIFF vs prior build caught regression. Lesson: iteration diff vision is mandatory.
+- **2026-05-09 LMG brand-fidelity regression** — code review said OK; iteration diff vision caught regression. Lesson: iteration diff vision is mandatory.
 - **2026-05-10 LMG white-on-white footer** — token check passed, DOM-walker failed. Lesson: computed-DOM-walker + vision catches what static can't.
-- **2026-05-12 cost discovery** — container uses Max 20x OAuth, Claude Vision FREE. Doctrine: use it everywhere.
+- **2026-05-12 cost discovery** — container uses Max 20x OAuth, Claude Vision FREE. Use it everywhere.
