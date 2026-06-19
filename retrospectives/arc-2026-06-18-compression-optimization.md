@@ -69,7 +69,7 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - `[x]` 1. Token-budget dashboard — shipped `bin/audit-instruction-files.mjs` CHECK 1 (iter 1)
 - `[x]` 2. EARS / hedge linter — shipped `bin/audit-instruction-files.mjs` CHECK 2 (iter 1, MEDIUM)
 - `[x]` 3. Filler-word blocklist — shipped `bin/audit-instruction-files.mjs` CHECK 3 (iter 1, HIGH/CI)
-- `[ ]` 4. Semantic dedup engine — embed rules, cluster cos-sim >0.85, surface merge candidates
+- `[x]` 4. Near-duplicate detector — `bin/audit-near-duplicates.mjs` (node-only 3-gram shingle Jaccard, no embeddings; advisory). Result: corpus tightly differentiated (max Jaccard 0.053) — NO merges needed; `prompt-cache`/`prompt-cache-strategy` confirmed complementary not duplicate.
 - `[ ]` 5. Contradiction detector — pairwise LLM judge on near-similar rules → `_contradiction-log.md`
 - `[ ]` 6. Description retrieval scorer — embed description vs synthetic trigger queries, score <0.7 fails
 - `[x]` 7. Cross-link INTEGRITY validator — `bin/audit-crosslinks.mjs` wired as blocking lint gate 16 (every `[[slug]]` resolves; 0 broken). PageRank/promote-isolated half still open.
@@ -144,6 +144,14 @@ Status: `[ ]` planned · `[x]` shipped. Grouped by leverage.
 - **Wire `bin/audit-instruction-files.mjs` to lefthook** now the gate is green — first add inline-code-span skip + `<!-- validator-ignore -->` hatch (iter-1 known refinement).
 
 ## Iteration log
+
+### iter 13 — 2026-06-19 (idea #4 + final prose files)
+
+- Built `bin/audit-near-duplicates.mjs` (idea #4): pure-lexical 3-gram shingle Jaccard over rules/ (no embeddings, node-only, advisory/never-block). **Finding: corpus is tightly differentiated — max similarity 0.053, zero real duplicates.** The one naming-tell pair (`prompt-cache` vs `prompt-cache-strategy`) confirmed complementary (load-order vs cache_control API), not a dup. The arc's earlier one-canonical-per-concept discipline held.
+- Compressed the final 4 genuinely-uncompressed prose files: coolify-docker-proxmox 265→163 (-38%), 06-build-and-slice-loop/build-breaking-rules 191→143 (-25%), llm-evals 472→363 (-23%, code preserved), build-prompts 940→807 (-14%, 77% code preserved).
+- **Compression mandate now essentially complete**: every prose-heavy rule + skill-dir + command file compressed; remaining large files are legitimate code references.
+- Gate 17 pass · 0 fail. Documented near-dup tool in playbook.
+- Next: remaining 50-idea roadmap (#8 progressive-disclosure enforcer, #11 stale-rule guard, #18 auto-TOC, #6 description-retrieval scorer).
 
 ### iter 12 — 2026-06-19 (CRITICAL: 91 untracked files committed)
 

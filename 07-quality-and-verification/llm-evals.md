@@ -21,16 +21,13 @@ paths:
 
 # LLM Eval Harness
 
-AI-heavy code ships with evals the same day. Evals are to AI output what Vitest is to
-pure logic — not optional hygiene, not a later phase. Write the golden test BEFORE tuning
-the prompt. Watch the score move. Gate the CI on composite-score regression. This is
-`[[evals]]` + `[[contract-first-ai]]` applied end-to-end with a complete harness.
+AI-heavy code ships with evals the same day. Evals are to AI output what Vitest is to pure logic — not optional hygiene, not a later phase. Write the golden test BEFORE tuning the prompt. Watch the score move. Gate CI on composite-score regression. This is `[[evals]]` + `[[contract-first-ai]]` applied end-to-end.
 
 Source authority: modelcontextprotocol.io, Anthropic evals documentation, `rules/evals.md`.
 
 ## When to write evals (mandatory trigger list)
 
-Write at least one eval case any time the feature's correctness depends on model output:
+Write at least one eval case when correctness depends on model output:
 
 - Summarization, extraction, classification, intent-detection
 - Copy generation (landing pages, emails, descriptions)
@@ -40,8 +37,7 @@ Write at least one eval case any time the feature's correctness depends on model
 - Structured-output conformance (does the JSON match the Zod schema every time?)
 - Judgment calls (slop detection, design critique, a11y rubric scoring)
 
-No AI-heavy feature merges without a `tools/evals/<slug>.cases.ts` and a passing
-`pnpm evals --slug <slug>` run recorded in CI.
+No AI-heavy feature merges without a `tools/evals/<slug>.cases.ts` and a passing `pnpm evals --slug <slug>` run recorded in CI.
 
 ---
 
@@ -136,8 +132,7 @@ export function exactMatch(output: string, expected: z.infer<typeof ExpectedSche
 
 ### Tier 2 — Semantic similarity via Workers AI embeddings
 
-Uses `@cf/baai/bge-base-en-v1.5` (free, <100ms). Cosine similarity between the model output
-and a reference answer. Threshold 0.82 = same semantic content, different wording.
+Uses `@cf/baai/bge-base-en-v1.5` (free, <100ms). Cosine similarity between model output and a reference answer. Threshold 0.82 = same semantic content, different wording.
 
 ```typescript
 // tools/evals/scorers/semantic-similarity.ts
@@ -396,14 +391,9 @@ Any eval `FAIL` or snapshot regression > 0.5 = build fail. No exceptions.
 
 ## Prompt versioning
 
-- `prompt_version` field in every case JSON must be bumped on EVERY change to:
-  - system prompt text
-  - rubric wording
-  - model swap
-  - schema change
-- Version format: `v<major>.<minor>` — minor for rubric tweaks, major for schema breaks.
-- The NDJSON history preserves all versions, so you can diff score distributions across
-  prompt versions with a simple `jq` query:
+- Bump `prompt_version` on EVERY change to: system prompt text, rubric wording, model swap, schema change.
+- Format: `v<major>.<minor>` — minor for rubric tweaks, major for schema breaks.
+- NDJSON history preserves all versions; diff score distributions across versions with a simple `jq` query:
 
 ```bash
 # Compare composite scores for v2.0 vs v2.1 on the donor-brief slug
@@ -411,15 +401,13 @@ jq -s 'group_by(.prompt_version) | map({version: .[0].prompt_version, avg_compos
   tools/evals/results/summarize-donor-brief.ndjson
 ```
 
-- Add `snapshot_baseline` tag to the first case in a new prompt version to anchor the
-  Vitest snapshot baseline.
+- Add `snapshot_baseline` tag to the first case in a new prompt version to anchor the Vitest snapshot baseline.
 
 ---
 
 ## CI gate rules
 
-- Every AI-heavy route in `src/worker/routes/` or `src/worker/ai/` must have a matching
-  `tools/evals/cases/<slug>.json` — CI checks existence with:
+- Every AI-heavy route in `src/worker/routes/` or `src/worker/ai/` must have a matching `tools/evals/cases/<slug>.json` — CI checks existence with:
 
 ```bash
 for f in src/worker/ai/*.ts; do
@@ -433,8 +421,7 @@ done
 - Composite score regression beyond `−0.5` vs prior Vitest snapshot = build fail.
 - New evals (no prior snapshot) must pass on first run to merge.
 - Evals run in parallel via `Promise.all`; never serial.
-- Never commit `tools/evals/results/*.ndjson` to git — add to `.gitignore`. History is
-  environment-local; CI starts fresh each run and the snapshot captures the reference score.
+- Never commit `tools/evals/results/*.ndjson` to git — add to `.gitignore`. History is environment-local; CI starts fresh each run and the snapshot captures the reference score.
 
 ---
 
@@ -447,9 +434,7 @@ done
 | Haiku 4.5 judge | ~$0.002 | Rubric scoring, Tier 3 |
 | Sonnet 4.6 judge | ~$0.015 | Nuanced rubrics only |
 
-A 20-case suite with Haiku judges = ~$0.04. Run 50×/day in CI = ~$2.00/day. Prompt-cache
-the rubric (90% off cached input) at scale. Never use Opus for judges — Haiku calibrated
-against periodic human labels is sufficient and 25× cheaper.
+A 20-case suite with Haiku judges = ~$0.04. Run 50×/day in CI = ~$2.00/day. Prompt-cache the rubric (90% off cached input) at scale. Never use Opus for judges — Haiku calibrated against periodic human labels is sufficient and 25× cheaper.
 
 ---
 

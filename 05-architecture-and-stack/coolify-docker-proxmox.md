@@ -8,7 +8,7 @@ updated: "2026-04-23"
 
 ## CRITICAL: First-Use Confirmation Required
 
-**Before using this skill for the first time in any project, ALWAYS ask:**
+Ask before ANY Coolify action in a new project:
 
 ```
 Hey — this project needs [service/capability] which runs on your Proxmox
@@ -20,67 +20,56 @@ This touches your production self-hosted infrastructure (70+ services).
 Want me to go ahead?
 ```
 
-**Wait for explicit "yes" before proceeding.**
-
-After first confirmation per project, subsequent Coolify operations in the same project don't need re-confirmation UNLESS they:
-
-- Deploy a NEW service (not just configure an existing one)
-- Delete or restart an existing service
-- Change environment variables on a shared service
-- Modify DNS or networking
+Wait for explicit "yes". Re-confirm within the same project only for: new service deploys, deletes/restarts, changes to shared-service env vars, or DNS/networking modifications.
 
 ## Infrastructure Overview
 
-### Proxmox Host (361 conversations about Proxmox in ChatGPT history)
+### Proxmox Host
 
-Brian's Proxmox box runs Coolify as the PaaS layer. Coolify manages 70+ Docker services.
+- Hardware: bare metal Proxmox with ZFS storage
+- VMs: OPNsense, Ubuntu Desktop, macOS, Windows 11, Home Assistant OS, Coolify server
+- Backup: daily ZFS snapshots → R2 (3-2-1)
+- Network: VLAN segmentation, 10+ VLANs
 
-- **Hardware** — Bare metal Proxmox with ZFS storage
-- **VMs** — OPNsense, Ubuntu Desktop, macOS, Windows 11, Home Assistant OS, Coolify server
-- **Backup** — Daily ZFS snapshots → R2 (3-2-1 pattern)
-- **Network** — VLAN segmentation, 10+ VLANs
+### OPNsense
 
-### OPNsense (250 conversations)
+- Primary firewall/router virtualized on Proxmox
+- VPN: multi-provider WireGuard + OpenVPN + Cloudflare WARP
+- DNS: Unbound with DNSSEC + DNS-over-TLS
+- ACME: Let's Encrypt via Cloudflare DNS challenge for `*.megabyte.space`
+- Authentik LDAP integration + Headscale mesh VPN
 
-- Virtualized on Proxmox as primary firewall/router
-- **VPN** — Multi-provider WireGuard + OpenVPN + Cloudflare WARP
-- **DNS** — Unbound with DNSSEC + DNS-over-TLS
-- **ACME** — Let's Encrypt via Cloudflare DNS challenge for `*.megabyte.space`
-- Authentik LDAP integration for authentication
-- Mesh VPN coordination via Headscale
+### Coolify Access
 
-### Coolify Access (136 mentions — THE hub)
+- URL: `{service}.megabyte.space` (behind CF Tunnel + Authentik)
+- API: `{coolify-url}/api/v1/`
+- Token: `~/.config/emdash/coolify-token`
+- Reverse proxy: Traefik with Authentik forward-auth middleware
+- Docker-compose magic vars: `SERVICE_FQDN_*`, `SERVICE_URL_*`
 
-- **URL** — `{service}.megabyte.space` pattern (behind CF Tunnel + Authentik)
-- **API** — `{coolify-url}/api/v1/`
-- **Token** — `~/.config/emdash/coolify-token`
-- Behind — Cloudflare tunnel (cloudflared) for zero-trust access
-- Reverse proxy — Traefik with Authentik forward-auth middleware
-- Docker-compose conventions — `SERVICE_FQDN_*`, `SERVICE_URL_*` magic variables
+### Already-Running Services
 
-### Already-Running Services (ranked by usage from 3,102 ChatGPT conversations)
+| Service | Role |
+|---------|------|
+| Authentik | SSO for everything |
+| Healthchecks | Uptime monitoring |
+| OpenWebUI | AI chat interface |
+| Bolt.diy | AI website builder |
+| Dify | AI app builder |
+| Postiz | Social automation |
+| n8n | Workflow automation |
+| Sentry | Error tracking (mandatory) |
+| PostHog | Product analytics (mandatory) |
+| FireCrawl | Web scraping |
+| Listmonk | Email marketing |
+| Browserless | Headless Chrome |
+| Home Assistant | Smart home (internal) |
 
-| Service | Pattern | Role |
-|---------|---------|------|
-| **Authentik** | `{service}.megabyte.space` | SSO for everything |
-| **Healthchecks** | same pattern | Uptime monitoring |
-| **OpenWebUI** | same pattern | AI chat interface |
-| **Bolt.diy** | same pattern | AI website builder |
-| **Dify** | same pattern | AI app builder |
-| **Postiz** | same pattern | Social automation |
-| **n8n** | same pattern | Workflow automation |
-| **Sentry** | same pattern | Error tracking (mandatory) |
-| **PostHog** | same pattern | Product analytics (mandatory) |
-| **FireCrawl** | same pattern | Web scraping |
-| **Listmonk** | same pattern | Email marketing |
-| **Browserless** | same pattern | Headless Chrome |
-| **Home Assistant** | (internal) | Smart home |
+All follow `{service}.megabyte.space`. Discoverable via Coolify API.
 
-All services follow `{service}.megabyte.space` pattern. Discoverable via Coolify API.
+### Common Problems
 
-### Common Coolify Problems (from debugging sessions)
-
-1. Healthcheck failures in Docker compose (10+ conversations)
+1. Healthcheck failures in Docker compose
 2. Container file permissions (9999:root pattern)
 3. Redirect loops — Cloudflare → Authentik → Service
 4. Port conflicts between containers
@@ -224,16 +213,12 @@ volumes:
   pgdata:
 ```
 
-## Disaster Recovery for Self-Hosted Services
-
-### Backup Strategy
+## Disaster Recovery
 
 - Coolify auto-backs up configurations
-- PostgreSQL databases — `pg_dump` via cron to R2
-- Volumes — periodic tar to R2
-- Environment variables — exported and stored encrypted
-
-### Recovery
+- PostgreSQL: `pg_dump` via cron to R2
+- Volumes: periodic tar to R2
+- Env vars: exported and stored encrypted
 
 ```bash
 # 1. Restore Coolify from backup

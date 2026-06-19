@@ -18,8 +18,7 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 8 template-levera
 
 ## Every build (***TEMPLATE LEVERAGE #1 — START FROM `template.projectsites.dev` CLONE — UNIVERSAL — BUILD-BREAKING***)
 
-- Every new site build MUST initialize by cloning the canonical template at `template.projectsites.dev` (R2 bucket `project-sites-template/`)
-- NEVER scaffold from-scratch via `npm create vite`
+- Clone from R2 bucket `project-sites-template/` — NEVER scaffold via `npm create vite`.
 
 ### Template includes
 
@@ -43,13 +42,11 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 8 template-levera
 
 ### Validator
 
-- `validate-template-origin.mjs` — assert `dist/.template-version` file exists matching current `template.projectsites.dev` SHA AND ≥80% of template files preserved in initial slice 0
+- `validate-template-origin.mjs` — assert `dist/.template-version` matches current `template.projectsites.dev` SHA AND ≥80% of template files preserved in slice 0
 
 ## Every build (***TEMPLATE LEVERAGE #2 — HOMEPAGE-FIRST VERTICAL SLICING — UNIVERSAL — BUILD-BREAKING***)
 
-- Every build's slice loop MUST start with homepage slice (`/`) before any secondary route
-- NEVER parallel-render all routes from prompt-zero
-- Homepage owns — hero, primary CTA, trust signals, value prop, navigation
+- Start slice loop with `/` before any secondary route; NEVER parallel-render all routes from prompt-zero.
 
 ### Slice order
 
@@ -60,7 +57,7 @@ Initialized from prompt-improvements brainstorm 2026-05-10 — 8 template-levera
 - **Slice 4** — `/contact` route
 - **Slice N** — remaining routes in priority order
 
-Each slice ships independently — partial site is better than full-site-broken.
+Each slice ships independently — partial site beats full-site-broken.
 
 ### Validator
 
@@ -78,18 +75,14 @@ Every slice MUST ship zero placeholders:
 - No `[Your Name]` template strings
 - No `https://example.com` references
 
-### Pipeline
-
-Post-slice grep gate before deploy.
-
 ### Validator
 
-- `validate-anti-placeholder.mjs` — grep `dist/**/*.{html,css,js,json}` for forbidden patterns (`/lorem ipsum|TODO|FIXME|XXX|placeholder\.com|coming soon|\[your |\bexample\.com\b/i`) — any match = slice FAIL
+- `validate-anti-placeholder.mjs` — grep `dist/**/*.{html,css,js,json}` for `/lorem ipsum|TODO|FIXME|XXX|placeholder\.com|coming soon|\[your |\bexample\.com\b/i` — any match = slice FAIL
 
 ## Every slice (***TEMPLATE LEVERAGE #4 — INCREMENTAL DUAL-VISION CHECKPOINT — UNIVERSAL — BUILD-BREAKING — see ~/.claude/rules/visual-inspection.md***)
 
-- Every slice MUST end with Playwright screenshots at 2bp (375 mobile + 1280 desktop) + Claude Vision (Sonnet 4.6, FREE on Max 20x OAuth) scoring 0-10 before next slice fires
-- Below 8/10 → apply critique + regenerate (max 2 attempts) → if still <8/10 log to `_visual_failures.json` and continue
+- End every slice with Playwright screenshots at 2bp (375 + 1280) + Claude Vision (Sonnet 4.6, FREE on Max 20x OAuth) scoring 0-10 before next slice fires.
+- Below 8/10 → apply critique + regenerate (max 2 attempts) → if still <8/10 log to `_visual_failures.json` and continue.
 
 ### Tier order
 
@@ -123,7 +116,7 @@ Post-slice grep gate before deploy.
 
 ## Every slice (***TEMPLATE LEVERAGE #5 — SLICE TIME BUDGET (10min HOMEPAGE / 5min ROUTE) — UNIVERSAL — BUILD-BREAKING***)
 
-Every slice MUST complete within budget:
+Budget limits:
 
 - Homepage slice — ≤10min wall-clock
 - Secondary-route slice — ≤5min
@@ -139,12 +132,11 @@ Exceeding budget = cut scope, ship MVP slice, surface remainder as recommendatio
 
 ### Validator
 
-- `validate-slice-budget.mjs` — assert every `_slice_log.json[i].duration_ms` ≤ budget for its slice type AND scope-cuts logged when triggered
+- `validate-slice-budget.mjs` — assert every `_slice_log.json[i].duration_ms` ≤ budget for its type AND scope-cuts logged when triggered
 
 ## Every slice (***TEMPLATE LEVERAGE #6 — DEPLOYABLE-AT-EVERY-SLICE GATE — UNIVERSAL — BUILD-BREAKING***)
 
-- Every slice MUST end in deployable state
-- Never half-broken HTML, never JS errors in console, never broken internal links
+- Every slice MUST end deployable — no broken HTML, no JS console errors, no broken internal links.
 
 ### Pipeline
 
@@ -160,18 +152,17 @@ Exceeding budget = cut scope, ship MVP slice, surface remainder as recommendatio
 
 ## Every slice (***TEMPLATE LEVERAGE #7 — REAL CONTENT FROM RESEARCH ARTIFACTS — UNIVERSAL — BUILD-BREAKING***)
 
-- Every slice MUST source its copy + media from build's pre-research artifacts (`_research.json`, `_corpus.json`, `_media_extraction.json`, `_brand.json`)
-- NEVER LLM-fabricated content
+- Source all copy + media from build's pre-research artifacts (`_research.json`, `_corpus.json`, `_media_extraction.json`, `_brand.json`) — NEVER LLM-fabricated content.
 
 ### Pipeline
 
 - Slice prompt receives `(slice_role, route, research_artifacts[]) → renders only with provided facts`
 - LLM may rephrase + condense + structure, never invent
-- Pipeline gate — every quantitative claim in slice output (%, $, N, dates) MUST cite `_research.json.refId` per `~/.claude/rules/citations.md`
+- Every quantitative claim (%, $, N, dates) MUST cite `_research.json.refId` per `~/.claude/rules/citations.md`
 
 ### Validator
 
-- `validate-real-content.mjs` — assert every `<section data-slice="X">` has at least one cite reference into `_research.json` OR `_corpus.json` AND no quantitative claim ships uncited
+- `validate-real-content.mjs` — assert every `<section data-slice="X">` has ≥1 cite into `_research.json` OR `_corpus.json` AND no quantitative claim ships uncited
 
 ## Every slice (***TEMPLATE LEVERAGE #8 — SLICE LOG AS BUILD-OUTPUT ARTIFACT — UNIVERSAL — BUILD-BREAKING***)
 
@@ -183,7 +174,7 @@ Every build MUST emit `_slice_log.json` capturing per-slice metadata:
  scope_cuts[], cite_count, recommendations_emitted[]}
 ```
 
-- Log surfaced under `/admin/build-trace` route post-deploy for owner inspection
+- Surfaced under `/admin/build-trace` post-deploy for owner inspection.
 
 ### Validator
 

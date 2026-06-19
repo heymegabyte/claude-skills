@@ -8,7 +8,7 @@ updated: "2026-04-24"
 
 > **Model migration note (pass-77, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Build prompt structure unchanged.
 
-The container runs ONE comprehensive Claude Code prompt. This prompt encompasses all build phases. The prompt is dynamically assembled from form data + research results. Claude Code reads pre-written context files (`_research.json`, `_brand.json`, `_assets.json`, etc.) and customizes the pre-installed template.
+The container runs ONE comprehensive Claude Code prompt assembled dynamically from form data + research results. Claude reads pre-written context files (`_research.json`, `_brand.json`, `_assets.json`, etc.) and customizes the pre-installed template.
 
 ## njsk.org Quality Bar (***THE FLOOR***)
 
@@ -251,20 +251,19 @@ These patterns must be applied automatically — not as a follow-up. Every page 
 **The njsk.org enrichment incident:** The first build shipped pages with plain text heroes, no contact forms (just "email us" text), no partner logos (just name-drops), and sidebar-only maps. All of these should have been first-build features, not follow-up additions.
 
 ### Content Migration (***NEVER DISCARD CONTENT***)
-The original site's content is the business's accumulated SEO equity and institutional knowledge. Treat it as sacred.
-- Migrate ALL text content from _scraped_content.json — rewrite for quality but preserve substance
-- Every blog post, news article, update → individual page at matching URL path
-- Team bios, service descriptions, FAQ answers, event archives → all migrated
-- Only discard: broken markup, "test" pages, truly empty pages, exact duplicates
-- When combining thin pages: content merges into a richer page, old URLs get 301s
-- Word count of new site should MATCH OR EXCEED original (not 50% — 100%+)
+
+- Migrate ALL text from `_scraped_content.json` — rewrite for quality but preserve substance.
+- Every blog post, news article, update → individual page at matching URL path.
+- Team bios, service descriptions, FAQ answers, event archives → all migrated.
+- Discard only: broken markup, "test" pages, truly empty pages, exact duplicates.
+- When combining thin pages: content merges into a richer page, old URLs get 301s.
+- Word count of new site MUST MATCH OR EXCEED original.
 
 ### URL Slug Hygiene (***ALWAYS CLEAN — NEVER COPY CMS GARBAGE***)
-Original CMS paths often contain garbage suffixes, numeric IDs, or folder artifacts (e.g. `/the-mens-dining-hall-1`, `/volunteer-1`, `/new-folder-1`). NEVER use these as primary routes.
-- Clean the slug: strip trailing numbers added by CMS (`-1`, `-2`), remove articles (`the-`), remove `new-folder-*` artifacts
-- `/the-mens-dining-hall-1` → primary route: `/services/mens-dining-hall`, redirect from original path
-- `/volunteer-1` → primary route: `/volunteer`, redirect from original path
-- `/new-folder-1` → primary route: `/services`, redirect from original path
+
+- Strip trailing CMS numbers (`-1`, `-2`), articles (`the-`), `new-folder-*` artifacts.
+- `/the-mens-dining-hall-1` → `/services/mens-dining-hall`, redirect from original
+- `/volunteer-1` → `/volunteer`, redirect from original
 - Sub-services get nested routes: `/services/health-clinic`, `/services/womens-center`
 - Use a Redirect component (navigate with replace:true) for SPA client-side 301 equivalents
 - Original ugly paths MUST still resolve via redirect — never 404 on a previously-indexed URL
@@ -290,9 +289,9 @@ Parse _scraped_content.json for all original URL paths. Every original URL must 
 - Build gate: compare original sitemap URLs vs new sitemap + redirects, fail if any URL unaccounted
 
 ### Media Acquisition (***MANDATORY — RUNS IN ALL BUILD MODES***)
-Media enrichment is NOT optional. Whether running in container, via prompt, or in manual Claude Code session — media acquisition MUST happen. A site with no images is not a site. Read ~/.agentskills/15-site-generation/media-acquisition.md for full strategy.
 
-**The njsk.org text-only-site incident:** The first build shipped a site with ZERO images because media acquisition was treated as a Phase 0 container-only step. It is a HARD GATE for ALL builds.
+- Media enrichment is NOT optional. Read ~/.agentskills/15-site-generation/media-acquisition.md for full strategy.
+- **The njsk.org text-only-site incident:** first build shipped zero images — hard gate now applies to ALL builds.
 
 **Manual/prompt build media steps (***FIRST PROMPT — BEFORE ANY CODE | run agents 1-5 IN PARALLEL***):**
 1. **Extract images from original site (***WALK EVERY PAGE — not just homepage***):** Phase-0 Playwright crawler MUST iterate every URL in source sitemap (capped at 1000), wait for `networkidle`, walk `<img>`+`<picture>`+CSS bg+slider/swiper/splide/glide+Squarespace/Wix gallery+lazy `data-src`+`og:image`+linked PDFs/DOCs (see media-acquisition.md "Original Media Extraction"). Download each to `public/images/{section}/{slug}-{i}.{ext}`. EVERY original image MUST land locally — hotlinking is blocked at the worker. Slider groups preserve order via `_sliders.json` manifest.
@@ -303,10 +302,11 @@ Media enrichment is NOT optional. Whether running in container, via prompt, or i
 6. **Image placement:** Hero section MUST have a background image, video, or photo. Every service/feature card needs an image. About page ≥2 photos. Team page = real headshots from source site (initials only as fallback per existing rule). Blog posts inherit source-site post photos. Gallery/photo section auto-renders when ≥5 images in a `[data-gallery]` ancestor.
 7. **Hard gate (***page-count-scaled — NEVER fixed 10***):** Count `public/images/**/*` minus chrome (logo+favicon). Threshold = `max(30, original_image_count × 1.4, page_count × 6_home_or_4_sub)`. 4-page rebuild ⇒ ≥30 images. 50-page ⇒ ≥200. 500-page ⇒ ≥2000. Below threshold = build NOT complete. Below 50% of threshold = media acquisition NOT started. Verify via `find public/images -type f | wc -l`.
 
-**For non-profit/church sites specifically:** Extract volunteer group photos from blog posts (these are often the most emotionally compelling images), download event photos, kitchen/dining hall interior shots. These organizations rely on emotional connection — text-only sites kill donations.
+For non-profit/church sites: extract volunteer group photos from blog posts (emotionally compelling), download event photos, kitchen/dining hall interior shots.
 
 ### Per-Page Image Extraction (***MANDATORY — EVERY PAGE GETS ITS IMAGES***)
-Images are not a site-wide pool — they belong to specific pages. When scraping the original site, associate EVERY image with the page it appeared on. This is critical for blog posts, service pages, and event recaps where photos are the primary content.
+
+- Images belong to specific pages, not a site-wide pool. Associate every image with the page it appeared on.
 
 **Process:**
 1. **Scrape every page individually:** For each page in _scraped_content.json or original sitemap, WebFetch the page and extract ALL `<img>` src URLs from the page body (not nav/footer chrome)
@@ -317,15 +317,16 @@ Images are not a site-wide pool — they belong to specific pages. When scraping
 6. **CMS URL patterns:** Squarespace uses `images.squarespace-cdn.com/content/v1/{site-id}/{hash}/{filename}`. WordPress uses `wp-content/uploads/{year}/{month}/{filename}`. Wix uses `static.wixstatic.com/media/{hash}`. Always download and host locally — never hotlink to CMS CDN (the original site may go offline)
 7. **Hard gate:** Every blog post that had images on the original site MUST have images on the new site. Every service page that had photos MUST have photos. Zero-image blog posts on a site where other posts have images = build incomplete
 
-**The njsk.org blog image incident:** Blog posts were migrated as text-only even though every post on njsk.org had 1-19 associated photos (volunteer group photos, event shots, donation images). These photos ARE the content for a non-profit blog — without them, posts are meaningless stubs.
+**The njsk.org blog image incident:** Blog posts were migrated as text-only even though every post on njsk.org had 1-19 associated photos. Without them, posts are meaningless stubs.
 
 ### Image Dedupe via 301 (***NEVER DELETE WITHOUT REDIRECTING — UPDATE EVERY REFERENCE***)
-When a build downloads CMS images, the same asset frequently appears under multiple filenames (Squarespace serves the same hero as `assetUrl` AND inside `body` HTML). Naive dedupe by md5 hash + delete breaks every reference still pointing at the deleted path — internal links, OG images, sitemap entries, external backlinks, search-engine-indexed URLs. **Always 301 the deleted twin to the kept canonical, never just `rm`.**
+
+- Same CMS asset appears under multiple filenames. Naive dedupe by md5 + delete breaks all references. Always 301 the deleted twin to the kept canonical.
 - **Workflow:** (1) hash every image in `public/images/{section}/` by md5 (2) for each duplicate, pick the canonical (shorter/more-descriptive filename, or `*-1.jpg` over `*-body-N.jpg`) (3) delete the twin file (4) emit `{deleted-url: canonical-url}` to a redirect map compiled into the worker (5) the worker `Response.redirect(target, 301)` on every request matching a deleted path
 - **Reference script (proven on njsk.org):** `~/.agentskills/15-site-generation/build-image-redirects.mjs` — walks `git log --reverse --name-status` to find every image deletion on the branch, recovers each blob via `git show {commit}~1:{path}`, hashes against current files, emits `src/data/image-redirects.ts` (Worker bundle) + `public/_image-redirects.json` (debug). Output: 478/502 mapped on njsk.org rebuild
 - **Worker integration:** Top of `fetch()` handler — `const target = imageRedirects[url.pathname]; if (target) return Response.redirect(new URL(target, url).toString(), 301);` BEFORE `env.ASSETS.fetch()`. Add a 404 short-circuit for `/images/{section}/*` so unmapped misses don't waterfall into SPA fallback
-- **Source-code reference hygiene (***UPDATE EVERY REFERENCE — NEVER LEAVE ALIASES***):** When images are renamed/deleted, grep every `.tsx/.ts/.html/.md` for the old filename and update to the canonical. Short aliases like `pseg-1.jpg`, `barbara-cary-1.jpg`, `fed-volunteers-1.jpg` are fragile — always reference the full descriptive filename (`pseg-feb-2023-1.jpg`, `introducing-barbara-cary-1.jpg`, `federal-reserve-bank-volunteers-1.jpg`). Hard gate: `node scripts/scan-assets.mjs` on production must report ZERO 404s on `/images/*` requests. Any 404 = build incomplete
-- **The njsk.org dedupe incident:** First dedupe pass deleted 502 duplicate images by md5 hash but left 9 home/services/volunteer/we-need pages referencing the deleted short-alias filenames — every page rendered with broken image icons. Fix required (a) building the 301 redirect map post-hoc from git history (b) rewriting every page-source `.tsx` to use canonical filenames (c) the parallel asset scan to catch the residual 404s. **The rule going forward: dedupe + redirect + reference-update happen in one atomic commit, never separately.**
+- **Source-code reference hygiene (***UPDATE EVERY REFERENCE — NEVER LEAVE ALIASES***):** When images are renamed/deleted, grep every `.tsx/.ts/.html/.md` for the old filename and update to the canonical. Hard gate: `node scripts/scan-assets.mjs` on production must report ZERO 404s on `/images/*` requests. Any 404 = build incomplete
+- **The njsk.org dedupe incident:** First dedupe pass deleted 502 duplicate images by md5 hash but left 9 pages referencing deleted short-alias filenames. Fix required: building the 301 redirect map post-hoc from git history + rewriting every page-source `.tsx` to use canonical filenames. **The rule: dedupe + redirect + reference-update happen in one atomic commit, never separately.**
 
 ### Per-Route SEO Meta (***EVERY ROUTE GETS UNIQUE TITLE / DESC / KEYPHRASE / CANONICAL / JSON-LD***)
 SPAs default to one shared `<title>` and `<meta>` set across every route — Yoast/Lighthouse/Search Console all flag this as duplicate-content. Every public route MUST have unique meta keyed off the pathname, with a researched keyphrase that the page genuinely deserves to rank for.
@@ -334,7 +335,7 @@ SPAs default to one shared `<title>` and `<meta>` set across every route — Yoa
 - **Blog post dynamic meta:** Don't pre-bake meta for every blog slug into `page-meta.ts` — derive at runtime from `blogPosts.find(p => p.slug === slug)`. Title = `{post.title.slice(0,47)}… | {Site} {Location}` clipped to 70 chars. Description = `post.excerpt.slice(0,156)`. Keyphrase = `post.keywords?.[0] ?? siteDefaultKeyphrase`. JSON-LD: BlogPosting + BreadcrumbList
 - **Keyphrase research (***INTENT-FIRST, NOT KEYWORD-STUFFING***):** For each route, ask: what would a genuine user type into Google to land here? `/donate` → "donate to {city} soup kitchen" (intent: I want to give). `/mass-schedule` → "Catholic Mass {city} NJ" (intent: I want to attend). `/services/health-clinic` → "free health clinic {city}" (intent: I need care). Avoid generic "best/top/leading" — use specific locality + service combinations
 - **Hard gate:** Every route in `App.tsx` MUST have a corresponding entry in `page-meta.ts` (or be derivable from data, like blog posts). Missing entry = `getMeta(pathname)` returns null = generic fallback meta = build incomplete. CI: `grep -oE 'path="[^"]+"' src/app.tsx | sort -u` cross-checked against `page-meta.ts` keys
-- **The njsk.org meta incident:** First build had a single static `<title>` and `<meta>` block in `index.html` — every route on the deployed SPA showed identical Google snippets. Fix was the `PageHead` + `page-meta.ts` pattern above; now every route shows a unique researched keyphrase + title + description in search results
+- **The njsk.org meta incident:** First build had a single static `<title>` and `<meta>` block in `index.html` — every route showed identical Google snippets. Fix: the `PageHead` + `page-meta.ts` pattern above
 
 ### Font-Flash Mitigation (***FOUT/FOIT MUST NEVER FLASH WRONG FONT***)
 Web fonts loading from Google Fonts/CDN cause a visible Flash Of Unstyled Text (FOUT) — body renders in fallback font, snaps to brand font ~200-800ms later, jarring layout shift. Mitigation runs in `index.html` before the React bundle, costs ~1KB, gracefully fades the page in once `document.fonts.ready` resolves.
@@ -361,13 +362,12 @@ Web fonts loading from Google Fonts/CDN cause a visible Flash Of Unstyled Text (
 
   The `setTimeout(reveal, 1200)` is a safety net — if `document.fonts.ready` never resolves (slow network, font CDN down), reveal at 1.2s anyway so the page never stays invisible
 
-- **Animate.css for in-page motion:** Use `animate__animated animate__fadeInUp animate__faster` etc. on hero sections, content cards, and route transitions. Glitch-free because animate.css uses transform/opacity only (GPU-composited, no layout thrash). All transitions gated on `prefers-reduced-motion: reduce`
+- **Animate.css for in-page motion:** Use `animate__animated animate__fadeInUp animate__faster` etc. on hero sections, content cards, and route transitions. All transitions gated on `prefers-reduced-motion: reduce`
 - **Hard gate:** Page-load video: capture first 1500ms with Playwright `recordVideo`. AI vision must NOT see a font-snap event (text shifts width/baseline mid-load). If snap is visible, preload directive missing or `<style>` block not blocking initial render
 
 ### Hero Image Context (***NEVER GENERIC — MATCH PAGE INTENT***)
 
-Hero backgrounds carry semantic weight. A food video on a Mass-schedule page or a generic stock-photo hero on a Health-Clinic page reads as careless. Every hero MUST visually align with the page's specific topic, not just the site's overall vibe.
-
+- Every hero MUST visually align with the page's specific topic, not just the site's overall vibe.
 - **Audit pass:** For each route, ask: does the hero image/video literally depict what this page is about? `/donate` → volunteers-serving-meals (the impact). `/mass-schedule` → stained-glass church interior (worship). `/services/health-clinic` → medical-care imagery (not food). `/we-need` → pantry/donation-stock (not soup kitchen line)
 - **Source priority:** (1) original-site photos that match the page topic (2) blog post photos from the same topic cluster (3) stock photos from Pexels/Pixabay with `topic` query (`pexels.com/search/{topic}` → first non-people-faced result, license-free) (4) AI generation as last resort
 - **Hard gate:** Visual QA pass — AI vision scores each hero on `image_matches_page_topic` (0-10). Any hero <8/10 flagged for replacement. Score 6 example: food-prep video on /mass-schedule (food is on-brand for the org but off-topic for the page). Score 9 example: stained-glass-window photo on /mass-schedule
@@ -375,20 +375,18 @@ Hero backgrounds carry semantic weight. A food video on a Mass-schedule page or 
 
 ### Parallel Verification Scan (***POST-DEPLOY GATE — ZERO 404s + ZERO CONSOLE ERRORS***)
 
-Manual click-through testing misses 80%+ of broken assets, console errors, and CSP violations because they fire only on specific routes/breakpoints/timings. Every deploy MUST run a parallel headless scan that captures every console error/warning and every failed network request across every route.
-
+- Manual click-through misses 80%+ of broken assets, console errors, and CSP violations. Every deploy MUST run a parallel headless scan across every route.
 - **Reference script:** `scripts/scan-assets.mjs` (Playwright + chromium, concurrency 6) — for each public route + sample of blog routes, opens a fresh context, attaches listeners for `console`, `pageerror`, `requestfailed`, and `response` (status >=400), navigates with `waitUntil:'networkidle'`, returns `{route, errors[], warnings[], failed[]}`. Sort + print per-route, end with summary, `process.exit(1)` if any errors or failures
 - **Bash sweep complement:** `scripts/check-routes.sh` — `curl -sk -o /dev/null -w "%{http_code}"` every route + every blog slug, print non-200s. Faster than Playwright (no browser), catches Worker-level 404s/redirects but not console errors
 - **Empty-config widgets (***NEVER SHIP WITH EMPTY data-sitekey OR PLACEHOLDER URLS***):** A `<div class="cf-turnstile" data-sitekey="">` produces a console error on every page render. Same for empty Stripe public keys, empty Resend tokens, empty PostHog snippets. Pattern: gate the widget render on the env var being set — `{import.meta.env.VITE_TURNSTILE_SITEKEY ? <div className="cf-turnstile" data-sitekey={...} /> : null}`. The script tag in `<head>` is fine to leave (loads silently); only the widget div with empty key produces the error
-- **Hard gate:** Both scripts run as the LAST step of every deploy verification. `scan-assets.mjs` exit code 0 + `check-routes.sh` reporting 0 non-200s = deploy verified. Any error = open the worker logs / fix the broken reference / redeploy / re-scan. Never mark a deploy "done" without the green scan
-- **The njsk.org scan incident:** Initial deploy passed the bash route-sweep (every route returned 200) but the Playwright scan revealed 72 console errors across services/volunteer/we-need pages — broken `<img>` references to short-alias filenames, plus Turnstile empty-sitekey errors. The bash sweep alone would have shipped a broken site; only the parallel Playwright scan caught the asset 404s. **Both scans now run on every deploy.**
+- **Hard gate:** Both scripts run as the LAST step of every deploy verification. `scan-assets.mjs` exit code 0 + `check-routes.sh` reporting 0 non-200s = deploy verified. Never mark a deploy "done" without the green scan
+- **The njsk.org scan incident:** Initial deploy passed the bash route-sweep but Playwright scan revealed 72 console errors — broken `<img>` references to short-alias filenames, plus Turnstile empty-sitekey errors. **Both scans now run on every deploy.**
 
 ### Full Blog Archive Crawl (***MANDATORY — 100% COVERAGE OR BUILD FAILS***)
 
-The /blog index on most CMSes (Squarespace, WordPress, Wix, Ghost) paginates. Stopping at page 1 = silently dropping 50–90% of the archive. The original site's blog is a multi-year corpus of partner spotlights, event recaps, donation announcements, and obituaries — every post is irreplaceable institutional history. **Coverage threshold: 100%, not "most".**
+- Pagination stops at page 1 = silently dropping 50–90% of the archive. Coverage threshold: 100%, not "most".
 
 **Squarespace canonical method (***ALWAYS USE THIS FIRST FOR SQUARESPACE — JSON API***):**
-The HTML pagination on Squarespace silently drops posts when "Load More" or themed pagination has bugs. The JSON endpoint is the source of truth — every post in the database appears here regardless of theme.
 
 - Endpoint: `GET https://{domain}/blog?format=json&offset=0` returns the first batch as JSON: `{ items: [...], pagination: { nextPage: bool, nextPageOffset: number } }`
 - Loop: start with `offset=0`, fetch, append `items` to a Map keyed by `item.id` (dedup), set `offset = items[items.length-1].publishOn` (a millisecond epoch), repeat until `items.length === 0` OR `pagination.nextPage === false`
@@ -432,9 +430,7 @@ The HTML pagination on Squarespace silently drops posts when "Load More" or them
 
 ### Inline Interlinking (***EVERY PAGE — TEXT IS LINK OPPORTUNITY***)
 
-Plain prose with zero internal links wastes SEO equity and user navigation. Every page MUST treat body text as a network of contextual cross-links to other pages and posts. This is non-negotiable for content-heavy non-profit and local-business sites.
-
-- **Per-page minimum:** 4–8 inline links in body copy on every page (not counting nav/footer/CTA buttons). Hero subtitle, mission/about paragraphs, FAQ answers, blog post body, and footer CTA blocks all get inline links.
+- Every page MUST have 4–8 inline links in body copy (not counting nav/footer/CTA buttons).
 - **Link targets per page type:** About → /services (each sub-program with anchor), /team, /volunteer, /donate, /blog, /contact. Services → /team (staff names link to bios), /volunteer, /donate, /we-need, /blog. Blog post → 3–5 sibling posts, /donate, /volunteer, /services anchor, /team. FAQ answers → corresponding deep pages. Contact → /volunteer, /donate, /mass-schedule, /we-need.
 - **Markdown link parser for string-array content:** When blog/FAQ/static content is stored as `string[]`, use a `renderInline()` helper that parses `[label](href)` syntax and emits React Router `<Link>` for internal hrefs (`/path`) and `<a target="_blank" rel="noopener">` for external (`http://`, `https://`, `mailto:`, `tel:`). Pattern: `/\[([^\]]+)\]\(([^)]+)\)/g`. Single component, used everywhere prose has links.
 - **Style consistency:** All inline links use one shared className: `text-{brand}-800 font-medium underline decoration-{brand}-300 underline-offset-2 hover:text-{brand}-600 hover:decoration-{brand}-600 transition-colors`. Never style inline links per-page — define once.
@@ -445,8 +441,7 @@ Plain prose with zero internal links wastes SEO equity and user navigation. Ever
 
 ### Stylized Google Maps (***EVERY LOCATION-AWARE SITE — NEVER RAW IFRAME***)
 
-Default Google Maps embeds clash with brand colors and look generic. Every customer-facing map MUST be stylized to match the brand and overlaid with a branded address card. No external Maps JS API key required — pure CSS filter on the iframe.
-
+- Default Google Maps embeds clash with brand colors. Every customer-facing map MUST be stylized to match the brand and overlaid with a branded address card.
 - **CSS filter recipe:** Apply to iframe `style.filter`. Maroon/red theme: `grayscale(100%) sepia(40%) hue-rotate(310deg) saturate(180%) contrast(95%) brightness(96%)`. Blue theme: `grayscale(100%) sepia(60%) hue-rotate(180deg) saturate(150%)`. Green theme: `grayscale(100%) sepia(60%) hue-rotate(70deg) saturate(140%)`. Tweak hue-rotate by 30° increments to nudge toward brand primary.
 - **Brand-tinted overlay:** Iframe sits in a `relative overflow-hidden` container with rounded corners and shadow. Address card absolutely positioned `bottom-4 left-4` (or `bottom-6 left-6` on desktop) using `bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-{brand}-100 p-5`.
 - **Address card content:** Brand-colored pin icon (40×40 rounded square with brand-800 background, white SVG pin), business name in heading font, full address as `<address>` element, "Get directions →" external link to `https://www.google.com/maps/dir/?api=1&destination={url-encoded-address}`.
@@ -456,7 +451,7 @@ Default Google Maps embeds clash with brand colors and look generic. Every custo
 
 ### Footer Logo Color Inversion (***ImageMagick alpha-channel recipe***)
 
-Most logos are designed for white backgrounds (dark text/marks on white). Footers are usually dark — placing a white-bg logo on a dark footer creates a glaring white rectangle. The fix is alpha-channel extraction + colorize, NOT `mix-blend-screen` (which leaves halos and breaks against gradients).
+Most logos are designed for white backgrounds. Footers are usually dark — placing a white-bg logo on a dark footer creates a glaring white rectangle. Use alpha-channel extraction + colorize, NOT `mix-blend-screen` (which breaks against gradients and PDF/email exports).
 
 - **The recipe (works for any single-color-on-white logo):**
 
@@ -480,7 +475,7 @@ Most logos are designed for white backgrounds (dark text/marks on white). Footer
 
   If the logo is invisible or cut off, the alpha mask is wrong — re-run with `-level 0%,80%` or adjust threshold.
 - **Common failure modes:** (1) Output appears solid maroon = alpha was applied inversely; the recipe above already corrects this. (2) Output is fully transparent = alpha was zeroed everywhere; check that input logo actually has dark marks on white (run `magick identify -verbose logo.png | grep -i mean` — mean should be near white if the bg is white). (3) Halos/edges visible at small sizes = `-level` threshold too aggressive; lower the upper bound from 90% to 70%.
-- **Why not mix-blend-screen:** CSS blend modes work on rendered pixels but interact unpredictably with backdrop filters, browser rendering quirks on Safari, and partial-opacity gradient backgrounds. They also can't be used in OG share images, email headers, or PDF exports. ImageMagick produces a real PNG with a real alpha channel — works everywhere.
+- **Why not mix-blend-screen:** CSS blend modes interact unpredictably with backdrop filters, browser rendering quirks on Safari, and partial-opacity gradient backgrounds. They also can't be used in OG share images, email headers, or PDF exports. ImageMagick produces a real PNG with a real alpha channel — works everywhere.
 
 ### Design System (***skill 10 — MANDATORY***)
 
@@ -515,7 +510,7 @@ Every quantitative claim (%, N, $, ratio, comparison, year-claim, "X% of users")
 
 ### Content Rules (***PRESERVE EVERYTHING***)
 
-- Word count must MATCH OR EXCEED original site (never less content than before)
+- Word count MUST MATCH OR EXCEED original site (never less content than before)
 - 5000+ words minimum real content (from research + scraped content) — most rebuilds will far exceed this
 - Migrate ALL substantive text from _scraped_content.json — rewrite for quality, preserve substance
 - Blog posts, news articles, event recaps → individual pages with original publish dates
@@ -900,6 +895,7 @@ Every successful build → analyze output quality. Patterns that improve quality
 Any time the build imports long-form blog content (Squarespace, WordPress, Medium, custom CMS), a two-stage pipeline runs:
 
 ### Stage 1 — Cleanup (`clean-blog-corpus.mjs` pattern)
+
 - Strip CMS residue (Squarespace `#block-yui_*`, `.sqs-*`, `.margin-wrapper`, raw `<style>` blocks)
 - AI-restructure flat HTML into typed blocks (`lead | heading | paragraph | quote | callout`)
 - Generate SEO keywords + 120-180-char excerpt per post
@@ -909,6 +905,7 @@ Any time the build imports long-form blog content (Squarespace, WordPress, Mediu
 - Names/dates/facts never rewritten
 
 ### Stage 2 — Editorial pass (`enhance-blog-posts.mjs` — see reference script in this skill dir)
+
 GPT Image 2 vision-mini editorial pass over every cleaned post. Mandates:
 
 1. **Grammar/spelling/professional tone** — fix without altering author voice or factual content
@@ -923,6 +920,7 @@ GPT Image 2 vision-mini editorial pass over every cleaned post. Mandates:
 6. **Renderer support** — body renderer must handle inline markdown links via a `renderInline` regex (`/\[([^\]]+)\]\(([^)]+)\)/g`) that splits text into `<a>` + plain spans. Without this, links render as raw `[label](/path)` strings
 
 ### Operations
+
 - Concurrency 5-8 against OpenAI (`OPENAI_API_KEY` env)
 - **CLI flags**:
   - `--only=slug` (single post)
@@ -932,7 +930,9 @@ GPT Image 2 vision-mini editorial pass over every cleaned post. Mandates:
 - Failures surface per-slug (`console.warn(\`FAIL ${slug}: ${err}\`)`) — never silently swallow
 
 ### Hard gate
+
 After enhancement, every post must have:
+
 - ≥2 outbound interlinks
 - Zero raw occurrences of the org's contact strings (email, phone, address) without an anchor wrapper
 

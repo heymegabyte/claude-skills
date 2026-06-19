@@ -92,6 +92,7 @@ Cross-links: `[[brian-preferences]]` `[[always]]` `[[drift-detection]]` `[[repo-
 - `bin/check-compression-regression.mjs` — fails any `rules/*.md` growing >20% vs git HEAD without `## Why this grew` or `<!-- grow-ok -->`. Blocking gate 17. Locks in compression gains.
 - `bin/audit-instruction-files.mjs` — token-budget + EARS/hedge + filler audit (`--json`/`--ci`). Manual/pre-commit tool; strips inline-code spans, honors `<!-- validator-ignore: filler|hedge -->`. Not a blocking gate (long code-reference files legitimately exceed the line budget).
 - `bin/audit-trigger-collisions.mjs` — inverted index of frontmatter `triggers:` across rules + skills; reports phrases shared by ≥2 files. Advisory (NOT blocking) — the router loads ALL matching rules, so shared triggers are usually intentional.
+- `bin/audit-near-duplicates.mjs` — 3-gram shingle Jaccard across rules/ (no embeddings); reports merge candidates. Advisory — corpus currently well-differentiated (max 0.053).
 
 ## See
 
