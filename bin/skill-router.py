@@ -45,7 +45,7 @@ EMBED_MODEL = "text-embedding-3-small"  # $0.02 / 1M tokens
 EMBED_DIM = 1536
 
 # Token budget for preamble routing
-DEFAULT_BUDGET_TOKENS = 40_000
+DEFAULT_BUDGET_TOKENS = 48_000
 
 # -----------------------------------------------------------------------------
 # Secrets
@@ -103,6 +103,18 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
     return fm, body
 
 
+
+def _parse_priority(val) -> int:
+    """Robust priority parse — never crash on string priorities like 'high'."""
+    if isinstance(val, int):
+        return val
+    m = {"high": 2, "medium": 2, "med": 2, "normal": 2, "low": 3}
+    try:
+        return int(val)
+    except (ValueError, TypeError):
+        return m.get(str(val).strip().lower(), 3)
+
+
 def discover_skills() -> list[dict]:
     """Walk the plugin dir, return list of {id, type, path, name, description, priority, triggers, paths, pack, body}."""
     out = []
@@ -120,7 +132,7 @@ def discover_skills() -> list[dict]:
             "path": str(skill_md.relative_to(PLUGIN_DIR)),
             "name": fm.get("name", skill_id),
             "description": fm.get("description", ""),
-            "priority": int(fm.get("priority", 3) or 3),
+            "priority": _parse_priority(fm.get("priority", 3)),
             "triggers": fm.get("triggers", []) if isinstance(fm.get("triggers"), list) else [],
             "paths": fm.get("paths", []) if isinstance(fm.get("paths"), list) else [],
             "pack": fm.get("pack", ""),
@@ -140,7 +152,7 @@ def discover_skills() -> list[dict]:
             "path": str(rule_md.relative_to(PLUGIN_DIR)),
             "name": rule_md.stem,
             "description": fm.get("description", ""),
-            "priority": int(fm.get("priority", 3) or 3),
+            "priority": _parse_priority(fm.get("priority", 3)),
             "triggers": fm.get("triggers", []) if isinstance(fm.get("triggers"), list) else [],
             "paths": fm.get("paths", []) if isinstance(fm.get("paths"), list) else [],
             "pack": fm.get("pack", ""),

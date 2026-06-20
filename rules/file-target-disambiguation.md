@@ -1,6 +1,6 @@
 ---
 name: file-target-disambiguation
-priority: high
+priority: 2
 pack: core
 triggers:
   - "where does this file go"

@@ -1,6 +1,6 @@
 ---
 name: skill-authoring-contract
-priority: high
+priority: 2
 pack: core
 triggers:
   - "new skill"

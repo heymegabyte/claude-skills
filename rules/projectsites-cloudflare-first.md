@@ -1,5 +1,5 @@
 ---
-priority: high
+priority: 2
 pack: core
 triggers:
   - "projectsites"

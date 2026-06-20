@@ -7,7 +7,7 @@ Codifies the authoring contract for every file under `template/utils/`. Enforced
 ## Frontmatter
 
 ```
-priority: high
+priority: 2
 pack: core
 triggers:
   - "template/utils/**"

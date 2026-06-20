@@ -1,5 +1,5 @@
 ---
-priority: high
+priority: 2
 pack: ai
 triggers:
   - mcp tool naming
