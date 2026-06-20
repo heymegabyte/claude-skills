@@ -95,13 +95,15 @@ Two layers: universal features (every site gets these) + category-specific featu
 
 ### Booking & Scheduling
 
-- **Cal.com embed** — free tier, embeddable scheduling widget (if no existing booking system)
-  - HOW: `@calcom/embed-react` `<Cal>` (inline) or `data-cal-link` trigger on the booking CTA; lazy-load below the fold, never block LCP.
-  - Brand it — pass `config={{ theme, cssVarsPerTheme }}` to match site tokens; never ship the raw default purple widget.
-  - Pre-create the event type via Cal API v2 (`/v2/event-types`, header `cal-api-version: 2024-08-13`) or document the owner one-click OAuth path per `non-technical-owner-onboarding`.
-  - **Build-gate**: a service business with bookable services (salon/medical/legal/trades/restaurant) that renders a "Book"/"Schedule" CTA with NO working booking surface (embed OR appointment form OR external link) = build fail.
+- **cal.diy embed (DEFAULT — open-source, self-hosted)** — `calcom/cal.diy`, the MIT/AGPL community edition of Cal.com; the embeddable scheduling *primitive* (event types, recurring, seated, Stripe/PayPal, Google/Outlook/Apple/CalDAV/ICS, webhooks, REST). Fits `[[cloudflare-lock-in-is-leverage]]` open-source + self-host ethos — own the booking stack, zero per-seat SaaS fee.
+  - HOST: self-host on Brian infra (Coolify/Proxmox per `coolify-docker-proxmox`, or a CF Container / Railway / Render) — Docker image, Postgres (Neon/Hyperdrive) + Redis. One instance serves every projectsites.dev site's bookings.
+  - EMBED: same `@calcom/embed-react` `<Cal>` (inline) / `data-cal-link` trigger, pointed at the self-hosted origin; lazy-load below the fold, never block LCP. Brand via `config={{ theme, cssVarsPerTheme }}` — never the raw default purple.
+  - Event types via cal.diy REST API or admin; owner one-click flow per `non-technical-owner-onboarding`.
+  - **Caveat**: cal.diy is "personal / non-production" per Cal.com (no teams/orgs/SSO/SLA). For enterprise clients needing teams/SSO/routing → hosted **Cal.com** (fallback) or self-host full Cal.com.
+- **Cal.com (hosted) — fallback** — when the client needs teams, SSO, routing forms, or a managed SLA cal.diy doesn't cover.
 - **Appointment request form** — for businesses needing human confirmation (medical, legal); Zod + Turnstile + Resend per `always` § Every form.
 - **Booking CTA** — links to existing system (OpenTable, Resy, Calendly, etc.) if discovered in research; `target="_blank" rel="noopener"`.
+- **Build-gate**: a service business with bookable services (salon/medical/legal/trades/restaurant) that renders a "Book"/"Schedule" CTA with NO working booking surface (cal.diy embed OR appointment form OR external link) = build fail.
 
 ### Communication
 

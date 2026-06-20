@@ -102,7 +102,7 @@ Every rebuild/optimization prompt ships the org-type-canonical page set MINIMUM,
 - `/before-after` — visual proof (salon/dental/contractor/fitness)
 - `/blog` — local-SEO content, recipe blog for restaurants, education for medical/legal
 - `/menu` — restaurant; full menu with allergens
-- `/booking` — Cal.com / Calendly / OpenTable / Resy embed dedicated route
+- `/booking` — cal.diy / Cal.com / Calendly / OpenTable / Resy embed dedicated route
 - `/emergency` — after-hours contact for medical/dental/plumber/HVAC/legal
 - `/service-area` — pSEO city pages per neighborhood/town served
 
@@ -346,7 +346,7 @@ And emits typed-block JSON:
 - `/financing` ← Affirm/Klarna/CareCredit/in-house plan terms
 - `/before-after` ← consent-tagged paired images via clip-path slider
 - `/menu` (restaurant) ← OCR scanned menu + allergen tags + dietary icons
-- `/booking` ← Cal.com/Calendly/OpenTable/Resy embed
+- `/booking` ← cal.diy/Cal.com/Calendly/OpenTable/Resy embed
 - `/emergency` ← 24/7 contact + service-area map
 
 ### Citation + Anti-Slop Gate

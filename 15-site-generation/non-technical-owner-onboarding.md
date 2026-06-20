@@ -70,7 +70,7 @@ Owner clicks admin link → Clerk magic-link validates → `/admin` SPA. Four ca
 ### Card 3: Bookings & payments
 
 - ONE-CLICK Stripe Express onboarding (embedded, no manual KYC form)
-- Cal.com OAuth (one click) → booking widget on site
+- cal.diy / Cal.com OAuth (one click) → booking widget on site
 - "Receive payments" toggle + "Receive bookings" toggle; **NO** API key paste or webhook URL config
 
 ### Card 4: Get help

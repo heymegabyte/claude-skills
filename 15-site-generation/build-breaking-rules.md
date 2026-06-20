@@ -1230,7 +1230,7 @@ data: {"phase": "research|asset|generation|inspection|quality|domain", "step": "
 - Components: hero/about/team/services/blog-grid/contact/footer
 - Validators, SW+manifest stubs, Analytics+Sentry+PostHog snippets
 - Per-route metadata helper, JSON-LD generators, sitemap+robots+humans+well-known/security.txt
-- Stripe-first donation widget stub, Cal.com embed stub, ElevenLabs audio brief stub, NotebookLM podcast embed slot
+- Stripe-first donation widget stub, cal.diy embed stub, ElevenLabs audio brief stub, NotebookLM podcast embed slot
 - Konami console + audio-reactive hero scripts pre-bundled
 
 ### Generation reduces to
