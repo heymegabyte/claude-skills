@@ -11,6 +11,7 @@ triggers:
   - "browserbase"
 paths:
   - "concern:cloudflare-workers"
+  - "org:website_build"
 ---
 
 # ProjectSites.dev — Cloudflare-First Platform
