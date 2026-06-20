@@ -207,6 +207,16 @@ logHeader "21. route-phrasing"
 runGate "route-phrasing" "check-route-phrasing --ci" \
   node "$SKILLS_ROOT/bin/check-route-phrasing.mjs" --ci
 
+# Hard gate 22 (Jun-2026 recovery-index RCA) — manifest-recovery. The router drops
+# ~61 rules for budget on a site prompt; the design survives ONLY because the manifest
+# recovery index cross-links every dropped-but-essential rule. Three fires running, a
+# pack:core website-essential rule was found dropped AND unreferenced (analytics, then
+# the CF infra LAW, then ai-agent-security) — silently unrecoverable. This gate asserts
+# every must-recover rule + every website-build pack member is [[referenced]].
+logHeader "22. manifest-recovery"
+runGate "manifest-recovery" "check-manifest-recovery --ci" \
+  node "$SKILLS_ROOT/bin/check-manifest-recovery.mjs" --ci
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.

@@ -69,6 +69,7 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 
 ## Architecture (CF-first, `[[cloudflare-lock-in-is-leverage]]`)
 
+- **Authoritative infra LAW: `[[projectsites-cloudflare-first]]`** — pull it on every projectsites.dev build. It carries the detail this index can't: allowed-infra law (CF + Neon + Upstash + Fly only), the public-request hot path, Hyperdrive shard-level bindings, the `browser.projectsites.dev` automation abstraction (vs internal Browserbase/Skyvern), the observability gateway, DB-allocation order, and the signed Site Capability Manifest. It's pack:core (not website-build) so it DROPS for budget on site prompts — recover it from here.
 - React 19 + Vite SSR/SSG + TanStack Router + Tailwind v4 + shadcn (default), OR Angular 21 stack when chosen (`[[frontend-stack]]`).
 - CF Workers + Hono + D1 + R2 + KV + DO (`[[hono-api]]`). Deep lock-in is the feature.
 - Every clickable entity linked (email/phone/URL/route) — unlinked email/phone = build fail.
@@ -110,6 +111,7 @@ The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` o
 - **Cinematic + design**: `[[cinematic-ui-patterns]]` (RollingCounter/Reveal, React+Angular) · `[[gorgeous-by-default]]` · `[[text-contrast]]` · `[[logo-contrast]]` · `[[image-quality]]`
 - **Content + brand**: `[[copy-writing]]` · `[[citations]]` · `[[timeline-authenticity]]` · `[[i18n-by-demographics]]` · `[[thin-source-amplification]]`
 - **Forms + comms**: `[[email-deliverability]]` (every-form gate)
+- **Architecture + security**: `[[projectsites-cloudflare-first]]` (CF infra LAW — always) · `[[ai-agent-security]]` (when the Phase-4 AI-native spiral ships chat-as-UI / tool-calls / agents) · `[[feature-flags]]` (every new feature flagged) · `[[production-observability-default-on]]` (analytics)
 - **Skills (numbered)**: `[[02-goal-and-brief]]` · `[[15-site-generation]]` · `[[16-cinematic-website-prime-directive]]` · `[[09-brand-and-content-system]]` · `[[10-experience-and-design-system]]` · `[[11-motion-and-interaction-system]]` · `[[12-media-orchestration]]` · `[[14-independent-idea-engine]]`
 - **Final pass**: `[[supreme-polish]]`
 
