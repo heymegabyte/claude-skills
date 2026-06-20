@@ -176,6 +176,10 @@ logHeader "16. crosslinks"
 runGate "crosslinks" "audit-crosslinks --ci" \
   node "$SKILLS_ROOT/bin/audit-crosslinks.mjs" --ci
 
+logHeader "19. always-load-budget"
+runGate "always-load-budget" "audit-always-load-budget --ci" \
+  node "$SKILLS_ROOT/bin/audit-always-load-budget.mjs" --ci
+
 logHeader "18. dead-paths"
 runGate "dead-paths" "audit-dead-paths --ci" \
   node "$SKILLS_ROOT/bin/audit-dead-paths.mjs" --ci

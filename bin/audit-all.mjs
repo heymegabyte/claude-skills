@@ -56,6 +56,7 @@ const AUDITS = [
   { script: 'audit-skill-discoverability.mjs', label: 'skill-discoverability' },
   { script: 'audit-path-scope.mjs',            label: 'path-scope' },
   { script: 'audit-dead-paths.mjs',            label: 'dead-paths' },
+  { script: 'audit-always-load-budget.mjs',    label: 'always-load' },
 ];
 
 // ---------------------------------------------------------------------------
