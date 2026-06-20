@@ -10,6 +10,25 @@ triggers:
   - "one-line site"
   - "make a site"
   - "website prompt"
+  # Natural-phrasing variants — real one-line prompts rarely say "build a website"
+  # verbatim. Substring-matched (skill-router match_triggers), so each must be a
+  # literal phrase a user types. Scoped to unambiguous site-build intent.
+  - "make me a site"
+  - "make me a website"
+  - "build me a site"
+  - "build me a website"
+  - "need a website"
+  - "need a site"
+  - "want a website"
+  - "want a site"
+  - "website for my"
+  - "site for my business"
+  - "design a website"
+  - "design a site"
+  - "set up a website"
+  - "create a landing page"
+  - "build a landing page"
+  - "landing page for"
 paths:
   - "org:website_build"
 ---

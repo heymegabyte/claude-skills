@@ -197,6 +197,16 @@ logHeader "20. priority-format"
 runGate "priority-format" "check-priority-format --ci" \
   node "$SKILLS_ROOT/bin/check-priority-format.mjs" --ci
 
+# Hard gate 21 (Jun-2026 phrasing-coverage RCA) — route-phrasing. Natural one-line
+# site prompts ("make me a site for my plumbing business", "I need a website for my
+# nonprofit", "create a landing page for…") substring-matched NO website-build
+# trigger, so they routed 0-2/6 core nodes with no manifest — silently skipping the
+# whole build doctrine. This gate asserts every realistic phrasing matches a pack
+# trigger, so a future trigger edit can't re-break natural-language coverage.
+logHeader "21. route-phrasing"
+runGate "route-phrasing" "check-route-phrasing --ci" \
+  node "$SKILLS_ROOT/bin/check-route-phrasing.mjs" --ci
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.
