@@ -21,3 +21,7 @@ members:
   - rules/logo-contrast
   - rules/supreme-polish
   - rules/website-build-manifest
+  - rules/text-contrast
+  - rules/cinematic-ui-patterns
+  - rules/gorgeous-by-default
+  - rules/email-deliverability
