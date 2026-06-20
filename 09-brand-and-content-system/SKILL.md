@@ -27,7 +27,7 @@ triggers:
   - "copy"
 paths:
   - "org:website_build"
-  - "concern:public_facing"
+  - "org:website_build"
 ---
 
 # 09 — Brand and Content System

@@ -22,7 +22,7 @@ triggers:
   - "components"
   - "theme"
 paths:
-  - "concern:public_facing"
+  - "org:website_build"
 ---
 
 # 10 — Experience and Design System

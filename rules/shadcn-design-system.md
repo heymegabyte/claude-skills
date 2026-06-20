@@ -10,7 +10,7 @@ triggers:
   - "stack:react-vite"
   - "design system react"
 paths:
-  - "concern:public"
+  - "stack:react-vite"
 ---
 
 # shadcn/ui Design System

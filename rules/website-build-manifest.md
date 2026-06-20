@@ -11,7 +11,7 @@ triggers:
   - "make a site"
   - "website prompt"
 paths:
-  - "concern:public"
+  - "org:website_build"
 ---
 
 # Website Build Manifest
