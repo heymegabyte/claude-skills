@@ -1,6 +1,6 @@
 ---
 name: "website-build-doctrine"
-priority: 3
+priority: 2
 pack: "website-build"
 triggers:
   - "build website"

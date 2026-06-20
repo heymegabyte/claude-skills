@@ -1,6 +1,6 @@
 ---
 name: "state-is-the-enemy"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "let "

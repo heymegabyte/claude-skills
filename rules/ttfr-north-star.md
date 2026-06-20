@@ -1,6 +1,6 @@
 ---
 name: "ttfr-north-star"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "TTFR"

@@ -4,7 +4,7 @@ description: "One-line-prompt → cinematic, gorgeous, functional, well-tested, 
 when_to_use: "Any one-line website prompt: 'Make a website for X', 'Build a site for Y', 'Rebuild Z.com', or equivalent. Trumps generic 06-build-and-slice-loop."
 effort: "xhigh"
 model: "inherit"
-priority: 3
+priority: 2
 pack: "website-build"
 triggers:
   - "make a website"

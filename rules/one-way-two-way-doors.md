@@ -1,6 +1,6 @@
 ---
 name: "one-way-two-way-doors"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "migrate"

@@ -1,6 +1,6 @@
 ---
 name: "blast-radius-minimization"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "blast radius"

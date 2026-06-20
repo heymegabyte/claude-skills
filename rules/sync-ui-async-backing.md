@@ -1,6 +1,6 @@
 ---
 name: "sync-ui-async-backing"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "optimistic"

@@ -1,6 +1,6 @@
 ---
 name: "instruction-compression-playbook"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "compress"

@@ -1,6 +1,6 @@
 ---
 name: "fail-fast-build-fail-soft-prod"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "zod.parse"

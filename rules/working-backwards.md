@@ -1,6 +1,6 @@
 ---
 name: "working-backwards"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "press release"

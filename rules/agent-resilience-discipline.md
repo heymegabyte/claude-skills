@@ -1,6 +1,6 @@
 ---
 name: "agent-resilience-discipline"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "connection drop"
