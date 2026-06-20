@@ -15,6 +15,8 @@ Every feature beyond a trivial one-file edit ships behind a flag. Default: `enab
 
 ## Architecture (canonical — every emdash project starting w/ njsk.org Wave 6)
 
+> **2026 alternative — CF Flagship**: Cloudflare now ships a native feature-flag service (KV + DO, sub-ms edge eval). For NEW builds evaluate Flagship before the custom D1 tables below — it removes the bespoke worker + admin UI maintenance. Keep this D1 design where you need the rich `description`/`e2e_tests`/`smoke_steps` governance columns Flagship doesn't model.
+
 Three D1 tables:
 
 - **`feature_flags`** — `key`, `enabled` (0/1), `rollout_percent` (0-100), `stage`, `description` (full prose), `e2e_tests` (JSON paths), `smoke_steps` (markdown recipe), `owner_email`, `created_at`, `updated_at`.
