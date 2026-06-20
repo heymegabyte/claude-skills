@@ -73,6 +73,10 @@ The harness config is the source of truth for site-build defaults; read these, d
 - `EMDASH_JSONLD_REQUIRED` (true) — JSON-LD per page (accurate types only).
 - `EMDASH_LIGHTHOUSE_MIN_PERF` (90) `_MIN_A11Y` (95) `_MIN_SEO` (95) `_MIN_BP` (95) · `EMDASH_AI_VISION_MIN` (9) · `EMDASH_AXE_MAX_VIOLATIONS` (0) — the quality bar above.
 
+## Build-gate validators — where they live (don't hunt the plugin)
+
+The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` orchestrator) live in the **generated site's** repo, scaffolded from `template.projectsites.dev` — NOT in this plugin. The rule defines WHAT each checks + the fail codes; the build CREATES the validator from that spec, wires it into `build_validators.ts`, and runs it in CI. A referenced validator missing from `bin/` is expected — generate it, don't skip the gate.
+
 ## Done definition (overrides generic gates for site prompts)
 
 - Deployed at real URL · every gate green · Self-Verify Statement per route · announced to user.
