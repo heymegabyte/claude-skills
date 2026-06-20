@@ -68,6 +68,17 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 - Deployed at real URL · every gate green · Self-Verify Statement per route · announced to user.
 - Reusable patterns flow BACK to `template.projectsites.dev` SAME TURN.
 
+## Full rule set — load on demand (router truncates the >40K website-build pack)
+
+<!-- grow-ok --> The pack exceeds budget, so not every member co-loads. This is the complete recoverable index — pull any of these when its concern is in scope:
+
+- **Stack foundation**: `[[shadcn-design-system]]` (React default) OR `[[spartan-ui-design-system]]` (Angular) · `[[frontend-stack]]`
+- **Cinematic + design**: `[[cinematic-ui-patterns]]` (RollingCounter/Reveal, React+Angular) · `[[gorgeous-by-default]]` · `[[text-contrast]]` · `[[logo-contrast]]` · `[[image-quality]]`
+- **Content + brand**: `[[copy-writing]]` · `[[citations]]` · `[[timeline-authenticity]]` · `[[i18n-by-demographics]]` · `[[thin-source-amplification]]`
+- **Forms + comms**: `[[email-deliverability]]` (every-form gate)
+- **Skills (numbered)**: `[[02-goal-and-brief]]` · `[[15-site-generation]]` · `[[16-cinematic-website-prime-directive]]` · `[[09-brand-and-content-system]]` · `[[10-experience-and-design-system]]` · `[[11-motion-and-interaction-system]]` · `[[12-media-orchestration]]` · `[[14-independent-idea-engine]]`
+- **Final pass**: `[[supreme-polish]]`
+
 ## See
 
 - `[[always]]` — the per-page/per-site/per-entity detail this manifest indexes
