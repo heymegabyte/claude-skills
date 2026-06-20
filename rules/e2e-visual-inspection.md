@@ -50,7 +50,9 @@ export async function randomSnapshot(
   const seed = `${process.env.TEST_TITLE}:${stepName}:${process.env.SHARD_INDEX ?? '0'}`;
   const fire = opts.force || hashToFloat(seed) < 0.3;
   if (!fire) return;
-  await page.addStyleTag({ content: '* { font-smooth: never !important; -webkit-font-smoothing: none !important }' });
+  // TT-safe (see § Reliable axe recipe #1): addStyleTag({content}) throws under
+  // require-trusted-types-for 'script'; inject via textContent instead.
+  await page.evaluate(() => { const s = document.createElement('style'); s.textContent = '* { font-smooth: never !important; -webkit-font-smoothing: none !important }'; document.head.appendChild(s); });
   await expect(page).toHaveScreenshot(`${stepName}.png`, {
     threshold: opts.threshold ?? 0.1,
     maxDiffPixelRatio: 0.005,
@@ -129,7 +131,8 @@ test.describe('booking funnel', () => {
 
 Running `@axe-core/playwright` against a LIVE prod URL (not a static build) is flaky by default — animations, scroll-spies, payment iframes, and edge contention all produce phantom violations. A shared `e2e/lib/axe.ts` `scanAxeStable(page, opts)` wrapper with these 8 patterns made a 26-route public gate reliably deterministic. Copy it into every project that gates a11y on prod.
 
-1. **Freeze animations before scanning.** `addStyleTag` zeroing `animation-duration`/`transition-duration`/`transition-delay` + `transform: none !important` on `*`. Without it, axe samples a reveal mid-fade and reports a transient `color-contrast` (a token at partial opacity reads as a faded color). The pass-6 class.
+1. **Freeze animations before scanning.** Inject CSS zeroing `animation-duration`/`transition-duration`/`transition-delay` + `transform: none !important` on `*`. Without it, axe samples a reveal mid-fade and reports a transient `color-contrast` (a token at partial opacity reads as a faded color). The pass-6 class.
+   - **⚠️ NEVER `page.addStyleTag({content})` on a Trusted-Types-hardened prod site.** It throws `[Report Only] requires a TrustedHTML value` under the `require-trusted-types-for 'script'` CSP that `[[csp-trusted-types]]` mandates — Playwright injects the content via an innerHTML-class path. The failure is INTERMITTENT (fires per-spec across every axe-clean test) so it reads as flakiness, not a hard bug. CSP-safe injection: `await page.evaluate(() => { const s = document.createElement('style'); s.textContent = '<css>'; document.head.appendChild(s); })` — `textContent` is NOT governed by Trusted Types (only `innerHTML`/`script.src` are). Same fix for any `addScriptTag`. Reference incident: njsk.org pass-226 (the hidden cause the matrix never reached 6/6). Items 2/6 below force-settle via `page.evaluate` already — they're TT-safe; only this `addStyleTag` was the trap.
 2. **Force-settle scroll-reveals to their final state.** For `.reveal, [data-reveal], main section, .reveal-stagger > *, .hero-rise > *`: add the visible class + set inline `opacity:1; transform:none; animation:none`. Zeroing CSS durations alone loses the race on animation-dense pages. Only animation-MARKED elements are touched, so genuinely-hidden content (closed `<details>`, dialogs, `[hidden]`) stays hidden.
 3. **`iframes: false` in the axe run options.** Third-party embed iframes (Square/Stripe payments, YouTube) load/reload async and their per-frame analysis intermittently throws `Execution context was destroyed … because of a navigation`. Their a11y is the vendor's responsibility and unfixable by you; first-party content iframes are rare, so this loses no real coverage and stops the crash.
 4. **Self-heal the contrast flake with a bounded re-scan loop.** Under parallel load, prod render pressure still occasionally beats the settle. If (and only if) a `color-contrast` violation appears, re-settle (increasing hold) and re-scan, up to 3 extra attempts. A STATIC-color violation persists every attempt (correctly reported); a mid-animation sample clears. This is correct measurement, NOT a relaxed assertion.
