@@ -29,7 +29,7 @@ triggers:
   - "stripe"
   - "growth"
 paths:
-  - "*"
+  - "concern:observability"
 ---
 
 # 13 — Observability and Growth

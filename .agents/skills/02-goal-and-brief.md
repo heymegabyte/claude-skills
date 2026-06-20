@@ -18,7 +18,7 @@ triggers:
   - "project brief"
   - "goals"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # 02 — Goal and Brief

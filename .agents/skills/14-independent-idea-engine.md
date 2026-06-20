@@ -17,7 +17,7 @@ triggers:
   - "ideas"
   - "co-founder"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # 14 — Independent Idea Engine
