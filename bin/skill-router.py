@@ -316,6 +316,11 @@ def cmd_fingerprint(cwd: str | None = None) -> dict:
             if "stripe" in deps or "@stripe/stripe-js" in deps:
                 fp["has_payments"] = True
                 fp["concerns"].append("stripe-billing")
+            if "square" in deps:
+                fp["has_payments"] = True
+                fp["concerns"].append("square-payments")
+            if any(d in deps for d in ("resend", "@aws-sdk/client-ses", "nodemailer", "postmark", "@sendgrid/mail")):
+                fp["concerns"].append("email")
             if "@anthropic-ai/sdk" in deps or "openai" in deps:
                 fp["has_ai"] = True
                 fp["concerns"].append("ai-features")
