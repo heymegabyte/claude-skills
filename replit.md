@@ -1,7 +1,7 @@
 # Emdash Skills for Replit
 
 Load CONVENTIONS.md for stack defaults. Load _router.md for skill routing.
-14 categories (01-14), 94 reference docs, 18 agents.
+19 categories (01-19), 117 doctrine rules, 20 agents.
 
 ## Stack
 

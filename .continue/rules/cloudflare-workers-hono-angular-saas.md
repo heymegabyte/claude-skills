@@ -1,7 +1,7 @@
 # Emdash Skills for Continue
 
 Load CONVENTIONS.md for stack defaults. Load _router.md for skill routing.
-14 categories (01-14), 94 reference docs, 18 agents.
+19 categories (01-19), 117 doctrine rules, 20 agents.
 
 ## Stack
 CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
