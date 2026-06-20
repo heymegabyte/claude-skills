@@ -199,4 +199,4 @@ Monitor decomposes in order, fans out parallel within each:
 6. Phase 6 improvement loop (until exhausted)
 7. Phase 7-8 continuous overlays
 
-Ship per `verification-loop.md` deploy + prod-E2E mandate.
+Before declaring done: run the full `website-completeness-checklist.md` (62 hard points) — every one must pass. Then ship per `verification-loop.md` deploy + prod-E2E mandate.
