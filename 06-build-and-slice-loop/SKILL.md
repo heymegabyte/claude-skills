@@ -157,7 +157,7 @@ e2e/
 8. **Deploy** (`npm run deploy`)
 9. **Prod E2E** (`npm run e2e:prod` against PROD_URL)
 10. **Verify console** (zero errors, zero CSP violations, zero failed resources)
-11. **AI vision QA** (6bp screenshots → vision rubric ≥8/10)
+11. **AI vision QA** (6bp screenshots → vision rubric ≥9/10)
 12. **Commit + push** (conventional commits per `rules/main-only-branch.md`)
 13. **Update `e2e/FEATURES.md`** + CHANGELOG
 

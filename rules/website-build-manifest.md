@@ -58,7 +58,7 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 ## Quality gates (every gate green before DONE)
 
 - Deployed + CDN-purged at real URL · Playwright E2E GREEN at 6 breakpoints (`[[verification-loop]]`).
-- AI vision ≥8/10 · Lighthouse a11y ≥95 / perf ≥75 · axe 0 violations (WCAG 2.2 AA).
+- AI vision ≥9/10 · Lighthouse perf ≥90 / a11y ≥95 / SEO ≥95 / BP ≥95 · axe 0 violations (WCAG 2.2 AA). Thresholds are authoritative from `~/.claude` env (`EMDASH_LIGHTHOUSE_MIN_*`, `EMDASH_AI_VISION_MIN`, `EMDASH_AXE_MAX_VIOLATIONS`) — read those, never hardcode looser.
 - CSP Level 3 strict-dynamic + nonce · Trusted Types · all hyperlinks valid · INP ≤200ms.
 - Every new feature behind a flag (`[[feature-flags]]`, default off) · JSON-LD per page (accurate types only).
 - Zero errors / stubs / TODO in shipped strings · zero unactioned Recs.

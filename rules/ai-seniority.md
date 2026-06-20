@@ -26,7 +26,7 @@ A diff auto-merges to `main` when ALL of these are true:
 
 - **Tests**: Playwright at 6 breakpoints × 3 browsers passing per `e2e-tdd-organization` + Vitest units green
 - **Static**: typecheck + lint + Prettier + drift validators clean per `drift-detection`
-- **Quality**: Lighthouse Performance ≥ 75 + Accessibility ≥ 95 + axe-core 0 violations + visual-qa AI rubric ≥ 8/10 per `e2e-visual-inspection`
+- **Quality**: Lighthouse Performance ≥ 90 + Accessibility ≥ 95 + axe-core 0 violations + visual-qa AI rubric ≥ 9/10 per `e2e-visual-inspection`
 - **Architecture**: every touched feature has a manifest per `feature-module-architecture`; every new flag has D1 + admin UI per `feature-flags`
 - **Agent Diversity Review**: per `agent-selection` — specialists assigned, rejected-agent note present, no work duplicated
 - **Risk tier**: `autonomous` or `review-recommended` per `autonomous-engineering`. `approval-required` + `blocked` tiers still pause for Brian.

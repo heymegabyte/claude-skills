@@ -42,9 +42,9 @@ Supreme policy. Loaded every prompt. Overrides all other skills.
 
 1. Deployed + purged
 2. Playwright E2E GREEN at 6 breakpoints (per `_kernel/standards.md#breakpoints`)
-3. AI vision ≥8/10
+3. AI vision ≥9/10
 4. Yoast GREEN
-5. Lighthouse A11y ≥95, Perf ≥75
+5. Lighthouse A11y ≥95, Perf ≥90
 6. Zero errors / stubs / TODO in user-visible strings
 7. Zero Recommendations
 8. CSP Level 3 strict-dynamic + nonce

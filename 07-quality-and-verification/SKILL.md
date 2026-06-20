@@ -58,7 +58,7 @@ Run the 5-level verification pyramid (static→unit→E2E→AI visual→post-dep
 1. **Static** — TS strict + ESLint + oxlint + Prettier + knip (dead code)
 2. **Unit** — Vitest 3 (40% faster on 5k+ tests, Rust sharding, browser mode default)
 3. **Playwright E2E** — homepage-first, 6 viewports × 3 browsers, hermetic, parallel
-4. **AI visual** — vision rubric ≥8/10 per route, 6bp screenshots
+4. **AI visual** — vision rubric ≥9/10 per route, 6bp screenshots
 5. **Post-deploy** — `wrangler tail` clean + console-error-free + axe-clean + Lighthouse green
 
 ## 8-check quality gate (every PR)
@@ -68,8 +68,8 @@ Run the 5-level verification pyramid (static→unit→E2E→AI visual→post-dep
 3. `npm test` (Vitest) green
 4. `npm run e2e:prod` green at 6 breakpoints
 5. axe-core 0 violations per `_kernel/standards.md#wcag22`
-6. Lighthouse Perf ≥75, A11y ≥95, BP ≥95, SEO ≥95
-7. AI vision QA ≥8/10 per route
+6. Lighthouse Perf ≥90, A11y ≥95, BP ≥95, SEO ≥95 (authoritative: `EMDASH_LIGHTHOUSE_MIN_*` in `~/.claude` env)
+7. AI vision QA ≥9/10 per route (authoritative: `EMDASH_AI_VISION_MIN`)
 8. Console / CSP / network errors = 0
 
 Any fail = blocker. Fix-forward per `rules/verification-loop.md`.
@@ -106,7 +106,7 @@ Violating any = build fail.
 
 - Random snapshot sampling 30% per step (seeded hash, reproducible)
 - New-section AI vision: `e2e/__seen-routes__.json` gates first render of any unknown route
-- Rubric: layout sane / contrast WCAG AA / brand / no slop / ≥8/10 (Claude Sonnet 4.6 or GPT Image 2 vision)
+- Rubric: layout sane / contrast WCAG AA / brand / no slop / ≥9/10 (Claude Sonnet 4.6 or GPT Image 2 vision)
 - Baselines in `e2e/__snapshots__/`
 - Pixelmatch tolerance 0.1% / 0.5% area
 
@@ -128,7 +128,7 @@ Spawn parallel in single `Agent` call:
 - **security-reviewer** — OWASP Top 10:2025 per `_kernel/standards.md#owasp2025`
 - **accessibility-auditor** — axe 6bp + WCAG 2.2 manual review
 - **performance-profiler** — Lighthouse CI + bundle audit + INP via LoAF
-- **visual-qa** — AI vision rubric ≥8/10
+- **visual-qa** — AI vision rubric ≥9/10
 
 Each: 100-300 word brief, ≤200 word summary back. Per `rules/agent-selection.md`.
 
