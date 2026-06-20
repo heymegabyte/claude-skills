@@ -19,9 +19,11 @@ A site is NOT shippable without its legal + error surfaces. The build doctrine m
 
 ## Error pages (every site, always)
 
+> **Implementation: `[[custom-error-pages]]`** — that submodule carries the full impl (404 / 500 / 503-maintenance / offline-PWA, the Hono `notFound`/`onError` handlers, brand-rendered templates). THIS section is the requirement + the status-code/SEO gate; delegate the build to it rather than writing a second error-page system.
+
 - **Branded 404** — site nav + search + top links + on-brand copy + working "go home" CTA; never the framework default. Served with a real `404` HTTP status (Worker/SSG), not a 200 SPA fallback.
 - **Branded 500 / error boundary** — on-brand, NO stack trace or internal detail to the user, retry + contact CTA. React error boundary + Worker catch.
-- Both server-rendered with the correct status code — a client-only 404 returns 200 to crawlers and pollutes the index.
+- Both server-rendered with the correct status code — a client-only 404 returns 200 to crawlers and pollutes the index. (`[[custom-error-pages]]` also covers 503 maintenance + PWA offline.)
 
 ## Privacy Policy (mandatory with ANY analytics, form, or non-essential cookie)
 
