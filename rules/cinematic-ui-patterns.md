@@ -13,6 +13,8 @@ paths:
 
 # Cinematic UI Patterns
 
+<!-- grow-ok --> <!-- React (default-stack) equivalents added; was Angular-only -->
+
 Mandate `<app-rolling-counter>` for every numeric stat and `[appReveal]` fade-in for every section on all projectsites.dev surfaces; no static alternatives.
 
 ## Standing rule
@@ -105,7 +107,32 @@ Mandate `<app-rolling-counter>` for every numeric stat and `[appReveal]` fade-in
 - `clip-path: inset(0 X% 0 0)` reveals the after-image; cyan rule + circular grab-handle ring
 - `prefers-reduced-motion: reduce` → instant snap, no clip-path transition
 
-## Component checklist (every Angular component on projectsites.dev)
+## React (DEFAULT stack — React 19 + Vite) equivalents
+
+The mandate is stack-agnostic; the behavior contracts above apply IDENTICALLY. On the default React stack, ship these as the parallel set (not Angular):
+
+- `<RollingCounter>` — `src/components/RollingCounter.tsx` (replaces `<app-rolling-counter>`)
+- `<Reveal>` wrapper or `useReveal()` hook — `src/components/Reveal.tsx` (replaces `appReveal` directive)
+- `<BeforeAfterSlider>` — `src/components/BeforeAfterSlider.tsx`
+- `<TrustStrip>` — `src/components/TrustStrip.tsx`
+
+```tsx
+// Same contract: rAF easeOutQuart count-up, IntersectionObserver threshold 0.4,
+// Intl.NumberFormat, tabular-nums, prefers-reduced-motion snap, SSR-safe final value.
+<RollingCounter value={2480} suffix="+" />
+<RollingCounter value={99.99} decimals={2} suffix="%" />
+<RollingCounter value={50000} prefix="$" duration={1800} />
+
+// Reveal: WAAPI Element.animate, 16px rise + fade 520ms, stagger 80ms by mount order,
+// IO fallback (threshold 0.12, rootMargin '0px 0px -6%') below fold, RM-safe final state.
+<Reveal><h2>Bold headline</h2></Reveal>
+<Reveal delay={120}><div>Delayed</div></Reveal>
+```
+
+- Implement count-up + reveal in a `useEffect` + `useRef`; guard `typeof window` for SSR/SSG (snap to final).
+- Never `<Reveal>` a live-filtered list root (same "list disappears" trap) — reveal the container once, not per-filter-result.
+
+## Component checklist (every Angular OR React component on projectsites.dev)
 
 - Numeric stat → `<app-rolling-counter>` (not raw `{{ value }}`)
 - Section root → `appReveal` (not static or pure `*ngIf` toggle)
