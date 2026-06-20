@@ -8,7 +8,7 @@ triggers:
   - "monaco"
   - "tiptap"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # Forms + Editors + Content Supervisor

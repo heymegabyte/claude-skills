@@ -7,7 +7,7 @@ triggers:
   - "playwright"
   - "scrape"
 paths:
-  - "*"
+  - "concern:e2e-testing"
 ---
 
 # Crawling + Testing + Browser Supervisor

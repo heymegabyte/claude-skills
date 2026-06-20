@@ -9,7 +9,7 @@ triggers:
   - "pixel perfect"
   - "meta perfect"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # Supreme Polish + 100-Ideas Audit

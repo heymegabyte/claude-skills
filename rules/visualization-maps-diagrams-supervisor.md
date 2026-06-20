@@ -9,7 +9,7 @@ triggers:
   - "map"
   - "graph"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # Visualization + Maps + Diagrams Supervisor

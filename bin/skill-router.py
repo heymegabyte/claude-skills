@@ -45,7 +45,7 @@ EMBED_MODEL = "text-embedding-3-small"  # $0.02 / 1M tokens
 EMBED_DIM = 1536
 
 # Token budget for preamble routing
-DEFAULT_BUDGET_TOKENS = 48_000
+DEFAULT_BUDGET_TOKENS = 150_000
 
 # -----------------------------------------------------------------------------
 # Secrets

@@ -7,7 +7,7 @@ triggers:
   - "wcag"
   - "color"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # Text Contrast on Backgrounds

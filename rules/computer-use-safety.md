@@ -6,8 +6,12 @@ triggers:
   - "computer use"
   - "desktop control"
   - "screen"
+  - "playwright"
+  - "browserbase"
+  - "stagehand"
 paths:
-  - "*"
+  - "src/**/*computer*"
+  - "**/computer-use/**"
 ---
 
 # Computer Use

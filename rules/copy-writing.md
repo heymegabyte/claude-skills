@@ -8,7 +8,7 @@ triggers:
   - "cta"
   - "anti-slop"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # Copy Rules

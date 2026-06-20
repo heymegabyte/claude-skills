@@ -8,7 +8,7 @@ triggers:
   - "stat"
   - "appReveal"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # Cinematic UI Patterns

@@ -7,7 +7,7 @@ triggers:
   - "mcp security"
   - "llm security"
 paths:
-  - "*"
+  - "concern:ai-features"
 ---
 
 # AI Agent Security

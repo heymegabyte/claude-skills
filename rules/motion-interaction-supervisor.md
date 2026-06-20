@@ -6,7 +6,7 @@ triggers:
   - "motion"
   - "animation"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # Motion + Interaction Supervisor

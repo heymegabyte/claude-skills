@@ -8,7 +8,7 @@ triggers:
   - "webhook"
   - "email"
 paths:
-  - "*"
+  - "concern:email"
 ---
 
 # Notifications + Email + Webhooks Supervisor

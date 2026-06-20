@@ -7,7 +7,7 @@ triggers:
   - "pdf"
   - "image upload"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # Media + File + Document Supervisor

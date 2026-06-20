@@ -7,7 +7,7 @@ triggers:
   - "0.333s"
   - "gorgeous"
 paths:
-  - "*"
+  - "org:website_build"
 ---
 
 # Gorgeous By Default
