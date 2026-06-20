@@ -90,5 +90,5 @@ The flat, scannable "is it actually finished?" gate every one-line site build ru
 
 47. Deployed to a real URL + CDN purged — "build succeeded" ≠ done.
 48. Playwright E2E on the LIVE url: load home → navigate via clicks → submit a form → assert content + 0 console errors, at 6 breakpoints.
-49. Live Lighthouse: Perf ≥ 90 / A11y ≥ 95 / SEO ≥ 95 / BP ≥ 95 · axe 0 · AI-vision ≥ 8/10 (thresholds authoritative from `~/.claude` `EMDASH_*` env).
+49. Live Lighthouse: Perf ≥ 90 / A11y ≥ 95 / SEO ≥ 95 / BP ≥ 95 · axe 0 · AI-vision ≥ 9/10 (thresholds authoritative from `~/.claude` `EMDASH_*` env — never hardcode looser).
 50. Per-route Self-Verify Statement (what shipped + each gate green) before announcing done.
