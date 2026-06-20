@@ -39,6 +39,12 @@ const MUST_RECOVER = [
   'ai-agent-security', // when Phase-4 AI-native spiral ships chat/tool-calls/agents
   'feature-flags', // every new feature behind a flag (Hard Gate)
   'email-deliverability', // every-form deliverability gate
+  // Universal 06-build-and-slice-loop submodules — every site needs these, and the
+  // whole skill drops for budget, so each MUST stay in the manifest catalog or it's
+  // silently unreachable on a one-line prompt (the catalog-removal regression).
+  'contact-forms-and-endpoints', // every site gets a working contact form
+  'custom-error-pages', // branded error page for every HTTP status
+  'pwa-kit', // full PWA on every site
 ];
 
 function packMembers() {
