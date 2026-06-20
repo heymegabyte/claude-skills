@@ -51,7 +51,10 @@ Automatically improve error handling, JSDoc, observability wiring, and type cove
 2. **PostHog**
    - Snippet on every HTML page w/ `persistence:'memory'` (cookie-free)
    - `capture_pageview` + `capture_pageleave` + `autocapture:true`
-   - CSP `script-src` + `connect-src` for posthog domain
+   - **`api_host` MUST be the regional INGESTION host** (`https://us.i.posthog.com` US / `https://eu.i.posthog.com` EU), NEVER `app.posthog.com` (the deprecated UI host — snippet inits but captures silently no-op).
+   - **CSP must allow BOTH ingestion AND assets hosts** in `script-src` + `connect-src`: `https://us.i.posthog.com https://us-assets.i.posthog.com` (a bare `app.posthog.com` blocks the capture POST → 0 events while the snippet loads fine).
+   - **VERIFY BY QUERYING THE BACKEND, never the browser.** "requests fire" ≠ "events land" — confirm an event round-trips via the PostHog MCP (`query-trends` for `$pageview`/a forced custom event) or the dashboard BEFORE claiming analytics works. A raw `fetch` to `…/i/v0/e/` returning 200 isolates ingestion-vs-client. (njsk.org pass-235→237: snippet+requests fired but 0 events landed — CSP blocked the ingestion host AND api_host was the deprecated UI host; a browser-only check falsely "verified" it.)
+   - Each PROPERTY gets its OWN project — don't let N sites share one `phc_` "Default project" key (mixes hosts, breaks per-site analytics).
    - Unified: errors + session replay + feature flags + product analytics
 
 3. **GA4/GTM**
