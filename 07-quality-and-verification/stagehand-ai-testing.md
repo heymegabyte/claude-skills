@@ -9,6 +9,7 @@ description: "AI browser testing: Stagehand (act/extract/observe/agent on a11y t
 
 ## What Is Stagehand
 
+- **Browserbase is ALWAYS driven via Stagehand** — whenever a task uses Browserbase (managed sessions, proxy, replay, bot-detection / Cloudflare-protected sites), call Stagehand's `act`/`extract`/`observe`/`agent`, NEVER the raw Browserbase SDK or bare Playwright. The `browse` CLI/skill wraps this.
 - Open-source AI browser automation SDK (`browserbase/stagehand`, 22K+ stars, MIT)
 - Four primitives — `act()`, `extract()`, `observe()`, `agent()` — that resolve natural language instructions against the accessibility tree at runtime
 - Selectors self-heal when pages change

@@ -22,6 +22,7 @@ Vitest for units, Playwright for E2E + browser automation, Crawlee for OSS crawl
 
 - **Vitest** — unit + integration tests (the default per `code-style`; replaces Karma in Angular via `@analogjs/vitest-angular`)
 - **Playwright** + **@playwright/test** — E2E + browser automation; homepage-first, real-user navigation per `e2e-tdd-organization`
+- **Stagehand** (`browserbase/stagehand`) — AI browser automation (`act`/`extract`/`observe`/`agent` on the a11y tree); the REQUIRED interface for Browserbase managed sessions (bot-detection / Cloudflare-protected sites) — never drive Browserbase raw. Per `stagehand-ai-testing`
 - **Crawlee** — OSS crawling/import pipelines (HTTP/Cheerio/Playwright/Puppeteer); backend-only per `workflow-automation-supervisor`
 - **Firecrawl** — ONLY after a license/deployment review (managed crawl)
 - **browser-use** — ONLY after a license/deployment review (agentic browser)
