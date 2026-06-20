@@ -99,39 +99,4 @@ Every URL clickable, every URL specific.
 
 ## Skill/Rule File Format
 
-All `.md` files in `~/.claude/` and `~/.agentskills/` use **human-readable bullets** (unordered) or **numbered lists** (when priority/weight matters). Stay concise — bullets not paragraphs, fragments where they read clean, no padding.
-
-### Do
-
-- Use `-` bullets for unordered items
-- Use `1.` numbered lists when order or priority matters
-- Use `### Subheaders` to group related bullets
-- Use `**bold**` for keywords inside bullets
-- Use backticks for paths, commands, code identifiers
-- Preserve `cross-links` to sibling rules
-- Keep bullet text tight: one idea per bullet, ≤2 lines
-- Match new sibling density — read 10 lines of a sibling rule before writing
-
-### Don't
-
-- Don't use pipe-delimited one-liners (`a|b|c|d`) — split into bullets
-- Don't use `→` separators inside text — break into "X → Y" bullets or sub-bullets
-- Don't write multi-sentence paragraphs when bullets work
-- Don't pad with explanatory prose — fragments are fine
-- Don't write verbose headers
-- Don't use markdown tables for simple mappings — use definition-style bullets (`- **key** — value`)
-
-### Pattern: priority list
-
-1. Highest priority
-2. Next
-3. Then
-
-### Pattern: definition-style bullet
-
-- **Term** — short definition or value
-- **Another term** — its meaning
-
-### Pattern: do/don't
-
-Use `### Do` / `### Don't` subheaders so contrast is scannable.
+- Moved to `[[skill-authoring-contract]]` § File format — it's authoring guidance, only needed when editing skill/rule `.md` files, so it lives in the authoring rule (loads on rule/skill edits) instead of taxing every prompt's budget here. Bullets-not-paragraphs · ≤2 lines/bullet · no pipe-delimited one-liners.

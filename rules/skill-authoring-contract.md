@@ -99,10 +99,51 @@ Severity mapping:
 - **HIGH** — dependency cycle (blocks CI)
 - **MEDIUM** — description template violation, missing evals (advisory)
 
+<!-- grow-ok --> Absorbed § File format from brian-preferences (tier-1) so authoring guidance loads on rule/skill edits via this rule's paths instead of taxing every prompt's always-load budget — net token reduction across prompts.
+
+## File format (all `.md` in `~/.claude/` + `~/.agentskills/`)
+
+Human-readable **bullets** (unordered) or **numbered lists** (when priority/weight matters). Concise — bullets not paragraphs, fragments where they read clean, no padding. (Canonical home for this; loads on rule/skill edits via this rule's `paths`, so it isn't taxed onto every prompt's budget.)
+
+### Do
+
+- Use `-` bullets for unordered items
+- Use `1.` numbered lists when order or priority matters
+- Use `### Subheaders` to group related bullets
+- Use `**bold**` for keywords inside bullets
+- Use backticks for paths, commands, code identifiers
+- Preserve `cross-links` to sibling rules
+- Keep bullet text tight: one idea per bullet, ≤2 lines
+- Match new sibling density — read 10 lines of a sibling rule before writing
+
+### Don't
+
+- Don't use pipe-delimited one-liners (`a|b|c|d`) — split into bullets
+- Don't use `→` separators inside text — break into "X → Y" bullets or sub-bullets
+- Don't write multi-sentence paragraphs when bullets work
+- Don't pad with explanatory prose — fragments are fine
+- Don't write verbose headers
+- Don't use markdown tables for simple mappings — use definition-style bullets (`- **key** — value`)
+
+### Pattern: priority list
+
+1. Highest priority
+2. Next
+3. Then
+
+### Pattern: definition-style bullet
+
+- **Term** — short definition or value
+- **Another term** — its meaning
+
+### Pattern: do/don't
+
+Use `### Do` / `### Don't` subheaders so contrast is scannable.
+
 ## Cross-links
 
 - [[instruction-compression-playbook]] — token-efficient skill prose style
-- [[brian-preferences]] — file format, bullet discipline, ≤2 lines per bullet
+- [[brian-preferences]] — communication, output, git, deploy preferences (file format now lives here)
 - [[validator-precision-discipline]] — keep audit false-positive rate near zero
 - [[drift-detection]] — authoring violations are drift, fixed in-turn
 - [[internal-skill-discovery]] — `metadata.internal: true` for OS-layer skills
