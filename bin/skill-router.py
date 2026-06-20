@@ -687,6 +687,23 @@ def cmd_route(prompt: str, cwd: str | None = None, cache_only: bool = False,
     # Fingerprint
     fp = cmd_fingerprint(cwd)
 
+    # Prompt-intent: a one-line website-build prompt ("build a website for X") has none
+    # of the cwd marker files (_research.json etc.) that set is_website_build — those only
+    # appear AFTER Phase 0. So detect build intent from the PROMPT (any website-build pack
+    # member trigger-matched) and set the flag here, BEFORE path-match — otherwise the
+    # org:website_build-scoped rules (cinematic-ui-patterns, copy-writing, supreme-polish,
+    # the forms/media/motion/visualization supervisors) would never load on the very prompt
+    # they exist for. Reuses match_triggers data → no trigger duplication.
+    try:
+        _triggered = set(match_triggers(prompt, conn))
+        _wb_members = set(all_packs().get("website-build", []))
+        if _triggered & _wb_members:
+            fp["is_website_build"] = True
+            if "website-build" not in fp["concerns"]:
+                fp["concerns"].append("website-build")
+    except Exception:
+        pass
+
     selected: dict[str, str] = {}  # id → reason
 
     # 1. Tier-1 always
