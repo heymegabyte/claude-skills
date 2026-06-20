@@ -231,8 +231,41 @@ img.save('screenshots/mobile-1080x1920.png')
 "
 ```
 
+## Service Worker — kill-switch (DEFAULT for SPA sites)
+
+A previously-deployed caching SW serves STALE assets after a redeploy → white screen / old version stuck. Default to a kill-switch SW that neutralizes any prior SW + flushes caches, UNLESS the build deliberately wants offline caching (then use Workbox).
+
+`public/sw.js` — self-unregistering kill-switch:
+
+```js
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((k) => caches.delete(k)));   // flush all caches
+    await self.registration.unregister();                    // remove this SW
+    const clients = await self.clients.matchAll({ type: 'window' });
+    clients.forEach((c) => c.navigate(c.url));               // hard-reload to drop SW
+  })());
+});
+```
+
+Registration guard (app entry):
+
+```js
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+```
+
+- Serve `/sw.js` with `Cache-Control: no-cache` (Worker route or `_headers`) so the kill-switch itself never caches.
+- **NEVER delete `sw.js` outright** — a 404 leaves the OLD SW active. Always ship at least the kill-switch.
+- **Build-gate**: a site that ever shipped a SW MUST ship the kill-switch (or a versioned Workbox SW) on the next deploy.
+- TRUE offline PWA (doc sites, catalogs): Workbox `generateSW` with `skipWaiting:true` + `clientsClaim:true` + versioned precache + navigation fallback to `offline.html`.
+
 ## Verification Checklist (EVERY deploy)
 
+- [ ] `sw.js` is the kill-switch (or a versioned Workbox SW) — served `no-cache`, never 404
 - [ ] `site.webmanifest` has screenshots (wide + narrow)
 - [ ] All shortcut URLs are within scope (no `tel:`, no external)
 - [ ] All shortcuts have 96x96 icons
