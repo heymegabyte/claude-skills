@@ -176,6 +176,10 @@ logHeader "16. crosslinks"
 runGate "crosslinks" "audit-crosslinks --ci" \
   node "$SKILLS_ROOT/bin/audit-crosslinks.mjs" --ci
 
+logHeader "18. dead-paths"
+runGate "dead-paths" "audit-dead-paths --ci" \
+  node "$SKILLS_ROOT/bin/audit-dead-paths.mjs" --ci
+
 logHeader "17. compression-regression"
 runGate "compression-regression" "check-compression-regression --ci" \
   node "$SKILLS_ROOT/bin/check-compression-regression.mjs" --ci

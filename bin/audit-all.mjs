@@ -55,6 +55,7 @@ const AUDITS = [
   { script: 'audit-trigger-collisions.mjs',   label: 'trigger-collisions' },
   { script: 'audit-skill-discoverability.mjs', label: 'skill-discoverability' },
   { script: 'audit-path-scope.mjs',            label: 'path-scope' },
+  { script: 'audit-dead-paths.mjs',            label: 'dead-paths' },
 ];
 
 // ---------------------------------------------------------------------------

@@ -321,6 +321,8 @@ def cmd_fingerprint(cwd: str | None = None) -> dict:
                 fp["concerns"].append("square-payments")
             if any(d in deps for d in ("resend", "@aws-sdk/client-ses", "nodemailer", "postmark", "@sendgrid/mail")):
                 fp["concerns"].append("email")
+            if any(d in deps for d in ("shopify", "@shopify/hydrogen", "@shopify/storefront-api-client", "@medusajs/medusa", "swell-js", "snipcart", "@commercelayer/sdk")):
+                fp["concerns"].append("ecommerce")
             if "@anthropic-ai/sdk" in deps or "openai" in deps:
                 fp["has_ai"] = True
                 fp["concerns"].append("ai-features")
