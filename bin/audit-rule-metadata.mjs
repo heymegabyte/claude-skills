@@ -5,7 +5,7 @@
  * Audits rules/*.md and [0-9][0-9]-*\/SKILL.md for three advisory issues:
  *
  *   missing-moscow  — no [MUST] / [SHOULD] / [COULD] tag anywhere in the file.
- *                     HIGH confidence. Tells maintainers to add priority weight.
+ *                     MEDIUM (advisory) — optional priority weighting, not a bug.
  *
  *   non-gerund-name — frontmatter `name:` does not end with a gerund or common
  *                     noun-activity form (words ending -ing, -tion, -sion, -ity,
@@ -302,13 +302,16 @@ function audit() {
 
     const file = relative(REPO_ROOT, absPath);
 
-    // 1. Missing MoSCoW tag
+    // 1. Missing MoSCoW tag — ADVISORY (MEDIUM), not a bug. MoSCoW tags are a
+    // nice-to-have (roadmap idea #17); most rules read fine without them. HIGH
+    // here was cry-wolf (158 findings drowned the real HIGHs) per
+    // validator-precision-discipline. Downgraded to MEDIUM so HIGH means actionable.
     if (isMissingMoscow(raw)) {
       findings.push({
         file,
         kind: 'missing-moscow',
-        confidence: 'HIGH',
-        detail: 'No [MUST] / [SHOULD] / [COULD] tag found anywhere in file — add to key rule bullets to express priority weight',
+        confidence: 'MEDIUM',
+        detail: 'No [MUST] / [SHOULD] / [COULD] tag — optional priority weighting (advisory, not required)',
       });
     }
 
