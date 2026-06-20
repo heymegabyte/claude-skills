@@ -10,7 +10,7 @@ triggers:
   - "skyvern"
   - "browserbase"
 paths:
-  - "*"
+  - "concern:cloudflare-workers"
 ---
 
 # ProjectSites.dev — Cloudflare-First Platform
