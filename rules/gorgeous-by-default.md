@@ -108,6 +108,21 @@ Every widget that *appears* (AI-chat widget cards, command palettes, popover men
 - **Re-render flicker guard**: if the widget container is rebuilt via `innerHTML` on every state change (chat re-render, live filter), a class-level entrance animation re-fires each rebuild → flicker. Either render the widget ONCE, or gate the animation to first mount (`@starting-style`, or animate only newly-appended nodes). See `cinematic-ui-patterns.md § the "list disappears" trap`.
 - **⚠️ Stacking-context trap (z-index that "doesn't work")**: a `position:fixed` widget/popover that should float above page-level FABs (chat fab, cart fab) will be TRAPPED if any ancestor establishes a stacking context (`transform`, `filter`, `backdrop-filter`, `opacity<1`, `will-change`, `contain`, or `position`+`z-index`). Inside that ancestor NO z-index can paint above a higher-stacked body-level sibling — the whole subtree sits at the ancestor's z-index. Fix: **re-parent the fixed overlay to `document.body`** on init so its z-index competes at the body level (fixed positioning stays viewport-relative as long as no transformed ancestor remains). Verify with `document.elementFromPoint(cx, cy)` (real hit-test), NOT by reading the z-index number — the number can be right while the paint is wrong. Reference incident: music.megabyte.space 2026-06-17 (More menu / fullscreen lyrics / queue trapped inside `.app` at z:1, below the z:9990 cart FAB).
 
+## Layout traps (silent visual bugs — verify every build)
+
+### Subtitle/kicker spans must be `block` (never inline beside their title)
+
+- An eyebrow/kicker/subtitle `<span>` that is `inline-block` (or default inline) can fall **on the same line as its title** when the title is also `inline-block` — two inline-blocks flow side-by-side if they fit. A kicker-above-title must be `block` so it always owns its own line.
+- **`margin-top`/`mt-*` on an inline span is silently ignored** — if a span has `mt-*`, that's a tell it was meant to be `block` (the author expected vertical spacing that never applied).
+- Fix at the shared component (`Eyebrow`/kicker) so it propagates; sweep raw subtitle spans too.
+- Reference incident (nyfoldingbox.com, 2026-06-20): `Eyebrow` was `inline-block` and `SectionHeading`'s `<h2>` was also `inline-block` → eyebrow rendered inline beside the title. Fix: `Eyebrow` → `block`; three `mt-*` subtitle spans (meta/CTA/year-kicker) → `block`.
+
+### SVG section dividers need an OPAQUE background (the section being LEFT)
+
+- A wave/curve section divider that fills only its lower region with `color` leaves the **upper region transparent** — which shows the page/body background (usually white/cream). Against a **dark or brand** next-section that white band is jarring (looks like a gap that "should be" the section color).
+- Fix: the divider's own `background` = the color of the section it's **leaving** (so the transparent region matches it); the SVG fill = the color of the section it's **entering** (so the wave flows into the next section). No transparency shows through.
+- Reference incident (nyfoldingbox.com, 2026-06-20): kraft→dark `Curve` dividers showed a white band below the kraft section. Fix: added a `bg` prop (kraft) + set fill to the entered section (`#111` dark / `#3f1108` brand). Swept all 6 dividers, not just the flagged one.
+
 ## Self-critique (before shipping any element)
 
 1. Is any `string[]` rendered as joined text? → convert to pills
@@ -116,4 +131,6 @@ Every widget that *appears* (AI-chat widget cards, command palettes, popover men
 4. Does every widget/popover/overlay fade-in-up on appear (not hard-pop)? → add `widget-in`
 5. If it's a fixed overlay meant to float above FABs, is it re-parented to `<body>` (verified via `elementFromPoint`, not just z-index)? → fix the stacking-context trap
 6. Is it reduced-motion-safe + contrast-safe? → gate + fix
-7. Would Brian call it gorgeous, not just functional? → if no, iterate
+7. Is every subtitle/kicker span `block` (not inline beside its title)? Any `mt-*` on an inline span? → make it `block` (see Layout traps)
+8. Does every SVG section divider have an opaque bg matching the section it leaves (no white band into dark/brand)? → add the `bg` (see Layout traps)
+9. Would Brian call it gorgeous, not just functional? → if no, iterate
