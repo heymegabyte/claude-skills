@@ -1,6 +1,6 @@
 ---
 name: "production-observability-default-on"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "new worker"

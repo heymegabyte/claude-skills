@@ -1,6 +1,6 @@
 ---
 name: "pii-handling-discipline"
-priority: 1
+priority: 2
 pack: "backend"
 triggers:
   - "pii"

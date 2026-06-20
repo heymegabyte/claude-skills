@@ -1,6 +1,6 @@
 ---
 name: "vendor-risk-tiering"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "vendor"

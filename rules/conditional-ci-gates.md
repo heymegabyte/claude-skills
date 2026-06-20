@@ -1,6 +1,6 @@
 ---
 name: "conditional-ci-gates"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "ci gate"

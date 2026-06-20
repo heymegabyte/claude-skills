@@ -1,6 +1,6 @@
 ---
 name: "customer-facing-changelog"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "changelog"

@@ -1,6 +1,6 @@
 ---
 name: "error-budget"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "SLO"

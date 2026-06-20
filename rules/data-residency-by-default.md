@@ -1,6 +1,6 @@
 ---
 name: "data-residency-by-default"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "d1"

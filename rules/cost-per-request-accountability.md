@@ -1,6 +1,6 @@
 ---
 name: "cost-per-request-accountability"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "cost"

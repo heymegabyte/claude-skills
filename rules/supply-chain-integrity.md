@@ -1,6 +1,6 @@
 ---
 name: "supply-chain-integrity"
-priority: 1
+priority: 2
 pack: "core"
 triggers:
   - "npm install"
