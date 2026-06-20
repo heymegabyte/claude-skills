@@ -11,7 +11,7 @@ triggers:
   - "data subject request"
   - "rtbf"
 paths:
-  - "*"
+  - "concern:d1-database"
 ---
 
 # Right to Deletion — GDPR Art. 17 + CCPA + LGPD Cascade
