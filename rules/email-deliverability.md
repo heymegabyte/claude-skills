@@ -2,9 +2,16 @@
 name: "email-deliverability"
 priority: 3
 pack: "infra"
-triggers: []
+triggers:
+  - "email"
+  - "resend"
+  - "transactional email"
+  - "smtp"
+  - "bounce"
+  - "deliverability"
+  - "list-unsubscribe"
 paths:
-  - "*"
+  - "concern:email"
 ---
 
 # Email Deliverability

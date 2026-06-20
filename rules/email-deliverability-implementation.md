@@ -12,7 +12,7 @@ triggers:
   - "postmaster"
   - "snds"
 paths:
-  - "*"
+  - "concern:email"
 ---
 
 # Email Deliverability — Implementation Deep Dive
