@@ -18,7 +18,7 @@ paths:
 
 The single acceptance checklist a one-line projectsites.dev / Emdash website prompt must satisfy before DONE. Loads only on website prompts (pack `website-build`) — not always-on. Each item links the rule carrying the detail; this file is the index, not the spec.
 
-> **Why priority 1**: the `website-build` pack (~25 members, >40K tokens) exceeds the router's load budget, so a site prompt can't load every member — the router ranks + truncates. This lean index loads FIRST and cross-links the full requirement set, so completeness survives truncation: load this, then pull each detail rule on demand. Keeping it small is the routing optimization — never inline spec here.
+> **Why priority 2 + lean (loads only on site prompts, first within the pack)**: the `website-build` pack (~25 members, >40K tokens) exceeds the router's load budget, so a site prompt can't load every member — the router ranks + truncates. This index stays priority 2 (NOT 1) on purpose: priority 1 would always-load it on every prompt, burning ~2K tokens on non-website turns — the opposite of "tokens only when needed." Instead it carries the strongest website triggers ("build a website" / "rebuild" / "projectsites" / "one-line site"), so on a site prompt it ranks at the TOP of the pack and is the last thing truncation would drop. It cross-links the full requirement set, so completeness survives truncation: load this, then pull each detail rule on demand. Keeping it small is the routing optimization — never inline spec here.
 Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]` `[[source-site-enhancement]]` `[[emdash-fleet]]` `[[verification-loop]]`
 
 ## Phase order (one prompt → full product)
@@ -54,6 +54,7 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 - CF Workers + Hono + D1 + R2 + KV + DO (`[[hono-api]]`). Deep lock-in is the feature.
 - Every clickable entity linked (email/phone/URL/route) — unlinked email/phone = build fail.
 - Every form: Turnstile + Zod + Resend deliverability gate.
+- Analytics instrumented before DONE (solo tier: PostHog + Workers Tracing OTLP) — Worker-reverse-proxied, autocapture OFF, schema-controlled events (`[[production-observability-default-on]]`). A finished site with zero analytics is incomplete; this rule's triggers don't fire on a bare site prompt, so pull it explicitly.
 
 ## Quality gates (every gate green before DONE)
 
