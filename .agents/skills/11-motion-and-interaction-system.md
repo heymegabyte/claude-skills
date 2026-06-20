@@ -19,7 +19,7 @@ triggers:
   - "animation"
   - "transition"
 paths:
-  - "concern:public_facing"
+  - "org:website_build"
 ---
 
 # 11 — Motion and Interaction System
