@@ -11,6 +11,7 @@ triggers:
 paths:
   - "concern:cloudflare-workers"
   - "concern:hono-stack"
+  - "org:website_build"
   - "src/worker/**"
   - "src/web/**"
 ---

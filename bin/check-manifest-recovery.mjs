@@ -48,6 +48,7 @@ const MUST_RECOVER = [
   '07-quality-and-verification', // detailed a11y/WCAG/skip-link/completeness gate specs + validators
   '08-deploy-and-runtime-verification', // deploy + CDN-purge + prod-E2E + rollback runtime checks
   'website-page-and-site-gates', // per-page/site/entity gates extracted from always.md (loads only on site prompts)
+  'csp-trusted-types', // CSP L3 + nonce + Trusted Types + COOP/COEP — every site's security headers
 ];
 
 function packMembers() {

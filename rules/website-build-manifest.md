@@ -81,7 +81,7 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 
 - Deployed + CDN-purged at real URL · Playwright E2E GREEN at 6 breakpoints (`[[verification-loop]]`).
 - AI vision ≥9/10 · Lighthouse perf ≥90 / a11y ≥95 / SEO ≥95 / BP ≥95 · axe 0 violations (WCAG 2.2 AA). Thresholds are authoritative from `~/.claude` env (`EMDASH_LIGHTHOUSE_MIN_*`, `EMDASH_AI_VISION_MIN`, `EMDASH_AXE_MAX_VIOLATIONS`) — read those, never hardcode looser.
-- CSP Level 3 strict-dynamic + nonce · Trusted Types · all hyperlinks valid · INP ≤200ms.
+- CSP Level 3 strict-dynamic + nonce · Trusted Types · all hyperlinks valid · INP ≤200ms. Full security-header set + nonce/TT policy detail: `[[csp-trusted-types]]` (+ `[[security-hardening]]` for HSTS/referrer-policy/nosniff/COOP/COEP).
 - Every new feature behind a flag (`[[feature-flags]]`, default off) · JSON-LD per page (accurate types only).
 - Zero errors / stubs / TODO in shipped strings · zero unactioned Recs.
 
@@ -112,7 +112,7 @@ The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` o
 - **Cinematic + design**: `[[cinematic-ui-patterns]]` (RollingCounter/Reveal, React+Angular) · `[[gorgeous-by-default]]` · `[[text-contrast]]` · `[[logo-contrast]]` · `[[image-quality]]`
 - **Content + brand**: `[[copy-writing]]` · `[[citations]]` · `[[timeline-authenticity]]` · `[[i18n-by-demographics]]` · `[[thin-source-amplification]]`
 - **Forms + comms**: `[[email-deliverability]]` (every-form gate)
-- **Architecture + security**: `[[projectsites-cloudflare-first]]` (CF infra LAW — always) · `[[ai-agent-security]]` (when the Phase-4 AI-native spiral ships chat-as-UI / tool-calls / agents) · `[[feature-flags]]` (every new feature flagged) · `[[production-observability-default-on]]` (analytics)
+- **Architecture + security**: `[[projectsites-cloudflare-first]]` (CF infra LAW — always) · `[[csp-trusted-types]]` (CSP L3 + nonce + Trusted Types + COOP/COEP/Permissions-Policy — every site) · `[[security-hardening]]` (HSTS/referrer-policy/nosniff) · `[[ai-agent-security]]` (when the Phase-4 AI-native spiral ships chat-as-UI / tool-calls / agents) · `[[feature-flags]]` (every new feature flagged) · `[[production-observability-default-on]]` (analytics)
 - **Per-page/site/entity gates**: `[[website-page-and-site-gates]]` (SEO head · webmanifest/robots/sitemap/security.txt · lightbox · Maps · clickable-entity linking · forms · timeline · Cmd+K — extracted from `[[always]]`, loads only on site prompts)
 - **Legal + compliance**: `[[legal-and-error-surfaces]]` (404/500 · privacy · cookie consent · accessibility statement · terms)
 - **Skills (numbered)**: `[[02-goal-and-brief]]` · `[[15-site-generation]]` · `[[16-cinematic-website-prime-directive]]` · `[[09-brand-and-content-system]]` · `[[10-experience-and-design-system]]` · `[[11-motion-and-interaction-system]]` · `[[12-media-orchestration]]` · `[[14-independent-idea-engine]]`
