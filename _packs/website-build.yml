@@ -20,3 +20,4 @@ members:
   - rules/image-quality
   - rules/logo-contrast
   - rules/supreme-polish
+  - rules/website-build-manifest
