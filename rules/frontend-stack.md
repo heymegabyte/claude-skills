@@ -35,7 +35,7 @@ Never write hand-rolled HTML files for any user-facing surface.
   - Default: `vite-ssg` for marketing sites (prerender at build → static HTML + hydration)
   - Dashboards w/ auth: TanStack Start (server functions + SSR streaming)
 - **Tailwind v4** CSS-first config in `app.css`
-- **shadcn/ui** (Radix primitives) — copied in, not installed
+- **shadcn/ui** (Radix primitives) — copied in, not installed; THE React design-system foundation per `[[shadcn-design-system]]` (parallel to Spartan UI for Angular below). NO MUI/Chakra/Ant.
 - **TypeScript 5.9+** strict
 - **Zod** at every API + form boundary
 

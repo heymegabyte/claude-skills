@@ -15,8 +15,9 @@ The single most expensive mistake is the wrong framework for the job. Choose del
 
 ## The rule
 
-- **React (19 + Vite + SSR/SSG)** → SMALL / SIMPLE / SHORT-FUNNEL surfaces:
+- **React (19 + Vite + SSR/SSG + shadcn/ui)** → SMALL / SIMPLE / SHORT-FUNNEL surfaces:
   - landing pages · marketing sites · portfolios · brochure sites · lightweight apps · simple customer-facing sites · one-off campaigns
+  - UI = **shadcn/ui ONLY** (Radix) + Tailwind v4 per `shadcn-design-system`. No MUI/Chakra/Ant.
   - Optimize for: fast first paint, SEO, minimal ceremony. NEVER over-engineer these.
 - **Angular (21+ + Nx + Spartan UI)** → LARGE / SERIOUS / LONG-LIVED applications:
   - SaaS dashboards · admin systems · PWAs · multi-tenant apps · workflow systems · visual builders · website factories · AI operations consoles · any serious long-lived product
