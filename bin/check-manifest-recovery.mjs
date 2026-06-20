@@ -45,6 +45,8 @@ const MUST_RECOVER = [
   'contact-forms-and-endpoints', // every site gets a working contact form
   'custom-error-pages', // branded error page for every HTTP status
   'pwa-kit', // full PWA on every site
+  '07-quality-and-verification', // detailed a11y/WCAG/skip-link/completeness gate specs + validators
+  '08-deploy-and-runtime-verification', // deploy + CDN-purge + prod-E2E + rollback runtime checks
 ];
 
 function packMembers() {
