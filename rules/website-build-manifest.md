@@ -1,6 +1,6 @@
 ---
 name: "website-build-manifest"
-priority: 1
+priority: 2
 pack: "website-build"
 triggers:
   - "build a website"

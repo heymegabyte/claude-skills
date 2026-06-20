@@ -1,6 +1,6 @@
 ---
 name: "mcp-server-hardening"
-priority: 1
+priority: 2
 pack: "ai"
 triggers:
   - "mcp server"

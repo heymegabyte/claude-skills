@@ -1,6 +1,6 @@
 ---
 name: "bash-matcher-guardrails"
-priority: 1
+priority: 2
 pack: "ai"
 triggers:
   - "PreToolUse"
