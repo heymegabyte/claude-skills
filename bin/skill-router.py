@@ -229,6 +229,40 @@ def estimate_tokens(s: str) -> int:
     return max(1, len(s) // 4)
 
 
+
+def cmd_sync_metadata():
+    """Fast, KEYLESS sync of routing metadata (priority/pack/triggers/paths/tokens)
+    for every skill — no embeddings. Fixes the stale-DB rot: rebuild-index skips
+    rows whose BODY is unchanged, so frontmatter-only edits (priority/pack) never
+    synced. This updates metadata for ALL rows regardless of body hash. Run on every
+    rule write (hook) + manually; full `rebuild-index` still owns embeddings."""
+    conn = db_open()
+    skills = discover_skills()
+    n = 0
+    for sk in skills:
+        cur = conn.execute("SELECT id FROM skills WHERE id=?", (sk["id"],))
+        if cur.fetchone():
+            conn.execute(
+                """UPDATE skills SET priority=?, triggers=?, paths=?, pack=?, tokens=?, updated_at=?
+                   WHERE id=?""",
+                (sk["priority"], json.dumps(sk["triggers"]), json.dumps(sk["paths"]),
+                 sk["pack"], estimate_tokens(sk["body"]), int(time.time()), sk["id"]),
+            )
+        else:
+            conn.execute(
+                """INSERT INTO skills (id,type,path,name,description,priority,triggers,paths,pack,body_hash,embedding,tokens,updated_at)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (sk["id"], sk["type"], sk["path"], sk["name"], sk["description"], sk["priority"],
+                 json.dumps(sk["triggers"]), json.dumps(sk["paths"]), sk["pack"],
+                 body_hash(sk["body"]), None, estimate_tokens(sk["body"]), int(time.time())),
+            )
+        n += 1
+    conn.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('last_metadata_sync', ?)", (str(int(time.time())),))
+    conn.commit()
+    conn.close()
+    print(f"[skill-router] metadata synced for {n} skills/rules (keyless, no embeddings)")
+
+
 def cmd_rebuild_index():
     """Generate embeddings for every skill/rule. Idempotent — skips unchanged bodies."""
     api_key = get_secret("OPENAI_API_KEY")
@@ -795,6 +829,9 @@ def main(argv: list[str]) -> int:
     cmd = argv[1]
     if cmd == "rebuild-index":
         cmd_rebuild_index()
+        return 0
+    if cmd == "sync-metadata":
+        cmd_sync_metadata()
         return 0
     if cmd == "fingerprint":
         cwd = argv[2] if len(argv) > 2 else None

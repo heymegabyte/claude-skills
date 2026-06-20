@@ -188,6 +188,15 @@ logHeader "17. compression-regression"
 runGate "compression-regression" "check-compression-regression --ci" \
   node "$SKILLS_ROOT/bin/check-compression-regression.mjs" --ci
 
+# Hard gate 20 (Jun-2026 routing-arc RCA) — priority-format. Six rules carried
+# `priority: high` (a string); rebuild-index did int('high') → ValueError → the
+# rebuild crashed and skills.db silently stayed STALE for the whole arc, so every
+# priority/pack/path change was invisible to the live router. This gate blocks any
+# non-numeric priority at commit time so that exact stale-DB class can't recur.
+logHeader "20. priority-format"
+runGate "priority-format" "check-priority-format --ci" \
+  node "$SKILLS_ROOT/bin/check-priority-format.mjs" --ci
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.
