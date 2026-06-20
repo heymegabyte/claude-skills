@@ -90,7 +90,7 @@ The canonical list of PREFERRED packages + the decision discipline. **Listing �
 
 ### Notifications / email / webhooks
 
-- ⏳ **Novu** — full notification center/inbox/preferences (in-app+email+push via adapters) when notifications are a feature. ⏳ **svix** — webhook management + signature verify. ⏳ **postal-mime** · **web-push**. ✅ **Amazon SES** — transactional email (SigV4 raw-send from Workers, zero npm dep) + ⏳ **listmonk** (self-hosted, relays via SES SMTP) for newsletters/campaigns. ❌ **Resend** (removed 2026-06-19). ❌ **react-email** in an Angular app (React-only).
+- ⏳ **Novu** — full notification center/inbox/preferences (in-app+email+push via adapters) when notifications are a feature. ⏳ **svix** — webhook management + signature verify. ⏳ **postal-mime** · **web-push**. ✅ **Amazon SES** — transactional email (SigV4 raw-send from Workers, zero npm dep) + ⏳ **listmonk** (self-hosted, relays via SES SMTP) for newsletters/campaigns. ❌ **Resend** (removed 2026-06-19). ✅ **react-email** (`@react-email/components` + `render()`) — ACCEPTED 2026-06-19 for (a) the generated React/Vite sites and any React surface, and (b) **server-side transactional email templating** (`render()` returns an HTML string, framework-agnostic output — runs in the Worker, never imported into the Angular admin bundle). The old ban was scoped to "don't import React into the Angular bundle"; server-side HTML rendering doesn't. Pairs with the SES/listmonk send path + Novu email adapter. Still ❌ inside the Angular admin SPA bundle.
 
 ### Database / backend / search / analytics
 

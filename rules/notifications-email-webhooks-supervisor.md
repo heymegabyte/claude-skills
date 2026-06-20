@@ -53,7 +53,7 @@ Wire a workflow at every meaningful state transition, not just errors:
 - **svix** — productized OUTBOUND webhooks (let customers subscribe to your events): signed payloads, delivery tracking, retries, replay, customer-facing endpoint manager. Verify signatures before parsing.
 - **postal-mime** — inbound email parsing.
 - **web-push** — browser push payloads (push channel when not via Novu's provider).
-- **react-email** — email templates ONLY in a React context (NOT inside the Angular app per `stack-selector`); Angular uses Novu templating / MJML.
+- **react-email** (`@react-email/components` + `render()`) — ACCEPTED 2026-06-19 for React surfaces (the generated React/Vite sites) AND **server-side transactional email templating**: `render(<Email/>)` returns an HTML string in the Worker, framework-agnostic output, never imported into the Angular admin bundle. Use it to author email bodies that the SES/listmonk send path (behind the Novu email adapter) delivers. Angular admin UI still uses Novu templating / MJML — react-email is for email HTML + React sites, not the admin SPA.
 - **Amazon SES** — transactional email ONLY behind the Novu email adapter per `secret-provisioning`; **listmonk** (self-hosted) for newsletters via SES SMTP relay. Resend removed 2026-06-19.
 
 ## Inbound webhooks
@@ -66,7 +66,7 @@ Wire a workflow at every meaningful state transition, not just errors:
 - ❌ Direct Amazon SES/SendGrid calls outside the Novu provider adapter.
 - ❌ A per-feature `notifications` table reinventing the inbox.
 - ❌ Untyped Novu payloads · cross-tenant subscriber bleed · notifications with no deep link / no "what to do next" per `auto-meta-work` § notifications.
-- ❌ react-email in an Angular app.
+- ❌ react-email imported into the **Angular admin SPA bundle** (it's accepted for React sites + server-side email HTML rendering — just never in the Angular bundle).
 
 ## ProjectSites.dev relevance
 
