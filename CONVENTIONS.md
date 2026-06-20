@@ -762,7 +762,7 @@ CF Workers native, arbitrary identifiers (orgId/tenantId) for per-tenant rate li
 ### Locations + invocation
 
 - Subagent locations: managed > `--agents` CLI > `.claude/agents/` > `~/.claude/agents/` > plugin
-- Brian's custom agents: `~/.agentskills/agents/` (18 agents, referenced via `--agents` or symlinked)
+- Brian's custom agents: `~/.agentskills/agents/` (20 agents, referenced via `--agents` or symlinked)
 - @ mention invocation with typeahead
 - `isolation: worktree` auto-cleans if no changes
 - Agent teams (experimental): `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, 3–5 teammates, 5–6 tasks each

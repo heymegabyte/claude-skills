@@ -124,7 +124,7 @@ Scope:
 ## Routing
 
 - **Skills 16** — `01-OS` → `14-Ideas` + `15-site-generation` + `16-cinematic-website-prime-directive`
-- **Agents 18** — `architect`, `code-simplifier`, `completeness-checker`, `deploy-verifier`, `security-reviewer`, `test-writer`, `seo-auditor`, `visual-qa`, `computer-use-operator`, `dependency-auditor`, `meta-orchestrator`, `migration-agent`, `content-writer`, `performance-profiler`, `incident-responder`, `accessibility-auditor`, `cost-estimator`, `changelog-generator`
+- **Agents 20** — `architect`, `code-simplifier`, `completeness-checker`, `deploy-verifier`, `security-reviewer`, `test-writer`, `seo-auditor`, `visual-qa`, `computer-use-operator`, `dependency-auditor`, `meta-orchestrator`, `migration-agent`, `content-writer`, `performance-profiler`, `incident-responder`, `accessibility-auditor`, `cost-estimator`, `changelog-generator`, `media-orchestrator`, `motion-choreographer`
 - **Template** — `megabytespace/saas-starter`. Clone for new projects. Update when stack/patterns change.
 
 ## Prime Directive
