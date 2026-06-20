@@ -36,8 +36,23 @@ for (const f of readdirSync(RULES).filter(x => x.endsWith('.md'))) {
   const pack = (fm.match(/pack:\s*"?([a-z-]+)"?/) || [])[1] || 'unknown';
   const tBlock = fm.match(/triggers:\s*([\s\S]*?)(?:\npaths:|\n[a-z_]+:|$)/);
   const triggers = tBlock ? (tBlock[1].match(/-\s*\S/g) || []).length : 0;
-  if (triggers >= 2 && pack !== 'core') {
-    findings.push({ file: `rules/${f}`, pack, triggers, kind: 'over-scoped-path', confidence: 'MEDIUM' });
+  // ACTIONABLE only if the rule maps to a concern the router actually detects
+  // (~/.claude/bin/skill-router.py). A broad rule with no concern home (loop-driven,
+  // copy-writing, supreme-polish) has nowhere to scope TO — `["*"]` is its correct
+  // home. Flag only rules whose name/triggers match a proven concern keyword.
+  const CONCERN_KEYWORDS = {
+    email: ['email', 'smtp', 'dkim', 'spf', 'dmarc', 'resend', 'deliverability'],
+    payments: ['stripe', 'square', 'payment', 'billing', 'refund', 'checkout', 'invoice'],
+    auth: ['auth', 'clerk', 'login', 'session', 'sso', 'oauth'],
+    'ai-features': ['llm', 'openai', 'anthropic', 'embedding', 'rag'],
+    'e2e-testing': ['playwright', 'e2e', 'vitest'],
+    'd1-database': ['d1', 'drizzle', 'sqlite'],
+    ecommerce: ['shopify', 'cart', 'product catalog', 'ecommerce'],
+  };
+  const hay = (f + ' ' + (tBlock ? tBlock[1] : '')).toLowerCase();
+  const concern = Object.entries(CONCERN_KEYWORDS).find(([, ks]) => ks.some((k) => hay.includes(k)));
+  if (triggers >= 2 && pack !== 'core' && concern) {
+    findings.push({ file: `rules/${f}`, pack, triggers, suggestConcern: `concern:${concern[0]}`, kind: 'over-scoped-path', confidence: 'MEDIUM' });
   }
 }
 findings.sort((a, b) => b.triggers - a.triggers);
