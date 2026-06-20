@@ -96,8 +96,12 @@ Two layers: universal features (every site gets these) + category-specific featu
 ### Booking & Scheduling
 
 - **Cal.com embed** — free tier, embeddable scheduling widget (if no existing booking system)
-- **Appointment request form** — for businesses needing human confirmation (medical, legal)
-- **Booking CTA** — links to existing system (OpenTable, Resy, Calendly, etc.) if discovered in research
+  - HOW: `@calcom/embed-react` `<Cal>` (inline) or `data-cal-link` trigger on the booking CTA; lazy-load below the fold, never block LCP.
+  - Brand it — pass `config={{ theme, cssVarsPerTheme }}` to match site tokens; never ship the raw default purple widget.
+  - Pre-create the event type via Cal API v2 (`/v2/event-types`, header `cal-api-version: 2024-08-13`) or document the owner one-click OAuth path per `non-technical-owner-onboarding`.
+  - **Build-gate**: a service business with bookable services (salon/medical/legal/trades/restaurant) that renders a "Book"/"Schedule" CTA with NO working booking surface (embed OR appointment form OR external link) = build fail.
+- **Appointment request form** — for businesses needing human confirmation (medical, legal); Zod + Turnstile + Resend per `always` § Every form.
+- **Booking CTA** — links to existing system (OpenTable, Resy, Calendly, etc.) if discovered in research; `target="_blank" rel="noopener"`.
 
 ### Communication
 
