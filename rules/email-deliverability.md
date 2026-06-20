@@ -63,5 +63,5 @@ Email that bounces is a feature that silently doesn't work. Since Feb 2024 (Goog
 
 - `notifications-email-webhooks-supervisor` — Novu backbone; Resend as the email adapter behind it
 - `secret-provisioning` — sending-domain DNS auto-provision (provider API → CF zone)
-- `always` § Every form — Turnstile + Zod + Resend; this rule gates the send path those forms trigger
+- `website-page-and-site-gates` § Every form — Turnstile + Zod + Resend; this rule gates the send path those forms trigger
 - `13-observability-and-growth` — Listmonk-on-Coolify newsletters via Resend SMTP relay

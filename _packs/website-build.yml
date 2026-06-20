@@ -20,3 +20,4 @@ members:
   - rules/gorgeous-by-default
   - rules/shadcn-design-system
   - rules/legal-and-error-surfaces
+  - rules/website-page-and-site-gates

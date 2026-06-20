@@ -55,4 +55,4 @@ A site is NOT shippable without its legal + error surfaces. The build doctrine m
 
 - `[[production-observability-default-on]]` — the analytics that triggers the consent requirement
 - `[[data-residency-by-default]]` · `[[pii-handling-discipline]]` — backend data-handling this surfaces to users
-- `[[email-deliverability]]` · `[[feature-flags]]` · `[[always]]` (§ Every site, § Ethics)
+- `[[email-deliverability]]` · `[[feature-flags]]` · `[[website-page-and-site-gates]]` (§ Every site) · `[[always]]` (§ Ethics)

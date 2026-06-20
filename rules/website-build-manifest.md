@@ -47,7 +47,7 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 3. **Phases 1-6 build loop** — template clone → maximalist enrichment → swap-out authority → AI-native spiral → agent swarm → "what else" loop.
 4. **Fan out** — multi-faceted site prompt fires the Monitor in the FIRST tool message (`[[monitor-orchestration]]`, `[[emdash-fleet]]`).
 
-## Per-page technical gates (see `[[always]]` § Every page)
+## Per-page technical gates (see `[[website-page-and-site-gates]]` § Every page)
 
 - Keyphrase-first title 50-60 chars · meta desc 120-156 · one H1 · canonical.
 - **`<head>` server-side per-route** via Worker `HTMLRewriter` — NEVER client-only (else whole site collapses to one indexable URL).
@@ -55,7 +55,7 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 - OG 1200×630 ≤100KB branded card · 2+ internal + 1+ outbound links · Yoast GREEN.
 - `fetchpriority="high"` on LCP img + preload · font woff2 preload · DNS-prefetch.
 
-## Per-site required assets (see `[[always]]` § Every site)
+## Per-site required assets (see `[[website-page-and-site-gates]]` § Every site)
 
 - `site.webmanifest` (screenshots/shortcuts/share_target) · split-by-purpose `robots.txt` · `humans.txt` · `sitemap.xml` with content-true `<lastmod>` · `security.txt` · favicon set · apple-touch-icon · kill-switch SW.
 - AVIF-primary images >200KB · JS chunks ≤250KB gz.
@@ -113,6 +113,7 @@ The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` o
 - **Content + brand**: `[[copy-writing]]` · `[[citations]]` · `[[timeline-authenticity]]` · `[[i18n-by-demographics]]` · `[[thin-source-amplification]]`
 - **Forms + comms**: `[[email-deliverability]]` (every-form gate)
 - **Architecture + security**: `[[projectsites-cloudflare-first]]` (CF infra LAW — always) · `[[ai-agent-security]]` (when the Phase-4 AI-native spiral ships chat-as-UI / tool-calls / agents) · `[[feature-flags]]` (every new feature flagged) · `[[production-observability-default-on]]` (analytics)
+- **Per-page/site/entity gates**: `[[website-page-and-site-gates]]` (SEO head · webmanifest/robots/sitemap/security.txt · lightbox · Maps · clickable-entity linking · forms · timeline · Cmd+K — extracted from `[[always]]`, loads only on site prompts)
 - **Legal + compliance**: `[[legal-and-error-surfaces]]` (404/500 · privacy · cookie consent · accessibility statement · terms)
 - **Skills (numbered)**: `[[02-goal-and-brief]]` · `[[15-site-generation]]` · `[[16-cinematic-website-prime-directive]]` · `[[09-brand-and-content-system]]` · `[[10-experience-and-design-system]]` · `[[11-motion-and-interaction-system]]` · `[[12-media-orchestration]]` · `[[14-independent-idea-engine]]`
 - **Quality + deploy detail** (dropped for budget, but the manifest's gate thresholds are high-level — pull these for the spec): `[[07-quality-and-verification]]` (5-level pyramid: the detailed a11y/WCAG 2.2/skip-link/completeness gate specs + their validators) · `[[08-deploy-and-runtime-verification]]` (the deploy + CDN-purge + prod-E2E + rollback runtime checks behind `[[verification-loop]]`)
@@ -125,6 +126,6 @@ The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` o
 
 ## See
 
-- `[[always]]` — the per-page/per-site/per-entity detail this manifest indexes
+- `[[website-page-and-site-gates]]` — the per-page/per-site/per-entity detail this manifest indexes (extracted from `[[always]]` so it loads only on site prompts)
 - `[[website-build-doctrine]]` — Phase -1 → Phase 8 sequence
 - `[[source-site-enhancement]]` — when the prompt names an existing domain to rebuild
