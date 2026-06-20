@@ -539,7 +539,10 @@ def embedding_topk(prompt: str, conn: sqlite3.Connection, k: int = 8) -> list[tu
 # Tier budget (#4)
 # -----------------------------------------------------------------------------
 REASON_PRIORITY_BUMP = {
-    "tier-1 always": 0,         # tier-1 essentials (keep at base)
+    "tier-1 always": -100,      # IMMUTABLE — priority:1 reserved before all else,
+                                # never budget-dropped (the always-load-budget gate
+                                # keeps this set <38K so it always fits). Was 0, which
+                                # let trigger-match(-3) outrank it and drop `always`.
     "trigger-match": -3,        # explicit phrase = strong signal — loads first
     "pack:": -3,                # pack named in prompt — loads first
     "semantic": -2,             # embedding top-K — high confidence
