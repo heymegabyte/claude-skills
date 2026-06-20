@@ -115,6 +115,11 @@ The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` o
 - **Architecture + security**: `[[projectsites-cloudflare-first]]` (CF infra LAW — always) · `[[ai-agent-security]]` (when the Phase-4 AI-native spiral ships chat-as-UI / tool-calls / agents) · `[[feature-flags]]` (every new feature flagged) · `[[production-observability-default-on]]` (analytics)
 - **Legal + compliance**: `[[legal-and-error-surfaces]]` (404/500 · privacy · cookie consent · accessibility statement · terms)
 - **Skills (numbered)**: `[[02-goal-and-brief]]` · `[[15-site-generation]]` · `[[16-cinematic-website-prime-directive]]` · `[[09-brand-and-content-system]]` · `[[10-experience-and-design-system]]` · `[[11-motion-and-interaction-system]]` · `[[12-media-orchestration]]` · `[[14-independent-idea-engine]]`
+- **Build-feature catalog** (`06-build-and-slice-loop` submodules — the whole skill drops for budget on a site prompt, so pull the relevant ones by site type):
+  - _Every site_: `[[contact-forms-and-endpoints]]` · `[[custom-error-pages]]` · `[[pwa-kit]]` · `[[empty-states-and-loading]]` · `[[microcopy-library]]` · `[[easter-eggs]]` · `[[keyboard-shortcuts-and-command-palette]]`
+  - _Content / marketing_: `[[blog-and-content-engine]]` (RSS/pagination/categories/longtail) · `[[site-search]]` (AI Search hybrid) · `[[ai-chat-widget]]` (mandatory on service/product) · `[[internationalization]]`
+  - _SaaS / app_: `[[onboarding-and-first-run]]` · `[[notification-center]]` · `[[data-tables]]` · `[[rich-text-editor]]` · `[[file-uploads-and-storage]]` · `[[admin-dashboard]]` · `[[realtime-and-websockets]]` · `[[webhook-system]]` · `[[copilot-and-ai-features]]` · `[[chat-native-dashboard]]`
+  - _Donation / commerce_: `[[stripe-first-donations]]` · `[[domain-provisioning]]`
 - **Final pass**: `[[supreme-polish]]`
 
 ## See
