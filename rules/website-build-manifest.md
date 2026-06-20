@@ -1,6 +1,6 @@
 ---
 name: "website-build-manifest"
-priority: 2
+priority: 1
 pack: "website-build"
 triggers:
   - "build a website"
@@ -17,6 +17,8 @@ paths:
 # Website Build Manifest
 
 The single acceptance checklist a one-line projectsites.dev / Emdash website prompt must satisfy before DONE. Loads only on website prompts (pack `website-build`) — not always-on. Each item links the rule carrying the detail; this file is the index, not the spec.
+
+> **Why priority 1**: the `website-build` pack (~25 members, >40K tokens) exceeds the router's load budget, so a site prompt can't load every member — the router ranks + truncates. This lean index loads FIRST and cross-links the full requirement set, so completeness survives truncation: load this, then pull each detail rule on demand. Keeping it small is the routing optimization — never inline spec here.
 Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]` `[[source-site-enhancement]]` `[[emdash-fleet]]` `[[verification-loop]]`
 
 ## Phase order (one prompt → full product)
