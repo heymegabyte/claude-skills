@@ -1,6 +1,6 @@
 ---
 name: "observability-and-growth"
-description: "Full instrumentation from day one. PostHog consolidates product analytics + feature flags + error tracking (one platform, one bill). GA4 via GTM (14-step automation, custom dimensions over events, server-side tagging). Sentry (deep error tracking + performance). Stripe (webhook-first with idempotent processing). Listmonk on Coolify (newsletters via Resend SMTP relay). PLG 7-layer framework. Programmatic SEO (5 page types). Incident auto-remediation via Sentry→Inngest pipeline. AI search (GEO) awareness. Local business conversions (phone_click, direction_click, form_submit, booking_click) with CRO patterns for both SaaS and local."
+description: "Full instrumentation from day one. PostHog consolidates product analytics + feature flags + error tracking (one platform, one bill). GA4 via GTM (14-step automation, custom dimensions over events, server-side tagging). Sentry (deep error tracking + performance). Stripe (webhook-first with idempotent processing). Listmonk on Coolify (newsletters via Amazon SES SMTP relay). PLG 7-layer framework. Programmatic SEO (5 page types). Incident auto-remediation via Sentry→Inngest pipeline. AI search (GEO) awareness. Local business conversions (phone_click, direction_click, form_submit, booking_click) with CRO patterns for both SaaS and local."
 metadata:
   version: "2.1.0"
   updated: "2026-05-03"
@@ -93,7 +93,7 @@ Per `_kernel/standards.md#integrations`:
 
 ## Listmonk (newsletter — self-hosted on Coolify)
 
-- Resend SMTP relay (`LISTMONK_FROM_EMAIL`)
+- Amazon SES SMTP relay (`LISTMONK_FROM_EMAIL`)
 - `listmonkSendTx(env, { templateAlias, ... })` via KV-cached alias→id map
 - Templates in `emails/*.html` synced via `scripts/listmonk-sync.mjs`
 - Auth: `Authorization: token <user>:<key>` (Listmonk 3.x API-user pattern)
