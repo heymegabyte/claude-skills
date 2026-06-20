@@ -16,6 +16,8 @@ paths:
 
 Execute the mandatory Phase -1→Phase 8 build sequence: competitor research → context saturation → build → enrichment → AI-native spiral → ship; skipping any phase is a build fail.
 
+> **Acceptance index**: `[[website-build-manifest]]` is the single checklist of every technical gate a finished site must clear (per-page, per-site, cinematic, architecture, quality). Consult it as the spine; load each detail rule on demand. This doctrine is the *sequence*, the manifest is the *gate list*.
+
 ## Phase -1 — Competitor Research (gate -1)
 
 Full protocol: `competitor-research.md`.

@@ -20,6 +20,8 @@ paths:
 
 One-line prompt → satisfy all 100 build-breaking rules across 10 categories before DONE.
 
+> **Start here**: `website-build-manifest` is the cross-linked acceptance index for the whole one-prompt build (phase order, per-page/per-site gates, architecture, quality bar, `EMDASH_*` config). Load it first, then this skill's 100 rules + the detail rules it links — the manifest survives router budget-truncation, this skill carries the cinematic specifics.
+
 ## 1. Cinematic Visual Doctrine (1-10)
 
 1. Dark-first (`#060610` base) + bold accent (`#00E5FF` / `#7C3AED` / `#50AAE3`) — never neutral grey
