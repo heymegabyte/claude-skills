@@ -12,9 +12,9 @@ paths:
   - "org:website_build"
 ---
 
-# Website Completeness Checklist (50 — none optional)
+# Website Completeness Checklist (62 — none optional)
 
-The flat, scannable "is it actually finished?" gate every one-line site build runs BEFORE declaring done. The `[[website-build-manifest]]` is the acceptance index (cross-links to detail); THIS is the literal 50-point checklist — a site ships only when all 50 pass. Each maps to a verifier (Playwright/Lighthouse/axe/build-gate) — assert, never assume. Grounded in `[[always]]` · `[[website-page-and-site-gates]]` · `[[legal-and-error-surfaces]]` · `[[verification-loop]]`.
+The flat, scannable "is it actually finished?" gate every one-line site build runs BEFORE declaring done. The `[[website-build-manifest]]` is the acceptance index (cross-links to detail); THIS is the literal 62-point checklist — a site ships only when all 62 pass. Each maps to a verifier (Playwright/Lighthouse/axe/build-gate) — assert, never assume. Grounded in `[[always]]` · `[[website-page-and-site-gates]]` · `[[legal-and-error-surfaces]]` · `[[verification-loop]]`.
 
 ## Routes & navigation
 
@@ -86,9 +86,24 @@ The flat, scannable "is it actually finished?" gate every one-line site build ru
 45. `/privacy` + cookie-consent gate (if analytics/cookies) + `/terms` (if accounts/payments) — footer-linked every page.
 46. GDPR/CCPA deletion path implemented if any PII is stored.
 
+## Content depth & substance
+
+47. Every indexable CONTENT page ≥ 800 words of REAL substance (home/about/services/location/landing/blog). Thin pages read as incomplete AND are invisible to SEO/AI-search. NEVER pad to hit it (`[[copy-writing]]` anti-slop) — if 800 feels like a stretch, the page is MISSING SECTIONS: add real FAQ / process / proof / specifics / examples, don't inflate sentences.
+48. Build-gate counts rendered body words per route and FAILS any content page < 800. Utility-page floors (lower, never empty): contact ~300 + map + form · legal/privacy/terms as long as needed · 404/thank-you concise.
+49. Homepage ≥ 6 distinct sections (hero · value prop · social proof · services/offerings · FAQ-or-process · final CTA) — never a hero + one paragraph.
+50. Unique `<title>` AND meta description per route — no two pages share either (duplicate = build fail).
+51. ≥ 1 primary CTA above the fold on every page; every page has an unmistakable next action.
+52. Every service/product/program named in nav has its OWN dedicated ≥ 800-word page — never a list item with no destination.
+53. ≥ 5 real FAQ Q&A on the homepage + each service page, with FAQPage JSON-LD (real questions only, never fabricated).
+54. ≥ 3 real, attributed testimonials/proof points if any social proof is claimed — zero invented quotes.
+55. No orphan pages — every route reachable from the global nav or footer within 2 clicks.
+56. Content/blog seeded with ≥ 3 real posts (≥ 800 words each, longtail-keyphrase-targeted) when the org type warrants content marketing.
+57. Every page targets ONE primary keyphrase (in title + H1 + first 100 words + URL); no two pages cannibalize the same keyphrase.
+58. Scannable: a subhead every ~150 words, lists/tables where they aid comprehension, no wall-of-text block > 300 words without a subhead.
+
 ## Verification (no "done" without these)
 
-47. Deployed to a real URL + CDN purged — "build succeeded" ≠ done.
-48. Playwright E2E on the LIVE url: load home → navigate via clicks → submit a form → assert content + 0 console errors, at 6 breakpoints.
-49. Live Lighthouse: Perf ≥ 90 / A11y ≥ 95 / SEO ≥ 95 / BP ≥ 95 · axe 0 · AI-vision ≥ 9/10 (thresholds authoritative from `~/.claude` `EMDASH_*` env — never hardcode looser).
-50. Per-route Self-Verify Statement (what shipped + each gate green) before announcing done.
+59. Deployed to a real URL + CDN purged — "build succeeded" ≠ done.
+60. Playwright E2E on the LIVE url: load home → navigate via clicks → submit a form → assert content + 0 console errors, at 6 breakpoints.
+61. Live Lighthouse: Perf ≥ 90 / A11y ≥ 95 / SEO ≥ 95 / BP ≥ 95 · axe 0 · AI-vision ≥ 9/10 (thresholds authoritative from `~/.claude` `EMDASH_*` env — never hardcode looser).
+62. Per-route Self-Verify Statement (what shipped + each gate green) before announcing done.
