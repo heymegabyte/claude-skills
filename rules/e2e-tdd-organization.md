@@ -130,6 +130,16 @@ export default defineConfig({
 - Healer auto-fixes broken selectors after refactors (always run before manual rewrite).
 - `browser.bind()` for MCP interop; `page.screencast` for video receipts on flaky specs.
 
+## Failure triage — verify EVERY red spec in isolation (never extrapolate)
+
+A spec that fails in a big parallel prod run is one of three things, and you only know which by **re-running that exact spec ALONE + curling its backing API**:
+
+- **Green in isolation → load-flake.** Only fails under peak parallel contention (chunk-fetch blips, edge pressure). Mitigate with `retries`, serial mode on heavy specs, or lower concurrency — do NOT touch the spec's assertions.
+- **Red in isolation, API/page correct → STALE TEST.** The component was refactored and the selector no longer matches (table→`<li>`; `getByRole('complementary')` can't see an `aria-hidden` rail; the slash lives in `title`, not body text). Fix the selector to the current markup.
+- **Red in isolation, API/page broken → REAL BUG.** Curl the backing endpoint: a 500/404/empty payload is a production defect (schema drift, misrouted handler) — fix the code/migration, not the test.
+
+**Triage each failing spec individually. NEVER declare a batch "all flaky" from spot-checking a few.** Reference incident (njsk.org pass-228→230): a combined admin run showed 9 failures; pass-228 verified 3 spec-types, found them flaky, and wrongly extrapolated "no real admin bugs." Isolating the REST exposed a real prod 500 — `mcp_catalog` missing `created_at`/`updated_at` → seed INSERT `D1_ERROR` → empty MCP grid — plus two stale selectors. Red-in-isolation + curl-the-API before calling anything a flake.
+
 ## Done definition (the gate)
 
 - Every new feature → spec written FIRST + RED + then GREEN
