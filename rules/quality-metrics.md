@@ -36,8 +36,8 @@ Define minimum pass/fail thresholds for readability, performance, accessibility,
 - No single chunk > 250KB gz (code-split React.lazy + manualChunks)
 - CSS ≤ 50KB gz
 - Fonts ≤ 100KB woff2 preload + unicode-range subset
-- Images ≤ 500KB total, largest image ≤ 200KB
-- PNG > 200KB → re-encode **AVIF primary** (20-30% smaller than WebP, 94% browser support) + WebP fallback + JPEG legacy
+- Image sizes are **use-based, not a fixed per-image cap** — see `image-optimization` (icons 5–50KB · cards 40–120KB · content 80–250KB · hero 250–500KB · fullscreen 400–900KB when justified). Page budget: <1MB above-fold, <2MB total.
+- Photos → **AVIF primary** (20-30% smaller than WebP, 94% browser support) + WebP fallback + JPEG legacy; SVG for logos/icons. Responsive `srcset` 320/640/960/1280/1920w. Treat oversized-for-use images as a perf bug.
 - Drop JPEG XL (10% support)
 - og-image 1200×630 ≤ 100KB BRANDED CARD (not raw photo)
 - apple-touch-icon 180×180 mandatory
