@@ -29,6 +29,7 @@ A site is NOT shippable without its legal + error surfaces. The build doctrine m
 
 - Dedicated `/privacy` page: what's collected (analytics events, form fields, IP), why, retention, the exact third parties used (PostHog, Resend, Cloudflare, Turnstile, Square/Stripe), and user rights (access / delete / port / opt-out).
 - Footer link on EVERY page · effective/updated date · contact channel for data requests.
+- **Deletion right impl: `[[right-to-deletion]]`** — once a form or account stores PII in D1 (a contact-form submission is PII), GDPR Art. 17 / CCPA require an automated deletion path (CF Workflows v2). State the right here; build it from that rule (its `gdpr`/`rtbf` triggers don't fire on a bare site prompt).
 
 ## Cookie / tracking consent (GDPR + ePrivacy + CCPA/CPRA)
 
