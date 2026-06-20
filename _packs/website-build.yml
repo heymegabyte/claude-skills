@@ -25,3 +25,4 @@ members:
   - rules/cinematic-ui-patterns
   - rules/gorgeous-by-default
   - rules/email-deliverability
+  - rules/shadcn-design-system

@@ -9,3 +9,4 @@ members:
   - rules/gorgeous-by-default
   - rules/text-contrast
   - rules/copy-writing
+  - rules/shadcn-design-system
