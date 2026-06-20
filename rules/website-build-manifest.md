@@ -60,6 +60,7 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 - `site.webmanifest` (screenshots/shortcuts/share_target) · split-by-purpose `robots.txt` · `humans.txt` · `sitemap.xml` with content-true `<lastmod>` · `security.txt` · favicon set · apple-touch-icon · kill-switch SW.
 - AVIF-primary images >200KB · JS chunks ≤250KB gz.
 - Contact/HQ page with address → MANDATORY branded Google Map pointed at the exact address.
+- **Legal + error surfaces (`[[legal-and-error-surfaces]]`)**: branded server-status 404 + 500 · `/privacy` (mandatory once analytics/forms/cookies exist — they do) · consent gate for analytics (PostHog/GA fire only post opt-in) · `/accessibility` statement (ADA/EAA) · `/terms` when accounts/payments/UGC · footer links Privacy + Accessibility on every page. Build-fail: analytics with no consent gate, or PII form with no `/privacy`.
 
 ## Cinematic + interaction (skill 16, `[[website-build-doctrine]]`)
 
@@ -112,6 +113,7 @@ The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` o
 - **Content + brand**: `[[copy-writing]]` · `[[citations]]` · `[[timeline-authenticity]]` · `[[i18n-by-demographics]]` · `[[thin-source-amplification]]`
 - **Forms + comms**: `[[email-deliverability]]` (every-form gate)
 - **Architecture + security**: `[[projectsites-cloudflare-first]]` (CF infra LAW — always) · `[[ai-agent-security]]` (when the Phase-4 AI-native spiral ships chat-as-UI / tool-calls / agents) · `[[feature-flags]]` (every new feature flagged) · `[[production-observability-default-on]]` (analytics)
+- **Legal + compliance**: `[[legal-and-error-surfaces]]` (404/500 · privacy · cookie consent · accessibility statement · terms)
 - **Skills (numbered)**: `[[02-goal-and-brief]]` · `[[15-site-generation]]` · `[[16-cinematic-website-prime-directive]]` · `[[09-brand-and-content-system]]` · `[[10-experience-and-design-system]]` · `[[11-motion-and-interaction-system]]` · `[[12-media-orchestration]]` · `[[14-independent-idea-engine]]`
 - **Final pass**: `[[supreme-polish]]`
 

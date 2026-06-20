@@ -19,3 +19,4 @@ members:
   - rules/text-contrast
   - rules/gorgeous-by-default
   - rules/shadcn-design-system
+  - rules/legal-and-error-surfaces
