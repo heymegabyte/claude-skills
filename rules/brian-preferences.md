@@ -92,8 +92,9 @@ Every URL clickable, every URL specific.
 
 ## Git policy
 
-- **Side repos** (agentskills, saas-starter, plugins, tools) → always commit + push to main/master automatically.
-- **Emdash projects** (`~/emdash-projects/*`) → commit freely, never push. Brian pushes from frontend/PR.
+- **ALWAYS auto-push — never hold work, never emit "NEEDS BRIAN" for a `git push`.** Commit AND `git push` to the remote automatically, same turn, for EVERY Brian repo: side repos (agentskills, saas-starter, plugins, tools) AND project repos under `~/emdash/repositories/*` (njsk.org, etc.). A push is autonomous infrastructure, never a human-gated step. (Brian directive 2026-06-19 — corrected the old "never push emdash projects" stance after it stranded 229 commits + a "NEEDS BRIAN: push" line.)
+- **Deploy = build + `wrangler deploy` + push, autonomously.** "Deploy latest" / any deploy means ship it AND push the source — don't ask, don't defer.
+- **Only `~/emdash-projects/*`** (the legacy frontend-managed tree, if any) stays Brian-pushed-from-PR. Everything in `~/emdash/repositories/*` is auto-push.
 - `How to improve?` → always find 50 more things, explore every branch, never cap effort.
 
 ## Skill/Rule File Format
