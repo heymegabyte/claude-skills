@@ -45,11 +45,12 @@ if (!existsSync(DB) || !existsSync(ROUTER)) {
   process.exit(0);
 }
 
-let selected;
+let selected, fp;
 try {
   const out = execFileSync('python3', [ROUTER, 'route', PROMPT, '--cwd', '/tmp'], { encoding: 'utf8' });
   const d = JSON.parse(out);
   selected = new Set((d.selected || []).map((s) => s.id));
+  fp = d.fingerprint || {};
 } catch (err) {
   console.log(`=== route-health === SKIP (router not runnable: ${String(err).slice(0, 60)})`);
   process.exit(0);
@@ -59,13 +60,28 @@ const manifestSelected = selected.has('rules/website-build-manifest');
 const got = CRITICAL.filter((c) => selected.has(c));
 const missing = CRITICAL.filter((c) => !selected.has(c));
 
-console.log('=== route-health (manifest must survive truncation on a site prompt) ===');
-console.log(`  manifest selected: ${manifestSelected ? '✓' : '✗ DROPPED'} · critical selected: ${got.length}/${CRITICAL.length}`);
+// Intent-detection keystone: a one-line website prompt must set is_website_build=True so
+// every org:website_build-scoped rule (CF-LAW, csp-trusted-types, secrets, cinematic, copy,
+// polish, the supervisors) loads. If this regresses, the manifest still loads via pack so the
+// check above passes — but ALL org-scoped detail silently stops loading. Assert a representative
+// org-scoped rule is selected to catch that.
+const intentFired = fp.is_website_build === true;
+const ORG_SCOPED_PROBE = 'rules/projectsites-cloudflare-first'; // org:website_build — must load on a site prompt
+const orgScopedLoaded = selected.has(ORG_SCOPED_PROBE);
+
+console.log('=== route-health (manifest survives truncation + intent-detection fires on a site prompt) ===');
+console.log(`  manifest selected: ${manifestSelected ? '✓' : '✗ DROPPED'} · critical: ${got.length}/${CRITICAL.length} · is_website_build: ${intentFired ? '✓' : '✗'} · org-scoped loads: ${orgScopedLoaded ? '✓' : '✗'}`);
 for (const m of missing) console.error(`  ✗ not selected: ${m}`);
 
-// Fatal ONLY if the manifest itself is dropped — that breaks the whole recovery design.
-// A missing non-manifest critical node is a warning (recoverable via the manifest).
 if (CI && !manifestSelected) {
   console.error('\n  FATAL: website-build-manifest dropped for budget — recovery index unreachable. Trim tier-1 or pack, or strengthen its triggers.');
+  process.exit(1);
+}
+if (CI && !intentFired) {
+  console.error('\n  FATAL: is_website_build=False on a website prompt — intent-detection regressed. Every org:website_build-scoped rule (CF-LAW, csp, secrets, cinematic…) silently stops loading. Check the prompt-intent block in cmd_route.');
+  process.exit(1);
+}
+if (CI && !orgScopedLoaded) {
+  console.error(`\n  FATAL: ${ORG_SCOPED_PROBE} (org:website_build) not loaded on a website prompt — org-scoping broke. Foundational architecture/security detail is unreachable.`);
   process.exit(1);
 }
