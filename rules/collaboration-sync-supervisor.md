@@ -8,7 +8,7 @@ triggers:
   - "collab"
   - "multiplayer"
 paths:
-  - "*"
+  - "concern:realtime"
 ---
 
 # Collaboration + Sync Supervisor

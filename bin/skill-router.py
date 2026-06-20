@@ -379,6 +379,10 @@ def cmd_fingerprint(cwd: str | None = None) -> dict:
                 fp["concerns"].append("hono-stack")
             if "playwright" in deps or "@playwright/test" in deps:
                 fp["concerns"].append("e2e-testing")
+            if any(d in deps for d in ("@sentry/node", "@sentry/cloudflare", "posthog-node", "posthog-js", "@opentelemetry/api", "@axiomhq/js")):
+                fp["concerns"].append("observability")
+            if any(d in deps for d in ("yjs", "@automerge/automerge", "@liveblocks/client", "partykit", "partysocket")):
+                fp["concerns"].append("realtime")
             fp["languages"].append("typescript" if (cwd_p / "tsconfig.json").exists() else "javascript")
         except Exception:
             pass

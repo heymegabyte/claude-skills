@@ -7,7 +7,7 @@ triggers:
   - "logging"
   - "tracing"
 paths:
-  - "*"
+  - "concern:observability"
 ---
 
 # Observability + Ops Supervisor
