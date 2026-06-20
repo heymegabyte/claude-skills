@@ -217,6 +217,15 @@ logHeader "22. manifest-recovery"
 runGate "manifest-recovery" "check-manifest-recovery --ci" \
   node "$SKILLS_ROOT/bin/check-manifest-recovery.mjs" --ci
 
+# Hard gate 23 (Jun-2026) — route-health. The RUNTIME complement to static gates 21/22:
+# routes the live router on a canonical site prompt and asserts website-build-manifest
+# lands in `selected` (not dropped for budget) — the linchpin of the recovery design.
+# Skips gracefully when no live skills.db (CI/headless); runs in local pre-commit where
+# routing-affecting edits are made.
+logHeader "23. route-health"
+runGate "route-health" "check-route-health --ci" \
+  node "$SKILLS_ROOT/bin/check-route-health.mjs" --ci
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.
