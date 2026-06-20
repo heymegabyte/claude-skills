@@ -6,4 +6,3 @@ members:
   - rules/angular-large-app-supervisor
   - rules/spartan-ui-only
   - rules/spartan-ui-design-system
-  - rules/frontend-stack
