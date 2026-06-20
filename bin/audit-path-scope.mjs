@@ -30,10 +30,15 @@ for (const f of readdirSync(RULES).filter(x => x.endsWith('.md'))) {
   const starPath = /paths:\s*[\s\S]*?-\s*"\*"/.test(fm) || /paths:\s*\[\s*"\*"\s*\]/.test(fm);
   if (!starPath) continue;
   universal++;
-  // count triggers
+  // count triggers + read pack: core-pack rules are GENUINELY universal (apply to
+  // all work) — `["*"]` is correct for them. Only a DOMAIN-packed rule claiming
+  // universal paths is a true over-scope candidate (per validator-precision-discipline).
+  const pack = (fm.match(/pack:\s*"?([a-z-]+)"?/) || [])[1] || 'unknown';
   const tBlock = fm.match(/triggers:\s*([\s\S]*?)(?:\npaths:|\n[a-z_]+:|$)/);
   const triggers = tBlock ? (tBlock[1].match(/-\s*\S/g) || []).length : 0;
-  if (triggers >= 2) findings.push({ file: `rules/${f}`, triggers, kind: 'over-scoped-path', confidence: 'MEDIUM' });
+  if (triggers >= 2 && pack !== 'core') {
+    findings.push({ file: `rules/${f}`, pack, triggers, kind: 'over-scoped-path', confidence: 'MEDIUM' });
+  }
 }
 findings.sort((a, b) => b.triggers - a.triggers);
 
