@@ -121,7 +121,7 @@ The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` o
   - _Every site_: `[[contact-forms-and-endpoints]]` · `[[custom-error-pages]]` · `[[pwa-kit]]` · `[[empty-states-and-loading]]` · `[[microcopy-library]]` · `[[easter-eggs]]` · `[[keyboard-shortcuts-and-command-palette]]`
   - _Content / marketing_: `[[blog-and-content-engine]]` (RSS/pagination/categories/longtail) · `[[site-search]]` (AI Search hybrid) · `[[ai-chat-widget]]` (mandatory on service/product) · `[[internationalization]]`
   - _SaaS / app_: `[[onboarding-and-first-run]]` · `[[notification-center]]` · `[[data-tables]]` · `[[rich-text-editor]]` · `[[file-uploads-and-storage]]` · `[[admin-dashboard]]` · `[[realtime-and-websockets]]` · `[[webhook-system]]` · `[[copilot-and-ai-features]]` · `[[chat-native-dashboard]]`
-  - _Donation / commerce_: `[[stripe-first-donations]]` · `[[domain-provisioning]]`
+  - _Donation / commerce_: `[[payments-routing]]` (FIRST — Square vs Stripe decision: donations/POS/one-time→Square, recurring-SaaS→Stripe) · `[[stripe-first-donations]]` · `[[domain-provisioning]]`
 - **Final pass**: `[[supreme-polish]]`
 
 ## See
