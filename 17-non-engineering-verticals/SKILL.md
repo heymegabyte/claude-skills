@@ -24,7 +24,8 @@ triggers:
   - "roadmap"
   - "stakeholder"
 paths:
-  - "*"
+  - "business/"
+  - "docs/business/"
 ---
 
 # 17 — Non-Engineering Verticals
