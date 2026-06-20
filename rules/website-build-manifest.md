@@ -63,6 +63,16 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 - Every new feature behind a flag (`[[feature-flags]]`, default off) · JSON-LD per page (accurate types only).
 - Zero errors / stubs / TODO in shipped strings · zero unactioned Recs.
 
+## Build defaults — read from `~/.claude` env (AUTHORITATIVE — never hardcode looser)
+
+The harness config is the source of truth for site-build defaults; read these, don't assume:
+
+- `EMDASH_FRONTEND_DEFAULT` (react-19-vite) / `EMDASH_FRONTEND_FALLBACK` (angular-21) — stack choice per `[[frontend-stack]]`.
+- `EMDASH_SITE_MODE` (cinematic-pwa-spa) — the build profile (cinematic + PWA + SPA).
+- `EMDASH_PWA_REQUIRED` (true) — `[[web-manifest-system]]` PWA assets + kill-switch SW are mandatory.
+- `EMDASH_JSONLD_REQUIRED` (true) — JSON-LD per page (accurate types only).
+- `EMDASH_LIGHTHOUSE_MIN_PERF` (90) `_MIN_A11Y` (95) `_MIN_SEO` (95) `_MIN_BP` (95) · `EMDASH_AI_VISION_MIN` (9) · `EMDASH_AXE_MAX_VIOLATIONS` (0) — the quality bar above.
+
 ## Done definition (overrides generic gates for site prompts)
 
 - Deployed at real URL · every gate green · Self-Verify Statement per route · announced to user.
