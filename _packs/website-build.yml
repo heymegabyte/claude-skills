@@ -22,3 +22,4 @@ members:
   - rules/legal-and-error-surfaces
   - rules/website-page-and-site-gates
   - rules/website-completeness-checklist
+  - rules/build-validators-manifest

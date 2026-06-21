@@ -123,7 +123,7 @@ The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` o
   - _Content / marketing_: `[[blog-and-content-engine]]` (RSS/pagination/categories/longtail) · `[[site-search]]` (AI Search hybrid) · `[[ai-chat-widget]]` (mandatory on service/product) · `[[internationalization]]`
   - _SaaS / app_: `[[onboarding-and-first-run]]` · `[[notification-center]]` · `[[data-tables]]` · `[[rich-text-editor]]` · `[[file-uploads-and-storage]]` · `[[admin-dashboard]]` · `[[realtime-and-websockets]]` · `[[webhook-system]]` · `[[copilot-and-ai-features]]` · `[[chat-native-dashboard]]`
   - _Donation / commerce_: `[[payments-routing]]` (FIRST — Square vs Stripe decision: donations/POS/one-time→Square, recurring-SaaS→Stripe) · `[[stripe-first-donations]]` · `[[domain-provisioning]]`
-- **Completeness gate**: `[[website-completeness-checklist]]` (the flat 62-point "is it actually finished?" list — run before declaring done)
+- **Completeness gate**: `[[website-completeness-checklist]]` (the flat 62-point "is it actually finished?" list — run before declaring done) · `[[build-validators-manifest]]` (the machine validators that mechanically enforce those 62 points — scaffold ALL into build_validators.ts)
 - **Final pass**: `[[supreme-polish]]`
 
 ## See
