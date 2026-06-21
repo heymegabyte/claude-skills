@@ -34,6 +34,7 @@ Never write hand-rolled HTML files for any user-facing surface.
 - **TanStack Start** OR **vite-plugin-ssr / vike** OR **Vite SSG (`vite-ssg`)** for SSR/SSG
   - Default: `vite-ssg` for marketing sites (prerender at build → static HTML + hydration)
   - Dashboards w/ auth: TanStack Start (server functions + SSR streaming)
+  - **Escape hatch for an EXISTING client SPA you can't cheaply convert (`<BrowserRouter>`, ~dozens of `window`-using components): browser-prerender (react-snap pattern).** A postbuild step serves `dist/` + runs the built app in headless Chromium (Playwright) per route, saving the fully-rendered HTML → `dist/<route>/index.html`. Captures body content + per-route head + JSON-LD with ZERO component/SSR-compat changes (no `window`-guarding). Proven on `template.projectsites.dev` (PR #4): `/about` `#root` 0→138 words server-side. Needs Chromium at build (run in CI/GHA, not a Chromium-less edge build). Satisfies the server-rendered-body gate when a full SSG migration is too costly.
 - **Tailwind v4** CSS-first config in `app.css`
 - **shadcn/ui** (Radix primitives) — copied in, not installed; THE React design-system foundation per `[[shadcn-design-system]]` (parallel to Spartan UI for Angular below). NO MUI/Chakra/Ant.
 - **TypeScript 5.9+** strict
