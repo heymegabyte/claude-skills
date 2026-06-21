@@ -32,6 +32,7 @@ The per-page / per-site / per-entity technical gates every projectsites.dev / Em
   - Gate: RAW-HTTP spec (`request.get`, no JS) asserting the server shell — a post-hydration DOM check passes even when the shell is wrong.
   - Incident: njsk.org pass-10 (site-wide `canonical=/` on all 32 routes).
 - JSON-LD per page only when accurate. WebPage is floor; add Organization/BreadcrumbList/FAQPage/Person/Product/Service ONLY when describing real entities. Never pad.
+  - **Must be SERVER-rendered in the raw HTML — NEVER client-injected only.** A client React `<JsonLd>` component (post-hydration) is INVISIBLE to Googlebot/ChatGPT/Perplexity rich-results parsers, exactly like a client-only `<head>` (same incident class). On a prerendered/SSG route it ships in the static HTML; on a client SPA, inject it per-route via the same Worker `HTMLRewriter`/prerender that sets the head. Gate: RAW-HTTP `curl` (no JS) must show the `<script type="application/ld+json">` per route.
 - FAQPage only when real Q&A exists. Don't fabricate.
 - OG 1200×630 ≤100KB **branded card** (NOT scraped photo)
 - 2+ internal links, 1+ outbound

@@ -59,7 +59,7 @@ The flat, scannable "is it actually finished?" gate every one-line site build ru
 ## SEO / GEO
 
 29. Title 50–60 + meta desc 120–156 + canonical on every route.
-30. JSON-LD per page, accurate types only (WebPage floor; Organization/LocalBusiness/FAQPage only when real).
+30. JSON-LD per page, accurate types only (WebPage floor; Organization/LocalBusiness/FAQPage only when real) — **SERVER-rendered in the raw HTML, never client-injected only** (client `<JsonLd>` is invisible to crawlers, same as a client-only head). RAW-HTTP curl must show `application/ld+json` per route.
 31. `sitemap.xml` (content-true `lastmod`) + AI-split `robots.txt` + `humans.txt` + `.well-known/security.txt`.
 32. 2+ internal links + 1+ outbound authority link per content page.
 33. OG + Twitter card per route, validated against Rich Results.
