@@ -22,6 +22,8 @@ The canonical list of build-gate validators a generated projectsites.dev / Emdas
 - **validate-links** — crawl `dist/`; every internal `<a href>` resolves to a real route (200). Fail `routes.dead_link`. (#1)
 - **validate-page-set-completeness** — every org-type standard route exists (nonprofit floor 14+, etc.). Fail `routes.page_missing`. (#2)
 - **validate-route-metadata** — RAW-HTTP per route: unique server-rendered title/desc/canonical/OG, no shared index head. Fail `meta.client_only` / `meta.duplicate`. (#3, #50)
+- **validate-body-content** — RAW-HTTP per route: the static HTML `<body>` contains the real page content (an `<h1>` + a meaningful body text length), NOT an empty `<div id="root">`. A client-only SPA fails this — its content is invisible to crawlers/AI-search. Fail `ssr.empty_body`. (#3)
+- **validate-ssr-head** — RAW-HTTP: routes don't all share the homepage head (SPA-fallback + no prerender + no edge rewriter = collapse). Fail `seo.client_only_head`. (#3)
 - **validate-no-orphans** — every route reachable from nav/footer within 2 clicks. Fail `routes.orphan`. (#55)
 - **validate-error-pages** — `/404` returns 404 + branded; error boundary present. Fail `routes.error_page_missing`. (#6)
 

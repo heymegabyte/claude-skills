@@ -25,8 +25,9 @@ The per-page / per-site / per-entity technical gates every projectsites.dev / Em
 - Meta desc 120-156 chars
 - One H1 in HTML shell (prerender)
 - Canonical
-- **`<head>` MUST be delivered server-side per-route, NEVER client-only.**
+- **`<head>` AND `<body>` content MUST be delivered server-side per-route, NEVER client-only.**
   - Client `PageHead`/Helmet (SPA, post-hydration) is INVISIBLE to Googlebot/ChatGPT/Perplexity/social scrapers — they read the raw shell.
+  - **Same for the BODY**: a client SPA serves an empty `<div id="root">` in the raw HTML → crawlers + AI-search see NO page content, only the shell. Prerender/SSG (`vite-ssg`, default per `[[frontend-stack]]`) or SSR so the raw-HTTP body holds the real H1 + copy per route. Gate: RAW-HTTP curl shows the page's H1 + body text, not an empty root.
   - Non-prerendered routes falling back to one `index.html` ship the HOMEPAGE title + `canonical=/` everywhere → whole site collapses to one indexable URL.
   - Fix: Worker `HTMLRewriter` keyed on `getMeta(pathname)` rewrites title/desc/og/twitter/canonical/`<html lang>` per route (base + locale, one source of truth).
   - Gate: RAW-HTTP spec (`request.get`, no JS) asserting the server shell — a post-hydration DOM check passes even when the shell is wrong.

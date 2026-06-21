@@ -20,7 +20,7 @@ The flat, scannable "is it actually finished?" gate every one-line site build ru
 
 1. Every nav/footer/CTA/in-body link resolves to a real route returning 200 — crawl the build; any internal 404 = build fail. No `#`/`javascript:void` placeholders.
 2. Generate the FULL standard page set for the org type (never a single-page stub) — e.g. nonprofit floor 14+ routes; local-business: home/about/services/contact/reviews/+service pages.
-3. Every route serves a per-pathname `<head>` (title/desc/canonical/OG) via Worker HTMLRewriter — never one shared index.html head.
+3. Every route serves a per-pathname `<head>` (title/desc/canonical/OG) via Worker HTMLRewriter — never one shared index.html head. AND the raw-HTTP `<body>` contains the REAL page content (H1 + copy), NOT an empty `<div id="root">` — a client-only SPA ships an empty body that crawlers + AI-search can't read (the strongest form of the rule). Prerender/SSG (`vite-ssg`) or SSR; RAW-HTTP curl (no JS) must show the page's H1 + body text per route.
 4. Global nav + footer present and identical on EVERY page — no page missing chrome.
 5. Breadcrumbs + BreadcrumbList JSON-LD on every page below top level.
 6. Branded 404 (nav+search+links, real 404 status) + 500 error boundary (on-brand, no stack trace).
