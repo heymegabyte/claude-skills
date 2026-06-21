@@ -12,7 +12,7 @@ triggers:
   - "cache miss"
   - "warm cache"
 paths:
-  - "*"
+  - "concern:ai-features"
 ---
 
 # Prompt Cache Strategy (Deep Dive)
