@@ -41,6 +41,7 @@ The canonical list of build-gate validators a generated projectsites.dev / Emdas
 - **validate-assets** — every internal asset ref resolves to a real file; favicons/webmanifest/OG present. Fail `assets.missing`. (#23, #25)
 - **validate-image-formats** — AVIF-primary + srcset; no PNG > 200KB; LCP img has `fetchpriority`+preload. Fail `assets.unoptimized`. (#24, #27)
 - **validate-no-cdn-hotlinks** — no hotlinked external images; all self-hosted/R2. Fail `assets.hotlink`. (#25)
+- **validate-og-cards** — RAW-HTTP per route: `og:image` (+`twitter:image`) resolves to a real 1200×630 file < 200KB, and no two routes share the same OG image (per-route social card, not one shared default). Fail `assets.og_missing` / `assets.og_shared`. Generator HOW in `[[image-quality]]` § Programmatic OG cards. (#33)
 - **perf-budget** — JS chunk ≤ 250KB gz; per-route asset budget. Fail `perf.budget_exceeded`. (#28)
 - **validate-cls** — every img/embed has explicit dimensions or `aspect-ratio`. Fail `perf.cls_risk`. (#21)
 
