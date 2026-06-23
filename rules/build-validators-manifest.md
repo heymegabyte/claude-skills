@@ -30,6 +30,7 @@ The canonical list of build-gate validators a generated projectsites.dev / Emdas
 ## Content & depth
 
 - **validate-no-placeholder** — zero `lorem|TODO|\[placeholder\]|Untitled|Click here|Learn more` in shipped HTML. Fail `content.placeholder`. (#7, #8, #9)
+- **validate-no-fabricated-people** — every named person (bio, testimonial author, team member, quote attribution) traces to a sourced fact in `_research.json`/`_citations.json`; no invented names, roles, or quotes. A real projectsites build ships this (`validate-no-fabricated-people.mjs`) — fabricated people are a correctness + legal/defamation risk. Fail `content.fabricated_person`. (#10, #54)
 - **validate-word-count** — rendered body words per route ≥ 800 for content pages (contact ~300, legal/utility exempt). Fail `content.thin_page`. (#47, #48)
 - **validate-homepage-sections** — homepage has ≥ 6 distinct `<section>`. Fail `content.homepage_thin`. (#49)
 - **validate-faq** — ≥ 5 Q&A + FAQPage JSON-LD on home + each service page. Fail `content.faq_missing`. (#53)
