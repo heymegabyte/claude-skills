@@ -9,7 +9,7 @@ triggers:
   - "missing rules"
   - "principle audit"
 paths:
-  - "*"
+  - "concern:observability"
 ---
 
 # Principles Incident Log

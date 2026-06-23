@@ -36,72 +36,60 @@ Every parallel fan-out assigns each work unit to the most-specialized agent. Nev
 
 ### Architecture (map to `architect` / `meta-orchestrator` + CF/Angular/Hono/Zod brief)
 
-| Archetype | Purpose · triggers · non-goals · inputs · outputs · verification · maps-to |
-|---|---|
-| cloudflare-architect | CF-primitive selection (Workers/D1/R2/KV/DO/Queues) · new edge surface · NOT impl · brief+constraints · ADR+binding plan · drift-detection · `architect`+CF |
-| angular-ssr-architect | Angular21+Nx+SSR-on-Workers · new app/feature shell · NOT styling · brief+routes · route+hydration plan · typecheck · `architect`+Angular |
-| saas-platform-architect | tenancy/entitlements/flags topology · new SaaS area · NOT UI · brief+pricing · platform ADR · drift-detection · `architect` |
-| multi-tenant-systems-architect | isolation + RBAC boundaries · cross-tenant data · NOT auth-impl · schemas · isolation plan · review · `meta-orchestrator` |
-| api-contract-architect | Hono+Zod+OpenAPI contracts · new endpoint family · NOT handlers · entities · typed contract · zod-validate · `architect`+Hono/Zod (`contract-first-ai.md`) |
-| database-data-modeler | D1/Neon schema + migrations · new tables · NOT seeding · entities · migration+ERD · migration dry-run · `architect`/`migration-agent` |
+- **cloudflare-architect** — CF-primitive selection (Workers/D1/R2/KV/DO/Queues) · new edge surface · NOT impl · ADR+binding plan · drift-detection → `architect`+CF
+- **angular-ssr-architect** — Angular21+Nx+SSR-on-Workers · new app/feature shell · NOT styling · route+hydration plan · typecheck → `architect`+Angular
+- **saas-platform-architect** — tenancy/entitlements/flags topology · new SaaS area · NOT UI · platform ADR · drift-detection → `architect`
+- **multi-tenant-systems-architect** — isolation + RBAC boundaries · cross-tenant data · NOT auth-impl · isolation plan → `meta-orchestrator`
+- **api-contract-architect** — Hono+Zod+OpenAPI contracts · new endpoint family · NOT handlers · typed contract · zod-validate → `architect`+Hono/Zod (`contract-first-ai.md`)
+- **database-data-modeler** — D1/Neon schema + migrations · new tables · NOT seeding · migration+ERD · migration dry-run → `architect`/`migration-agent`
 
 ### Implementation (`general-purpose + brief` — MUST get briefs, never bare generic)
 
-| Archetype | Purpose · triggers · non-goals · inputs · outputs · verification · maps-to |
-|---|---|
-| frontend-feature-builder | Angular/React feature UI · new user surface · NOT API · contract+design · component+spec · Playwright · `general-purpose`+brief |
-| backend-api-builder | Hono handlers + services · new endpoint · NOT schema · contract · handler+unit · vitest · `general-purpose`+brief |
-| worker-runtime-builder | Worker/DO/Queue/Workflow · edge runtime · NOT UI · binding plan · runtime+test · typecheck · `general-purpose`+brief |
-| integration-builder | Stripe/Resend/PostHog/MCP wiring · external service · NOT core logic · keys+contract · adapter+test · vitest · `general-purpose`+brief |
-| forms-and-automation-builder | Zod forms + Turnstile + jobs · new form/automation · NOT design · schema · form+validation · Playwright · `general-purpose`+brief |
-| auth-billing-builder | Clerk/Stripe Link flows · auth/billing surface · NOT pricing policy · contract · flow+test · E2E+approval · `general-purpose`+brief |
-| dashboard-builder | admin/data dashboards · new admin view · NOT data model · contract · view+spec · Playwright · `general-purpose`+brief |
+- **frontend-feature-builder** — Angular/React feature UI · new user surface · NOT API · component+spec · Playwright → `general-purpose`+brief
+- **backend-api-builder** — Hono handlers + services · new endpoint · NOT schema · handler+unit · vitest → `general-purpose`+brief
+- **worker-runtime-builder** — Worker/DO/Queue/Workflow · edge runtime · NOT UI · runtime+test · typecheck → `general-purpose`+brief
+- **integration-builder** — Stripe/Resend/PostHog/MCP wiring · external service · NOT core logic · adapter+test · vitest → `general-purpose`+brief
+- **forms-and-automation-builder** — Zod forms + Turnstile + jobs · new form/automation · NOT design · form+validation · Playwright → `general-purpose`+brief
+- **auth-billing-builder** — Clerk/Stripe Link flows · auth/billing surface · NOT pricing policy · flow+test · E2E+approval → `general-purpose`+brief
+- **dashboard-builder** — admin/data dashboards · new admin view · NOT data model · view+spec · Playwright → `general-purpose`+brief
 
 ### Quality
 
-| Archetype | Purpose · triggers · non-goals · inputs · outputs · verification · maps-to |
-|---|---|
-| playwright-e2e-verifier | homepage-first E2E · any feature · NOT impl fixes · feature · specs+run · green suite · `test-writer` |
-| vitest-unit-verifier | unit coverage · new function · NOT E2E · code · tests+coverage · thresholds · `test-writer` |
-| zod-contract-verifier | runtime contract parity · new schema · NOT impl · schemas · parity tests · validate · `general-purpose`+brief (`contract-first-ai.md`) |
-| accessibility-reviewer | axe 6bp + WCAG 2.2 · UI surface · NOT redesign · pages · violations+fixes · axe 0 · `accessibility-auditor` |
-| performance-reviewer | CWV + bundle + INP · route · NOT features · routes · budget report · Lighthouse · `performance-profiler` |
-| security-reviewer | OWASP + secrets + CSP · risky surface · NOT features · diff · findings · scan · `security-reviewer` |
-| observability-reviewer | Sentry/PostHog/trace coverage · new feature · NOT infra · code · gap report · trace check · `general-purpose`+brief |
-| dead-code-removal-agent | unused exports/deps · post-build · NOT behavior change · tree · removals · knip+typecheck · `code-simplifier` |
+- **playwright-e2e-verifier** — homepage-first E2E · any feature · NOT impl fixes · specs+run · green suite → `test-writer`
+- **vitest-unit-verifier** — unit coverage · new function · NOT E2E · tests+coverage · thresholds → `test-writer`
+- **zod-contract-verifier** — runtime contract parity · new schema · NOT impl · parity tests · validate → `general-purpose`+brief (`contract-first-ai.md`)
+- **accessibility-reviewer** — axe 6bp + WCAG 2.2 · UI surface · NOT redesign · violations+fixes · axe 0 → `accessibility-auditor`
+- **performance-reviewer** — CWV + bundle + INP · route · NOT features · budget report · Lighthouse → `performance-profiler`
+- **security-reviewer** — OWASP + secrets + CSP · risky surface · NOT features · findings · scan → `security-reviewer`
+- **observability-reviewer** — Sentry/PostHog/trace coverage · new feature · NOT infra · gap report · trace check → `general-purpose`+brief
+- **dead-code-removal-agent** — unused exports/deps · post-build · NOT behavior change · removals · knip+typecheck → `code-simplifier`
 
 ### Product / Design
 
-| Archetype | Purpose · triggers · non-goals · inputs · outputs · verification · maps-to |
-|---|---|
-| ux-flow-designer | flow + friction audit · new journey · NOT code · brief · flow spec · review · `general-purpose`+brief |
-| visual-polish-designer | cinematic visual QA · UI surface · NOT copy · screenshots · score+fixes · AI-vision ≥8 · `visual-qa` |
-| conversion-copywriter | CTA + hero copy · marketing surface · NOT code · brief · copy · anti-slop grep · `content-writer` |
-| seo-metadata-specialist | title/meta/JSON-LD/OG · any route · NOT body copy · route · meta+schema · Rich Results · `seo-auditor` |
-| content-structure-specialist | IA + FAQ + headings · content page · NOT design · brief · structure · readability · `content-writer` |
-| animation-motion-specialist | View Transitions + scroll motion · hero/section · NOT logic · design · motion+reduced-motion gate · AI-vision · `motion-choreographer` |
-| media-orchestration-specialist | image triplets (AVIF/WebP/JPEG via Sharp) + video (Veo/Sora) + TTS audio · any media surface · NOT layout · asset inventory · optimized assets + srcset + OG/favicons · asset-exists + LCP budget · `media-orchestrator` |
+- **ux-flow-designer** — flow + friction audit · new journey · NOT code · flow spec · review → `general-purpose`+brief
+- **visual-polish-designer** — cinematic visual QA · UI surface · NOT copy · score+fixes · AI-vision ≥8 → `visual-qa`
+- **conversion-copywriter** — CTA + hero copy · marketing surface · NOT code · copy · anti-slop grep → `content-writer`
+- **seo-metadata-specialist** — title/meta/JSON-LD/OG · any route · NOT body copy · meta+schema · Rich Results → `seo-auditor`
+- **content-structure-specialist** — IA + FAQ + headings · content page · NOT design · structure · readability → `content-writer`
+- **animation-motion-specialist** — View Transitions + scroll motion · hero/section · NOT logic · motion+reduced-motion gate · AI-vision → `motion-choreographer`
+- **media-orchestration-specialist** — image triplets (AVIF/WebP/JPEG via Sharp) + video (Veo/Sora) + TTS audio · any media surface · NOT layout · optimized assets + srcset + OG/favicons · asset-exists + LCP budget → `media-orchestrator`
 
 ### AI-development (`general-purpose + brief`, citing pattern rules)
 
-| Archetype | Purpose · triggers · non-goals · inputs · outputs · verification · maps-to |
-|---|---|
-| prompt-systems-architect | prompt registry + templates · new AI surface · NOT model choice · brief · prompt+version · eval · `general-purpose`+brief (`prompt-as-training-signal.md`) |
-| agentskills-maintainer | rule/skill authoring + dedup · reusable lesson · NOT product code · gradient · rule edit · format lint · `general-purpose`+brief |
-| evals-designer | eval suites · new AI capability · NOT impl · spec · eval set · eval pass · `general-purpose`+brief (`evals.md`) |
-| drift-detection-agent | architecture/contract drift · pre-feature scan · NOT fixes-only · tree · drift report · `validate:features` · `general-purpose`+brief (`drift-detection.md`) |
-| tool-api-designer | tool/MCP surface as API · new tool · NOT runtime · entities · typed tool def · schema check · `general-purpose`+brief (`tool-design-as-api.md`) |
-| sandbox-execution-agent | isolated code-exec · untrusted/preview · NOT prod · code · sandbox result · isolation check · `general-purpose`+brief (`sandbox-execution.md`) |
-| self-improvement-reviewer | "did system improve?" · post-run · NOT product · run log · global edits · rule lint · `general-purpose`+brief (`prompt-as-training-signal.md`) |
+- **prompt-systems-architect** — prompt registry + templates · new AI surface · NOT model choice · prompt+version · eval → `general-purpose`+brief (`prompt-as-training-signal.md`)
+- **agentskills-maintainer** — rule/skill authoring + dedup · reusable lesson · NOT product code · rule edit · format lint → `general-purpose`+brief
+- **evals-designer** — eval suites · new AI capability · NOT impl · eval set · eval pass → `general-purpose`+brief (`evals.md`)
+- **drift-detection-agent** — architecture/contract drift · pre-feature scan · NOT fixes-only · drift report · `validate:features` → `general-purpose`+brief (`drift-detection.md`)
+- **tool-api-designer** — tool/MCP surface as API · new tool · NOT runtime · typed tool def · schema check → `general-purpose`+brief (`tool-design-as-api.md`)
+- **sandbox-execution-agent** — isolated code-exec · untrusted/preview · NOT prod · sandbox result · isolation check → `general-purpose`+brief (`sandbox-execution.md`)
+- **self-improvement-reviewer** — "did system improve?" · post-run · NOT product · global edits · rule lint → `general-purpose`+brief (`prompt-as-training-signal.md`)
 
 ### Final review
 
-| Archetype | Purpose · triggers · non-goals · inputs · outputs · verification · maps-to |
-|---|---|
-| final-integration-reviewer | full-brief completeness · every run · NOT new features · diff · gap list · checklist · `completeness-checker` |
-| agent-diversity-reviewer | owns gate below · every parallel run · NOT impl · spawn log · diversity verdict · table · `general-purpose`+brief |
-| risk-and-approval-reviewer | risk-tier + approval gate · any risky action · NOT execution · diff · risk verdict · taxonomy · `general-purpose`+brief (`autonomous-engineering.md`) |
-| release-readiness-reviewer | deploy + prod-E2E gate · pre-deploy · NOT features · build · go/no-go · prod E2E · `deploy-verifier` |
+- **final-integration-reviewer** — full-brief completeness · every run · NOT new features · gap list · checklist → `completeness-checker`
+- **agent-diversity-reviewer** — owns gate below · every parallel run · NOT impl · diversity verdict · table → `general-purpose`+brief
+- **risk-and-approval-reviewer** — risk-tier + approval gate · any risky action · NOT execution · risk verdict · taxonomy → `general-purpose`+brief (`autonomous-engineering.md`)
+- **release-readiness-reviewer** — deploy + prod-E2E gate · pre-deploy · NOT features · go/no-go · prod E2E → `deploy-verifier`
 
 ## Assignment table (REQUIRED every parallel run)
 

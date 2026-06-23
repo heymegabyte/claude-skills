@@ -11,7 +11,7 @@ paths:
 
 # Stack Selector
 
-The single most expensive mistake is the wrong framework for the job. Choose deliberately, up front, by SIZE + LIFESPAN of the product — not by familiarity or novelty.
+Choose deliberately by SIZE + LIFESPAN of the product — not familiarity or novelty.
 
 ## The rule
 
@@ -25,7 +25,7 @@ The single most expensive mistake is the wrong framework for the job. Choose del
 
 ## The litmus
 
-Ask: *"Will this grow into a multi-surface, multi-role, long-lived application with workflows, auth tiers, and dozens of views?"*
+*"Will this grow into a multi-surface, multi-role, long-lived application with workflows, auth tiers, and dozens of views?"*
 
 - **Yes →** Angular large-app per `angular-large-app-supervisor`.
 - **No (it's a site/funnel) →** React small per `frontend-stack`.

@@ -13,11 +13,11 @@ paths:
 
 # Model Routing
 
-Select the correct Claude model tier (Opus/Sonnet/Haiku) by task complexity and cost; never use Opus for tasks Haiku can handle correctly.
+Select the correct Claude model tier by task complexity and cost; never use Opus for tasks Haiku can handle.
 
 ## Opus 4.8 (`claude-opus-4-8`) — flagship
 
-- **Use for** — same surfaces as Opus 4.7 below; zero-cost upgrade (same $5/$25 per MTok pricing).
+- **Use for** — same surfaces as Opus 4.7; zero-cost upgrade (same $5/$25 per MTok pricing).
 - 1M context, 128K output. Adaptive thinking only.
 - Source: Anthropic. (2026). *Models overview*. `docs.anthropic.com/en/docs/about-claude/models/overview`
 - Migration: `rg "claude-opus-4-7" ~/.claude ~/.agentskills` → s/4-7/4-8/. Keep 4.7/4.6 as fallback chain per `opus-quota-fallback`.
@@ -65,18 +65,18 @@ Select the correct Claude model tier (Opus/Sonnet/Haiku) by task complexity and 
 
 ## Agent routing
 
-- **Opus** — architect, completeness-checker, security-reviewer, visual-qa, meta-orchestrator (each has `model_fallback: claude-sonnet-4-6` + `effort_fallback: high` per ``opus-quota-fallback``)
+- **Opus** — architect, completeness-checker, security-reviewer, visual-qa, meta-orchestrator (each has `model_fallback: claude-sonnet-4-6` + `effort_fallback: high` per `opus-quota-fallback`)
 - **Sonnet** — code-simplifier, computer-use-operator, deploy-verifier, dependency-auditor, incident-responder, migration-agent, performance-profiler, test-writer, media-orchestrator, motion-choreographer
 - **Haiku** — seo-auditor, content-writer, accessibility-auditor, cost-estimator, changelog-generator
 
 ## Quota-aware routing
 
-- When the user has switched the session to Sonnet (`/model claude-sonnet-4-6`), Opus-pinned agents transparently read their `model_fallback` field and spawn as Sonnet
-- When `~/.claude/.opus-disabled` flag file exists OR `CLAUDE_OPUS_DISABLED=true` is exported, same fallback fires
-- When an Opus API call 429s on `rate_limit` / `quota_exceeded`, the Monitor sets an in-memory `OPUS_AVAILABLE=false` for the next 5 minutes
-- Fast Mode (`/fast`) auto-disables when `OPUS_AVAILABLE=false` — no user prompt needed
-- Sonnet fallback is ~5-10% quality drop on Brian's typical workload — acceptable to keep shipping; never blocks work
-- Defer ``supreme-polish`` / ``source-site-enhancement`` § 9-agent fan-out / payment+auth security reviews until Opus restores
+- `/model claude-sonnet-4-6` session → Opus-pinned agents spawn as Sonnet via `model_fallback`.
+- `~/.claude/.opus-disabled` flag OR `CLAUDE_OPUS_DISABLED=true` → same fallback.
+- Opus API 429 on `rate_limit`/`quota_exceeded` → Monitor sets in-memory `OPUS_AVAILABLE=false` for 5 min.
+- Fast Mode (`/fast`) auto-disables when `OPUS_AVAILABLE=false`.
+- Sonnet fallback is ~5-10% quality drop — acceptable; never blocks work.
+- Defer `supreme-polish` / `source-site-enhancement` § 9-agent fan-out / payment+auth security reviews until Opus restores.
 
 ## Effort parameter
 
@@ -86,8 +86,6 @@ Select the correct Claude model tier (Opus/Sonnet/Haiku) by task complexity and 
 - **`medium`** — content writing
 - **`low`** — formatting / changelog
 
-Match effort to task complexity.
-
 ## Batch API
 
 - 50% discount.
@@ -96,22 +94,22 @@ Match effort to task complexity.
 
 ## Cloudflare Workers AI (`env.AI.run`)
 
-- **Always reach for the FP8 variants** — the full-precision aliases are deprecated on most accounts and return 400 at runtime
+- **Always reach for the FP8 variants** — full-precision aliases are deprecated on most accounts and return 400 at runtime.
 - **Llama 3.3 70B** → `@cf/meta/llama-3.3-70b-instruct-fp8-fast` (2-3× faster + free on Workers AI)
 - **Llama 3.1 8B** → `@cf/meta/llama-3.1-8b-instruct-fp8`
 - **Llama 4 Scout 17B** → `@cf/meta/llama-4-scout-17b-16e-instruct` (vision-capable, multimodal)
 - **Never use** — `@cf/meta/llama-3.3-70b-instruct`, `@cf/meta/llama-3.1-8b-instruct`, `@cf/meta/llama-3.1-70b-instruct` (retired)
-- Verify availability via REST: `GET /accounts/{id}/ai/models/search?search=<term>` before shipping a model name in code
+- Verify availability via REST: `GET /accounts/{id}/ai/models/search?search=<term>` before shipping a model name in code.
 - Reference incident (2026-05-24, projectsites.dev): AI chat returned "service is unavailable" 100% — 18 files referenced retired aliases; patched to `…-fp8-fast` + `…-fp8` in one sed pass.
 
 ## Provider cost tiers (premium / mid-grade / instant)
 
-Standing routing policy for APPLICATION LLM calls + agent build pipelines — a DIFFERENT axis from the Claude-altitude orchestration tiers below (that axis picks which *Claude* model runs a loop phase; this picks which *vendor* serves an app/build call). Brian's directive 2026-06-17.
+Standing routing policy for APPLICATION LLM calls + agent build pipelines — a DIFFERENT axis from the Claude-altitude orchestration tiers (which picks which *Claude* model runs a loop phase; this picks which *vendor* serves an app/build call). Brian's directive 2026-06-17.
 
 - **Premium — Anthropic (Claude) / OpenAI (ChatGPT).** Higher-order research, architecture + planning, security/payment/auth decisions, and ALL vision (DeepSeek has none). Reserve for judgment, not volume.
 - **Mid-grade — DeepSeek** (`deepseek-chat`; `deepseek-reasoner` for higher-order). The DEFAULT for most generation/implementation/build work, AND the primary provider for headless **Claude Code build agents** via DeepSeek's Anthropic-compatible endpoint: `ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic` + `ANTHROPIC_AUTH_TOKEN=$DEEPSEEK_API_KEY` + `ANTHROPIC_MODEL=deepseek-chat` (keep `ANTHROPIC_API_KEY` as passive fallback; `BUILD_LLM_PROVIDER=anthropic` forces Claude). API base `https://api.deepseek.com`; key `DEEPSEEK_API_KEY` is ALWAYS a `wrangler secret` / get-secret entry — never committed.
-- **Instant — Cloudflare Workers AI** (`env.AI.run` `@cf/meta/llama-*`, free, edge). Pre-routing, classification, moderation, embeddings, anything it does well at sub-ms latency. Default-reach for reflex-speed work.
-- **End state:** collapse everything toward Workers AI as it catches up to Anthropic/DeepSeek. Until then — premium for judgment, DeepSeek for volume, Workers AI for reflexes.
+- **Instant — Cloudflare Workers AI** (`env.AI.run` `@cf/meta/llama-*`, free, edge). Pre-routing, classification, moderation, embeddings — sub-ms latency default for reflex-speed work.
+- **End state:** collapse everything toward Workers AI as it catches up. Until then — premium for judgment, DeepSeek for volume, Workers AI for reflexes.
 - Reference impl: projectsites.dev `external_llm.chooseProviderForTier(env, 'premium'|'standard'|'instant')` + `ai_gateway` deepseek slug + container `_deepseekKey`/`_anthropicBaseUrl` injection. Cloudflare AI Gateway supports a `deepseek` provider slug — route through it for caching/observability.
 
 ## Hierarchical orchestration

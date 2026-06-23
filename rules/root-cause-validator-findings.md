@@ -11,7 +11,7 @@ triggers:
   - "tool says orphan"
   - "validator says violation"
 paths:
-  - "*"
+  - "concern:observability"
 ---
 
 # Root-Cause Validator Findings Before Applying Fixes

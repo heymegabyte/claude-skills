@@ -22,11 +22,22 @@ paths:
 How to compress any AI-instruction file (rule / skill / SKILL.md / AGENTS.md) without shedding meaning. Research-grounded (Anthropic Skills docs, context-engineering 2025-26, LLMLingua, EARS, llms.txt). Eat the dogfood: this file obeys its own rules.
 Cross-links: `[[brian-preferences]]` `[[always]]` `[[drift-detection]]` `[[repo-folder-hygiene]]` `[[prompt-as-training-signal]]`
 
+## The governing priority (Brian, 2026-06-21)
+
+- **Business requirements > inferable knowledge.** It matters more that the AI clearly knows every business requirement it CANNOT infer (brand values, vendor/version choices, thresholds, named files, hard rules) than that a file restates general engineering Claude already knows. Spend tokens on the former; cut the latter to near-zero.
+- **All rules stay available; each costs far fewer tokens.** Compress content — do NOT drop rules. Total per-prompt load must shrink, not the rule count.
+
 ## The compression test
 
-- Compression is **lossless when it removes tokens Claude already infers** (definitions of known concepts, filler, hedging, restated context). Cut these freely.
-- Compression is **lossy when it removes a constraint that would change a specific action**. Keep these verbatim.
+- Compression is **lossless when it removes tokens Claude already infers** (definitions of known concepts, filler, hedging, restated context, rationale/"why this matters"). Cut these freely.
+- Compression is **lossy when it removes a constraint that would change a specific action** (a business requirement). Keep these verbatim.
 - Before deleting a line ask: *"Would removing this cause a specific wrong action?"* No → delete. Yes → keep, tighten wording.
+
+## Always-loaded budget — HARD GATE (every-prompt cost)
+
+- Rules with `priority: 1` OR `paths: ["*"]` load on EVERY prompt. Their aggregate token total is capped by `bin/audit-always-load-budget.mjs` (blocking gate 19): `tier-1 ≤ 38K`, `eligible(+paths:*) ≤ ELIGIBLE_BUDGET`. The eligible budget is a **RATCHET — lower it as the arc compresses; it may only go down.** This is what stops per-prompt load drifting back toward 150K.
+- **Logs / archives / records are NEVER `paths: ["*"]`.** They are records, not instructions — scope `paths` to a concern (they still load via their triggers when relevant). `[[principles-incident-log]]`, `[[root-cause-validator-findings]]` → `concern:observability`. Don't compress their content (per Don't below); just keep them OUT of the every-prompt set.
+- **New always-loaded rule** (`priority:1` or `paths:["*"]`) must justify "truly every prompt?" AND fit the ratchet — else `priority:2` + a concern path (loads via triggers).
 
 ## Core rules (MUST)
 

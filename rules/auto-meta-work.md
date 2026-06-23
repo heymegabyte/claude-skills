@@ -25,9 +25,9 @@ Automatically improve error handling, JSDoc, observability wiring, and type cove
 ### Tier 1 — Solo SaaS / nonprofit / local / portfolio
 
 - Pick TWO max: **PostHog** + **Workers Tracing**
-- Skip **Sentry** (PostHog covers errors + replay)
-- Skip **GA4** (PostHog covers analytics; use `persistence:'memory'`)
-- Skip **AI Gateway** unless LLM calls exceed 10k/mo
+- Skip Sentry (PostHog covers errors + replay)
+- Skip GA4 (use `persistence:'memory'`)
+- Skip AI Gateway unless LLM calls exceed 10k/mo
 
 ### Tier 2 — Enterprise / regulated / multi-team SaaS
 
@@ -40,55 +40,56 @@ Automatically improve error handling, JSDoc, observability wiring, and type cove
 
 ### Vendor wiring
 
-1. **Sentry**
-   - Install `@sentry/cloudflare` (Workers) or `@sentry/node` → `withSentry` wrapper
-   - Project via `mcp__sentry__create_project` (org:`megabyte-labs`, team:`megabyte-labs`, platform:`javascript`)
-   - `SENTRY_DSN` via `wrangler secret put`
-   - Pattern: `import { withSentry } from '@sentry/cloudflare'; export default withSentry(env => ({ dsn, tracesSampleRate: 1.0, sendDefaultPii: false }), worker);`
-   - Use OIDC, not static DSN secrets
-   - Focus on exceptions; Workers Tracing handles I/O spans
+**1. Sentry**
 
-2. **PostHog**
-   - Snippet on every HTML page w/ `persistence:'memory'` (cookie-free)
-   - `capture_pageview` + `capture_pageleave` + `autocapture:true`
-   - **`api_host` MUST be the regional INGESTION host** (`https://us.i.posthog.com` US / `https://eu.i.posthog.com` EU), NEVER `app.posthog.com` (the deprecated UI host — snippet inits but captures silently no-op).
-   - **CSP must allow BOTH ingestion AND assets hosts** in `script-src` + `connect-src`: `https://us.i.posthog.com https://us-assets.i.posthog.com` (a bare `app.posthog.com` blocks the capture POST → 0 events while the snippet loads fine).
-   - **VERIFY BY QUERYING THE BACKEND, never the browser.** "requests fire" ≠ "events land" — confirm an event round-trips via the PostHog MCP (`query-trends` for `$pageview`/a forced custom event) or the dashboard BEFORE claiming analytics works. A raw `fetch` to `…/i/v0/e/` returning 200 isolates ingestion-vs-client. (njsk.org pass-235→237: snippet+requests fired but 0 events landed — CSP blocked the ingestion host AND api_host was the deprecated UI host; a browser-only check falsely "verified" it.)
-   - **HEADLESS PLAYWRIGHT CANNOT VERIFY POSTHOG CAPTURE — posthog-js bot-filters automation.** posthog-js silently drops events from headless/automated browsers via multi-signal detection (UA, `navigator.webdriver`, `navigator.plugins`, `window.chrome`, …) — spoofing UA + webdriver is NOT enough; capture stays 0. So 0 events from a Playwright check is the EXPECTED null result, never proof of breakage. To prove client capture: load in a REAL non-automated browser (Computer Use / your own Chrome) OR wait for real traffic, then query the backend. Use a raw `fetch` to `…/i/v0/e/` to prove the INGESTION path (CSP/region/key) since it bypasses the bot filter. (njsk pass-239: 4 turns of "0 events" was a headless-harness artifact, not a prod bug.)
-   - Each PROPERTY gets its OWN project — don't let N sites share one `phc_` "Default project" key (mixes hosts, breaks per-site analytics).
-   - Unified: errors + session replay + feature flags + product analytics
+- Install `@sentry/cloudflare` (Workers) or `@sentry/node` → `withSentry` wrapper
+- Project via `mcp__sentry__create_project` (org:`megabyte-labs`, team:`megabyte-labs`, platform:`javascript`)
+- `SENTRY_DSN` via `wrangler secret put`; use OIDC, not static DSN secrets
+- Pattern: `import { withSentry } from '@sentry/cloudflare'; export default withSentry(env => ({ dsn, tracesSampleRate: 1.0, sendDefaultPii: false }), worker);`
+- Focus on exceptions; Workers Tracing handles I/O spans
 
-3. **GA4/GTM**
-   - GTM container snippet (head script + noscript iframe after body)
-   - CSP for `googletagmanager.com` + `google-analytics.com` + `analytics.google.com` + `region1.google-analytics.com`
+**2. PostHog**
 
-4. **Workers Tracing (OTLP)**
-   - `[observability] enabled = true` in `wrangler.jsonc` — zero-config OTel tracing of every I/O
-   - Export to Axiom / Honeycomb / Grafana / Datadog via `@opentelemetry/exporter-trace-otlp-http`
+- Snippet on every HTML page w/ `persistence:'memory'` (cookie-free); `capture_pageview` + `capture_pageleave` + `autocapture:true`
+- **`api_host` MUST be the regional INGESTION host** (`https://us.i.posthog.com` US / `https://eu.i.posthog.com` EU) — NEVER `app.posthog.com` (deprecated UI host — captures silently no-op)
+- **CSP must allow BOTH ingestion AND assets hosts** in `script-src` + `connect-src`: `https://us.i.posthog.com https://us-assets.i.posthog.com`
+- **VERIFY BY QUERYING THE BACKEND, never the browser.** "requests fire" ≠ "events land" — confirm round-trip via PostHog MCP (`query-trends` for `$pageview`) or raw `fetch` to `…/i/v0/e/`. (njsk.org pass-235→237: snippet+requests fired but 0 events landed — CSP blocked ingestion host AND wrong `api_host`.)
+- **HEADLESS PLAYWRIGHT CANNOT VERIFY POSTHOG CAPTURE** — posthog-js bot-filters automation (UA, `navigator.webdriver`, plugins, `window.chrome`). 0 events from Playwright = expected null, not a bug. Use real browser (Computer Use) or raw `fetch` to `…/i/v0/e/` to prove ingestion path. (njsk pass-239: 4 turns of "0 events" was headless artifact.)
+- Each PROPERTY gets its OWN project — don't share one `phc_` key across N sites
 
-5. **AI Gateway**
-   - Every LLM call routes through binding (`env.AI.run()` auto-routes)
-   - Direct Anthropic: `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/anthropic/v1/messages`
-   - For logging, caching, rate-limit, fallback
-   - **Per-request `cacheKey` + `cacheTtl`** on Worker binding for fine-grained LLM-call dedupe — pass stable hash of prompt+ctx; 30-70% hit rate on repeated surfaces (FAQ-gen, metadata-extract, classify). Source: Cloudflare. (2026). *AI Gateway Worker binding methods*. `developers.cloudflare.com/ai-gateway/integrations/worker-binding-methods/`
-   - **`env.AI.gateway().patchLog(id, {score, feedback, metadata})`** wires post-call eval scores back to the specific gateway log entry → closes the eval loop online per `evals.md` § three-tier grading
-   - **Async batch via `env.AI.run(model, { queueRequest: true, messages: [...] })`** for Llama 3.3 70B + BGE embeddings — ~5-10× throughput on bulk content gen (pSEO render, page-prerender, doc-embedding). Source: Cloudflare. (2026). *Workers AI improvements*. `blog.cloudflare.com/workers-ai-improvements/`
+**3. GA4/GTM**
+
+- GTM container snippet (head script + noscript iframe after body)
+- CSP for `googletagmanager.com` + `google-analytics.com` + `analytics.google.com` + `region1.google-analytics.com`
+
+**4. Workers Tracing (OTLP)**
+
+- `[observability] enabled = true` in `wrangler.jsonc` — zero-config OTel tracing of every I/O
+- Export to Axiom / Honeycomb / Grafana / Datadog via `@opentelemetry/exporter-trace-otlp-http`
+
+**5. AI Gateway**
+
+- Every LLM call routes through binding (`env.AI.run()` auto-routes)
+- Direct Anthropic: `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/anthropic/v1/messages`
+- **Per-request `cacheKey` + `cacheTtl`** on Worker binding for LLM-call dedupe — stable hash of prompt+ctx; 30-70% hit rate on repeated surfaces
+- **`env.AI.gateway().patchLog(id, {score, feedback, metadata})`** wires post-call eval scores back to gateway log → closes eval loop per `evals.md` § three-tier grading
+- **Async batch via `env.AI.run(model, { queueRequest: true, messages: [...] })`** for Llama 3.3 70B + BGE embeddings — ~5-10× throughput on bulk content gen
 
 ## Security scan — OWASP Top 10:2025
 
-1. **Broken Access Control** (incl SSRF)
-2. **Security Misconfiguration** (moved up from #5)
+1. Broken Access Control (incl SSRF)
+2. Security Misconfiguration
 3. Supply Chain
 4. Injection
 5. Cryptographic Failures
 6. (new) #10 Mishandling Exceptional Conditions
 
-### Check for
+**Check for:**
 
 - Hardcoded secrets
 - Missing auth checks
 - SQL injection — use parameterized Drizzle queries
-- XSS — sanitize user input in templates, **Trusted Types** for DOM-XSS
+- XSS — sanitize user input; **Trusted Types** for DOM-XSS
 - SSRF — validate URLs
 - CSP Level 3 strict-dynamic + per-response random nonce (never reused)
 - Every PR: `detect-secrets scan`
@@ -97,7 +98,7 @@ Automatically improve error handling, JSDoc, observability wiring, and type cove
 ## Agents SDK stubs
 
 - New projects get agent definitions in `.claude/agents/` (architect, test-writer, deploy-verifier minimum)
-- Agent frontmatter (v2.1.33+): `description`, `prompt`, `tools`, `disallowedTools`, `model`, `permissionMode`, `mcpServers`, `hooks`, `skills`, `initialPrompt`, `memory` (`user|project|local`), `effort` (`low|medium|high|max|xhigh` — `xhigh` Opus-4.7-only, falls back to `high`), `background` (true=detached), `isolation: worktree` (separate git checkout per invocation, auto-cleaned unless dirty), `color`
+- Agent frontmatter (v2.1.33+): `description`, `prompt`, `tools`, `disallowedTools`, `model`, `permissionMode`, `mcpServers`, `hooks`, `skills`, `initialPrompt`, `memory` (`user|project|local`), `effort` (`low|medium|high|max|xhigh` — `xhigh` Opus-4.7-only, falls back to `high`), `background` (true=detached), `isolation: worktree`, `color`
 - Match agent routing table in model-routing
 - Skill frontmatter: `name`, `description`, `when_to_use`, `paths` (glob), `disable-model-invocation` (true→never auto-loads), `argument-hint`, `user-invocable` (default true)
 
@@ -120,26 +121,14 @@ Automatically improve error handling, JSDoc, observability wiring, and type cove
 
 - Structured Outputs beta header `structured-outputs-2025-11-13` + `output_config.format` for strict JSON schema
 - Incompatible with Citations (returns 400) — pick one per request
-- Citations is GA (not beta) across all active models except Haiku 3 — `citations: {enabled: true}` per document
-- PDF=page, plain-text=char-index, custom=block-index
-- `cited_text` is free (doesn't count toward output tokens)
+- Citations is GA across all active models except Haiku 3 — `citations: {enabled: true}` per document
+- PDF=page, plain-text=char-index, custom=block-index; `cited_text` is free (not counted as output tokens)
 
 ## Template Scan (megabytespace/saas-starter — EVERY PROMPT)
 
-- After any code change, ask: "Would saas-starter have saved time here?"
-- If yes → push improvement to `megabytespace/saas-starter` same prompt
-- Template must reflect current best practices: same stack, same `.claude/` config, same standards as any Emdash project
+- After any code change: "Would saas-starter have saved time here?" If yes → push improvement same prompt
+- Template must reflect current best practices: same stack, same `.claude/` config, same standards
 - **Bindings**: D1 (read-replicas) + KV + CACHE + R2 (IA lifecycle) + AI + Hyperdrive + Vectorize + Queue + DO (SQLite) + Container + Assets
-- **Stubs**:
-  - Clerk auth (M2M JWT)
-  - Square Web Payments SDK for accepting (donations + POS + subscriptions + tap-to-pay — DEFAULT for ALL inbound money)
-  - Stripe Connect Express stub for payouts ONLY (vendor/contractor/volunteer reimbursement, marketplace splits — NEVER for accepting end-user money)
-  - Inngest workflows
-  - Workflows v2 step-based jobs
-  - Turnstile
-  - Resend
-  - Health endpoint
-  - `secrets.required` block
-  - Workers Builds CI config
+- **Stubs**: Clerk auth (M2M JWT) · Square Web Payments SDK (accepting: donations/POS/subscriptions/tap-to-pay — DEFAULT for ALL inbound money) · Stripe Connect Express (payouts only: vendor/contractor/volunteer/marketplace splits — NEVER for accepting end-user money) · Inngest workflows · Workflows v2 step-based jobs · Turnstile · Resend · Health endpoint · `secrets.required` block · Workers Builds CI config
 - Three artifacts checked every prompt: (1) template repo (2) E2E tests (3) skills+config
 - Template = source of truth for `gh repo create --template megabytespace/saas-starter`

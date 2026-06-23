@@ -102,7 +102,7 @@ billingRouter.post(
 
 ## Anti-patterns
 
-### Middleware with business logic (500 lines — absorbed billing domain)
+### Middleware with business logic
 
 ```ts
 // BAD — auth.ts checking plan, seats, overages; sending email as side effect
@@ -115,7 +115,6 @@ export const requireAuth = createMiddleware(async (c, next) => {
     await sendOverageEmail(c.env, user); // side effect in middleware — impossible to test
   }
 });
-// Billing bug could be in auth.ts; no one looks there
 ```
 
 ### Generic abstraction from one use case
@@ -128,31 +127,21 @@ export function createWebhookHandler<T>(config: {
   route: (event: T) => Promise<void>;
   dedupeTable: string;
 }) { ... }
-// Config object harder to type than two concrete handlers.
-// Write stripe-webhooks.ts and square-webhooks.ts; extract a shared verify-signature helper only after both exist.
-```
-
-### Thin feature module that skips business rules
-
-```ts
-// BAD — delegates to genericCreate, skipping Stripe, coupon validation, seat limits, proration
-billingRouter.post('/subscriptions', requireAuth, async (c) => {
-  return c.json(await genericCreate(c.env.DB, 'subscriptions', c.req.json()));
-});
+// Write stripe-webhooks.ts and square-webhooks.ts; extract shared verify-signature only after both exist.
 ```
 
 ## Size guidelines
 
-- **`worker/middleware/*.ts`** (each file) — 30–80 lines expected, 200 lines ceiling.
+- **`worker/middleware/*.ts`** — 30–80 lines expected, 200 lines ceiling.
 - **`worker/middleware/`** (total) — 150–300 lines expected, 500 lines ceiling.
 - **`worker/features/<name>/schemas.ts`** — 50–200 lines, no ceiling.
 - **`worker/features/<name>/service.ts`** — 100–500 lines, no ceiling.
 - **`worker/features/<name>/handlers.ts`** — 80–300 lines; split by resource at 400.
-- **`worker/lib/*.ts`** (shared utilities) — 30–100 lines expected, 150 lines ceiling; absorb domain back into feature past ceiling.
+- **`worker/lib/*.ts`** — 30–100 lines expected, 150 lines ceiling; absorb domain back into feature past ceiling.
 
 ## Checklist
 
-- `worker/middleware/` contains only: auth, CORS, error handler, request ID, rate limiter, logger. Anything else is domain logic — move it to a feature.
+- `worker/middleware/` contains only: auth, CORS, error handler, request ID, rate limiter, logger. Anything else → move to a feature.
 - Every file in `worker/middleware/` stays under 200 lines.
 - Feature service classes can be as long as the domain requires.
 - Before extracting a shared utility: does it exist in TWO or more features with REAL duplication? If not, leave it in the feature.
@@ -161,7 +150,7 @@ billingRouter.post('/subscriptions', requireAuth, async (c) => {
 
 ## See
 
-- [[feature-module-architecture]] — canonical feature folder shape at the wide base of the pyramid
-- [[hono-api]] — middleware order, `createFactory()`, and route group patterns that stay thin by design
+- [[feature-module-architecture]] — canonical feature folder shape at the wide base
+- [[hono-api]] — middleware order, `createFactory()`, and route group patterns
 - [[zod-everywhere]] — where feature-level depth and sharing genuinely coexist
-- [[code-style]] — file size conventions, module boundaries, Angular colocation principle applied to Workers
+- [[code-style]] — file size conventions, module boundaries
