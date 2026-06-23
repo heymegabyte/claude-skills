@@ -38,7 +38,7 @@ paths:
 
 Plan and generate all site media section-by-section: images (GPT Image 1.5), logos (Ideogram v3), video (Sora), OG cards, and compression pipeline.
 
-> **Model migration note (pass-77, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`. Media pipeline unchanged.
+> **Model migration note (pass-77, 2026-06-09)**: `DALL-E` → **GPT Image 1.5** + `GPT-4o` → **GPT Image 2 vision**. Per `platform.openai.com/docs/deprecations`.
 
 ## Submodules
 
@@ -47,20 +47,13 @@ Plan and generate all site media section-by-section: images (GPT Image 1.5), log
 - **og-image-generation** — Satori edge-rendered OG, KV / R2 cache, meta-tag helper
 - **image-optimization** — Sharp processing, responsive srcset, WebP/AVIF, blur placeholders, R2 pipeline
 - **image-profiling** — GPT Image 2 vision batch profiling
-- **lightbox-classifier** — per-image eligibility — `kind!=logo` + ≥1024×768 + score≥7
+- **lightbox-classifier** — per-image eligibility: `kind!=logo` + ≥1024×768 + score≥7
 - **social-brand-hex** — canonical brand-color map per social platform
 - **notebooklm-pipeline** — per-site podcast via ElevenLabs Studio + infographic via Vega-Lite/Recraft/GPT-Image-2 + HeyGen video + CF Stream + RSS + JSON-LD + cost ceiling $3.50/site
 
 ## Strategy by Section
 
-- **Hero** — GPT Image 1.5 / Sora
-- **Features** — GPT Image 1.5 / SVG
-- **How It Works** — GPT Image 1.5
-- **Testimonials** — stock
-- **About** — stock / real
-- **Blog** — GPT Image 1.5
-- **Social** — Satori OG 1200×630
-- **Icons** — Ideogram v3 + processing
+Hero → GPT Image 1.5 / Sora · Features → GPT Image 1.5 / SVG · How It Works → GPT Image 1.5 · Testimonials → stock · About → stock/real · Blog → GPT Image 1.5 · Social → Satori OG 1200×630 · Icons → Ideogram v3
 
 Pre-gen checklist: communication goal? Brand style? Dimensions? Format? Budget? Stock or generated?
 
@@ -70,25 +63,18 @@ Read every image before deploy. Check: blur, artifacts, watermarks, wrong colors
 
 ## Brian's Style
 
-- Space/cosmic — `#00E5FF` + `#7C3AED`, deep black (`#060610`)
-- Connections/dots — quantum, neural, constellation
-- "Ultra realistic" scenes; transparent logos; simpler always
-- Motifs — squirrels, turtles
+- Space/cosmic — `#00E5FF` + `#7C3AED`, deep black (`#060610`); connections/dots — quantum, neural, constellation
+- "Ultra realistic" scenes; transparent logos; simpler always; motifs — squirrels, turtles
 
 ## Image Generation
 
 - **GPT Image 1.5** preferred (best quality); **GPT Image 1** for speed; **GPT Image 1-mini** for bulk/drafts
-- Fallback: `scripts/image_gen.py`
+- Fallback: `scripts/image_gen.py`; product screenshots: Playwright on live URL
 - Be specific: include colors, specify avoidances
-- Product screenshots: browser rendering via Playwright on live URL
 
 ## GPT Image 1.5 First Slot-Fill (CANONICAL — UNIVERSAL)
 
-GPT Image 1.5 is PRIMARY originator for every image slot the source-resolution chain didn't fill from real-entity sources (Places / uploads / scrape).
-
-- After real-entity sources exhaust, GPT Image 1.5 invoked BEFORE generic stock — per-slot prompt produces tighter topic match
-- Stock APIs run parallel speed-pass fallback (instant return if GPT Image 1.5 hangs >15s) but GPT Image 1.5 output preferred at curation
-- See skill 15 `media-acquisition` Media-Slot-Manifest + Fail-CLOSED auto-regenerate (5 attempts, prompt-refinement loop, $0.40 worst-case ceiling per slot)
+PRIMARY originator for every slot real-entity sources (Places / uploads / scrape) didn't fill. GPT Image 1.5 invoked BEFORE generic stock; stock APIs run parallel speed-pass fallback (instant return if GPT Image 1.5 hangs >15s). See skill 15 `media-acquisition` + Fail-CLOSED auto-regenerate (5 attempts, $0.40 worst-case ceiling per slot).
 
 ## Per-Slot Prompt Mandatory Fields (BUILD-BREAKING — `validate-image-prompts.mjs` + `validate-dalle-slot-fill.mjs`)
 
@@ -101,50 +87,24 @@ Every GPT Image 1.5 call MUST encode 6 fields from `_media_slots.json`:
 5. Photographic technical specs (camera, lens, lighting, DoF — "shot on Hasselblad, 85mm prime, golden hour, shallow DoF")
 6. Negative prompt block ("no text, no watermarks, no logos, no extra fingers, no AI artifacts, no stock-photo cliches")
 
-Generic prompts FAIL validator. Same template applies to FLUX, Recraft, Stability — reuse slot-prompt across providers w/ fallback chain.
+Generic prompts FAIL validator. Same template applies to FLUX, Recraft, Stability.
 
 ## Fail-CLOSED Auto-Regenerate (BUILD-BREAKING — `validate-no-empty-slots.mjs`)
 
-Every slot in `_media_slots.json` MUST end build w/ `filled_url != null AND filled_score >= relevance_floor` (default 8/10 via GPT Image 2 vision).
+Every slot MUST end build w/ `filled_url != null AND filled_score >= relevance_floor` (default 8/10 via GPT Image 2 vision). Failure modes (Pexels empty, NSFW-flagged, broken scrape, vision below floor) → immediate re-gen w/ REFINED prompt — NEVER silent skip, NEVER substitute brand-gradient unless 5 attempts exhausted. `media_pipeline_orchestrator` sub-agent owns this loop. See `media-acquisition.md` § Fail-CLOSED chain.
 
-Failure modes (Pexels returns nothing, GPT Image 1.5 NSFW-flagged, scraped image broken, vision relevance below floor) trigger immediate auto-regeneration via GPT Image 1.5 w/ REFINED prompt — NEVER silent skip, NEVER substitute brand-gradient unless 5 regen attempts exhausted.
+## Logo / Icon / Video / OG
 
-Build orchestrator's `media_pipeline_orchestrator` sub-agent owns this loop. Submodule: `media-acquisition.md` § Fail-CLOSED chain.
+- **Logo** — Ideogram v3 (best text rendering); **Icons** — Recraft V3; output: PNG transparent + SVG; bg removal → favicon set (16/32/180/192/512 + maskable); brand mark MUST be vector-clean
+- **Video** — Sora (primary cinematic); Veo (narrative stitching, 7-8 × 8-sec clips → 60-sec arc); HeyGen (explainer/spokesperson); captions VTT + transcript; `prefers-reduced-motion` → static poster fallback
+- **OG (1200×630)** — Satori edge-rendered, per-route unique, BRANDED CARD never raw photo, ≤100KB, cached KV 7d / R2 forever
 
-## Logo / Icon Generation
+## Stock Photography + Asset Compression + Performance
 
-- **Ideogram v3** for logos (best text rendering); **Recraft V3** for vector-style icons
-- Output: PNG transparent + SVG (if possible)
-- Process: bg removal → favicon set (16/32/180/192/512 + maskable)
-- Brand mark MUST be vector-clean — no AI artifacts on edges
+**Stock**: Pexels first (free, API); Pixabay second. Never Unsplash (generic), iStock/Getty (paid). Critique-and-remix loop max 3 rounds; AI vision <7/10 = reject + regenerate.
 
-## Video Generation
+**Compression**: AVIF primary (94% browser support, 20-30% smaller than WebP); WebP fallback (Safari 14+); JPEG legacy. Sharp: 320/640/1280/1920w srcset; blur placeholder; dominant color → CSS bg fill. R2 upload per-extension content-type.
 
-- **Sora** for primary cinematic content; Veo for narrative stitching (7-8 × 8-sec clips → 60-sec arc); HeyGen for explainer + spokesperson
-- All include captions VTT + transcript; `prefers-reduced-motion` → static poster fallback
-
-## OG Image (1200×630)
-
-- Satori edge-rendered from template; per-route unique; BRANDED CARD never raw photo
-- ≤100KB; cached in KV 7d / R2 forever
-
-## Stock Photography
-
-- **Pexels** first (free, high quality, API); **Pixabay** second
-- Never: Unsplash (generic, overused), iStock/Getty (paid, unnecessary)
-- Critique-and-remix loop max 3 rounds; AI vision rates each candidate — <7/10 = reject + regenerate
-
-## Asset Compression Pipeline
-
-- AVIF primary (94% browser support, 20-30% smaller than WebP); WebP fallback (Safari 14+); JPEG legacy
-- Sharp: 320 / 640 / 1280 / 1920w responsive srcset
-- Blur placeholder generation; dominant color extraction → CSS bg fill while loading
-- R2 upload pipeline per-extension content-type
-
-## Performance Budgets
-
-- Total images per page ≤500KB; largest single image ≤200KB
-- Hero LCP image `fetchpriority="high"` + preload link
-- `loading="lazy"` on every other image; `decoding="async"` always
+**Budgets**: total images/page ≤500KB; largest single ≤200KB; Hero LCP `fetchpriority="high"` + preload; `loading="lazy"` + `decoding="async"` on all others.
 
 ## See submodules for: media-prompts, compression-pipeline, og-image-generation, image-optimization, image-profiling, lightbox-classifier, social-brand-hex, notebooklm-pipeline, build-breaking-rules.

@@ -36,15 +36,15 @@ Anything else = AI slop. Cut it.
 
 ## 3-Tier Hierarchy
 
-- **Tier 1 — Functional** — feedback on every interaction (hover, focus, active, tap). Duration 100-200ms. Transform/opacity only.
-- **Tier 2 — Choreographic** — page transitions, modal entrance, section reveal. Duration 300-500ms. View Transitions or `@starting-style`.
+- **Tier 1 — Functional** — feedback on every interaction (hover, focus, active, tap). Duration 100–200ms. Transform/opacity only.
+- **Tier 2 — Choreographic** — page transitions, modal entrance, section reveal. Duration 300–500ms. View Transitions or `@starting-style`.
 - **Tier 3 — Cinematic** — hero parallax, signature reveal, scroll-driven storytelling. Duration ≥600ms. Scroll-timeline.
 
-Never stack 3 tiers in same surface — overwhelming. One cinematic per page.
+Never stack 3 tiers on same surface. One cinematic per page.
 
 ## Mandatory `prefers-reduced-motion`
 
-EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final state, never hide content. Pair with `animation-duration:1ms` fallback for unsupported browsers.
+EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final state, never hide content.
 
 ```css
 @media (prefers-reduced-motion: reduce) {
@@ -75,7 +75,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 
 - `animation-timeline: scroll()` (root scroller) or `view()` (element-in-viewport)
 - Off-main-thread on Chrome stable + Safari 26 (2025)
-- Firefox unsupported — pair w/ `prefers-reduced-motion` AND duration:1ms fallback
+- Firefox unsupported — pair with `prefers-reduced-motion` AND `duration:1ms` fallback
 
 ```css
 @keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -84,8 +84,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 
 ## `@starting-style` (DOM-insert animation)
 
-- Baseline 2026
-- Animates from explicit "starting" state to default state when element enters DOM
+Baseline 2026 — animates from explicit starting state to default state when element enters DOM.
 
 ```css
 .toast { opacity: 1; transform: translateY(0); transition: opacity 0.3s, transform 0.3s; }
@@ -94,8 +93,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 
 ## Container Scroll-State Queries (Baseline 2026)
 
-- `@container scroll-state(stuck: top)` — apply styles when element is stuck
-- Replaces JS scroll-listener-based sticky styling
+`@container scroll-state(stuck: top)` — replaces JS scroll-listener-based sticky styling.
 
 ```css
 .nav { container-type: scroll-state; }
@@ -104,19 +102,17 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 
 ## Micro-Interactions (Tier 1 patterns)
 
-- **Button press** — `transform: scale(0.98)` on `:active`, 100ms transition
-- **Hover** — `transform: translateY(-1px)` + color shift + 200ms
-- **Focus-visible** — 3px brand-accent ring, 2px offset, 0ms transition (instant)
-- **Tap** — haptic feedback on mobile via `navigator.vibrate(10)` if supported
+- **Button press** — `transform: scale(0.98)` on `:active`, 100ms
+- **Hover** — `transform: translateY(-1px)` + color shift, 200ms
+- **Focus-visible** — 3px brand-accent ring, 2px offset, 0ms (instant)
+- **Tap** — haptic feedback via `navigator.vibrate(10)` if supported
 - **Toggle** — animated check/cross morph via `<svg>` path interpolation
-- **Loading** — pulse animation 1.2s ease-in-out infinite
+- **Loading** — pulse 1.2s ease-in-out infinite
 
 ## Stagger sequences (no JS needed)
 
 ```css
 .list-item { animation: fade-up 0.4s ease-out backwards; }
-.list-item:nth-child(1) { animation-delay: 0ms; }
-.list-item:nth-child(2) { animation-delay: 80ms; }
 /* OR use sibling-index() (Baseline 2026) */
 .list-item { transition-delay: calc((sibling-index() - 1) * 80ms); }
 ```
@@ -126,7 +122,7 @@ EVERY animation MUST honor `prefers-reduced-motion: reduce` — snap to final st
 - Animate `transform` + `opacity` ONLY on hot paths
 - `will-change` sparingly (transform, opacity only when actually animated)
 - Drop GPU layers after animation completes
-- INP target ≤100ms per `_kernel/standards.md#cwv` — animations shouldn't block input
+- INP target ≤100ms per `_kernel/standards.md#cwv` — animations must not block input
 
 ## Interaction polish (every interactive element)
 
@@ -143,8 +139,8 @@ Audit gate: Playwright cycles each interactive through 4 states → diff ≥3px 
 
 - ❌ Uniform fade-in on every element (AI slop tell)
 - ❌ Parallax on every section (one cinematic per page)
-- ❌ Spinning loaders that don't progress (use indeterminate progress bars or skeletons)
-- ❌ Auto-playing video w/ sound
+- ❌ Spinning loaders that don't progress
+- ❌ Auto-playing video with sound
 - ❌ Carousel auto-rotate (manual swipe only — accessibility)
 - ❌ Scroll-jacking that breaks browser back button
 - ❌ Animations that block input (INP >100ms)

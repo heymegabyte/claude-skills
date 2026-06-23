@@ -42,37 +42,17 @@ Default stack: `_kernel/standards.md#stack`. Override conditions below.
 
 ## Cloudflare-first decision tree
 
-### Compute
+**Compute**: Workers (default, every HTTP/cron/queue) · Pages (static-only marketing, rare) · Containers (non-JS runtimes: Playwright headful, ffmpeg, Python ML, build orchestration) · Sandbox SDK (generated/risky code before live promotion)
 
-- **Workers** (default) — every HTTP-serving surface, every cron, every queue consumer
-- **Pages** — static-only marketing (rare; Workers + Assets binding usually better)
-- **Containers** — non-JS runtimes (Playwright headful, ffmpeg, Python ML), browser rendering, build orchestration
-- **Sandbox SDK** — generated/risky code execution before promotion to live runtime
+**State**: D1 (default relational, ≤10GB/db, Sessions API read-replicas, Time Travel 30-day PIT) · KV (eventually-consistent, cache/sessions/feature-flags) · R2 (object storage, lifecycle Standard→IA after 30d) · Durable Objects (coordination + strongly-consistent SQLite storage since Apr 2025, chat rooms/builder sessions/rate-limiting) · Hyperdrive (front external Postgres/MySQL) · Vectorize (semantic search/RAG, 5M dim/index, topK 100, 10 metadata indexes)
 
-### State
+**Async**: Queues (best-effort, 5000 msg/sec, R2 event notifications) · Workflows v2 (deterministic, 50K concurrent, 300 creates/sec, 2M queued/workflow, `step.do` + `step.sleep` + `step.waitForEvent`) · Inngest (event-driven, better DX/observability)
 
-- **D1** (default) — relational, ≤10GB per database, Sessions API for read-replicas, Time Travel 30-day PIT
-- **KV** — eventually-consistent k/v, cache, sessions, feature-flag state
-- **R2** — object storage (images, PDFs, exports, backups), lifecycle Standard→IA after 30d
-- **Durable Objects** — coordination + strongly-consistent storage (chat rooms, builder sessions, rate limiting per-user). SQLite-backed since Apr 2025.
-- **Hyperdrive** — front external Postgres/MySQL (Neon, PlanetScale)
-- **Vectorize** — semantic search, RAG embeddings (5M dim/index, topK 100, 10 metadata indexes)
-
-### Async
-
-- **Queues** — best-effort delivery, 5000 msg/sec, R2 event notifications
-- **Workflows v2** — deterministic step-based, 50K concurrent, 300 creates/sec, 2M queued/workflow, `step.do` + `step.sleep` + `step.waitForEvent`
-- **Inngest** — event-driven w/ better DX/observability (where it fits)
-
-### AI
-
-- **Workers AI** — Llama 3.3 70B FP8 free, Llama 3.1 8B FP8, Llama 4 Scout 17B vision
-- **AI Gateway** — caching + rate-limit + fallback + logging for every LLM call
-- **Vectorize** — embeddings + ANN search
+**AI**: Workers AI (Llama 3.3 70B FP8 free, Llama 3.1 8B FP8, Llama 4 Scout 17B vision) · AI Gateway (caching + rate-limit + fallback + logging for every LLM call) · Vectorize (embeddings + ANN search)
 
 ## Override conditions (when CF isn't enough)
 
-| Need | Fallback | Adapter pattern |
+| Need | Fallback | Adapter |
 |---|---|---|
 | Advanced SQL (RLS, OLAP, partial indexes) | Neon Postgres via Hyperdrive | `SqlPort` |
 | Redis primitives at scale (sorted sets, streams) | Upstash Redis | `KvPort` |
@@ -84,60 +64,40 @@ Adapters live in `libs/core/ports/`. Product code imports port, never vendor SDK
 
 ## Auth (default Clerk M2M JWT)
 
-- **Clerk** — M2M JWT (free, networkless verification), passkeys, OAuth, magic links
-- **Better Auth** — when Clerk pricing doesn't fit (rare)
+- **Clerk** — M2M JWT (free, networkless verification), passkeys, OAuth, magic links; **Better Auth** when Clerk pricing doesn't fit (rare)
 - Hash API keys at rest. Audit log every sensitive action.
 - Tenant isolation: every table carries `org_id`, every query filters by it (404 on mismatch, never 403)
 
 ## Data patterns
 
-### D1 typed bindings
+**D1**
 
 ```toml
-# wrangler.jsonc
 [[d1_databases]]
 binding = "DB"
 database_name = "myapp"
 ```
 
 - `wrangler types` against `compatibility_date` + bindings (preferred over hand-maintained Env interface)
-- Drizzle v1 RQBv2 + Zod for query + validation
-- Batch via `db.batch([...])` (no transactions in D1)
-- Sessions API for read-replicas: `db.withSession(bookmark)`
-- Time Travel 30-day PIT: `wrangler d1 time-travel restore`
+- Drizzle v1 RQBv2 + Zod for query + validation; batch via `db.batch([...])` (no transactions in D1)
+- Sessions API: `db.withSession(bookmark)` · Time Travel: `wrangler d1 time-travel restore`
 
-### R2 patterns
+**R2**: per-extension content-type on upload · lifecycle Standard→IA after 30d · event notifications → Queues at 5000 msg/sec for thumbnailing/indexing · versioning for asset rollback
 
-- Per-extension content-type on upload
-- Lifecycle Standard → IA after 30d for backups/exports
-- R2 event notifications → Queues at 5000 msg/sec for thumbnailing/indexing
-- Versioning for asset rollback
-
-### DO patterns
-
-- One DO per stateful entity (chat room, builder session, rate-limited user)
-- SQLite-backed by default since Apr 2025 — 10GB per DO
-- Direct stub: `env.MY_DO.getByName(name)` (replaces `idFromName` → `get` two-step)
-- Alarm misfires → idempotent handler
+**Durable Objects**: one DO per stateful entity · SQLite-backed, 10GB per DO · direct stub `env.MY_DO.getByName(name)` · alarm misfires → idempotent handler
 
 ## Reliability
 
-- Workers CPU 10ms free / 50ms paid default (configurable 5min)
-- Wall time 30s paid
-- `ctx.waitUntil()` for async post-response work
-- `ctx.passThroughOnException()` for graceful degradation
-- WebSocket payload up to 32 MiB (CF Workers + DO)
-- JSRPC payload up to 32 MiB
+- Workers CPU 10ms free / 50ms paid default (configurable 5min); wall time 30s paid
+- `ctx.waitUntil()` for async post-response work; `ctx.passThroughOnException()` for graceful degradation
+- WebSocket + JSRPC payload up to 32 MiB
 
 ## Cost discipline
 
-- Workers free tier: 100k requests/day. Sufficient for most solo projects.
-- Workers Paid: $5/mo (10M requests + 30M CPU-ms included) + $0.30/M extra requests + $0.02/M extra CPU-ms (verified 2026-06-09 per `developers.cloudflare.com/workers/platform/pricing`)
-- D1 on Workers Paid: 5GB storage + 25B rows-read + 50M rows-written included/month, then $0.75/GB-month + $0.001/M extra rows-read + $1/M extra rows-written. No egress / bandwidth charges. Read replication is included (verified 2026-06-09 per `developers.cloudflare.com/d1/platform/pricing`)
-- R2: 10GB free, $0.015/GB-month, $0/egress (huge win vs S3)
-- Workers AI: Llama 3.3 70B FP8 FREE
-- AI Gateway: free
-- Reference: solo SaaS at <$100k/mo MRR stays 10-100× cheaper than AWS-equivalent on CF
+- Workers free tier: 100k req/day; Workers Paid: $5/mo (10M req + 30M CPU-ms) + $0.30/M extra req + $0.02/M extra CPU-ms
+- D1 on Workers Paid: 5GB + 25B rows-read + 50M rows-written/mo; then $0.75/GB-mo + $0.001/M rows-read + $1/M rows-written; no egress; read replication included (verified 2026-06-09)
+- R2: 10GB free, $0.015/GB-mo, $0/egress · Workers AI Llama 3.3 70B FP8 FREE · AI Gateway free
+- Solo SaaS <$100k/mo MRR stays 10-100× cheaper than AWS-equivalent on CF
 
 ## Default config (`wrangler.jsonc`)
 

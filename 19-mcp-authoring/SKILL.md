@@ -28,39 +28,26 @@ submodules:
 
 # 19 — MCP Authoring
 
-The Model Context Protocol (MCP) is the standard surface for giving AI agents structured
-access to external systems. An MCP server exposes three primitive types:
+Three primitive types:
 
-- **Tools** — callable functions with a JSON schema input, returning structured output.
-  The model decides when to call them. Think: "do something."
-- **Resources** — addressable content (files, DB rows, live feeds) returned as text or
-  binary. The model fetches them. Think: "read something."
-- **Prompts** — reusable prompt templates with typed arguments. Think: "fill and inject."
+- **Tools** — callable functions (JSON schema input → structured output). Model decides when to call. "Do something."
+- **Resources** — addressable content (files, DB rows, feeds) returned as text/binary. "Read something."
+- **Prompts** — reusable templates with typed args. "Fill and inject."
 
-Source authority: modelcontextprotocol.io/introduction, `@modelcontextprotocol/sdk` NPM package.
-
----
+Source authority: modelcontextprotocol.io/introduction, `@modelcontextprotocol/sdk` NPM.
 
 ## When to author an MCP server
 
-Build one when:
+Build when:
 
-- An existing REST API or Worker function would provide genuine value to an AI agent but
-  is not currently reachable as a tool (the cost of schema-wrapping is lower than the
-  benefit of agent access).
-- You need to share a tool set across multiple Claude sessions / Claude Code projects
-  without copy-pasting prompts.
-- A CF Worker already owns the business logic and you want to give Claude persistent,
-  auth-aware access (HTTP transport on Workers = zero extra infra).
-- You are extending the forge pipeline to emit MCP servers from OpenAPI specs
-  (`--target=mcp-server` flag — see `forge-mcp-from-openapi.md`).
+- A REST API/Worker would provide genuine agent value and schema-wrapping cost < benefit
+- Tool set needs sharing across multiple Claude sessions without copy-pasting prompts
+- CF Worker owns business logic and you want Claude persistent auth-aware access (HTTP transport = zero extra infra)
+- Extending the forge pipeline (`--target=mcp-server` — see `forge-mcp-from-openapi.md`)
 
-Do NOT build one when a simple `[[hono-api]]` route + direct `curl` / `fetch` suffices —
-MCP adds SDK overhead that isn't justified for one-off integrations.
+Do NOT build when a simple `[[hono-api]]` route + direct `fetch` suffices — MCP adds SDK overhead not justified for one-off integrations.
 
----
-
-## Architecture overview
+## Architecture
 
 ```
 Claude Code / Claude Desktop
@@ -81,11 +68,7 @@ Claude Code / Claude Desktop
  External system (D1 / R2 / Vectorize / external API)
 ```
 
-Every tool input validated with `z.parse()` before hitting the system. Every result
-validated before returning. No raw model outputs, no untyped `any`. Per `[[contract-first-ai]]`
-and `[[zod-everywhere]]`.
-
----
+Every tool input: `z.parse()` before hitting the system. Every result: Zod-validated before returning. Per `[[contract-first-ai]]` and `[[zod-everywhere]]`.
 
 ## Transport decision
 
@@ -97,9 +80,8 @@ and `[[zod-everywhere]]`.
 | Streaming | Native (stdout) | SSE (`text/event-stream`) |
 | Setup | `~/.claude.json` mcpServers entry | CF Worker deploy + `.claude.json` remote entry |
 | Best for | Dev tools, local scripts, secret-laden CLIs | Shared team tools, SaaS integrations, per-user auth |
-| Per `[[cloudflare-lock-in-is-leverage]]` | Use for purely local utilities | Prefer — CF Workers = zero cold-start, global, cheap |
 
----
+Per `[[cloudflare-lock-in-is-leverage]]`: prefer HTTP on CF Workers over any third-party MCP host.
 
 ## .claude.json registration
 
@@ -111,9 +93,7 @@ and `[[zod-everywhere]]`.
     "my-local-tool": {
       "command": "node",
       "args": ["/absolute/path/to/mcp-server/dist/index.js"],
-      "env": {
-        "DB_PATH": "/Users/Apple/data/mydb.sqlite"
-      }
+      "env": { "DB_PATH": "/Users/Apple/data/mydb.sqlite" }
     }
   }
 }
@@ -126,18 +106,13 @@ and `[[zod-everywhere]]`.
   "mcpServers": {
     "my-worker-tool": {
       "url": "https://my-mcp.workers.dev/mcp",
-      "headers": {
-        "Authorization": "Bearer ${MY_MCP_TOKEN}"
-      }
+      "headers": { "Authorization": "Bearer ${MY_MCP_TOKEN}" }
     }
   }
 }
 ```
 
-Place at `~/.claude.json` for global registration or `.claude.json` at repo root for
-project-scoped registration. Claude Code picks up both.
-
----
+Place at `~/.claude.json` (global) or `.claude.json` at repo root (project-scoped).
 
 ## Sub-modules
 
@@ -145,18 +120,14 @@ project-scoped registration. Claude Code picks up both.
 - `http-server-on-workers.md` — Hono + MCP SDK + SSE on CF Workers, wrangler.toml, auth
 - `forge-mcp-from-openapi.md` — plan for extending `bin/forge-skill-from-openapi.mjs` to emit MCP servers
 
----
+## Quality gates (every MCP server)
 
-## Quality gates for every MCP server
-
-1. All tool inputs have a Zod schema — never accept raw `unknown`.
-2. All tool results conform to a Zod output schema before returning.
-3. Errors return MCP `isError: true` with structured `{ code, message }`, never throw raw JS errors.
-4. Every tool has a `description` that an LLM can use to decide when to call it — specific, ≤2 sentences.
-5. No secret values in tool schemas or resource URIs — pass via `env` block in `.claude.json`.
-6. Smoke-test with `npx @modelcontextprotocol/inspector` before registering.
-
----
+1. All tool inputs have a Zod schema — never accept raw `unknown`
+2. All tool results conform to a Zod output schema before returning
+3. Errors return MCP `isError: true` with structured `{ code, message }` — never throw raw JS errors
+4. Every tool `description` ≤2 sentences, specific enough for an LLM to decide when to call it
+5. No secret values in tool schemas or resource URIs — pass via `env` block in `.claude.json`
+6. Smoke-test with `npx @modelcontextprotocol/inspector` before registering
 
 ## Cross-links
 
