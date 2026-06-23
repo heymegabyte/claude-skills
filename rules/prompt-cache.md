@@ -28,24 +28,24 @@ Structure prompts with deterministic skill load order and static prefixes first 
 
 ## Cache mechanics
 
-- Minimum cacheable prefix is model-dependent:
-  - **Opus 4.8/4.7/4.6/4.5 + Haiku 4.5** require 4,096 tokens
-  - **Sonnet 4.6/4.5 + Opus 4.1 + older** require 1,024 tokens
+- Minimum cacheable prefix:
+  - **Opus 4.8/4.7/4.6/4.5 + Haiku 4.5** — 4,096 tokens
+  - **Sonnet 4.6/4.5 + Opus 4.1 + older** — 1,024 tokens
 - Max **4 explicit `cache_control` breakpoints** per request
-- TTL: 5min default (free refresh on hit), 1hr extended via `{"ttl": "1h"}`
-- 1h entries MUST precede 5m entries in the same request — out-of-order placement silently demotes 1h to 5m
+- TTL: 5min default; 1hr via `{"ttl": "1h"}`
+- 1h entries MUST precede 5m entries — out-of-order silently demotes 1h to 5m
 
 ## Cache pricing multipliers
 
-- 5m write = 1.25×
-- 1h write = 2.0×
-- Read = 0.1×
-- Output = 1.0×
-- Break-even: 1h beats 5m only at ≥ 3 reads/hour
+- **5m write** — 1.25×
+- **1h write** — 2.0×
+- **Read** — 0.1×
+- **Output** — 1.0×
+- Break-even: 1h beats 5m only at ≥3 reads/hour
 
 ## Breakpoint placement
 
-- Set at natural boundaries: end of tool definitions, end of system prompt, end of rules, end of conversation
+- Set at natural boundaries: end of tool definitions, system prompt, rules, conversation
 - Optimal ordering: Tools → system → rules → skills → conversation
 
 ## Cache pre-warm
@@ -60,24 +60,24 @@ Structure prompts with deterministic skill load order and static prefixes first 
 - `web_search`/`citations` toggled → system + messages cleared
 - `tool_choice`/images/thinking-mode change → messages cleared (system + tool-defs preserved)
 - Switching adaptive ↔ enabled ↔ disabled thinking modes breaks message cache
-- Any rule/skill edit invalidates that block's cache — batch edits in one prompt = single invalidation
+- Any rule/skill edit invalidates that block — batch edits in one prompt = single invalidation
 - Avoid editing rules mid-conversation
 
 ## Cache lookback
 
 - 20-block window
-- Placing `cache_control` on per-request varying content (timestamps, request IDs) guarantees miss
+- `cache_control` on per-request varying content (timestamps, request IDs) guarantees miss
 
 ## Opus 4.7/4.8 tokenizer change
 
-- **~35% more tokens for the same input vs Opus 4.6** — the tokenizer was upgraded in 4.7 and carried forward unchanged in **4.8** (`claude-opus-4-8`, the current flagship per `model-routing.md`)
+- **~35% more tokens for the same input vs Opus 4.6** — tokenizer upgraded in 4.7, carried forward unchanged in **4.8** (`claude-opus-4-8`, current flagship per `model-routing.md`)
 - Per-token price unchanged but effective request cost rises — factor into cost-estimator and pre-warm decisions
-- Cache mechanics, prefix minimums, and 4-breakpoint ceiling are all identical across 4.7 ↔ 4.8 — no migration work beyond updating model IDs
+- Cache mechanics, prefix minimums, and 4-breakpoint ceiling are identical across 4.7 ↔ 4.8
 
 ## Subagent caching
 
 - Fill subagents with up to 900K relevant context (skills, research, code) — they get their own cache
-- Return ≤ 200 word summary to main thread
+- Return ≤200 word summary to main thread
 
 ## Token-efficient tool use (Sonnet 4.6)
 

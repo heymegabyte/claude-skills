@@ -12,8 +12,6 @@ paths:
 
 # Quality Thresholds
 
-Define minimum pass/fail thresholds for readability, performance, accessibility, SEO, and security that every shipped surface must clear.
-
 ## Readability
 
 - Flesch ≥ 60
@@ -24,20 +22,18 @@ Define minimum pass/fail thresholds for readability, performance, accessibility,
 
 - LCP ≤ 2.5s (4-phase: TTFB → load delay → load time → render delay)
 - CLS ≤ 0.1
-- **INP ≤ 200ms** (3-phase: input delay → processing → presentation delay)
-- 43% of sites fail INP — strict ≤ 100ms is the cinematic target
+- **INP ≤ 200ms** (3-phase: input delay → processing → presentation delay); strict ≤100ms cinematic target
 - Worker CPU ≤ 50ms p99 (free tier 10ms CPU cap; paid 30s wall + 50ms CPU default, configurable to 5min)
 - Debug INP via **Long Animation Frames API** (`PerformanceObserver` type:`long-animation-frame`, web-vitals v4+ `longAnimationFrameEntries`)
-- For SPA per-route CWV use **Soft Navigations API** (`softNavs:true` in web-vitals v4+)
+- SPA per-route CWV: **Soft Navigations API** (`softNavs:true` in web-vitals v4+)
 
 ## Budgets
 
-- JS ≤ 200KB gz total/route
-- No single chunk > 250KB gz (code-split React.lazy + manualChunks)
+- JS ≤ 200KB gz total/route; no single chunk > 250KB gz (code-split React.lazy + manualChunks)
 - CSS ≤ 50KB gz
 - Fonts ≤ 100KB woff2 preload + unicode-range subset
-- Image sizes are **use-based, not a fixed per-image cap** — see `image-optimization` (icons 5–50KB · cards 40–120KB · content 80–250KB · hero 250–500KB · fullscreen 400–900KB when justified). Page budget: <1MB above-fold, <2MB total.
-- Photos → **AVIF primary** (20-30% smaller than WebP, 94% browser support) + WebP fallback + JPEG legacy; SVG for logos/icons. Responsive `srcset` 320/640/960/1280/1920w. Treat oversized-for-use images as a perf bug.
+- Images: use-based, not per-image cap (icons 5–50KB · cards 40–120KB · content 80–250KB · hero 250–500KB · fullscreen 400–900KB when justified). Page budget: <1MB above-fold, <2MB total.
+- Photos → **AVIF primary** (20-30% smaller than WebP, 94% browser support) + WebP fallback + JPEG legacy; SVG for logos/icons. Responsive `srcset` 320/640/960/1280/1920w.
 - Drop JPEG XL (10% support)
 - og-image 1200×630 ≤ 100KB BRANDED CARD (not raw photo)
 - apple-touch-icon 180×180 mandatory
@@ -46,7 +42,7 @@ Define minimum pass/fail thresholds for readability, performance, accessibility,
 
 ## A11y
 
-- axe-core 0 violations — but **axe 0 ≠ AA conformance** (it auto-tests only 2.5.8 of the 9 new WCAG 2.2 SC, ~57% of issues by volume). Green axe is necessary, never sufficient.
+- axe-core 0 violations — **axe 0 ≠ AA conformance** (auto-tests only 2.5.8 of 9 new WCAG 2.2 SC, ~57% of issues by volume). Green axe is necessary, never sufficient.
 - Lighthouse ≥ 95
 - Contrast ≥ 4.5:1
 - Target size ≥ 24px (WCAG 2.2 2.5.8 — the one criterion axe auto-tests)
@@ -92,13 +88,13 @@ Define minimum pass/fail thresholds for readability, performance, accessibility,
 - Meta desc 120-156 chars HARD
 - Keyphrase 0.5-3%
 - JSON-LD per page only when accurate; never pad. WebPage is the floor; add Organization/BreadcrumbList/FAQPage/Person/Product/Service ONLY when they describe real entities on the page
-- FAQPage only when real Q&A exists on the page. Don't fabricate Q&A to add the schema
+- FAQPage only when real Q&A exists on the page — never fabricate Q&A to add the schema
 - Exactly 1 H1 in HTML shell (prerender, NOT script-injected)
 - Every internal asset ref resolves to real file in build output
 - `sitemap.xml` every `<url>` has `<lastmod>`
 - Canonical uses custom hostname when `primary_hostname` set
 - `color-scheme` meta present
-- JSON-LD claims should match visible content (don't lie via schema)
+- JSON-LD claims must match visible content (don't lie via schema)
 - Person + `sameAs` on author pages when there's a real author bio
 - BreadcrumbList on multi-level routes (≥2 segments deep)
 

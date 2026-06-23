@@ -14,74 +14,47 @@ paths:
 
 # Router Drift Auto-Reconciliation
 
-`_router.md` is the live map Claude uses to resolve which skill handles a task. Orphan
-skills — files that exist on disk but are absent from the router — are invisible to
-routing. They accumulate silently: no error, no warning, just degraded skill coverage
-over time.
+`_router.md` is the live map Claude uses to resolve which skill handles a task. Orphan skills (on disk, absent from router) are invisible — they accumulate silently with no error, just degraded coverage.
 
-**The principle:** router reconciliation must be continuous, not periodic. Every write
-to a skill submodule file should trigger an immediate registration check. Manual
-`/audit-router --fix` passes are a fallback, not the baseline.
-
----
+Router reconciliation MUST be continuous, not periodic. Every skill submodule write triggers an immediate registration check. Manual `/audit-router --fix` is a fallback, not the baseline.
 
 ## Reference incident (2026-06-18)
 
-`/audit-router --fix` found **51 orphan skills, 0 stale entries** after ~1 month of
-active skill development. The map was never wrong — it was perpetually incomplete.
-PostToolUse hook `router-reconcile-on-skill-write.py` was wired the same turn.
-
----
+`/audit-router --fix` found **51 orphan skills, 0 stale entries** after ~1 month of active development. PostToolUse hook `router-reconcile-on-skill-write.py` was wired the same turn.
 
 ## The hook
 
-**File:** `~/.claude/hooks/router-reconcile-on-skill-write.py`
-
-**Event:** `PostToolUse`
-
-**Matcher:** `Write|Edit|MultiEdit`
-
-**Trigger condition:** modified path matches
-`~/.claude/plugins/heymegabyte-claude-skills/[0-9]+-*/**.md`
-(numbered submodule directory; excludes `SKILL.md` which describes a category, not a slug)
+- **File:** `~/.claude/hooks/router-reconcile-on-skill-write.py`
+- **Event:** `PostToolUse`
+- **Matcher:** `Write|Edit|MultiEdit`
+- **Trigger condition:** modified path matches `~/.claude/plugins/heymegabyte-claude-skills/[0-9]+-*/**.md` (excludes `SKILL.md`)
 
 **Logic:**
 
-1. Parse the modified file path from stdin JSON (`tool_input.file_path`)
-2. Extract `category_dir` (e.g., `05-architecture-and-stack`) and `slug` (e.g., `cf-auto-provision`)
+1. Parse modified file path from stdin JSON (`tool_input.file_path`)
+2. Extract `category_dir` and `slug`
 3. Search `_router.md` for `` `slug` `` — if found, no-op
-4. If not found: locate the category's line in the Category Map and append `,`slug`` to its slug list
-5. If no category line exists: insert a new Category Map entry
-6. Write the updated `_router.md` back to disk
+4. If not found: append `,`slug`` to the category's slug list in Category Map
+5. If no category line exists: insert new Category Map entry
+6. Write updated `_router.md`
 
-**Output to stderr:**
+**stderr output:**
 
-- `router-reconcile: registered orphan {slug} in {category_dir}` — slug was missing, now added
-- `router-reconcile: no action needed ({slug})` — slug was already present
-- `router-reconcile: skipping SKILL.md in {category_dir}` — SKILL.md writes are intentionally skipped
+- `router-reconcile: registered orphan {slug} in {category_dir}`
+- `router-reconcile: no action needed ({slug})`
+- `router-reconcile: skipping SKILL.md in {category_dir}`
 
-**Override:** `CLAUDE_ROUTER_RECONCILE_DISABLE=1` suppresses the hook for batch operations
-(e.g., mass skill imports or router rebuilds where you want a single `/audit-router --fix`
-pass instead of N individual writes).
-
----
+**Override:** `CLAUDE_ROUTER_RECONCILE_DISABLE=1` suppresses hook for batch operations (mass imports, router rebuilds). Never leave set globally.
 
 ## What the hook does NOT do
 
-- Does not remove stale entries — that requires `/audit-router --fix` (stale detection needs
-  glob verification against the full filesystem)
-- Does not update Task Routing rules — only the Category Map slug lists
-- Does not fire on rules files (`rules/*.md`) — those are not routeable slugs
-- Does not fire on `SKILL.md` — category descriptors, not slugs
+- Does not remove stale entries — use `/audit-router --fix` (needs full filesystem glob)
+- Does not update Task Routing rules — only Category Map slug lists
+- Does not fire on `rules/*.md` or `SKILL.md`
 
-For stale entry pruning or task routing updates, run `/audit-router --fix` manually or on
-a periodic cadence (monthly is sufficient given the hook handles daily drift).
-
----
+Run `/audit-router --fix` for stale pruning or task routing updates (monthly cadence sufficient).
 
 ## Wiring in settings.json
-
-The hook is registered under `PostToolUse` alongside `enforce-tdd-e2e.py`:
 
 ```json
 "PostToolUse": [
@@ -103,45 +76,25 @@ The hook is registered under `PostToolUse` alongside `enforce-tdd-e2e.py`:
 ]
 ```
 
----
-
 ## Anti-patterns
 
-- **Relying on periodic manual audits** — a 51-orphan backlog is the result; the hook
-  reduces this to 0 permanently.
-- **Running `/audit-router --fix` after every single skill write** — the hook replaces
-  that pattern; reserve `--fix` for full sweeps (post-sprint, new developer onboarding,
-  post-merge from a fork).
-- **Setting `CLAUDE_ROUTER_RECONCILE_DISABLE=1` globally** — the override exists for
-  batch operations only; leaving it set defeats the entire principle.
-- **Skipping SKILL.md from hook scope** — SKILL.md is a category descriptor, not a slug;
-  including it would cause false positives. The hook correctly skips it.
-
----
+- Relying on periodic manual audits — 51-orphan backlog is the result
+- Running `/audit-router --fix` after every single skill write — hook replaces that
+- Setting `CLAUDE_ROUTER_RECONCILE_DISABLE=1` globally
 
 ## Verification
 
-After wiring:
-
 ```bash
-# Confirm hook is executable
 ls -la ~/.claude/hooks/router-reconcile-on-skill-write.py
-
-# Confirm wiring in settings.json
 jq '.hooks.PostToolUse' ~/.claude/settings.json
-
-# Smoke test: create a dummy skill file and verify _router.md was updated
 echo "test" > ~/.claude/plugins/heymegabyte-claude-skills/05-architecture-and-stack/_test-reconcile.md
 grep '_test-reconcile' ~/.claude/plugins/heymegabyte-claude-skills/_router.md
-# → should show the slug registered; then clean up:
 rm ~/.claude/plugins/heymegabyte-claude-skills/05-architecture-and-stack/_test-reconcile.md
 ```
 
----
-
 ## See also
 
-- `[[audit-router]]` — full sweep command; handles stale pruning + task routing updates the hook cannot
+- `[[audit-router]]` — full sweep; handles stale pruning + task routing updates the hook cannot
 - `[[bash-matcher-guardrails]]` — `PostToolUse` event name, `Write|Edit|MultiEdit` matcher syntax
-- `[[drift-detection]]` — router orphans as a class of doc drift; this hook is the auto-fix for that class
-- `rules/principles-incident-log.md` § 18 — incident log entry for the 2026-06-18 51-orphan discovery
+- `[[drift-detection]]` — router orphans as a class of doc drift; this hook is the auto-fix
+- `rules/principles-incident-log.md` §18 — 2026-06-18 51-orphan incident log

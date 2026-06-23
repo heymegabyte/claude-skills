@@ -26,7 +26,7 @@ const BUDGET = 38_000; // priority:1 (tier-1) set — headroom under the router'
 // RATCHET: set just above the current compressed total; lower it as the compression
 // arc shrinks files further. It may only go DOWN — this is what stops the every-prompt
 // load drifting back toward 150K (the Jun-21 user directive). Per [[instruction-compression-playbook]].
-const ELIGIBLE_BUDGET = 72_000;
+const ELIGIBLE_BUDGET = 68_000;
 const JSON_OUT = process.argv.includes('--json');
 const CI = process.argv.includes('--ci');
 
