@@ -57,9 +57,16 @@ Cross-links: `[[brian-preferences]]` `[[always]]` `[[drift-detection]]` `[[repo-
 - **Code blocks** — do NOT gut working code; it is reference, not prose. Long code-heavy files are legitimate (`[[webhook-receiver-architecture]]` = 523 lines, fine). Apply progressive disclosure instead (Rule below).
 - **User-facing query templates** — compress 0%. Exact wording matters.
 
+## Dynamic sourcing — `reference/` (Brian, 2026-06-21)
+
+- Heavy **implementation detail** (full code handlers, schemas, RFC templates, exhaustive examples) lives in `reference/<owning-rule>.md`, NOT inline. The router indexes only `rules/*.md` + `*/SKILL.md`, so `reference/` costs **0 tokens until Read on demand**.
+- Keep in the rule: the **requirement** (WHAT/WHEN, thresholds, vendor/version, [MUST]) + a plain-path pointer `` See `reference/<topic>.md` ``. Move out: the **HOW** (long code, boilerplate).
+- Keep inline: short snippets that ARE the spec (a required header value, a legally-required field). Pointer is a plain path, NOT a `[[crosslink]]`.
+- Net effect: a domain rule loads lean every time its triggers fire; the implementation is one `Read` away when actually building. See `reference/README.md`.
+
 ## Structural moves (SHOULD)
 
-- **Progressive disclosure** — SKILL.md is a table of contents. Inline only what changes per-task; link the rest one level deep (`See [[ref]]`). Never nest references >1 deep.
+- **Progressive disclosure** — SKILL.md is a table of contents. Inline only what changes per-task; link the rest one level deep (`See [[ref]]` for rules, `` `reference/x.md` `` for code). Never nest references >1 deep.
 - **Critical-first-and-last** — put the most load-bearing constraint in the first 10 lines AND echo in the last 5. Middle-context recall is ~40% worse (U-curve / "lost in the middle").
 - **Archive temporal guidance** — date-stamped patterns ("before Aug 2025…") go stale; wrap in `<details>` or a `## Legacy` block so they cost 0 tokens to skip.
 - **TOC for files >100 lines** — add a `## Contents` block so the file can be preview-read without full load.

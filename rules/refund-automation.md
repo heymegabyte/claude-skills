@@ -28,224 +28,48 @@ No payment feature merges without automated refund + dispute paths wired up. A s
 - **Both rails** — D1 `payment_events` dedupe table prevents double-refund on webhook replay.
 - **Both rails** — Resend receipt issued within 30 seconds of webhook processing via `ctx.waitUntil()`.
 
-## Correct Pattern — Stripe dispute auto-accept
+## Handler requirements
 
-```ts
-// worker/features/billing/stripe-webhooks.ts
-import Stripe from 'stripe';
-import { z } from 'zod';
+### Stripe dispute (`charge.dispute.created`)
 
-const DisputeSchema = z.object({
-  id: z.string(),
-  amount: z.number(),
-  currency: z.string(),
-  charge: z.string(),
-});
+- Zod-parse `event.data.object` before any DB write; reject malformed payloads.
+- Idempotency check against `payment_events(event_id, source='stripe')` before calling any Stripe API.
+- Auto-accept when `dispute.amount <= 2500` cents; submit evidence for larger disputes.
+- Evidence fields: `customer_email_address`, `receipt` URL, `uncategorized_text`.
 
-export async function handleStripeDispute(
-  env: Env,
-  stripe: Stripe,
-  event: Stripe.Event,
-): Promise<void> {
-  const dispute = DisputeSchema.parse(event.data.object);
+See `reference/refund-automation.md` for the full `handleStripeDispute` handler.
 
-  // idempotency guard — webhook may fire more than once
-  const already = await env.DB.prepare(
-    'SELECT 1 FROM payment_events WHERE event_id = ? AND source = ?',
-  ).bind(event.id, 'stripe').first();
-  if (already) return;
+### Stripe subscription cancellation
 
-  await env.DB.prepare(
-    'INSERT INTO payment_events (event_id, source, processed_at) VALUES (?, ?, ?)',
-  ).bind(event.id, 'stripe', new Date().toISOString()).run();
+- Calculate `daysSinceBillingCycleStart = floor((now/1000 - sub.current_period_start) / 86400)`.
+- Within 30 days: `stripe.subscriptions.cancel({ prorate: true })` then retrieve upcoming invoice credit balance and immediately create a refund against the original charge.
+- Outside 30 days: `stripe.subscriptions.update({ cancel_at_period_end: true })`, no refund.
 
-  // auto-accept disputes under $25 (amount is in cents)
-  if (dispute.amount <= 2500) {
-    await stripe.disputes.accept(dispute.id);
-    // evidence submission is optional for small disputes; Stripe closes them automatically
-    return;
-  }
+See `reference/refund-automation.md` for the full `cancelSubscription` implementation.
 
-  // larger disputes: submit evidence (receipt, IP log, delivery confirmation)
-  await stripe.disputes.update(dispute.id, {
-    evidence: {
-      customer_email_address: await getCustomerEmail(env, dispute.charge),
-      receipt: await buildReceiptEvidenceUrl(env, dispute.charge),
-      uncategorized_text: 'Customer received and used the service. See attached receipt.',
-    },
-    submit: true,
-  });
-}
-```
+### Square dispute (`DISPUTE_CREATED`)
 
-## Correct Pattern — Stripe subscription cancellation with proration refund
+- Same idempotency pattern against `payment_events(event_id, source='square')`.
+- Auto-accept at ≤ 2500 cents via `client.disputesApi.acceptDispute(dispute.id)`.
+- Submit evidence for larger disputes via `client.disputesApi.submitEvidenceDispute(dispute.id)`.
 
-```ts
-// worker/features/billing/cancel-subscription.ts
-export async function cancelSubscription(
-  env: Env,
-  stripe: Stripe,
-  subscriptionId: string,
-  userId: string,
-): Promise<{ refundAmount: number; currency: string }> {
-  const sub = await stripe.subscriptions.retrieve(subscriptionId);
-  const daysSinceBillingCycleStart = Math.floor(
-    (Date.now() / 1000 - sub.current_period_start) / 86400,
-  );
+See `reference/refund-automation.md` for the full `handleSquareDispute` handler.
 
-  if (daysSinceBillingCycleStart <= 30) {
-    // cancel immediately and issue prorated refund for unused days
-    const cancelled = await stripe.subscriptions.cancel(subscriptionId, {
-      prorate: true,
-    });
+### Refund receipt email
 
-    // Stripe creates a credit balance; convert to refund immediately
-    const invoice = await stripe.invoices.retrieveUpcoming({
-      customer: sub.customer as string,
-    });
-    const creditBalance = Math.abs(invoice.amount_due); // negative = credit
+- Send via Resend inside `ctx.waitUntil()` — never block the API response.
+- Format amount with `Intl.NumberFormat` using the charge's currency.
+- From address must pass `email-deliverability.md` gate (SPF+DKIM+DMARC).
 
-    if (creditBalance > 0) {
-      const charge = sub.latest_invoice
-        ? (await stripe.invoices.retrieve(sub.latest_invoice as string)).charge
-        : null;
+See `reference/refund-automation.md` for the full `sendRefundReceipt` implementation.
 
-      if (charge) {
-        await stripe.refunds.create({
-          charge: charge as string,
-          amount: creditBalance,
-          reason: 'requested_by_customer',
-        });
-      }
-    }
+## Anti-patterns (build-fail)
 
-    return { refundAmount: creditBalance, currency: sub.currency };
-  }
+- **Stub dispute handler** — `charge.dispute.created` registered but returns early without action → 0.75% chargeback rate, processor suspension risk.
+- **Manual refund queue** — inserting to a `pending_refunds` table for human processing → solo builder never drains it; chargebacks follow.
+- **No idempotency guard** — calling `stripe.disputes.accept()` or `stripe.refunds.create()` without checking `payment_events` first → webhook replay fires twice.
 
-  // outside the 30-day window: cancel at period end, no refund
-  await stripe.subscriptions.update(subscriptionId, {
-    cancel_at_period_end: true,
-  });
-  return { refundAmount: 0, currency: sub.currency };
-}
-```
-
-## Correct Pattern — Square dispute auto-accept
-
-```ts
-// worker/features/payments/square-webhooks.ts
-import { Client, Environment } from 'square';
-import { z } from 'zod';
-
-const SquareDisputeSchema = z.object({
-  id: z.string(),
-  amount_money: z.object({
-    amount: z.number(), // cents
-    currency: z.string(),
-  }),
-  disputed_payment: z.object({ payment_id: z.string() }),
-});
-
-export async function handleSquareDispute(
-  env: Env,
-  client: Client,
-  payload: unknown,
-): Promise<void> {
-  const { data } = z.object({ data: z.object({ object: z.object({ dispute: SquareDisputeSchema }) }) }).parse(payload);
-  const dispute = data.object.dispute;
-
-  // idempotency guard
-  const already = await env.DB.prepare(
-    'SELECT 1 FROM payment_events WHERE event_id = ? AND source = ?',
-  ).bind(dispute.id, 'square').first();
-  if (already) return;
-
-  await env.DB.prepare(
-    'INSERT INTO payment_events (event_id, source, processed_at) VALUES (?, ?, ?)',
-  ).bind(dispute.id, 'square', new Date().toISOString()).run();
-
-  if (dispute.amount_money.amount <= 2500) {
-    await client.disputesApi.acceptDispute(dispute.id);
-    return;
-  }
-
-  // submit evidence for larger disputes
-  await client.disputesApi.submitEvidenceDispute(dispute.id);
-}
-```
-
-## Correct Pattern — Resend refund receipt
-
-```ts
-// worker/lib/refund-receipt.ts
-import { Resend } from 'resend';
-
-export async function sendRefundReceipt(
-  ctx: ExecutionContext,
-  env: Env,
-  opts: {
-    to: string;
-    refundAmount: number;
-    currency: string;
-    originalChargeDate: string;
-    reason: string;
-  },
-): Promise<void> {
-  const resend = new Resend(env.RESEND_API_KEY);
-  const formatted = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: opts.currency.toUpperCase(),
-  }).format(opts.refundAmount / 100);
-
-  // non-blocking — receipt does not delay the API response
-  ctx.waitUntil(
-    resend.emails.send({
-      from: 'billing@megabyte.space',
-      to: opts.to,
-      subject: `Refund of ${formatted} processed`,
-      html: `<p>Your refund of ${formatted} has been processed. Original charge: ${opts.originalChargeDate}. Reason: ${opts.reason}. Allow 5–10 business days to appear on your statement.</p>`,
-    }),
-  );
-}
-```
-
-## Anti-Patterns
-
-### No dispute handler
-
-```ts
-// BAD — dispute webhook registered but handler is a stub
-app.post('/webhooks/stripe', async (c) => {
-  const event = await stripe.webhooks.constructEvent(...);
-  if (event.type === 'charge.dispute.created') {
-    // TODO: handle disputes
-    return c.json({ ok: true });
-  }
-});
-// Result: 0.75% chargeback rate, processor flags account, possible suspension
-```
-
-### Manual refund queue
-
-```ts
-// BAD — creates a D1 table of "refunds to process manually"
-// Solo builder never empties this queue; chargebacks follow
-await env.DB.prepare(
-  'INSERT INTO pending_refunds (charge_id, reason, created_at) VALUES (?, ?, ?)',
-).bind(chargeId, 'cancellation', new Date().toISOString()).run();
-```
-
-### Refund without idempotency guard
-
-```ts
-// BAD — webhook replay fires refund twice
-app.post('/webhooks/stripe', async (c) => {
-  const event = ...; // parsed
-  if (event.type === 'charge.dispute.created') {
-    await stripe.disputes.accept(event.data.object.id); // fires again on retry
-  }
-});
-```
+See `reference/refund-automation.md` for code examples of each anti-pattern.
 
 ## Checklist
 
