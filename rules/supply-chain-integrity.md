@@ -33,126 +33,42 @@ npm packages are routinely compromised (`event-stream`, `ua-parser-js`, `node-ip
 
 ## Install policy: scripts off by default
 
-Never run `npm install` without `--ignore-scripts` unless you have audited the `postinstall` chain.
-
-```bash
-# CORRECT — scripts disabled by default
-npm install --ignore-scripts
-
-# If a package genuinely needs scripts (native bindings, etc.):
-# 1. Audit what the script does FIRST
-# 2. Run with --foreground-scripts to see output
-npm install --foreground-scripts <specific-package>
-
-# Add to .npmrc to enforce project-wide
-echo "ignore-scripts=true" >> .npmrc
-```
-
+- Always pass `--ignore-scripts` to `npm install` unless you have audited the `postinstall` chain first.
 - Re-enable scripts only for packages that explicitly need them (e.g., `esbuild`, `sharp`).
-- Document every exception in `.npmrc` with an inline comment.
+- Document every exception in `.npmrc` with an inline comment; add `ignore-scripts=true` to `.npmrc` to enforce project-wide.
+
+See `reference/supply-chain-integrity.md` for the full implementation.
 
 ## Lockfile integrity
 
-```bash
-# Verify lockfile integrity on CI (fail if lockfile was modified)
-npm ci --ignore-scripts  # npm ci fails if lockfile is out of sync with package.json
-
-# For pnpm
-pnpm install --frozen-lockfile --ignore-scripts
-
-# For yarn berry
-yarn install --immutable --ignore-scripts
-```
-
 - Commit `package-lock.json` (or `pnpm-lock.yaml`). Never `.gitignore` a lockfile.
+- CI MUST use `npm ci --ignore-scripts` (or `--frozen-lockfile` / `--immutable` for pnpm/yarn) — these fail when the lockfile is out of sync with `package.json`.
+
+See `reference/supply-chain-integrity.md` for the full implementation.
 
 ## Commit signing
 
-Every commit to main must be signed. Unsigned commits can be forged by anyone with push access.
+- Every commit to main must be signed. Unsigned commits can be forged by anyone with push access.
+- Enable globally via `git config --global commit.gpgsign true` (GPG) or `gpg.format ssh` (SSH / 1Password).
+- CI must verify the signature with `git log --show-signature` and exit 1 on failure.
 
-```bash
-# Enable signed commits globally
-git config --global commit.gpgsign true
-git config --global user.signingkey <YOUR_GPG_KEY_ID>
-
-# Or use SSH signing (simpler for 1Password SSH agent users)
-git config --global gpg.format ssh
-git config --global user.signingkey "key::ssh-ed25519 AAAA..."
-git config --global gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
-```
-
-Verify in CI:
-
-```yaml
-# .github/workflows/verify-commits.yml
-- name: Verify commit signatures
-  run: |
-    git log --show-signature -1 | grep -E "(gpg|Good signature|using RSA|using ED25519)" \
-      || (echo "ERROR: unsigned commit" && exit 1)
-```
+See `reference/supply-chain-integrity.md` for the full implementation.
 
 ## SBOM generation
 
-Every release generates a CycloneDX SBOM from the lockfile — the audit trail for "what exactly shipped."
+- Every release generates a CycloneDX SBOM from the lockfile — the audit trail for "what exactly shipped."
+- Use `npx @cyclonedx/cyclonedx-npm --output-file sbom.json`.
+- Store the SBOM in R2 alongside the deploy artifact via `wrangler r2 object put`.
 
-```bash
-# Generate CycloneDX SBOM from package-lock.json
-npx @cyclonedx/cyclonedx-npm --output-file sbom.json --output-format JSON
-
-# Or via cyclonedx-cli
-cyclonedx-npm --package-lock-only --output-format JSON > sbom.json
-```
-
-Store the SBOM in R2 alongside the deploy artifact:
-
-```typescript
-// scripts/upload-sbom.mjs
-import { execSync } from 'node:child_process';
-
-const version = process.env.DEPLOY_VERSION ?? Date.now().toString();
-execSync('npx @cyclonedx/cyclonedx-npm --output-file /tmp/sbom.json');
-
-const sbom = await Bun.file('/tmp/sbom.json').text();
-const r2Key = `sboms/${version}/sbom.cyclonedx.json`;
-
-// Upload via wrangler r2 object put or via CF API
-execSync(`wrangler r2 object put sboms/${r2Key} --file /tmp/sbom.json`);
-console.log(`SBOM uploaded to R2: ${r2Key}`);
-```
+See `reference/supply-chain-integrity.md` for the full implementation.
 
 ## Socket CLI / Snyk scanning in CI
 
-```yaml
-# .github/workflows/supply-chain.yml
-name: Supply Chain Integrity
-
-on: [push, pull_request]
-
-jobs:
-  audit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: npm audit (blocks on moderate+)
-        run: npm audit --audit-level=moderate --ignore-scripts
-
-      - name: Socket CLI deep scan
-        uses: nicolo-ribaudo/socket-npm-action@v1
-        # or run manually:
-        # npx @socket.dev/cli@latest npm-audit --strict
-
-      - name: Generate SBOM
-        run: npx @cyclonedx/cyclonedx-npm --output-file sbom.json
-
-      - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom
-          path: sbom.json
-```
-
+- Run `npm audit --audit-level=moderate --ignore-scripts` + Socket CLI on every push and PR.
 - Socket CLI catches what `npm audit` misses: malicious install scripts, protestware, typosquatting, dependency confusion attacks, obfuscated code.
+- Generate and upload the SBOM as a CI artifact on every run.
+
+See `reference/supply-chain-integrity.md` for the full CI workflow.
 
 ## npm audit gate in PR
 
@@ -163,38 +79,15 @@ jobs:
 | moderate | Blocks PR merge — 7-day grace period with tracked issue |
 | low | Warning only — tracked in dependency audit backlog |
 
-```bash
-# CI command — exits non-zero on moderate+
-npm audit --audit-level=moderate --ignore-scripts
-
-# Override for a specific advisory when no fix exists (document reason):
-npm audit --audit-level=moderate --ignore-scripts \
-  || true  # NEVER use true silently — investigate first
-```
-
 - If a vulnerability has no fix, pin to the last clean version and open a tracked issue. Never suppress with `--audit-level=none`.
 
 ## Publishing policy
 
 - Only Brian's npm account publishes. 2FA required (`auth-and-writes`).
 - No automation token publishes critical packages without a human 2FA approval step.
-
-```bash
-# Verify 2FA is enforced
-npm profile get 2fa  # should return: auth-and-writes
-
-# Explicitly log in before publish — never rely on cached token in CI
-npm login --auth-type=legacy  # CI: use NPM_TOKEN env var + OTP via 1Password automation
-```
-
 - Always allowlist `files` in `package.json` — omitting it accidentally publishes `.env`, `secrets/`, and build artifacts.
 
-```json
-{
-  "files": ["dist/", "src/", "README.md", "LICENSE"],
-  "publishConfig": { "access": "public" }
-}
-```
+See `reference/supply-chain-integrity.md` for the full implementation.
 
 ## Anti-patterns
 
