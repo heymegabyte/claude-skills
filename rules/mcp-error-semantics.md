@@ -34,110 +34,41 @@ An **empty result** (empty list, null body, zero rows) is still `isError: false`
 ## Reference incident — 2026-06-18
 
 **Server:** `resend-mcp` (and `resend-hardened-mcp`)
-**Bug:** Every tool handler returned `{ isError: false, content: [{ text: <error JSON> }] }` for HTTP 4xx/5xx responses. Only network-level exceptions (caught in the outer `catch`) set `isError: true`.
-**Impact:** Claude could not distinguish a successful email send from a 422 "invalid recipient" error — it treated error bodies as successful results and continued the conversation with incorrect state.
-**Root cause:** The success-path return was written before `res.ok` was checked:
+**Bug:** Every tool handler returned `{ isError: false, ... }` for HTTP 4xx/5xx responses.
+Only network-level exceptions (caught in the outer `catch`) set `isError: true`.
+**Impact:** Claude could not distinguish a successful email send from a 422 "invalid
+recipient" error — it treated error bodies as successful results.
+**Root cause:** Success-path return written before `res.ok` was checked (83 handlers × 2 files).
 
-```typescript
-// WRONG — isError omitted, 4xx body silently treated as success
-const data = res.status === 204 ? {} : await res.json().catch(() => ({}));
-return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
-```
+See `reference/mcp-error-semantics.md` for the wrong/correct code diff and the full
+canonical handler pattern.
 
-**Fix (applied to 83 handlers × 2 files = 166 call sites):**
+## Canonical handler: required steps
 
-```typescript
-// CORRECT — res.ok gate before success return
-const data = res.status === 204 ? {} : await res.json().catch(() => ({}));
-if (!res.ok) return { isError: true, content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
-return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
-```
+Every tool handler MUST implement these six steps. No exceptions:
 
-## Canonical handler pattern
+- Validate inputs with Zod `safeParse`; return `isError: true` with `VALIDATION_ERROR` on failure — never throw.
+- Guard input size: if `JSON.stringify(input).length > 65_536` return `isError: true` with `SIZE_LIMIT_EXCEEDED`.
+- Wrap `fetch` in `try/catch`; the `catch` block MUST return `isError: true` with `FETCH_ERROR`.
+- Gate on `res.ok` BEFORE using the response body — `if (!res.ok) return { isError: true, ... }`.
+- Return success without `isError` (defaults false) only when `res.ok === true`.
+- Handle 204 No Content: `const data = res.status === 204 ? {} : await res.json().catch(() => ({}))`.
 
-Every tool handler MUST follow this shape. No exceptions.
-
-```typescript
-if (request.params.name === "my-tool") {
-  // 1. Validate inputs — set isError: true on failure, never throw
-  const parsed = MyInputSchema.safeParse(request.params.arguments ?? {});
-  if (!parsed.success) {
-    return { isError: true, content: [{ type: 'text', text: JSON.stringify({
-      code: 'VALIDATION_ERROR', message: parsed.error.message
-    }) }] };
-  }
-  const input = parsed.data;
-
-  // 2. Guard on input size (hardened servers)
-  if (JSON.stringify(input).length > 65_536) {
-    return { isError: true, content: [{ type: 'text', text: JSON.stringify({
-      code: 'SIZE_LIMIT_EXCEEDED', message: 'Input exceeds 64KB limit.'
-    }) }] };
-  }
-
-  // 3. Execute — wrap fetch in try/catch
-  try {
-    const res = await fetch(url, { method, headers, body });
-    const data = res.status === 204 ? {} : await res.json().catch(() => ({}));
-
-    // 4. Gate on HTTP status — isError: true for any non-2xx
-    if (!res.ok) {
-      return { isError: true, content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
-    }
-
-    // 5. Success — omit isError (defaults false) or set explicitly
-    return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
-
-  } catch (err) {
-    // 6. Network / parse errors
-    return { isError: true, content: [{ type: 'text', text: JSON.stringify({
-      code: 'FETCH_ERROR', message: String(err)
-    }) }] };
-  }
-}
-```
+See `reference/mcp-error-semantics.md` for the full annotated handler implementation.
 
 ## Worker-side helper
 
-`template/utils/mcp-error-response.ts` exports typed helpers for every case
-above. Prefer these over inline literals to keep error shapes consistent.
+- Use `mcpOk`, `mcpHttpError`, `mcpCaughtError`, `mcpFetch` from `template/utils/mcp-error-response.ts`.
+- `mcpFetch(() => fetch(url, opts))` is the idiomatic one-liner that handles all six steps automatically.
 
-```typescript
-import { mcpOk, mcpHttpError, mcpCaughtError, mcpFetch } from '@/utils';
-
-// Idiomatic one-liner using mcpFetch
-return mcpFetch(() => fetch(url, { method: 'GET', headers }));
-
-// Or step-by-step for custom logic
-const res = await fetch(url, opts);
-const data = res.status === 204 ? {} : await res.json().catch(() => ({}));
-if (!res.ok) return mcpHttpError(res.status, data);
-return mcpOk(data);
-```
-
-Exports: `mcpOk` · `mcpHttpError` · `mcpCaughtError` · `mcpValidationError` ·
-`mcpSizeLimitError` · `mcpFetch` + types `McpToolResult` · `McpContentBlock` ·
-`McpErrorPayload`.
+See `reference/mcp-error-semantics.md` for import example and step-by-step alternative.
 
 ## forge-mcp-from-openapi compliance
 
-The `forge-mcp-from-openapi` generator MUST emit the canonical pattern above
-for every generated handler. Verify with:
-
-```bash
-node bin/validate-mcp-tools.mjs <server-name>
-```
-
-A server that passes the validator with 0 violations is compliant. The
-validator checks:
-
-- `[missing-zod-schema]` — exported InputSchema absent
-- `[orphaned-handler]` — handler case with no ListTools entry
-- `[unhandled-tool]` — ListTools entry with no handler case
-
-Note: `isError` semantic correctness is NOT currently detected by the
-validator (it is a runtime behaviour check). Manual review or eval coverage is
-required.
+- The forge generator MUST emit the canonical pattern for every generated handler.
+- Verify with `node bin/validate-mcp-tools.mjs <server-name>` (0 violations = compliant).
+- Validator checks: `[missing-zod-schema]` · `[orphaned-handler]` · `[unhandled-tool]`.
+- `isError` semantic correctness is NOT detected by the validator — require manual review or eval coverage.
 
 ## Drift checklist (per-server, run at forge time)
 

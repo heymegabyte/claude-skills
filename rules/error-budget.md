@@ -48,47 +48,13 @@ used by uptime monitors → 99.9%).
 A burn rate of 1× means you consume your entire error budget in exactly 30 days.
 2× = exhausted in 15 days; 14.4× = exhausted in 50 hours (fast burn).
 
-```typescript
-// worker/lib/slo-burn-rate.ts
-export interface SLOConfig {
-  routeKey: string;
-  sloPercent: number; // e.g. 99.9
-  windowDays: number; // 30
-}
-
-export function burnRate(
-  config: SLOConfig,
-  errorCountLast30d: number,
-  totalRequestsLast30d: number
-): number {
-  const errorBudgetFraction = (100 - config.sloPercent) / 100;
-  const budgetErrors = totalRequestsLast30d * errorBudgetFraction;
-  // burn rate = actual errors / budget errors
-  return budgetErrors > 0 ? errorCountLast30d / budgetErrors : 0;
-}
-```
-
-PostHog query for 30-day error counts (run nightly via cron, store result in D1 `slo_snapshots`):
-
-```sql
--- posthog HogQL — daily error snapshot
-SELECT
-  properties.$pathname AS route,
-  count() AS error_count,
-  countIf(properties.status >= 500) AS server_errors
-FROM events
-WHERE event = '$pageview'
-  AND timestamp >= now() - INTERVAL 30 DAY
-GROUP BY route
-```
-
-Alert thresholds (PostHog alert or Workers Tracing OTLP):
-
 | Burn rate | Urgency | Action |
 |---|---|---|
 | ≥ 2× | Warning | Investigate in current sprint; no ship-stop |
 | ≥ 5× | High | Investigate immediately; hold new features for this service |
 | ≥ 14.4× (fast burn) | Critical | **Ship-stop trigger** — see below |
+
+See `reference/error-budget.md` for the full TypeScript implementation, PostHog HogQL query, ship-stop guard, and manifest.ts shape.
 
 ## Ship-stop trigger
 
@@ -100,57 +66,14 @@ When ANY route's 30-day burn rate hits **14.4×** OR the rolling 1-hour burn rat
 4. Only error-reduction commits merge to main until burn rate drops below 1× AND holds for 24 hours.
 5. Close the incident record; reset `SHIP_STOP=false`.
 
-```typescript
-// worker/lib/ship-stop-guard.ts
-import { isFlagOn } from './feature-flags';
-
-export async function enforceShipStop(env: Env): Promise<boolean> {
-  const flag = await env.DB
-    .prepare("SELECT value FROM system_flags WHERE key = 'SHIP_STOP'")
-    .first<{ value: string }>();
-  return flag?.value === 'true';
-}
-```
-
-Call `enforceShipStop` in CI pre-deploy step. If true, exit 1 and surface message:
-`"Ship-stop active: error budget exhausted. Fix reliability before deploying features."`
+Call `enforceShipStop` in CI pre-deploy step. If true, exit 1 and surface the ship-stop message.
 
 ## Automatic killswitch via feature flags
 
-When a feature's error rate spikes post-launch (detectable via Workers Tracing span error tag
-`cf.route = '<feature route>'`), auto-kill it without a redeploy:
-
-```typescript
-// worker/routes/api/checkout.ts
-const featureOn = await isFlagOn(env, 'new_checkout_flow', user, anonId);
-// If burn rate guard tripped, isFlagOn returns false regardless of DB state
-// because the killswitch sets stage='killswitch' on the flag row
-if (!featureOn) {
-  // fall back to legacy checkout path
-}
-```
-
-This is `[[feature-flags]]` § killswitch in practice — error budget exhaustion automatically
-promotes the most risky in-flight flag to killswitch stage.
-
-## SLO declaration in manifest.ts
-
-Every feature module that owns a route declares its SLO contract:
-
-```typescript
-// worker/features/checkout/manifest.ts
-export const manifest = {
-  featureSlug: 'checkout',
-  routes: ['/api/checkout', '/api/checkout/confirm'],
-  slo: {
-    availabilityPercent: 99.9,
-    windowDays: 30,
-    maxBurnRate: 14.4,         // fast-burn threshold
-    alertBurnRate: 5,           // warn threshold
-  },
-  owner: 'brian@megabyte.space',
-} as const;
-```
+When a feature's error rate spikes post-launch, auto-kill it without a redeploy by checking
+the killswitch-promoted flag at request time. This is `[[feature-flags]]` § killswitch in
+practice — error budget exhaustion automatically promotes the most risky in-flight flag to
+killswitch stage.
 
 ## Anti-patterns
 

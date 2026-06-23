@@ -27,108 +27,19 @@ paths:
 - `worker/features/<name>/` can be as deep as the domain requires: Zod schemas, service class, multiple handlers, query builders, domain types, constants, README.
 - When a generic utility grows past ~100 lines, audit for absorbed domain knowledge — extract it back to the feature.
 
-## Correct pattern — thin shared middleware
+## Correct patterns
 
-```ts
-// worker/middleware/auth.ts (~60 lines — this is the ceiling)
-export const requireAuth = createMiddleware<{ Bindings: Env; Variables: { userId: string } }>(
-  async (c, next) => {
-    const token = c.req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) return c.json({ error: 'Unauthorized' }, 401);
-    try {
-      const payload = await verify(token, c.env.CLERK_JWT_KEY);
-      c.set('userId', payload.sub);
-      await next();
-    } catch {
-      return c.json({ error: 'Invalid token' }, 401);
-    }
-  },
-);
+- Thin middleware: one concern per file, no DB calls, no email side-effects, no plan checks. Auth file ~60 lines, error handler ~30 lines.
+- Deep feature module: schema + service (300 lines is fine) + handler colocated in `worker/features/<name>/`.
 
-// worker/middleware/error-handler.ts (~30 lines)
-export function registerErrorHandler(app: Hono) {
-  app.onError((err, c) => {
-    console.error({ error: err.message, stack: err.stack, url: c.req.url });
-    return c.json({ error: 'Internal server error' }, 500);
-  });
-  app.notFound((c) => c.json({ error: 'Not found' }, 404));
-}
-```
-
-## Correct pattern — deep feature module
-
-```ts
-// worker/features/billing/schemas.ts
-export const CreateSubscriptionSchema = z.object({
-  planId: z.enum(['starter', 'growth', 'enterprise']),
-  billingCycle: z.enum(['monthly', 'annual']),
-  couponCode: z.string().max(20).optional(),
-  seats: z.number().int().min(1).max(500).optional(),
-});
-
-// worker/features/billing/billing-service.ts (~300 lines — totally fine here)
-export class BillingService {
-  constructor(private db: DrizzleD1Database, private stripe: Stripe, private kv: KVNamespace) {}
-
-  async createSubscription(userId: string, input: CreateSubscriptionInput): Promise<Subscription> {
-    const plan = PLAN_CONFIG[input.planId];
-    const coupon = input.couponCode ? await this.validateCoupon(input.couponCode) : null;
-    const stripeSub = await this.stripe.subscriptions.create({
-      customer: await this.getOrCreateStripeCustomer(userId),
-      items: [{ price: plan.priceId[input.billingCycle] }],
-      coupon: coupon?.stripeId,
-      quantity: input.seats ?? 1,
-    });
-    return this.persistAndReturn(userId, stripeSub, input);
-  }
-
-  private async validateCoupon(code: string): Promise<{ stripeId: string } | null> {
-    // 50 lines of coupon-specific business logic — belongs here, not in a generic "validateCode" util
-  }
-}
-
-// worker/features/billing/handlers.ts (~120 lines)
-billingRouter.post(
-  '/subscriptions',
-  requireAuth,
-  zValidator('json', CreateSubscriptionSchema),
-  async (c) => {
-    const svc = new BillingService(drizzle(c.env.DB), stripe, c.env.KV);
-    const sub = await svc.createSubscription(c.get('userId'), c.req.valid('json'));
-    return c.json(sub, 201);
-  },
-);
-```
+See `reference/inverted-abstraction-pyramid.md` for the full implementation.
 
 ## Anti-patterns
 
-### Middleware with business logic
+- Middleware that checks billing plans, seat counts, or sends email as a side effect.
+- A "generic" webhook handler abstraction created for a single payment rail — write two concrete files first.
 
-```ts
-// BAD — auth.ts checking plan, seats, overages; sending email as side effect
-export const requireAuth = createMiddleware(async (c, next) => {
-  const user = await verifyAndFetchFullUser(c, token); // fetches billing plan, seats, overages
-  if (user.plan === 'free' && c.req.path.startsWith('/api/export')) {
-    return c.json({ error: 'Upgrade required' }, 403);
-  }
-  if (user.seats > user.subscription.maxSeats) {
-    await sendOverageEmail(c.env, user); // side effect in middleware — impossible to test
-  }
-});
-```
-
-### Generic abstraction from one use case
-
-```ts
-// BAD — "generic" webhook handler with only one active payment rail
-export function createWebhookHandler<T>(config: {
-  verifySignature: (req: Request, secret: string) => Promise<boolean>;
-  parsePayload: (body: string) => T;
-  route: (event: T) => Promise<void>;
-  dedupeTable: string;
-}) { ... }
-// Write stripe-webhooks.ts and square-webhooks.ts; extract shared verify-signature only after both exist.
-```
+See `reference/inverted-abstraction-pyramid.md` for full anti-pattern code.
 
 ## Size guidelines
 

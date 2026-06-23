@@ -52,78 +52,26 @@ Never compress for payment routes, auth routes, or public API endpoints without 
 
 ## 90-day no-use rule
 
-Any route, column, or feature flag with **zero authenticated calls in 90 days** is removal-eligible without Announce. Confirm with D1 before removing:
+Any route, column, or feature flag with **zero authenticated calls in 90 days** is removal-eligible without Announce. Confirm with D1 queries before removing.
 
-```sql
--- Routes with zero traffic in last 90 days
-SELECT route_path, MAX(last_called_at) as last_use
-FROM route_analytics
-WHERE last_called_at < datetime('now', '-90 days')
-   OR last_called_at IS NULL
-ORDER BY last_use ASC;
-```
-
-```sql
--- Feature flags never written in 90 days
-SELECT key, updated_at
-FROM feature_flags
-WHERE stage IN ('stable', 'deprecated')
-  AND updated_at < datetime('now', '-90 days')
-  AND rollout_percent = 100;
-```
+See `reference/backwards-compatibility-removal-cadence.md` for the D1 queries.
 
 If the query returns rows, move to Hard-warn immediately — they skipped Announce and Soft-warn by disuse.
 
 ## Soft-warn implementation
 
-```typescript
-// worker/lib/deprecation-header.ts
-export function addDeprecationHeader(
-  res: Response,
-  route: string,
-  sunsetDate: string // ISO 8601
-): Response {
-  const headers = new Headers(res.headers);
-  headers.set('Deprecation', 'true');
-  headers.set('Sunset', sunsetDate);          // RFC 8594
-  headers.set('Link', `</api/v2${route}>; rel="successor-version"`);
-  return new Response(res.body, { ...res, headers });
-}
+- Add RFC 8594 `Deprecation: true` and `Sunset: <ISO-date>` headers to every response.
+- Add `Link: </api/v2{route}>; rel="successor-version"` header.
+- Log every deprecated-route call to D1 `route_analytics` so the 90-day counter stays accurate.
 
-// Usage in route handler (soft-warn stage):
-app.get('/api/v1/donations', async (c) => {
-  const res = await handleDonations(c);
-  return addDeprecationHeader(res, '/donations', '2026-09-01');
-});
-```
+See `reference/backwards-compatibility-removal-cadence.md` for `addDeprecationHeader()` and the D1 logging snippet.
 
-Log every deprecated-route call to D1 so the 90-day counter stays accurate:
+## Hard-warn / Remove: 410 Gone handler
 
-```typescript
-ctx.waitUntil(
-  env.DB.prepare(
-    'INSERT OR REPLACE INTO route_analytics (route_path, last_called_at) VALUES (?, CURRENT_TIMESTAMP)'
-  ).bind('/api/v1/donations').run()
-);
-```
+- After the sunset date, the route returns HTTP 410 with `error`, `message`, `docs`, and `sunset` fields.
+- Keep the 410 handler live for **30 additional days** after Remove so callers get an actionable error instead of a 404.
 
-## Hard-warn stage: return 410 after sunset date
-
-```typescript
-app.get('/api/v1/donations', (c) =>
-  c.json(
-    {
-      error: 'Gone',
-      message: 'This endpoint was removed. Migrate to /api/v2/donations.',
-      docs: 'https://megabyte.space/docs/migration/donations-v2',
-      sunset: '2026-09-01',
-    },
-    410
-  )
-);
-```
-
-Keep the 410 handler live for **30 additional days** after Remove so callers get an actionable error instead of a 404.
+See `reference/backwards-compatibility-removal-cadence.md` for the 410 response handler.
 
 ## Breaking-change semver discipline
 
@@ -138,31 +86,17 @@ Only bump major when the **external contract** (response shape, required params,
 
 ## migration-agent invocation
 
-For any removal affecting an external caller (public API, webhook endpoint, Clerk user attributes), spawn `migration-agent` per `[[autonomous-engineering]]` approval tier `review-recommended`:
+For any removal affecting an external caller (public API, webhook endpoint, Clerk user attributes), spawn `migration-agent` per `[[autonomous-engineering]]` approval tier `review-recommended`.
 
-```
-Agent(migration-agent):
-  "Deprecate /api/v1/donations. Sunset date: 2026-09-01.
-   Add soft-warn headers per backwards-compatibility-removal-cadence.md.
-   D1 migration: add route_analytics row. Changelog entry required.
-   Cross-link: [[customer-facing-changelog]]."
-```
+See `reference/backwards-compatibility-removal-cadence.md` for the Agent invocation template.
 
 ## Changelog discipline
 
-Every Announce stage entry requires a changelog row per `[[customer-facing-changelog]]`. Minimum entry:
+- Every Announce stage entry MUST have a changelog row per `[[customer-facing-changelog]]`.
+- Entry MUST include: endpoint/column name, sunset date, replacement, and a migration guide.
+- No silent removals. Ever. Even for "internal" routes.
 
-```markdown
-### Deprecated: GET /api/v1/donations
-
-**Sunset:** 2026-09-01 · **Replacement:** [GET /api/v2/donations](/api/v2/donations)
-
-The v1 donations endpoint returns a flat array. v2 returns a paginated object with
-`cursor`-based pagination. Migrate by updating your call to pass `cursor` and read
-`data[]` instead of the top-level array.
-```
-
-No silent removals. Ever. Even for "internal" routes.
+See `reference/backwards-compatibility-removal-cadence.md` for the changelog entry template.
 
 ## Anti-patterns
 

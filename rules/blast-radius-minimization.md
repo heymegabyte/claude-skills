@@ -26,8 +26,7 @@ paths:
 
 Every change is scoped to the minimum surface that can possibly fail. A broken commit that
 affects 1% of users for 5 minutes is a normal Tuesday. A broken commit that takes down every
-user for 30 minutes is an incident. The difference is almost always containment — not code
-quality.
+user for 30 minutes is an incident. The difference is almost always containment — not code quality.
 
 ## The "5-minute thought experiment"
 
@@ -47,9 +46,9 @@ No answer of "everyone" ships without prior explicit approval from this rule.
 ## Feature-flag isolation (first line of defense)
 
 Every non-trivial feature ships at `enabled=0, rollout_percent=0, stage='experimental'` per
-`[[feature-flags]]`. This means blast radius at launch = 0 users.
+`[[feature-flags]]`. Blast radius at launch = 0 users.
 
-Rollout sequence:
+Rollout sequence — never skip tiers, never jump 0% → 100%:
 
 ```
 experimental (0%)
@@ -59,70 +58,25 @@ experimental (0%)
   → stable (100%) — promote after 1 week without P1
 ```
 
-Never skip tiers. Never jump from 0% to 100%. The automation that does this lives in the
-`/admin/feature-flags` rollout slider — move it one tier at a time.
-
 ## Canary deployments via Workers gradual rollout
 
-Workers supports gradual rollout via `wrangler deploy --percentage <N>`. Use it for
-infra-layer changes that can't be behind a flag (e.g., route rewrite, new middleware):
+- Until Workers native canary is GA, simulate with a feature-flag-driven A/B split at the route level.
+- Promote via the `/admin/feature-flags` rollout slider: 1% → 10% → 100%.
+- Error budget (`[[error-budget]]`) gates each promotion step.
 
-```toml
-# wrangler.toml
-[env.production]
-# After successful canary, remove this line and do full deploy
-# canary_percentage = 5  # (wrangler flag, not yet GA — use feature flags instead)
-```
-
-Until Workers native canary is GA, simulate it with a feature-flag-driven A/B split at the
-route level:
-
-```typescript
-// worker/routes/checkout.ts
-const useNewCheckout = await isFlagOn(env, 'new_checkout_v2', user, anonId);
-return useNewCheckout
-  ? handleNewCheckout(c)
-  : handleLegacyCheckout(c);
-```
-
-1% → 10% → 100% via admin rollout slider. Error budget (`[[error-budget]]`) gates each step.
+See `reference/blast-radius-minimization.md` for the route-split implementation.
 
 ## Multi-tenant isolation: DO-per-tenant
 
-In multi-tenant apps, one tenant's bug, runaway loop, or corrupt state must not affect others.
-Durable Objects enforce this at the infra level:
+- Every tenant gets its own Durable Object — one tenant's corrupt state cannot affect others.
+- Route all tenant requests through `idFromName(tenantId)` to guarantee isolation.
+- Recovery for a single broken tenant: `wrangler do reset --id <id>` with no impact to others.
 
-```typescript
-// worker/durable-objects/tenant-do.ts
-export class TenantDO implements DurableObject {
-  constructor(private state: DurableObjectState, private env: Env) {}
-
-  async fetch(request: Request): Promise<Response> {
-    // All state is tenant-scoped: this DO owns ONLY this tenant's data.
-    // A bug that corrupts this DO's state cannot corrupt another tenant's DO.
-    const tenantId = this.state.id.toString();
-    // ...
-  }
-}
-
-// worker/routes/api/tenant.ts — route to the tenant's own DO
-app.all('/api/tenant/*', async (c) => {
-  const tenantId = c.get('user').tenantId;
-  const id = c.env.TENANT_DO.idFromName(tenantId);
-  const stub = c.env.TENANT_DO.get(id);
-  return stub.fetch(c.req.raw);
-});
-```
-
-If a single-tenant state machine breaks, `wrangler do reset --id <id>` recovers it without
-touching other tenants. Reference: `[[cf-agents-do-pattern]]`.
+See `reference/blast-radius-minimization.md` for the full DO class and routing handler.
 
 ## Schema migrations: backward-additive only
 
-Never combine a schema change and a code change that depends on it in the same deploy. If
-the deploy fails mid-way, you have a schema mismatch with no rollback path.
-
-The two-deploy rule:
+Three-deploy rule — never combine a schema change and the code that depends on it:
 
 ```
 Deploy 1: ADD new column (nullable, or with DEFAULT) — no code reads it yet.
@@ -132,39 +86,19 @@ Deploy 2: Ship code that reads/writes the new column.
 Deploy 3 (optional cleanup): DROP old column AFTER 30 days of zero reads.
 ```
 
-```sql
--- CORRECT: backward-additive migration (deploy 1)
-ALTER TABLE donations ADD COLUMN payment_method_type TEXT DEFAULT 'card';
+- D1 enforces no ROLLBACK inside migrations — the additive approach IS the rollback strategy.
+- Use `[[drizzle-orm-and-migrations]]` migration-agent for multi-step migration orchestration.
 
--- WRONG: DROP in the same migration as an ADD that new code depends on
--- ALTER TABLE donations DROP COLUMN legacy_processor; -- NEVER in same release
-```
-
-D1 enforces no ROLLBACK inside migrations — the additive approach IS the rollback
-strategy: deploy 1 adds the column, rollback simply reverts to code that ignores it.
-Use `[[drizzle-orm-and-migrations]]` `migration-agent` for multi-step migration orchestration.
+See `reference/blast-radius-minimization.md` for the correct and incorrect SQL patterns.
 
 ## Rollback-first deployment culture
 
-Every deploy must have a rollback answer BEFORE it ships. For Cloudflare Workers, the
-answer is always `wrangler rollback` (or `wrangler rollback <version-id>` to a specific
-version). For D1, Time Travel to a pre-migration snapshot.
+- Every deploy must have a rollback answer BEFORE it ships.
+- For Workers: `wrangler rollback` or `wrangler rollback <version-id>`.
+- For D1: Time Travel to a pre-migration snapshot.
+- Automate the pre-deploy rollback check in CI.
 
-Pre-deploy checklist (automate in CI):
-
-```bash
-# scripts/pre-deploy-check.sh
-# 1. Confirm rollback version exists
-PREV_VERSION=$(wrangler versions list --json | jq -r '.[1].id')
-echo "Rollback target: $PREV_VERSION"
-
-# 2. Confirm D1 time travel is enabled (not older than 30 days)
-wrangler d1 time-travel info "$DB_NAME"
-
-# 3. Confirm error budget is healthy (burn rate < 5×)
-# (calls D1 slo_snapshots table, exits 1 if SHIP_STOP=true)
-node scripts/check-ship-stop.mjs
-```
+See `reference/blast-radius-minimization.md` for the `pre-deploy-check.sh` script.
 
 ## Anti-patterns
 

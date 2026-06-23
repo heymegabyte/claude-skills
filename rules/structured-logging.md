@@ -61,87 +61,33 @@ Production floor is `info`. Set `LOG_LEVEL=debug` env var to lower for a deploy.
 
 ## Worker-side implementation
 
-Workers Tracing OTLP captures `console.log` output as structured JSON when the payload is valid JSON. Use `console.log(JSON.stringify({...}))` — never `console.info`/`console.warn` for structured entries (they bypass OTLP aggregation in some collector versions).
+- Use `console.log(JSON.stringify({...}))` — never `console.info`/`console.warn` for structured entries (they bypass OTLP aggregation in some collector versions).
+- Logger lives at `src/worker/lib/logger.ts`; all handlers import `log()` from it.
+- `error` and `fatal` levels MUST forward to `Sentry.captureException`.
+- Spread the required `LogFields` interface across every call site — never construct the shape ad-hoc.
 
-```ts
-// src/worker/lib/logger.ts
-import * as Sentry from "@sentry/cloudflare";
-
-export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
-
-interface LogFields {
-  traceId: string;
-  requestId: string;
-  workerId: string;
-  env: string;
-  [key: string]: unknown;
-}
-
-export function log(level: LogLevel, msg: string, fields: LogFields, err?: unknown) {
-  const entry = {
-    level,
-    ts: Date.now(),
-    msg,
-    ...fields,
-    ...(err instanceof Error
-      ? { error: { message: err.message, stack: err.stack, code: (err as any).code } }
-      : {}),
-  };
-  console.log(JSON.stringify(entry));
-  if (level === "error" || level === "fatal") {
-    Sentry.captureException(err ?? new Error(msg), {
-      tags: { traceId: fields.traceId, workerId: fields.workerId },
-      extra: entry,
-    });
-  }
-}
-```
+See `reference/structured-logging.md` for the full typed `log()` implementation.
 
 ## Per-request traceId via Hono middleware
 
-```ts
-// src/worker/middleware/trace.ts
-import { createMiddleware } from "hono/factory";
+- Register `traceMiddleware` before all routes: `app.use("*", traceMiddleware)`.
+- Middleware propagates incoming `x-trace-id` header or mints a fresh UUID.
+- Access downstream: `const traceId = c.get("traceId")`.
 
-export const traceMiddleware = createMiddleware(async (c, next) => {
-  const traceId = c.req.header("x-trace-id") ?? crypto.randomUUID();
-  const requestId = (c.req.raw as any).cf?.requestId ?? crypto.randomUUID();
-  c.set("traceId", traceId);
-  c.set("requestId", requestId);
-  c.res.headers.set("x-trace-id", traceId);
-  await next();
-});
-```
-
-Register before all routes: `app.use("*", traceMiddleware);`
-
-Access downstream: `const traceId = c.get("traceId");`
+See `reference/structured-logging.md` for the full middleware implementation.
 
 ## PostHog event capture
 
-Every significant action emitted to PostHog MUST include `traceId` for cross-correlation with logs and Sentry traces:
+- Every significant PostHog event MUST include `traceId` and `requestId` for cross-correlation with logs and Sentry traces.
 
-```ts
-posthog.capture({
-  distinctId: userId,
-  event: "payment.completed",
-  properties: { traceId, requestId, amount, currency },
-});
-```
+See `reference/structured-logging.md` for the capture call pattern.
 
 ## PII handling
 
-Never log raw PII. Pass through `redactPii()` per `[[pii-handling-discipline]]`:
+- Never log raw PII. Pass through `redactPii()` per `[[pii-handling-discipline]]`.
+- `redactPii(s)` returns `"***"` for email/phone patterns, masked ID otherwise.
 
-```ts
-// BAD
-log("info", "user signed up", { ...base, email: user.email });
-
-// GOOD
-log("info", "user signed up", { ...base, email: redactPii(user.email) });
-```
-
-`redactPii(s)` returns `"***"` for email/phone patterns, masked ID otherwise.
+See `reference/structured-logging.md` for good/bad examples.
 
 ## Anti-patterns (build-fail drift)
 

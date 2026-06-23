@@ -26,18 +26,9 @@ paths:
 
 - Tests live IN the same file, guarded by `if (import.meta.vitest) { ... }`.
 - NO separate `*.test.ts` or `*.spec.ts` siblings for utility files.
-- Pattern:
-
-  ```ts
-  if (import.meta.vitest) {
-    const { describe, it, expect } = import.meta.vitest;
-    describe('scrubPii', () => {
-      it('redacts email', () => expect(scrubPii('a@b.com')).not.toContain('@'));
-    });
-  }
-  ```
-
 - Why: colocation keeps the test next to the thing it describes; reduces file count per `repo-folder-hygiene`.
+
+See `reference/template-utility-conventions.md` for the pattern.
 
 ### 2. Zero external deps — `node:` and Web Crypto only
 
@@ -48,14 +39,10 @@ paths:
 
 ### 3. Workers-compatible — no `process.env` direct
 
-- Never read `process.env.FOO` anywhere in a utility.
-- Accept env via a typed parameter (e.g. `env: Env`) passed from the caller (`c.env` in Hono).
+- Never read `process.env.FOO` anywhere in a utility. Accept env via a typed parameter (`env: Env`) from the caller.
 - Exception: `process.env.NODE_ENV` inside `if (import.meta.vitest)` blocks is tolerated.
-- Pattern:
 
-  ```ts
-  export function buildSignedUrl(path: string, env: Pick<Env, 'SIGNING_SECRET'>): string { ... }
-  ```
+See `reference/template-utility-conventions.md` for the pattern.
 
 ### 4. JSDoc on every export with `@example`
 
@@ -67,19 +54,7 @@ Every exported function, constant, class, and type alias requires JSDoc with:
 - At least one `@example` block showing real input → real output.
 - `@throws` naming the typed Error subclass when the function throws.
 
-```ts
-/**
- * Redact PII tokens from an arbitrary string.
- *
- * @param raw - Unsanitised user-supplied text.
- * @returns The input with email, phone, and SSN patterns replaced by `[REDACTED]`.
- * @throws {PiiScrubError} When `raw` is not a string.
- * @example
- * scrubPii('call me at 555-867-5309')
- * // → 'call me at [REDACTED]'
- */
-export function scrubPii(raw: string): string { ... }
-```
+See `reference/template-utility-conventions.md` for the full JSDoc example.
 
 ### 5. Pure functions where possible
 
@@ -91,17 +66,9 @@ export function scrubPii(raw: string): string { ... }
 
 - Never `throw new Error(...)` from a utility — always a named subclass.
 - Declare it in the same file, above the function that uses it.
-
-```ts
-export class PiiScrubError extends Error {
-  constructor(message: string, public readonly input: unknown) {
-    super(message);
-    this.name = 'PiiScrubError';
-  }
-}
-```
-
 - Why: callers can `catch (e) { if (e instanceof PiiScrubError) }` for precise handling.
+
+See `reference/template-utility-conventions.md` for the subclass pattern.
 
 ### 7. Type-only imports use `import type`
 
@@ -120,36 +87,11 @@ export class PiiScrubError extends Error {
 
 ## `bin/validate-template-utils.mjs` — compliance script
 
-Create/maintain this script at repo root. Run in CI and pre-commit via lefthook.
+- Create/maintain at repo root. Run in CI and pre-commit via lefthook.
+- Checks: `import.meta.vitest` present · no external imports · no `process.env` access · `@example` JSDoc present · no bare `throw new Error(` · no default export · no `require(`.
+- Exit 1 on any violation; reports `FAIL <file>: <reason>` per violation.
 
-```js
-#!/usr/bin/env node
-// Validates template/utils/ against authoring conventions.
-// Exit 1 on any violation.
-import { readdir, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-
-const ROOT = new URL('../template/utils/', import.meta.url).pathname;
-const files = (await readdir(ROOT)).filter(f => f.endsWith('.ts'));
-let violations = 0;
-
-for (const file of files) {
-  const src = await readFile(join(ROOT, file), 'utf8');
-  const fail = (msg) => { console.error(`FAIL ${file}: ${msg}`); violations++; };
-
-  if (!src.includes('import.meta.vitest'))       fail('missing co-located vitest block');
-  if (/^import .* from "[^node"']/.test(src))    fail('external dep import detected');
-  if (/process\.env\.[A-Z]/.test(src))           fail('direct process.env access');
-  if (/export (function|const|class)/.test(src) &&
-      !src.includes('@example'))                  fail('exported symbol missing @example JSDoc');
-  if (/throw new Error\(/.test(src))              fail('bare Error throw — use typed subclass');
-  if (/^export default/.test(src))                fail('default export — use named exports only');
-  if (/require\(/.test(src))                      fail('require() call — ESM only');
-}
-
-if (violations) { console.error(`\n${violations} violation(s). Fix before committing.`); process.exit(1); }
-console.log(`✓ ${files.length} utility file(s) passed all conventions.`);
-```
+See `reference/template-utility-conventions.md` for the full script.
 
 ---
 
