@@ -16,7 +16,7 @@ paths:
 
 Execute the mandatory Phase -1→Phase 8 build sequence: competitor research → context saturation → build → enrichment → AI-native spiral → ship; skipping any phase is a build fail.
 
-> **Acceptance index**: `[[website-build-manifest]]` is the single checklist of every technical gate a finished site must clear (per-page, per-site, cinematic, architecture, quality). Consult it as the spine; load each detail rule on demand. This doctrine is the *sequence*, the manifest is the *gate list*.
+> **Acceptance index**: `[[website-build-manifest]]` is the single checklist of every technical gate a finished site must clear (per-page, per-site, cinematic, architecture, quality). This doctrine is the *sequence*, the manifest is the *gate list*.
 
 ## Phase -1 — Competitor Research (gate -1)
 
@@ -50,9 +50,9 @@ Persist: `_research.json` + `_brand.json` + `_assets.json` + `_confirmations.jso
 ## Phase 1 — Template First, Template Always
 
 - Clone `github.com/HeyMegabyte/template.projectsites.dev` (NOT `saas-starter`).
-- **KNOWN TEMPLATE DEFECT — fix on every clone until upstream lands (confirmed live Jun-2026, template PR #1):** the template ships a CLIENT-ONLY-head SPA (`_redirects: /* → /index.html`, per-route SEO in `useSEO.ts` runs client-side only, no prerender, no edge HTMLRewriter). Crawlers read the static shell → every route serves the HOMEPAGE `<title>`+`canonical=/` → **site-wide SEO collapse** (the `[[always]]` build-fail; even projectsites.dev itself is collapsed). The client-side canonical/title update is INVISIBLE to Googlebot/ChatGPT/Perplexity. So after cloning you MUST add **per-route SERVER head** before ship: vite-react-ssg prerender (resolves title+desc+canonical by running React at build) OR a Pages Function `_middleware.ts` HTMLRewriter keyed on a server-resolvable `getMeta(pathname)` map (extract route meta into `src/seo/routes.ts` first — it's currently runtime-only React literals). Verify with the `validate-ssr-head` build-gate (`[[build-validators-manifest]]`) — RAW-HTTP curl each route, assert UNIQUE server-rendered title + per-route canonical.
+- **KNOWN TEMPLATE DEFECT — fix on every clone until upstream lands (confirmed live Jun-2026, template PR #1):** the template ships a CLIENT-ONLY-head SPA (`_redirects: /* → /index.html`, per-route SEO in `useSEO.ts` runs client-side only, no prerender, no edge HTMLRewriter). Crawlers read the static shell → every route serves the HOMEPAGE `<title>`+`canonical=/` → **site-wide SEO collapse** (the `[[always]]` build-fail; even projectsites.dev itself is collapsed). The client-side canonical/title update is INVISIBLE to Googlebot/ChatGPT/Perplexity. Add **per-route SERVER head** before ship: vite-react-ssg prerender (resolves title+desc+canonical by running React at build) OR a Pages Function `_middleware.ts` HTMLRewriter keyed on a server-resolvable `getMeta(pathname)` map (extract route meta into `src/seo/routes.ts` first). Verify with `validate-ssr-head` build-gate (`[[build-validators-manifest]]`) — RAW-HTTP curl each route, assert UNIQUE server-rendered title + per-route canonical.
 - Also fix on clone: `index.html` references 5 favicons absent from `public/` (404s) — generate from `_brand.json` or commit defaults.
-- Push reusable artifacts BACK SAME TURN on every build. Each push makes next site 30%+ faster.
+- Push reusable artifacts BACK SAME TURN on every build.
 
 Flow-back targets (useful in ≥2 future builds): Components → `src/components/sections/` · Hooks → `src/hooks/` · Schemas → `src/schemas/` · Utilities → `src/lib/` · CF Workflow v2 defs → `src/workflows/` · Animation primitives → `src/motion/` · Build validators → `scripts/validators/` · Prompts → `prompts/` · Section catalogs → JSON specs.
 

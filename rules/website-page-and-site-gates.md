@@ -14,62 +14,49 @@ paths:
 
 # Website Page & Site Gates
 
-The per-page / per-site / per-entity technical gates every projectsites.dev / Emdash site must satisfy. Extracted from `[[always]]` so this WEBSITE-specific detail loads only on site prompts (via the `website-build` pack) instead of taxing every non-website prompt's budget — `[[always]]` keeps only the universal cross-cutting rules. The `[[website-build-manifest]]` indexes these sections; this rule is the detail.
-
 > Numeric stats + first-load animation → `[[cinematic-ui-patterns]]` (`<app-rolling-counter>` + `appReveal` mandatory on every projectsites.dev surface).
 
 ## Every page
 
 - Keyphrase FIRST
-- Title 50-60 chars
-- Meta desc 120-156 chars
+- Title 50–60 chars
+- Meta desc 120–156 chars
 - One H1 in HTML shell (prerender)
 - Canonical
-- **`<head>` AND `<body>` content MUST be delivered server-side per-route, NEVER client-only.**
-  - Client `PageHead`/Helmet (SPA, post-hydration) is INVISIBLE to Googlebot/ChatGPT/Perplexity/social scrapers — they read the raw shell.
-  - **Same for the BODY**: a client SPA serves an empty `<div id="root">` in the raw HTML → crawlers + AI-search see NO page content, only the shell. Prerender/SSG (`vite-ssg`, default per `[[frontend-stack]]`) or SSR so the raw-HTTP body holds the real H1 + copy per route. Gate: RAW-HTTP curl shows the page's H1 + body text, not an empty root.
-  - Non-prerendered routes falling back to one `index.html` ship the HOMEPAGE title + `canonical=/` everywhere → whole site collapses to one indexable URL.
-  - Fix: Worker `HTMLRewriter` keyed on `getMeta(pathname)` rewrites title/desc/og/twitter/canonical/`<html lang>` per route (base + locale, one source of truth).
-  - Gate: RAW-HTTP spec (`request.get`, no JS) asserting the server shell — a post-hydration DOM check passes even when the shell is wrong.
-  - Incident: njsk.org pass-10 (site-wide `canonical=/` on all 32 routes).
+- **`<head>` AND `<body>` content MUST be server-rendered per-route, NEVER client-only.**
+  - Client `PageHead`/Helmet (post-hydration) is invisible to Googlebot/ChatGPT/Perplexity/social scrapers.
+  - Client SPA serves empty `<div id="root">` → crawlers see NO page content. Use `vite-ssg`/SSR so raw-HTTP body holds real H1 + copy per route.
+  - Non-prerendered routes falling back to one `index.html` collapse whole site to one indexable URL with homepage title + `canonical=/`.
+  - Fix: Worker `HTMLRewriter` keyed on `getMeta(pathname)` rewrites title/desc/og/twitter/canonical/`<html lang>` per route.
+  - Gate: RAW-HTTP `curl` (no JS) must show the page's H1 + body text. Incident: njsk.org pass-10 (site-wide `canonical=/` on all 32 routes).
 - JSON-LD per page only when accurate. WebPage is floor; add Organization/BreadcrumbList/FAQPage/Person/Product/Service ONLY when describing real entities. Never pad.
-  - **Must be SERVER-rendered in the raw HTML — NEVER client-injected only.** A client React `<JsonLd>` component (post-hydration) is INVISIBLE to Googlebot/ChatGPT/Perplexity rich-results parsers, exactly like a client-only `<head>` (same incident class). On a prerendered/SSG route it ships in the static HTML; on a client SPA, inject it per-route via the same Worker `HTMLRewriter`/prerender that sets the head. Gate: RAW-HTTP `curl` (no JS) must show the `<script type="application/ld+json">` per route.
-- FAQPage only when real Q&A exists. Don't fabricate.
+  - **MUST be server-rendered in raw HTML — NEVER client-injected only.** Gate: RAW-HTTP `curl` must show `<script type="application/ld+json">` per route.
+- FAQPage only when real Q&A exists. Never fabricate.
 - OG 1200×630 ≤100KB **branded card** (NOT scraped photo)
 - 2+ internal links, 1+ outbound
 - Yoast GREEN
 - `<meta name="color-scheme">` present
 - DNS-prefetch + preconnect for fonts/analytics
 - Font woff2 preload for primary display + body
-- Speculation Rules prerender when navigation dominant (multi-page funnels, doc sites). Skip on landing where analytics integrity matters — prerender double-counts GA4 pageviews + can fire conversions before user interaction
+- Speculation Rules prerender when navigation dominant (multi-page funnels, doc sites). Skip on landing where analytics integrity matters — prerender double-counts GA4 pageviews + can fire conversions before user interaction.
 - `fetchpriority="high"` on LCP `<img>` AND its preload link
 
 ## Every site (REQUIRED)
 
-- `site.webmanifest` w/ `screenshots[]` 3+ form_factor:"wide"|"narrow", `shortcuts[]`, `share_target`, `file_handlers`, `protocol_handlers` for store listings
-- `robots.txt` — split AI crawlers by purpose, never blanket-block (blanket = removed from AI answers entirely):
-  - **Allow (search/retrieval — keeps you cited in ChatGPT/Perplexity/AI Overviews)**: `OAI-SearchBot`, `Claude-SearchBot`, `Claude-User`, `PerplexityBot`
-  - **Disallow (training-only — opt out of model training)**: `GPTBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `CCBot`, `Bytespider`
+- `site.webmanifest` w/ `screenshots[]` 3+ form_factor:"wide"|"narrow", `shortcuts[]`, `share_target`, `file_handlers`, `protocol_handlers`
+- `robots.txt` — split AI crawlers by purpose, never blanket-block:
+  - **Allow (search/retrieval)**: `OAI-SearchBot`, `Claude-SearchBot`, `Claude-User`, `PerplexityBot`
+  - **Disallow (training-only)**: `GPTBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `CCBot`, `Bytespider`
   - Explicit `Allow`/`Disallow` per UA — never default
-  - **Cloudflare gotcha**: CF "AI Audit / Managed robots.txt" EDGE-INJECTS a `# BEGIN Cloudflare Managed content` block ABOVE origin robots.txt (`ai-train=no` + `Disallow: /` for training bots).
-    - Origin ALLOWS the same bots → contradictory duplicate `User-agent` groups, undefined crawler behavior, possible drop from AI answers.
-    - Fix: reconcile origin to AGREE with the managed block (disallow training, allow search/retrieval), or disable the managed feature in the dashboard.
-    - Always `curl` the LIVE robots.txt (not the repo file) to catch the injected block.
-    - Incident: music.megabyte.space 2026-06-10.
+  - **Cloudflare gotcha**: CF "AI Audit / Managed robots.txt" edge-injects `# BEGIN Cloudflare Managed content` block ABOVE origin robots.txt (`ai-train=no`, training-bot disallow). Origin that also allows/disallows the same bots = contradictory duplicates → undefined crawler behavior. Fix: reconcile origin to agree with managed block, or disable CF managed feature. Always `curl` the LIVE robots.txt. Incident: music.megabyte.space 2026-06-10.
 - `humans.txt`
-- `sitemap.xml` (every `<url>` has `<lastmod>`)
-  - **`<lastmod>` must reflect when the URL's CONTENT changed, NOT build time.**
-    - Stamping `TODAY` on every URL each build tells Google the whole site changed today → Google STOPS TRUSTING the field (developers.google.com/search/blog/2023/06/sitemaps-lastmod-ping), forfeiting crawl-priority. Same freshness-fabrication class as JSON-LD `dateModified: TODAY` or Google-News `publication_date` keyed on rewrite date.
-    - Fix: committed `{ url: { hash, lastmod } }` store — hash each page's source, PRESERVE stored date while hash unchanged, bump to today only on new/changed URL.
-    - Single-writer per URL — two generators re-signing the same `loc` mutually clobber back to always-today.
-    - Gate so a raw `<lastmod>${TODAY}</lastmod>` inside a `<url>` can't reappear.
-    - Reference impl: brickcitylabor `scripts/lib/sitemap-lastmod.mjs`.
+- `sitemap.xml` — every `<url>` has `<lastmod>`
+  - **`<lastmod>` MUST reflect when the URL's content changed, NOT build time.** Stamping `TODAY` on every build → Google stops trusting the field (developers.google.com/search/blog/2023/06/sitemaps-lastmod-ping).
+  - Fix: committed `{ url: { hash, lastmod } }` store — preserve stored date while hash unchanged, bump to today only on new/changed URL. Single-writer per URL. Gate: raw `<lastmod>${TODAY}</lastmod>` inside `<url>` must not reappear.
+  - Reference impl: brickcitylabor `scripts/lib/sitemap-lastmod.mjs`.
 - `browserconfig.xml`
 - `.well-known/security.txt`
-  - **Cloudflare gotcha (same class as robots.txt above)**: CF account-level **managed `security.txt`** edge-serves one file across EVERY zone (`server: cloudflare`, CF-injected `report-to`/`nel`, no `cf-cache-status`), SHADOWING any `public/.well-known/security.txt` — the repo file NEVER serves.
-    - Repo copy then silently drifts (stale contacts/expiry) and a future agent "fixes" a dead file.
-    - Always `curl` the LIVE security.txt; if CF-managed, edit the **account security.txt dashboard setting**, not the asset; keep the repo copy reconciled or delete it.
-    - Incident: pdf.megabyte.space 2026-06-12.
+  - **Cloudflare gotcha**: CF account-level managed `security.txt` edge-serves across EVERY zone, shadowing any `public/.well-known/security.txt` — repo file NEVER serves. Edit the **account security.txt dashboard setting**, not the asset; keep repo copy reconciled or delete it. Always `curl` the LIVE security.txt. Incident: pdf.megabyte.space 2026-06-12.
 - `favicon.ico` + `favicon-16x16.png` + `favicon-32x32.png`
 - `apple-touch-icon.png` (180×180)
 - OG image
@@ -77,15 +64,12 @@ The per-page / per-site / per-entity technical gates every projectsites.dev / Em
 
 ### Optional
 
-- `llms.txt` — <0.3% adoption, no major LLM crawler requests it; DX-only for Cursor/Claude Code, **not a build gate**.
-  - BUT Lighthouse `agentic-browsing` (Chrome DevTools 2026) SCORES it: missing/invalid (no H1, no links) drops the category (67→100 on music.megabyte.space 2026-06-10).
-  - For AI-native/catalog sites, ship a data-driven one (llmstxt.org: H1 + summary + linked sections, generated from data so it never drifts).
-  - Verify by re-running `lighthouse_audit` (chrome-devtools MCP), not by guessing.
+- `llms.txt` — not a build gate, but Lighthouse `agentic-browsing` (Chrome DevTools 2026) scores it: missing/invalid drops the category. For AI-native/catalog sites, ship a data-driven one (llmstxt.org: H1 + summary + linked sections, generated from data). Verify by re-running `lighthouse_audit` (chrome-devtools MCP).
 
 ### Asset rules
 
 - Every internal asset ref must resolve to real file in build (**asset existence gate**)
-- PNG >200KB → re-encode AVIF primary (20-30% smaller than WebP, 94% browser support) + WebP fallback + JPEG legacy
+- PNG >200KB → re-encode AVIF primary (20–30% smaller than WebP, 94% browser support) + WebP fallback + JPEG legacy
 - Drop JPEG XL (10% support, Chrome flag-only)
 - JS chunks ≤250KB gzip via route code-splitting (React.lazy + manualChunks)
 
@@ -100,11 +84,11 @@ The per-page / per-site / per-entity technical gates every projectsites.dev / Em
 
 ## Every contact page WITH a headquarters / physical address (REQUIRED)
 
-- **A full-width Google Maps widget is MANDATORY** on the contact page (or any page showing a HQ/address) whenever a physical address exists. Not optional.
-- The map MUST be **pointed at the exact address** (`?q=<urlencoded address>&output=embed` for the keyless Embed iframe, or a JS-API marker at the geocoded address).
-- The map MUST be **styled to the site** — not a raw default iframe: brand-framed container (rounded corners, brand border/shadow), brand-tinted overlay where it improves contrast, and a **floating branded info card overlaid on the map carrying the LOGO** + business name + full address + a "Get directions" CTA (`maps/dir/?api=1&destination=<address>`).
-- Keyless path (default): Google Maps Embed iframe (`google.com/maps?q=…&output=embed`) drops a pin at the address — pair with the floating logo card to satisfy "address + logo" without an API key. Key path (when richer marker needed): Maps JavaScript API `AdvancedMarkerElement` with the site logo as the marker glyph.
-- `loading="lazy"` + a `title` on the iframe; never block LCP with the map (place it below the fold).
+- **Full-width Google Maps widget is MANDATORY** on any contact/page showing HQ/address.
+- Map MUST be pointed at the exact address (`?q=<urlencoded address>&output=embed` for keyless Embed iframe, or JS-API marker at geocoded address).
+- Map MUST be **styled to the site**: brand-framed container (rounded corners, brand border/shadow), brand-tinted overlay, **floating branded info card overlaid on the map carrying the LOGO** + business name + full address + "Get directions" CTA (`maps/dir/?api=1&destination=<address>`).
+- Keyless path: Google Maps Embed iframe + floating logo card satisfies "address + logo". Key path: Maps JavaScript API `AdvancedMarkerElement` with site logo as marker glyph.
+- `loading="lazy"` + `title` on the iframe; never block LCP (place below the fold).
 - Build-fail when a contact/HQ page renders an address but no embedded map.
 
 ## Every clickable entity
@@ -121,22 +105,23 @@ The per-page / per-site / per-entity technical gates every projectsites.dev / Em
 
 - Street address → `<a href="https://www.google.com/maps/dir/?api=1&destination=<urlencoded>">`
 - PO Box / no-direction-target → `<a href="https://www.google.com/maps/search/?api=1&query=<urlencoded>">`
-- Named institution/org/journal/conference/publication mentioned in body → hyperlinked to canonical URL using institution name as anchor (never "click here" / "learn more")
+- Named institution/org/journal/conference/publication in body → hyperlinked to canonical URL (never "click here" / "learn more")
 - SKU/EIN/DOI/ISBN/arXiv-id → linked to authoritative registry
 
 ### Validator
 
-- `validate-hyperlinks.mjs` greps dist/ HTML:
-  - Build-fail on unlinked email regex `[\w.+-]+@[\w-]+\.[\w.-]+`
-  - Build-fail on unlinked US phone `(\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})`
-  - Warn on unlinked address `(P\.?O\.? Box \d+|\d+ [A-Z][a-z]+ (Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr))`
-  - Warn on unlinked named institutions in body copy
+`validate-hyperlinks.mjs` greps dist/ HTML:
+
+- Build-fail on unlinked email regex `[\w.+-]+@[\w-]+\.[\w.-]+`
+- Build-fail on unlinked US phone `(\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})`
+- Warn on unlinked address `(P\.?O\.? Box \d+|\d+ [A-Z][a-z]+ (Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr))`
+- Warn on unlinked named institutions in body copy
 
 ## Every form
 
 - Turnstile (invisible, `data-appearance="interaction-only"`, NEVER visible widgets)
 - Zod
-- Resend — every send path passes the `[[email-deliverability]]` gate (SPF+DKIM+DMARC, RFC 8058 one-click unsub on marketing, spam <0.3%) or mail bounces at SMTP silently
+- Resend — every send path passes the `[[email-deliverability]]` gate (SPF+DKIM+DMARC, RFC 8058 one-click unsub on marketing, spam <0.3%)
 
 ## Every historical timeline (`[[timeline-authenticity]]`)
 
@@ -160,5 +145,5 @@ The per-page / per-site / per-entity technical gates every projectsites.dev / Em
 
 ## See
 
-- `[[always]]` — the universal cross-cutting rules (secrets, post-work, ethics, report) this was extracted from
+- `[[always]]` — universal cross-cutting rules
 - `[[website-build-manifest]]` — indexes these gates · `[[email-deliverability]]` · `[[timeline-authenticity]]` · `[[legal-and-error-surfaces]]`

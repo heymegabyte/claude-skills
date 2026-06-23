@@ -38,7 +38,7 @@ Fire amplification phases in priority order until floor is cleared.
 ### Phase 1 — Industry-knowledge corpus injection
 
 - Pull `_industry-evergreen-corpus.json` per org type from `~/.agentskills/15-site-generation/industry-corpora/`
-- Frame as the business's official guidance (licensed practitioner stands behind it), not "we asked an expert"
+- Frame as the business's official guidance (licensed practitioner stands behind it)
 - **Plumber** — pipe-burst triage, water-heater lifespans, hard-water symptoms, sewer warning signs, fixture lifecycle
 - **HVAC** — annual tune-up schedule, refrigerant by year built, thermostat-by-sqft, indoor air quality
 - **Restaurant** — allergen statements, sourcing, dietary accommodations, party-booking
@@ -51,7 +51,7 @@ Fire amplification phases in priority order until floor is cleared.
 ### Phase 2 — Geographic + community context
 
 - Census ACS → demographics → "Why we serve {neighborhood}"
-- NOAA climate → "Snow removal in Newark: what 32" snowfall looks like"
+- NOAA climate → seasonal service pages (e.g. "Snow removal in Newark: what 32" snowfall looks like")
 - OpenStreetMap + Maps → neighborhood boundaries, landmarks → service-area pages
 - Local government open data → permits, code violations, zoning pages
 - School districts + parishes + fire/police precincts → hyper-local SEO
@@ -61,8 +61,7 @@ Fire amplification phases in priority order until floor is cleared.
 
 - Scrape top 5 competitors (Google Maps Places + Yelp + their sites)
 - Write the business's own version of every common service page competitors have but source doesn't
-- Never copy verbatim — extract topics, write fresh
-- Never claim competitor credentials — topic list only, not proof
+- Never copy verbatim — extract topics, write fresh; never claim competitor credentials
 
 ### Phase 4 — Public data enrichment
 

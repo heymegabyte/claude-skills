@@ -47,9 +47,13 @@ Equivalent alternatives exist and migration would take **days**, not weeks. Exam
 - None. Use the SDK directly, no abstraction layer required.
 - Swap decision is autonomous per `autonomous-engineering` — no approval needed.
 
+---
+
 ## The CF lock-in exception
 
 Cloudflare primitives are **load-bearing BY DESIGN**. Deep CF lock-in is the declared strategy per `cloudflare-lock-in-is-leverage`. There is no replacement plan for CF itself — that is intentional. All other load-bearing dependencies need active justification at integration time.
+
+---
 
 ## Classification decision tree
 
@@ -63,60 +67,35 @@ Is it CF (Workers / D1 / R2 / DO / KV / Queues / Cache)?
   → Load-bearing by doctrine; NO replacement plan required
 ```
 
+---
+
 ## Abstraction layer for load-bearing vendors
 
-The abstraction layer is a thin service module, not a generic interface. It wraps the vendor SDK into domain language so that if the vendor changes its API, there is one place to fix:
+- Wrap every load-bearing vendor SDK in a thin service module under `worker/services/<vendor>.ts`.
+- Consumers import from the service module only — never import the SDK directly elsewhere.
+- The module translates between vendor API shape and internal domain types.
 
-```ts
-// worker/services/email.ts  — wraps Resend (load-bearing)
-import { Resend } from 'resend'
+See `reference/vendor-risk-tiering.md` for the canonical Resend service module example.
 
-export interface EmailPayload {
-  to: string | string[]
-  subject: string
-  html: string
-  from?: string
-}
+---
 
-export async function sendEmail(env: Env, payload: EmailPayload): Promise<void> {
-  const resend = new Resend(env.RESEND_API_KEY)
-  const { error } = await resend.emails.send({
-    from: payload.from ?? 'noreply@megabyte.space',
-    to: payload.to,
-    subject: payload.subject,
-    html: payload.html,
-  })
-  if (error) throw new Error(`Resend send failed: ${error.message}`)
-}
-// Consumers call sendEmail(env, {...}) — never import Resend directly elsewhere
-```
+## ARCHITECTURE.md vendor section
 
-## ARCHITECTURE.md vendor section template
+- Every project MUST have a `## Vendor Inventory` table in `ARCHITECTURE.md` listing each vendor, its tier, and its replacement plan (load-bearing) or swap time (replaceable).
+- Add this table at integration time, not after.
 
-```md
-## Vendor Inventory
+See `reference/vendor-risk-tiering.md` for the table template and example entries.
 
-| Vendor | Tier | Replacement plan |
-|--------|------|-----------------|
-| Cloudflare (Workers/D1/R2/DO) | Load-bearing (intentional) | N/A — lock-in by design |
-| Clerk | Load-bearing | Replace with CF Access + custom JWT in ~2 weeks; migrate user table, swap auth middleware |
-| Stripe | Load-bearing | Replace with Square Billing if <$1K MRR; ~1 week migration, data export via Stripe API |
-| Resend | Load-bearing | Replace with CF Email Routing + Mailgun in ~3 days |
-| PostHog | Replaceable | Swap analytics SDK; 1 day |
-| Sentry | Replaceable | Swap error SDK; half day |
-| Upstash | Replaceable | Replace with CF KV; 1 day |
-```
+---
 
-## Secret rotation schedule (load-bearing vendors)
+## Secret rotation schedule
 
-All load-bearing vendor secrets rotate on a ≤90-day cadence per `secret-provisioning`:
+- All load-bearing vendor secrets MUST rotate on a ≤90-day cadence per `secret-provisioning`.
+- Add one calendar entry per load-bearing vendor to `~/.claude/rules/secret-rotation-calendar.md`.
 
-```sh
-# ~/.claude/rules/secret-rotation-calendar.md entry for each load-bearing vendor:
-# Clerk CLERK_SECRET_KEY — rotate every 90 days — next: YYYY-MM-DD
-# Stripe STRIPE_SECRET_KEY — rotate every 90 days — next: YYYY-MM-DD
-# Resend RESEND_API_KEY — rotate every 90 days — next: YYYY-MM-DD
-```
+See `reference/vendor-risk-tiering.md` for the calendar entry format.
+
+---
 
 ## Cross-links
 
