@@ -34,7 +34,7 @@ paths:
 
 # 13 — Observability and Growth
 
-Wire full-stack instrumentation from day one using tiered PostHog+Sentry+GA4 stacks, feature flags, PLG patterns, and incident auto-remediation.
+Tiered PostHog+Sentry+GA4 stacks wired from day one; feature flags, PLG patterns, incident auto-remediation.
 
 ## Instrumentation tiers
 
@@ -46,37 +46,24 @@ Per `_kernel/standards.md#integrations`:
 
 ## PostHog (Tier 1 cornerstone)
 
-- Snippet on every HTML page w/ `persistence:'memory'` (cookie-free)
-- `capture_pageview` + `capture_pageleave` + `autocapture:true`
+- Snippet on every HTML page w/ `persistence:'memory'` (cookie-free); `capture_pageview` + `capture_pageleave` + `autocapture:true`
 - Unified platform: product analytics + feature flags + session replay + error tracking
 - CSP: `script-src` + `connect-src` for posthog domain
 - Per-feature event naming: `<feature>:<action>` (`signup:complete`, `editor:save`, `share:copy`)
 
 ## Sentry (Tier 2)
 
-- `@sentry/cloudflare` v9 + `withSentry` wrapper
-- Project created via `mcp__sentry__create_project` (org:`megabyte-labs`)
+- `@sentry/cloudflare` v9 + `withSentry` wrapper; project via `mcp__sentry__create_project` (org:`megabyte-labs`)
 - `SENTRY_DSN` via `wrangler secret put`
 - Pattern: `withSentry(env => ({ dsn, tracesSampleRate: 1.0, sendDefaultPii: false }), worker)`
 - Breadcrumbs before risky ops; capture exception w/ context tags (`worker` | `route` | `userId`)
 - Release tracking via `SENTRY_RELEASE` env; Workers Tracing handles I/O spans
 
-## Workers Tracing (Tier 1 + Tier 2)
+## Workers Tracing (Tier 1 + 2) / GA4 + GTM (Tier 2) / AI Gateway (Tier 3)
 
-- `[observability] enabled = true` in `wrangler.jsonc` — zero-config OTel I/O tracing
-- Export to Axiom (cheapest at edge), Honeycomb (BubbleUp), Grafana, Datadog via `@opentelemetry/exporter-trace-otlp-http`
-
-## GA4 + GTM (Tier 2 only)
-
-- GTM container snippet (head script + noscript iframe after body)
-- CSP: `googletagmanager.com` + `google-analytics.com` + `analytics.google.com` + `region1.google-analytics.com`
-- Server-side tagging when privacy-critical (EU traffic); custom dimensions over custom events
-
-## AI Gateway (Tier 3)
-
-- `env.AI.run()` auto-routes through Gateway
-- Direct Anthropic: `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/anthropic/v1/messages`
-- Caching + rate-limit + fallback + per-call logging
+- Workers Tracing: `[observability] enabled = true` in `wrangler.jsonc` — zero-config OTel I/O tracing; export to Axiom, Honeycomb, Grafana, Datadog via `@opentelemetry/exporter-trace-otlp-http`
+- GA4 + GTM: container snippet (head script + noscript iframe); CSP: `googletagmanager.com` + `google-analytics.com` + `analytics.google.com` + `region1.google-analytics.com`; server-side tagging for EU; custom dimensions over custom events
+- AI Gateway: `env.AI.run()` auto-routes; direct Anthropic: `https://gateway.ai.cloudflare.com/v1/{account}/{gateway}/anthropic/v1/messages`; caching + rate-limit + fallback + per-call logging
 
 ## Stripe (SaaS billing only — per `rules/payments-routing.md`)
 
@@ -93,8 +80,7 @@ Per `_kernel/standards.md#integrations`:
 
 ## Listmonk (newsletter — self-hosted on Coolify)
 
-- Amazon SES SMTP relay (`LISTMONK_FROM_EMAIL`)
-- `listmonkSendTx(env, { templateAlias, ... })` via KV-cached alias→id map
+- Amazon SES SMTP relay (`LISTMONK_FROM_EMAIL`); `listmonkSendTx(env, { templateAlias, ... })` via KV-cached alias→id map
 - Templates in `emails/*.html` synced via `scripts/listmonk-sync.mjs`
 - Auth: `Authorization: token <user>:<key>` (Listmonk 3.x API-user pattern)
 
@@ -108,57 +94,27 @@ Per `_kernel/standards.md#integrations`:
 6. **Revenue** — upgrade trigger, expansion
 7. **Referral** — viral coefficient, two-sided rewards
 
-Instrument each layer with PostHog events. Funnel visible in PostHog dashboard.
-
 ## Programmatic SEO (5 page types)
 
-- **Integration** (`/integrations/{tool}`)
-- **Comparison** (`/compare/{a}-vs-{b}`)
-- **Use-case** (`/for/{audience}`)
-- **Template** (`/templates/{type}`)
-- **Location** (`/{city}-{service}`)
-
-Each: unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal links + 1+ outbound citation. Cap 200 pages per axis. Per `rules/copy-writing.md` § pSEO + `rules/thin-source-amplification.md`.
+- `/integrations/{tool}` · `/compare/{a}-vs-{b}` · `/for/{audience}` · `/templates/{type}` · `/{city}-{service}`
+- Each: unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal links + 1+ outbound citation. Cap 200 pages per axis.
+- Per `rules/copy-writing.md` § pSEO + `rules/thin-source-amplification.md`.
 
 ## GEO / AI search
 
-- Quotable answer blocks 40-60 words (LLM citation magnet)
-- FAQPage schema highest AI-citation rate (ChatGPT / Perplexity / Google AI Overviews)
-- JSON-LD facts MUST also appear as visible HTML body text
-- Lead paragraphs answer query in <40 words
+- Quotable answer blocks 40-60 words (LLM citation magnet); FAQPage schema highest AI-citation rate (ChatGPT / Perplexity / Google AI Overviews)
+- JSON-LD facts MUST also appear as visible HTML body text; lead paragraphs answer query in <40 words
 - EEAT: author bio + `Person` schema + `sameAs` + dated revision + ownership statement
 - `llms.txt` at site root (DX-only, <0.3% adoption — not build gate)
 
-## Local-business conversions
+## Local-business conversions + CRO
 
-Track per `local-conversions.md` submodule:
+Track per `local-conversions.md`: `phone_click` (`tel:`) · `direction_click` (Google Maps) · `form_submit` · `booking_click` (Calendly/Cal.com) · `chat_click` · `review_click` (Google Business/Yelp). Each fires PostHog + Sentry breadcrumb + (Tier 2) GA4 conversion event.
 
-- `phone_click` — `tel:` link
-- `direction_click` — Google Maps directions
-- `form_submit` — contact / quote
-- `booking_click` — Calendly / Cal.com / direct
-- `chat_click` — live chat opened
-- `review_click` — Google Business / Yelp redirect
-
-Each fires PostHog + Sentry breadcrumb + (Tier 2) GA4 conversion event.
-
-## CRO patterns
-
-- Sticky CTA bar on mobile (phone + book)
-- Scroll-progress bar (subtle)
-- Exit-intent modal (only on cart/pricing pages, not blogs)
-- Social proof near every CTA ("Trusted by N customers")
-- Urgency without dark patterns ("3 spots left this week" if true)
-- Trust strip above fold (logos, accreditations, real licenses)
-- Single primary CTA per surface; secondaries de-emphasized
+CRO: sticky CTA bar on mobile · scroll-progress bar (subtle) · exit-intent modal (cart/pricing only, not blogs) · social proof near every CTA · urgency without dark patterns ("3 spots left this week" if true) · trust strip above fold · single primary CTA per surface.
 
 ## Incident auto-remediation
 
-Sentry → Inngest pipeline:
-
-1. Sentry webhook on `event.alert.triggered`
-2. Inngest function dispatches `incident-responder` agent
-3. Agent reads event → traces to source file → proposes fix → opens PR via gh MCP
-4. PR auto-merges if all CI gates pass per `rules/ai-seniority.md`
+Sentry → Inngest pipeline: (1) Sentry webhook on `event.alert.triggered` → (2) Inngest dispatches `incident-responder` agent → (3) agent reads event, traces to source file, proposes fix, opens PR via gh MCP → (4) PR auto-merges if all CI gates pass per `rules/ai-seniority.md`.
 
 ## See submodules: posthog, ga4-gtm, sentry, stripe-billing, square-payments, listmonk, plg-framework, programmatic-seo, incident-remediation, geo-ai-search, local-conversions.

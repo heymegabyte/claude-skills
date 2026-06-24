@@ -48,20 +48,20 @@ Extract real brand assets and apply the full copy system (anti-slop, SEO, trust 
 
 ## Brand Extraction (Rebuilds)
 
-1. Screenshot existing (Wayback if down). Extract logo / colors / fonts / tone. Never discard equity.
+1. Screenshot existing (Wayback if down). Extract logo/colors/fonts/tone. Never discard equity.
 
 2. **Color extraction (NON-NEGOTIABLE)** — Screenshot with Playwright, GPT Image 2 vision extracts hex (logo priority), cross-ref logo, build palette, validate WCAG AA. NEVER invent, NEVER use Emdash defaults for clients, NEVER infer from category.
 
 3. **Second-pass verification (BUILD-BREAKING — pre-deploy)** — After GPT Image 2 vision returns `{primary, secondary, accent}`:
    - Load logo PNG via sharp, sample dominant chroma via k-means k=5 ignoring transparent + near-white/near-black (top-3 cluster centroids in HSL)
-   - For EACH returned color, compute min HSL hue-distance to top-3 logo chromas — if `min_hue_distance > 30°` AND saturation>0.2, FAIL w/ diagnostic
+   - For EACH color, compute min HSL hue-distance to top-3 logo chromas — if `min_hue_distance > 30°` AND saturation>0.2, FAIL w/ diagnostic
    - Re-run GPT Image 2 vision w/ corrective prompt naming top-3 logo chromas + demanding `primary` derived from one
    - Validator: `validate-color-from-logo.mjs` in `build_validators.ts` between brand-research and template-pick
    - NEVER ship primary color failing hue-distance check
 
 4. **Logo-luminance + source-theme drives theme (NON-NEGOTIABLE)** — Two-signal:
    - Signal A: logo dominant-color luminance (WCAG formula)
-   - Signal B: source-site dominant background luminance (Playwright screenshot of `body` background — avg pixel luminance)
+   - Signal B: source-site dominant background luminance (Playwright screenshot of `body` background)
    - BOTH agree → match; disagree → source-site wins UNLESS source design score <7/10 (then logo wins)
    - High-quality source (≥7/10 via GPT Image 2 vision `detail:low`) → match source theme verbatim
    - Set theme BEFORE template selection. Reject palette where logo-on-bg contrast <4.5:1 (WCAG AA).
@@ -88,30 +88,17 @@ Extract real brand assets and apply the full copy system (anti-slop, SEO, trust 
 
 ## Brand Extraction from Physical Assets (LOCAL BUSINESS — NO WEBSITE)
 
-### Signage / Storefront (Google Street View + Places Photos)
-
 - Street View Static API: `https://maps.googleapis.com/maps/api/streetview?size=1200x800&location={lat},{lng}&source=outdoor`
 - Places photos: filter `types: ["exterior", "storefront"]`
-- GPT Image 2 vision on storefront — prompt: `"Extract brand identity from this business storefront photo. Return JSON: {sign_text, sign_font_style (serif/sans/script/decorative/hand-lettered), primary_color (hex), secondary_color (hex), accent_color (hex), logo_description, overall_aesthetic, confidence (0-1)}"`
-
-### Business Cards / Collateral
-
-GPT Image 2 vision extracts: logo (crop region), colors (exact hex), font, tagline, NAP for verification.
-
-### Color extraction priority for local
-
-1. Signage → 2. Logo → 3. Storefront awning/trim → 4. Interior decor → 5. Vehicle wrap → 6. Business card → 7. Category default (LAST RESORT)
-
-Each color tagged with `color_source` for provenance.
-
-### Font matching from signage
-
-GPT Image 2 vision identifies style → map to closest Google Font: Script → Dancing Script | Serif → Playfair Display | Modern sans → Inter | Hand-lettered → Caveat. Never use exact proprietary fonts — find spirit, not letter.
+- GPT Image 2 vision on storefront — prompt: `"Extract brand identity from this business storefront photo. Return JSON: {sign_text, sign_font_style, primary_color (hex), secondary_color (hex), accent_color (hex), logo_description, overall_aesthetic, confidence (0-1)}"`
+- Business cards: GPT Image 2 vision extracts logo (crop region), colors (exact hex), font, tagline, NAP for verification.
+- Color extraction priority: 1. Signage → 2. Logo → 3. Storefront awning/trim → 4. Interior decor → 5. Vehicle wrap → 6. Business card → 7. Category default (LAST RESORT). Each tagged with `color_source`.
+- Font matching from signage: Script → Dancing Script | Serif → Playfair Display | Modern sans → Inter | Hand-lettered → Caveat. Never use exact proprietary fonts.
 
 ## Brand Inference (New Products)
 
-- Dev tool → technical / dark / monospace | SaaS → professional / clean / cards | Agency → confident / bold
-- E-commerce → friendly / product-focused | Nonprofit → warm / impact imagery | API → technical / docs-forward
+- Dev tool → technical/dark/monospace | SaaS → professional/clean/cards | Agency → confident/bold
+- E-commerce → friendly/product-focused | Nonprofit → warm/impact imagery | API → technical/docs-forward
 - Emdash defaults (NOT for clients): `#00E5FF`, `#50AAE3`, `#060610`. Sora / Space Grotesk / JetBrains Mono.
 
 ## Anti-AI-Slop Detection (MANDATORY SCAN)
@@ -120,9 +107,9 @@ GPT Image 2 vision identifies style → map to closest Google Font: Script → D
 
 **Banned patterns:** "Welcome to" | "Discover [product]" | vague aspirational headlines | hedging ("may help you," "can potentially") | generic superlatives
 
-**Banned design tells:** Inter as sole font | purple-blue gradients | uniform 16px border-radius everywhere | centered everything | Hero / Lucide as sole icon set | abstract 3D blobs | uniform fade-in on all elements | plastic AI stock photos
+**Banned design tells:** Inter as sole font | purple-blue gradients | uniform 16px border-radius everywhere | centered everything | Hero/Lucide as sole icon set | abstract 3D blobs | uniform fade-in on all elements | plastic AI stock photos
 
-Fix: ask "Would the founder actually say this?" No → rewrite. Color signals function, not decoration.
+Fix: ask "Would the founder actually say this?" No → rewrite.
 
 ## Copy System
 
@@ -131,11 +118,8 @@ Fix: ask "Would the founder actually say this?" No → rewrite. Color signals fu
 - Body — one idea/paragraph, 2-4 sentences, active, concrete, benefit-oriented
 - CTAs — specific action verb first, gradient primary + ghost secondary, above fold + page end
 - Never: "Click here" | "Submit" | "Learn more"
-
-## Brand Voice Enforcement
-
 - Personality mapping — Expert → precise industry terms | Direct → short declarative | Pragmatic → outcomes/implementation
-- Vocabulary lists — always-use / never-use / prefer-over | max sentence: 25 words
+- Vocabulary: always-use / never-use / prefer-over lists | max sentence: 25 words
 - Banned structures: passive voice, hedging, em dashes mid-sentence | monthly drift audit
 
 ## Microcopy System
@@ -148,14 +132,8 @@ Fix: ask "Would the founder actually say this?" No → rewrite. Color signals fu
 
 ## Machine-Readable Brand Documentation
 
-### DESIGN.md (6 sections)
-
-1. Visual Theme | 2. Color Palette (hex + role) | 3. Typography (family + scale + weight) | 4. Spacing + Layout | 5. Components (states + variants + props) | 6. Elevation + Shadows
-
-### Tokens
-
-- W3C DTCG JSON format, single source of truth for design system
-- Generated from `tokens.json` → CSS vars + Tailwind config
+- **DESIGN.md** (6 sections): 1. Visual Theme | 2. Color Palette (hex + role) | 3. Typography (family + scale + weight) | 4. Spacing + Layout | 5. Components (states + variants + props) | 6. Elevation + Shadows
+- **Tokens**: W3C DTCG JSON format, single source of truth. Generated from `tokens.json` → CSS vars + Tailwind config.
 
 ## SEO + Structured Data
 
@@ -168,21 +146,21 @@ Fix: ask "Would the founder actually say this?" No → rewrite. Color signals fu
 ### pSEO 5 page types
 
 - Integration (`/integrations/{tool}`) | Comparison (`/compare/{a}-vs-{b}`) | Use-case (`/for/{audience}`) | Template (`/templates/{type}`) | Location (`/{city}-{service}`)
-- Each: unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal links + 1+ outbound citation. Vary sentence structure, swap synonyms, reorder. Never templatize verbatim.
+- Each: unique H1 + meta desc + 800+ unique words + 1 unique image + 3+ internal links + 1+ outbound citation. Never templatize verbatim.
 
 ### GEO / AI search
 
 - Quotable answer blocks 40-60 words (LLMs cite)
 - FAQPage schema highest AI-citation rate
-- JSON-LD facts must also appear as visible HTML text | lead paragraphs answer query in <40 words
+- JSON-LD facts MUST also appear as visible HTML text | lead paragraphs answer query in <40 words
 - EEAT: author bio + Person schema + `sameAs` + dated revision + ownership
 
-## Trust surfaces
+## Trust Surfaces
 
 - Real testimonials w/ verifiable attribution | license/accreditation badges
 - Security.txt + privacy + terms | Person JSON-LD w/ sameAs | About + Team pages with real bios
 
-## Legal pages (required)
+## Legal Pages (required)
 
 - /privacy | /terms | /accessibility
 

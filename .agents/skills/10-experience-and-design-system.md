@@ -27,16 +27,9 @@ paths:
 
 # 10 — Experience and Design System
 
-Build anti-AI-slop premium interfaces using dark-first OKLCH color, fluid `clamp()` type, DTCG tokens, and View Transitions on every public-facing surface.
+Build anti-AI-slop premium interfaces: dark-first OKLCH color, fluid `clamp()` type, DTCG tokens, View Transitions on every public-facing surface.
 
-## The Apple Test
-
-After every design: would Apple's design team find this acceptable?
-
-- Two elements compete → remove one
-- Crowded → add whitespace
-- Busy type → reduce sizes, increase weight contrast
-- Final feel: effortless, inevitable
+**Apple Test** — after every design: two elements compete → remove one; crowded → add whitespace; busy type → reduce sizes, increase weight contrast; final feel: effortless, inevitable.
 
 ## CSS Patterns
 
@@ -49,7 +42,10 @@ After every design: would Apple's design team find this acceptable?
 ## Typography
 
 - Body: Sora 400/500 · Headings: Space Grotesk 600/700 · Mono: JetBrains Mono 400/500 · Display: Clash Display 700 (hero only)
-- Variable fonts: WOFF2, subset to needed chars, self-host (never Google Fonts CDN), `font-display:swap`
+- Variable fonts: WOFF2, subset, self-host (never Google Fonts CDN), `font-display:swap`
+- Body min 16px (prefer 18) · Line-height 1.6 body, 1.1-1.2 headings · Letter-spacing -0.02em >2rem · Max 65ch
+- Never skip levels. Scale: Minor Third 1.2 general, Perfect Fourth 1.333 marketing
+- `text-wrap:balance` headings, `text-wrap:pretty` paragraphs
 
 ```css
 :root {
@@ -64,10 +60,6 @@ After every design: would Apple's design team find this acceptable?
   --text-hero: clamp(3rem, 2rem + 5vw, 6rem);
 }
 ```
-
-- Body min 16px (prefer 18) · Line-height 1.6 body, 1.1-1.2 headings · Letter-spacing -0.02em >2rem · Max 65ch
-- Never skip levels. Scale: Minor Third 1.2 general, Perfect Fourth 1.333 marketing
-- `text-wrap:balance` headings, `text-wrap:pretty` paragraphs
 
 ## Color (Dark Default)
 
@@ -88,20 +80,9 @@ After every design: would Apple's design team find this acceptable?
 
 - Never `#000` (use `#060610`) · Never `#fff` (use `#f0f0f5`)
 - Cyan: primary CTAs · Blue: secondary · Gradients on buttons only · 6% borders · Subtle glow on primary interactive
-
-### Dark-first
-
 - Elevation via lightness not shadows: base → surface 1 → surface 2 → surface 3
-- Status colors desaturate 10-20% from light-mode equivalents
-- Sans-serif fonts; use `-webkit-font-smoothing:antialiased`
-
-### Theme
-
 - `color-scheme:light dark` · `data-theme="dark|light"` user override · `localStorage` persistence · `prefers-color-scheme` system default · Always provide toggle
-
-### Modern color
-
-- OKLCH perceptually uniform · `color-mix()` for blending · Relative `oklch(from var(--brand) l c calc(h + 30))` · `light-dark()` theme-aware
+- OKLCH perceptually uniform · `color-mix()` · Relative `oklch(from var(--brand) l c calc(h + 30))` · `light-dark()` theme-aware
 - Contrast 4.5:1 normal, 3:1 large/UI (WCAG 2.2 AA) · Target size min 24×24 px (2.5.8) · Focus 2px thick, 3:1 contrast (2.4.13)
 
 ## CSS Architecture (2026)
@@ -110,14 +91,11 @@ After every design: would Apple's design team find this acceptable?
 @layer reset, base, tokens, components, utilities, overrides;
 ```
 
-- Native nesting (Sass optional) · Container queries (`container-type:inline-size`, `@container`) · `:has()` replaces JS
-- `@scope` bounded styling (Baseline 2026) · Anchor positioning replaces Floating UI (Baseline 2026) · Scroll-state queries `@container scroll-state(stuck: top)` (Baseline 2026)
-- CSS `if()` conditional · Typed `attr()` · `sibling-index()` / `sibling-count()` for stagger: `transition-delay: calc((sibling-index() - 1) * 40ms)`
+- Native nesting · Container queries (`container-type:inline-size`, `@container`) · `:has()` replaces JS
+- `@scope` bounded styling · Anchor positioning replaces Floating UI · Scroll-state queries `@container scroll-state(stuck: top)` (Baseline 2026)
+- CSS `if()` · Typed `attr()` · `sibling-index()` / `sibling-count()` stagger: `transition-delay: calc((sibling-index() - 1) * 40ms)`
 - `appearance:base-select` native `<select>` (Chrome 135+) · `@supports` for progressive enhancement
-
-### Baseline 2026
-
-- `@scope` · Anchor positioning · Scroll-state queries · `@starting-style` (all browsers) · `interpolate-size: allow-keywords` · `field-sizing: content` · `text-wrap: pretty` · `@property`
+- **Baseline 2026**: `@scope` · Anchor positioning · Scroll-state queries · `@starting-style` · `interpolate-size: allow-keywords` · `field-sizing: content` · `text-wrap: pretty` · `@property`
 
 ## W3C DTCG Design Tokens (2025.10 Stable)
 
@@ -130,24 +108,16 @@ After every design: would Apple's design team find this acceptable?
 
 ## AI-Ready Design Documentation
 
-- `DESIGN.md`: plain-text markdown for LLM consumption
-- Sections: Visual Theme, Color Palette, Typography, Spacing + Layout, Components, Elevation
-- Atomic documentation: small context-rich units tied to components
-- Component metadata: states, variants, props, constraints, a11y, rationale
+- `DESIGN.md`: plain-text markdown; sections: Visual Theme, Color Palette, Typography, Spacing + Layout, Components, Elevation
+- Atomic docs: context-rich units per component with states, variants, props, constraints, a11y, rationale
 - MCP servers (Figma Dev Mode MCP) for programmatic access
 
 ## Layout
 
 - Container 1140px (wide 1400, narrow 720), padding `clamp(1rem,3vw,3rem)`
 - Sections `clamp(4rem,8vw,8rem)`, border between; grid `auto-fit minmax(280px,1fr)`, 1fr at 768px
-
-### Patterns
-
-- Hero (full-viewport, centered) · Features (3-col icon + heading + desc) · Alternating (zigzag) · Pricing (3-tier highlighted) · FAQ (accordion) · CTA (full-width dark) · Footer (4-col stack)
-
-### SaaS
-
-- Single-CTA 13.5%; Hero / Proof / Features / Demo / Testimonials / Pricing / FAQ / CTA; bento grid for feature showcases
+- Patterns: Hero (full-viewport, centered) · Features (3-col icon+heading+desc) · Alternating (zigzag) · Pricing (3-tier highlighted) · FAQ (accordion) · CTA (full-width dark) · Footer (4-col stack)
+- SaaS: Single-CTA 13.5%; Hero / Proof / Features / Demo / Testimonials / Pricing / FAQ / CTA; bento grid for feature showcases
 
 ## Components
 
@@ -159,20 +129,15 @@ After every design: would Apple's design team find this acceptable?
 
 ## Interaction (every interactive element)
 
-`cursor:pointer`, hover state, focus-visible (3px cyan, 2px offset), active (scale 0.98), transition (0.2s color, 0.1s transform).
-
-WCAG 2.2 — min 24×24px targets, focus not obscured by sticky headers, dragging alternatives required, accessible auth.
+`cursor:pointer`, hover state, focus-visible (3px cyan, 2px offset), active (scale 0.98), transition (0.2s color, 0.1s transform). WCAG 2.2 — min 24×24px targets, focus not obscured by sticky headers, dragging alternatives required, accessible auth.
 
 ### 4-state distinction (NON-NEGOTIABLE)
 
 Every link/button/card MUST visually differ across `:default | :hover | :focus-visible | :active` — NEVER let two states look identical.
 
-- Default → neutral
-- Hover → underline-sweep + color shift + `translateY(-1px)`
-- Focus-visible → 3px cyan ring 2px offset (distinct from hover)
-- Active → `scale(0.98)` + immediate color confirm
+- Default → neutral · Hover → underline-sweep + color shift + `translateY(-1px)` · Focus-visible → 3px cyan ring 2px offset (distinct from hover) · Active → `scale(0.98)` + immediate color confirm
 
-Audit gate: Playwright cycles each interactive element through 4 states and screenshots → diff ≥3px pixel-difference between adjacent states or fail.
+Audit gate: Playwright cycles each interactive element through 4 states → screenshots → diff ≥3px pixel-difference between adjacent states or fail.
 
 ### Underline-sweep (text links default)
 
@@ -182,6 +147,6 @@ Audit gate: Playwright cycles each interactive element through 4 states and scre
 .underline-hover:hover::after,.underline-hover:focus-visible::after{left:0;right:0}
 ```
 
-Brand-accent = theme's primary (`var(--brand-accent)` / theme equivalent — never hard-coded #hex).
+`var(--brand-accent)` / theme equivalent — never hard-coded #hex.
 
 ## See submodules: design-tokens.md, build-breaking-rules.md, cinematic-doctrine.md.
