@@ -71,3 +71,8 @@ Retrofit discipline: when you touch ANY surface with a processed input lacking s
 - TS config enforces `"strict": true` + `"noUncheckedIndexedAccess": true` + `"exactOptionalPropertyTypes": true` per `[[code-style]]`
 - Zod adds the RUNTIME guarantee TypeScript can't — strict types prove compile-time shape, Zod proves runtime shape
 - `z.infer` is the bridge — schemas drive both at once
+
+## Zod as the OpenAPI + boundary SSOT
+
+- OpenAPI is **derived** from Zod via `@asteasolutions/zod-to-openapi` (`extendZodWithOpenApi` + `OpenApiGeneratorV31`) — never hand-maintain an OpenAPI YAML/JSON; see `[[hono-api]]` for the serving layer.
+- `effect/Schema` does **NOT** replace Zod at I/O boundaries — Effect is for control-flow/errors/concurrency INSIDE services; Zod owns every runtime edge.

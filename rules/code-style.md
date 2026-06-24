@@ -49,7 +49,7 @@ Enforce TS 5.9+ strict mode, Google TS Style, ESM-only imports, and Cloudflare W
 
 - Inline handlers (type inference). RPC: `hc<AppType>` for client.
 - **WorkerEntrypoint** + service bindings for internal Worker-to-Worker (promise pipelining, 32 MiB payload, JSRPC compat `2024-04-03`).
-- `@hono/zod-validator` all bodies. `@hono/zod-openapi` for OpenAPI generation.
+- `@hono/zod-validator` all bodies. `@hono/zod-openapi` for OpenAPI generation — **superseded for new OpenAPI work** by `hono-openapi` + `@asteasolutions/zod-to-openapi` (see `hono-api.md`).
 - Centralized `onError()` + `notFound()`. Error shape: `{error,code?,details?}`.
 - Split routes: `app.route('/path',subApp)`. KV rate-limit. Turnstile all forms. `GET /health`.
 - `createFactory()` for reusable middleware chains. Method chaining: `app.use().get().post()`.

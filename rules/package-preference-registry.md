@@ -53,10 +53,15 @@ Paid/pro-only deps · proprietary UI kits · non-commercial licenses · duplicat
 - ✅ **Zod** — every runtime boundary (core per `zod-everywhere`).
 - ✅ **Angular Reactive Forms** — typed forms.
 - ✅ **zod-validation-error** — human-readable error formatting.
-- ✅ **zod-to-json-schema** — forms/docs/AI-tools/generated interfaces.
+- ✅ **zod-to-json-schema** — forms/docs/AI-tools/generated interfaces (keep alongside `zod-to-openapi`; different targets).
 - ✅ **@t3-oss/env-core** — env-var validation.
 - ⏳ **NGX Formly** — schema-driven forms where complexity justifies it.
 - ⏳ **libphonenumber-js** — phone validation where phone inputs exist.
+
+### API contracts / OpenAPI
+
+- ✅ **@asteasolutions/zod-to-openapi** — DERIVE OpenAPI 3.x from Zod schemas (`extendZodWithOpenApi` + `OpenApiGeneratorV31`); never hand-maintain. Pairs with Stainless SDK-codegen + `zod-to-json-schema`.
+- ✅ **hono-openapi** — OpenAPI serving layer for Hono: `describeRoute()` + `openAPISpecs(app)`. Supersedes `@hono/zod-openapi` for new work; use with `@hono/zod-validator` or its own resolver.
 
 ### Editors / content
 
@@ -115,6 +120,10 @@ Paid/pro-only deps · proprietary UI kits · non-commercial licenses · duplicat
 ### Payments
 
 - 🔌 **stripe** — ONLY when billing is required (per `payments-routing`: Square for accept-money default; Stripe for SaaS billing/payouts). Behind adapter.
+
+### Control-flow / FP
+
+- ✅ **effect** — typed errors, retry/timeout/concurrency, DI for complex services/workflows. SPECIFIC surfaces only — not a wholesale rewrite. `effect/Schema` does NOT replace Zod at I/O boundaries; Zod stays SSOT. Adopt per-service; Workers-compatible ESM.
 
 ### AI / agents
 

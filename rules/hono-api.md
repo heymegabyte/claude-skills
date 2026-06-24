@@ -114,6 +114,13 @@ Define Hono-on-Workers API patterns including RPC mode, WorkerEntrypoint binding
 - Use instead of static API keys between Workers
 - `CLERK_JWT_KEY` PEM verification for zero-RTT session checks at the edge
 
+## OpenAPI generation
+
+- **`hono-openapi`** is the OpenAPI serving layer: `describeRoute(meta)` per-route + `openAPISpecs(app, {openapi:'3.1.0',...})` to emit the spec document.
+- **`@asteasolutions/zod-to-openapi`** derives the spec from Zod schemas: `extendZodWithOpenApi(z)` once at startup + `OpenApiGeneratorV31` to build the registry — never hand-maintain OpenAPI YAML/JSON.
+- Use `@hono/zod-validator` (or `hono-openapi`'s own resolver) for per-route input validation; Zod remains the SSOT per `[[zod-everywhere]]`.
+- `@hono/zod-openapi` is **superseded** for new OpenAPI work — use `hono-openapi` + `zod-to-openapi` instead.
+
 ## CF 2026 primitives (Agents/Dev Week — reach for these before rolling your own)
 
 - **Flagship** — native CF feature-flag service (KV + DO, sub-ms eval). Evaluate before the custom D1 flag tables in `feature-flags.md` for new builds.
