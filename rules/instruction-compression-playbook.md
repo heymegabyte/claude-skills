@@ -66,7 +66,7 @@ Cross-links: `[[brian-preferences]]` `[[always]]` `[[drift-detection]]` `[[repo-
 
 ## Structural moves (SHOULD)
 
-- **Progressive disclosure** — SKILL.md is a table of contents. Inline only what changes per-task; link the rest one level deep (`See [[ref]]` for rules, `` `reference/x.md` `` for code). Never nest references >1 deep.
+- **Progressive disclosure** — SKILL.md is a table of contents. Inline only what changes per-task; link the rest one level deep (`See [[ref]]` for rules, `` `reference/<topic>.md` `` for code). Never nest references >1 deep.
 - **Critical-first-and-last** — put the most load-bearing constraint in the first 10 lines AND echo in the last 5. Middle-context recall is ~40% worse (U-curve / "lost in the middle").
 - **Archive temporal guidance** — date-stamped patterns ("before Aug 2025…") go stale; wrap in `<details>` or a `## Legacy` block so they cost 0 tokens to skip.
 - **TOC for files >100 lines** — add a `## Contents` block so the file can be preview-read without full load.

@@ -226,6 +226,14 @@ logHeader "23. route-health"
 runGate "route-health" "check-route-health --ci" \
   node "$SKILLS_ROOT/bin/check-route-health.mjs" --ci
 
+# Hard gate 24 (Jun-2026) — reference-pointers. Integrity for the dynamic-sourcing arc:
+# every `reference/<x>.md` pointer left in a rule/skill must resolve to a real file
+# (a rename/typo would silently dead-end the AI). Crosslinks gate (16) only covers
+# [[slug]] links, not these plain-path pointers.
+logHeader "24. reference-pointers"
+runGate "reference-pointers" "check-reference-pointers --ci" \
+  node "$SKILLS_ROOT/bin/check-reference-pointers.mjs" --ci
+
 # Soft INFO gates (pass-63→67) — 4 audit reports.
 # Human mode: with --quiet, buffer output; only emit if any drift. Without --quiet, emit always.
 # JSON mode (pass-69): capture each script's --json envelope into an `info` block alongside `gates`.
