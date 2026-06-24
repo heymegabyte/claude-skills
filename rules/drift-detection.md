@@ -71,6 +71,7 @@ Any artifact GENERATED at build (sitemap, RSS/JSON feed, service-worker precache
 - **SW precache ↔ public/** — `validate-links.mjs` parses `sw.js` `STATIC_ASSETS`, asserts every asset-extension entry exists in `public/`.
 - **JSON-LD structural** — `validate-jsonld.mjs` asserts each block has `@context` + `@type` + type-specific required fields (`HowTo→step`, `FAQPage→mainEntity`, `WebPage→name`, …).
 - **route manifest ↔ worker soft-404** — shared `known-routes.ts` (`KNOWN_ROUTES` + `isKnownRoute`) imported by link validator AND Worker; unknown HTML paths return real 404 (not 200 soft-404).
+- **SPA route ↔ known-route manifest** — `validate-spa-routes.mjs` asserts every non-dynamic `KNOWN_ROUTES` entry has a matching `<Route>` in `app.tsx`. A route present in the manifest + page-meta + sitemap but ABSENT from the SPA router serves a 200 shell that renders the 404 page — a soft-404 on an SEO-indexed URL the link validator can't catch (it checks manifest membership, not Route existence). Reference: njsk.org `/grants` shipped this way (full content + meta + sitemap, no `<Route>`) until the gate caught it.
 - **fabricated-people** — `validate-no-fabricated-people.mjs` flags person-name paired with quote/testimonial lacking a `_confirmations.json` entry. See `copy-writing.md § Fabricated-people build gate`.
 
 ### Audit cadence
