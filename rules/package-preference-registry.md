@@ -12,15 +12,15 @@ paths:
 
 # Package Preference Registry
 
-Canonical preferred packages + decision discipline. **Listing ≠ installing.** Every dep needs a real business requirement. No bloat, demos-as-features, duplicate architectures, shallow integrations.
+Canonical preferred packages + decision discipline. **Listing ≠ installing.** Every dep needs a real business requirement. No bloat or duplicate architectures.
 
 ## Prime principle (OSS-first)
 
-Prefer high-quality OSS that reduces implementation risk, improves user value, or creates reusable capabilities. Check: licensing, maintenance, API stability, security, tests, deployment fit. Liberal adoption of *recyclable, actively-maintained, typed, composable, testable, accessible, provider-agnostic* tools beats hand-rolling — but every candidate clears the decision gate below.
+Prefer high-quality OSS that cuts implementation risk or creates reusable capability. Check licensing, maintenance, API stability, security, tests, deployment fit. Adopting *maintained, typed, composable, accessible* tools beats hand-rolling — but every candidate clears the gate below.
 
 ## Decision discipline (run for EVERY candidate)
 
-1. Already have an equivalent? 2. Feature truly needs it? 3. License (free/OSS only — no paid/pro-only, no non-commercial, no proprietary UI kits). 4. Angular/SSR compatible? 5. Bundle/perf impact? 6. Cloudflare compatible (adapter where relevant)? 7. Lighter existing solution enough? → **install now · defer · adapter-only · reject** + document why.
+1. Already have an equivalent? 2. Feature truly needs it? 3. License (OSS/free only)? 4. Angular/SSR compatible? 5. Bundle/perf impact? 6. Cloudflare compatible? 7. Lighter existing solution enough? → **install now · defer · adapter-only · reject** + document why.
 
 ## Hard NEVER
 
@@ -140,6 +140,10 @@ Paid/pro-only deps · proprietary UI kits · non-commercial licenses · duplicat
 - ⏳ **Inngest** / **Cloudflare Workflows** (+ Dynamic) — deploys/imports/crawls/AI-jobs/notifications/billing/scheduled ops; typed input + Zod + status + retries + trace-id + idempotency.
 - ⏳ **Crawlee** (OSS crawl/import).
 - 🔌 **Firecrawl**/**browser-use** — only if license/deployment fit.
+
+## ProjectSites.dev stack
+
+ProjectSites.dev's Cloudflare-first, status-tagged recommended stack (backend/CF/admin/React/AI/auth/search/quality/services/infra + Core/Recommended/Conditional/Study/Avoid gates) lives in `[[projectsites-recommended-stack]]` (scoped — loads on projectsites/website-build prompts, not every prompt) and the in-repo `docs/STACK.md`.
 
 ## Per-package full-detail template (fill as each is adopted)
 

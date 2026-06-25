@@ -70,4 +70,5 @@ members:
   - rules/multi-harness-portability
   - rules/skill-authoring-contract
   - rules/projectsites-cloudflare-first
+  - rules/projectsites-recommended-stack
   - rules/emdash-fleet
