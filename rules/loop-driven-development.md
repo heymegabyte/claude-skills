@@ -65,6 +65,8 @@ Recs shrinking from 15 to 4 across iterations = genuine convergence, not time ex
 - Skipping end-of-turn report — loop stalls silently with no error.
 - Running loops during approval-required work — loops assume `autonomous` tier.
 - Spawning >5 agents per iteration when Opus quota is active — wire `model_fallback` before starting.
+- **Running a long arc on a feature branch while `main` advances in parallel** — the arc silently diverges; by the time you merge, both sides have built overlapping features differently (add/add conflicts on whole files). Run the arc ON `main` per `[[main-only-branch]]`, OR `git merge origin/main` into the arc branch every few fires to keep the gap small. Reference incident: njsk.org `funky-donkeys` ran ~20 fires (animation + notifications + audit tooling) while `main` independently shipped wave-2-5 features → 369↔10 divergence with add/add conflicts on `get-help.tsx`/`corporate.tsx`. Each extra arc-branch commit made the reconciliation harder — a signal to STOP shipping to the branch and merge first.
+- **Continuing to ship when the loop is blocked on a human decision** (a divergent merge, an approval-required action) — extra commits worsen the blocker. Surface the blocker + STOP, don't keep firing.
 
 ## Loop Termination Signals (priority order)
 
