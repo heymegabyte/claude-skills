@@ -24,7 +24,7 @@ ProjectSites.dev is a **Cloudflare-native multi-tenant website/application platf
 - **NEVER by default**: Google Cloud Run, AWS, GCP, Azure, Vercel, Supabase, Render, Railway, or any managed app platform. Only on an explicit Brian override.
 - **Neon** = the Postgres escape hatch — only when D1 can't (true Postgres semantics, advanced SQL, RLS, extensions, customer-isolated Postgres, large relational app data).
 - **Upstash** = the Redis escape hatch — only for Redis-shaped problems (pub/sub, streams, sorted sets, leaderboards, global token buckets, Redis locks). NEVER the default manifest cache — use KV/R2 first.
-- **Fly.io** = the stateful-VM/container escape hatch — only when a true stateful VM is required AND Workers/DO/Containers/Queues/Workflows/R2/D1/KV/Hyperdrive/Browser Run/Agents/Sandbox cannot safely satisfy it.
+- **Fly.io** = the stateful-VM/container escape hatch — only when a true stateful VM is required AND Workers/DO/Containers/Queues/Workflows/R2/D1/KV/Hyperdrive/Browser Run/Agents/Sandbox cannot safely satisfy it. **Canonical reference impl: the voice answering gateway** (`apps/voice-gateway/`, a `twilio-labs/call-gpt` fork — Twilio Media Streams duplex audio WS, Fly region `iad`/us-east VA, autoscale by concurrent calls; ADR-0011). A long-lived sub-second bidirectional media socket is the textbook Fly.io case.
 
 ## First-class Cloudflare primitives (reach for these first)
 
