@@ -62,7 +62,7 @@ Cross-links: `[[brian-preferences]]` `[[always]]` `[[drift-detection]]` `[[repo-
 - Heavy **implementation detail** (full code handlers, schemas, RFC templates, exhaustive examples) lives in `reference/<owning-rule>.md`, NOT inline. The router indexes only `rules/*.md` + `*/SKILL.md`, so `reference/` costs **0 tokens until Read on demand**.
 - Keep in the rule: the **requirement** (WHAT/WHEN, thresholds, vendor/version, [MUST]) + a plain-path pointer `` See `reference/<topic>.md` ``. Move out: the **HOW** (long code, boilerplate).
 - Keep inline: short snippets that ARE the spec (a required header value, a legally-required field). Pointer is a plain path, NOT a `[[crosslink]]`.
-- Net effect: a domain rule loads lean every time its triggers fire; the implementation is one `Read` away when actually building. See `reference/README.md`.
+- Net effect: a domain rule loads lean every time its triggers fire; the implementation is one `Read` away when actually building. See `reference/README.md` (incl. sub-agent absolute-path resolution + gate 24 pointer integrity).
 
 ## Structural moves (SHOULD)
 

@@ -17,4 +17,5 @@ The skill-router indexes only `rules/*.md` and `*/SKILL.md`. Files here are **in
 
 - A rule keeps the requirement + a plain-path pointer: `` See `reference/<topic>.md` for the full implementation. `` (plain path, NOT a `[[crosslink]]` — crosslinks are for router-loaded rules only).
 - The AI reads the reference file on demand when implementing that surface.
+- **Path resolution:** `reference/<x>.md` is relative to the plugin root (`~/.agentskills/reference/<x>.md`, symlinked from `~/.claude/plugins/heymegabyte-claude-skills/`). The main agent resolves it directly. **When spawning a sub-agent** that must read a reference file, pass the ABSOLUTE path `~/.agentskills/reference/<x>.md` in its brief — a fresh sub-agent's cwd is usually a project dir, where the relative path won't resolve (per `[[parallel-subagent-economy]]` fresh-context rule).
 - Reference filenames mirror the owning rule: `rules/webhook-receiver-architecture.md` → `reference/webhook-receiver-architecture.md`.
