@@ -1,11 +1,12 @@
 # DockerSlim All Containers
 
-Every custom Docker image we BUILD-AND-PUSH (registry-deployed containers, local/dev images, CI sidecars) is minified with **DockerSlim (`slim build`)** and **functional-tested still-working** before it ships. A slimmed image that fails its smoke test is NOT shipped — the slim is reverted, never the functionality.
+Every custom Dockerfile we author is **linted with Hadolint** before it builds, and every custom image we BUILD-AND-PUSH (registry-deployed containers, local/dev images, CI sidecars) is minified with **DockerSlim (`slim build`)** and **functional-tested still-working** before it ships. A Dockerfile with Hadolint errors does not build; a slimmed image that fails its smoke test is NOT shipped — the slim is reverted, never the functionality.
 
-Cross-links: `[[cloudflare-lock-in-is-leverage]]` `[[verification-loop]]` `[[supply-chain-integrity]]` `[[cost-per-request-accountability]]`
+Cross-links: `[[cloudflare-lock-in-is-leverage]]` `[[verification-loop]]` `[[supply-chain-integrity]]` `[[cost-per-request-accountability]]` `[[lint-doctrine]]`
 
 ## The mandate
 
+- **Lint every Dockerfile with Hadolint FIRST** — `hadolint <Dockerfile>` before any `docker build`. It catches unpinned base tags/apt versions, missing `--no-install-recommends`, `ADD`-where-`COPY`, root-user runtime, shell-form `CMD`, layer-cache busters, and `latest` tags. Wire it into lefthook + CI (`hadolint **/Dockerfile*`); a DL-code error fails the build. Pin the base image by digest, run as non-root, `--no-install-recommends` + clean apt lists in the same layer — most Hadolint findings ARE the slimming win restated. Install: `brew install hadolint`. (Per `[[lint-doctrine]]` § Shell + ops.)
 - **Slim every custom image** — `slim build --http-probe` (or `--exec`/`--include-path` for non-HTTP) produces a `.slim` image with only the files the running container actually touches (typically 10–30× smaller, smaller attack surface).
 - **Functional-test the slimmed image** — the slim is only accepted if the container still boots AND serves its real workload (HTTP 2xx on its health/route, or its CLI entrypoint exits 0). No test = no ship.
 - **Slim ≠ break** — DockerSlim drops files the probe didn't exercise; if the app uses a path lazily (a rarely-hit route, a runtime `require`, a spawned binary), add it via `--include-path`/`--include-bin`/`--include-exe` and re-probe. Never ship a slim that 500s a real path.

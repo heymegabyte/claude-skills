@@ -6,5 +6,6 @@ members:
   - 08-deploy-and-runtime-verification
   - rules/computer-use-safety
   - rules/docker-slim-all-containers
+  - rules/neon-database-conservation
   - rules/email-deliverability
   - rules/email-deliverability-implementation
