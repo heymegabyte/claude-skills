@@ -19,8 +19,13 @@ Trigger a 100-point comprehensive audit and multi-agent polish sweep on the full
 ## Trigger
 
 - Phrase: `pixel ?perfect|meta ?perfect|polish (everything|the whole|all)|audit (the whole|the entire|everything)|100 (ideas|features|improvements|upgrades|enhancements)|make it (perfect|amazing|beautiful)|everything well[- ]integrated|commonly forgotten|every step`
-- Auto every 5th prompt on a project touched ≥10 times.
 - `monitor-orchestration.md` is the execution shell; this rule is the content brief.
+
+## This is a BOUNDED, terminating sweep — NOT infinite polish
+
+- A supreme-polish run is **one finite pass**: produce `_ideas-100.md`, ship every idea ≥7, deploy + verify, then **STOP**. It is not a perpetual loop and must never be armed as one.
+- **No auto-re-fire.** Earlier guidance auto-fired this "every 5th prompt on a mature project" — that manufactured infinite polish and is **removed**. Run it only on the trigger phrases above or an explicit `/supreme-polish`.
+- Ship-list empty (every surfaced idea <7, or all ≥7 already shipped) ⇒ the sweep is DONE; report it and stop — do not invent more ideas to keep the pass alive. Per `[[loop-driven-development]]` § Every loop MUST terminate.
 
 ## Output (ALL in one turn)
 
