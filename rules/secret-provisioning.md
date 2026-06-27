@@ -37,6 +37,25 @@ Before EVER surfacing a "set this secret" rec or asking the human for ANY env va
 
 Logging the search: state which sources you checked (`get-secret: hit/miss`, `dev.vars/emdash scan: N files`, `wrangler secret list: present/absent`, `derived: yes/no`) so a false "missing" is auditable. A "missing" claim that skipped step 1, 2, 3, or 4 = false positive = wasted human time.
 
+## Persist EVERY new secret to get-secret (the write side — Brian, 2026-06-27)
+
+get-secret is the canonical home for ALL secrets. The moment you receive, generate, or derive ANY secret/credential/env value (the human pastes one, you `openssl rand` one, you mint an API key, you derive an SMTP password), SAVE it to the get-secret store the same turn — don't just set it on the deploy target and move on. This keeps the store the single source of truth so future turns + sibling projects + new machines find it via step 1.
+
+Write recipe (age-encrypted; the store is git-tracked + the encrypted blob is safe to commit):
+
+```bash
+DIR="$HOME/.local/share/chezmoi/home/.chezmoitemplates/secrets-$(hostname -s)"   # per-host symlink
+printf '%s' '<VALUE>' | chezmoi encrypt > "$DIR/<KEY>"          # no trailing newline
+get-secret -e <KEY>                                            # verify: exit 0 = stored
+[ "$(get-secret <KEY>)" = '<VALUE>' ] && echo MATCH            # round-trip
+cd "$(chezmoi source-path)/home/.chezmoitemplates/secrets" \
+  && git add <KEY> && git commit -m "secrets: add <KEY> (age-encrypted)" && git push   # syncs all machines
+```
+
+- chezmoi encryption is **age** (`recipient age1necy24c…`); existing entries are `-----BEGIN AGE ENCRYPTED FILE-----`. The store is the `heymegabyte/install.doctor` git repo — committing the encrypted file is the norm (siblings like `AWS_DEFAULT_REGION` are committed).
+- Name the file EXACTLY the env-var key (`DEEPSEEK_API_KEY`, `LIVEKIT_API_SECRET`) — `get-secret <KEY>` reads `$DIR/<KEY>`.
+- This is the complement to the source-exhaustion order: exhaust get-secret on READ, populate get-secret on WRITE. A secret that only ever lived on a deploy target (a bare `wrangler secret put`) is invisible to every future search — back-fill it into get-secret too.
+
 ## Detect-availability protocol
 
 - Call `/Users/Apple/.local/bin/get-secret KEY`
