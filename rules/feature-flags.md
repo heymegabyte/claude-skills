@@ -13,9 +13,26 @@ paths:
 
 Every feature beyond a trivial one-file edit ships behind a flag. Default: `enabled=0, rollout_percent=0, stage='experimental'`. Admin promotes through stages + dials rollout % from `/admin/feature-flags`. Nothing ships permanently-on at launch.
 
-## Architecture (canonical — every emdash project starting w/ njsk.org Wave 6)
+## STANDARD — Cloudflare Flagship is THE feature-flag service (Brian directive 2026-06-27)
 
-> **2026 alternative — CF Flagship**: CF now ships a native feature-flag service (KV + DO, sub-ms edge eval). Evaluate Flagship for NEW builds before the custom D1 tables below — it removes bespoke worker + admin UI maintenance. Keep this D1 design where you need the rich `description`/`e2e_tests`/`smoke_steps` governance columns Flagship doesn't model.
+> **MANDATE: use Cloudflare Flagship for ALL feature flags.** Flagship is CF's native
+> feature-flag service (OpenFeature standard, KV + DO, edge-evaluated in-isolate, public
+> beta 2026) — `cloudflare-lock-in-is-leverage` applies: prefer the CF-native primitive.
+> Every project evaluates flags through Flagship via the native Workers binding (no HTTP).
+> - **New builds**: define flags in Flagship from day one; bind `env.FLAGSHIP`; evaluate via
+>   the OpenFeature provider. No bespoke flag worker/admin to maintain.
+> - **Existing D1-flag projects**: keep the D1 engine as the **fallback + admin source-of-truth**
+>   (its rich `description`/`e2e_tests`/`smoke_steps` governance columns Flagship doesn't model),
+>   but wire a `FlagshipEvaluationProvider` behind the OpenFeature port that PREFERS Flagship when
+>   bound and falls back to D1 on any miss. Sync all registry flags into Flagship (boolean def +
+>   default variant + % rollout + stage tag). Reference impl: projectsites.dev
+>   `middleware/feature-evaluation.ts` (`FlagshipEvaluationProvider` + factory) +
+>   `scripts/sync-flags-to-flagship.mjs` + ADR-0033. Go-live: provision a Flagship app at
+>   dash.cloudflare.com (Feature Flags), set `FLAGSHIP_API_TOKEN`/`FLAGSHIP_APP_ID`, run the sync,
+>   add the `[[flagship]]` binding to `wrangler.toml`.
+> Docs: https://developers.cloudflare.com/flagship/ · https://blog.cloudflare.com/flagship/
+
+## Architecture (D1 fallback engine — kept as admin SoT + governance layer)
 
 Three D1 tables:
 
