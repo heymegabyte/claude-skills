@@ -15,6 +15,7 @@ paths:
 ## Why this grew
 
 - 2026-06-19: added § "Mint a scoped CF API token from the Global API Key" + § "Never-overwrite-live-secrets discipline" — two arc-proven techniques (projectsites.dev) that unblock prod secret-put without escalating to the user. Load-bearing recipes, not filler.
+- 2026-06-27: added § "Source-exhaustion order" — Brian directive that the human is the LAST resort for any secret/env var; exhaust get-secret + sibling Emdash projects + self-derivation first. Load-bearing protocol (proved: all 7 projectsites SES secrets provisioned with zero human asks), not filler.
 
 Auto-fetch every required secret from `get-secret` and push it to the destination platform before running any deploy; never prompt the user to do it manually.
 
@@ -23,6 +24,17 @@ Auto-fetch every required secret from `get-secret` and push it to the destinatio
 - Every deploy that depends on a secret MUST auto-fetch from `/Users/Apple/.local/bin/get-secret` and push to the destination BEFORE running the deploy command
 - Destinations: CF Pages `npx wrangler pages secret put` | CF Workers `npx wrangler secret put` | Vercel `vercel env add` | Fly `flyctl secrets set` | Render dashboard API | etc.
 - NEVER recommend the user run `wrangler pages secret put` themselves — that is friction for zero gain when the secret is right there in get-secret
+
+## Source-exhaustion order — NEVER ask the human until ALL of these are dry (Brian, 2026-06-27)
+
+Before EVER surfacing a "set this secret" rec or asking the human for ANY env var / secret / credential, exhaust these sources IN ORDER. Asking the human is the LAST resort, only for a value that exists nowhere below.
+
+1. **`get-secret` (chezmoi store)** — `/Users/Apple/.local/bin/get-secret KEY`. Backing store is `~/.local/share/chezmoi/home/.chezmoitemplates/secrets-$(hostname -s)/` (a per-host dir; follow the symlink). `ls -1L` that dir to discover the FULL key inventory (≈383 keys incl. `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, every `CLOUDFLARE_*`, OAuth pairs, …) — grep it for the key + likely aliases BEFORE concluding "missing".
+2. **Other Emdash projects** — every repo under `~/emdash/repositories/*` (and `~/emdash/**`). A sibling project commonly already holds the same credential. Scan their `.dev.vars`, `.env*`, `wrangler.toml`, `wrangler.jsonc`, `secrets.required` blocks: `grep -rIiE "<KEY>|<alias>" ~/emdash/repositories --include='.dev.vars' --include='*.env' --include='.env*' --include='wrangler.toml' --include='wrangler.jsonc' --exclude-dir=node_modules`. Watch for renamed variants across projects (e.g. brickcitylabor uses `AWS_SES_ACCESS_KEY_ID`, projectsites uses `AWS_ACCESS_KEY_ID` — same credential, different name).
+3. **Self-generable / derivable** — if the value is generatable (HMAC/webhook/signing/session/CSRF secret, salt, nonce → `openssl rand -base64 32`) or DERIVABLE from a value you already found (e.g. SES SMTP password = HMAC-derived from `AWS_SECRET_ACCESS_KEY` + region; SMTP host = `email-smtp.<region>.amazonaws.com`; SMTP user = `AWS_ACCESS_KEY_ID`), generate/derive it per `[[secret-auto-provisioning]]` + `[[always]]` § Secrets — never ask.
+4. **THEN, only if truly absent everywhere** — surface ONE "set this secret" rec with the exact deeplinked mint URL (vendor-issued third-party creds the human alone can create: Stripe/Resend/OAuth apps, etc.).
+
+Logging the search: state which sources you checked (`get-secret: hit/miss`, `emdash scan: N files`, `derived: yes/no`) so a false "missing" is auditable. A "missing" claim that skipped step 1, 2, or 3 = false positive = wasted human time.
 
 ## Detect-availability protocol
 
