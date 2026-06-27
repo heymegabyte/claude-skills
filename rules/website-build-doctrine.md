@@ -97,10 +97,10 @@ Replace wholesale when ANY: AI vision <8/10 · generic feel · competitor benchm
 
 ### Audio + voice
 
-- AI 3-min podcast per page (OpenAI TTS / ElevenLabs / NotebookLM) — "Listen to this page."
-- Voice tour — full-site narration with chapter markers.
-- Voice search — Whisper STT → semantic site search.
-- Phone voice agent — Twilio + ElevenLabs Conversational AI.
+- AI 3-min podcast per page (Piper self-hosted TTS — preferred; OpenAI TTS fallback / NotebookLM) — "Listen to this page."
+- Voice tour — full-site narration with chapter markers (Piper TTS).
+- Voice search — Whisper / Deepgram STT → semantic site search.
+- Phone voice agent — Twilio/LiveKit + Piper TTS (self-hosted). (Piper replaces ElevenLabs per Brian 2026-06-27 — open-source + free.)
 
 ### Video
 

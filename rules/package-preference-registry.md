@@ -78,6 +78,12 @@ Paid/pro-only deps · proprietary UI kits · non-commercial licenses · duplicat
 - ✅ **Uppy** (uploads) — INSTALLED in projectsites.dev v2 media section. **Lean-integration recipe:** use `@uppy/core` + `@uppy/xhr-upload` ONLY — NOT `@uppy/dashboard` (its CSS pulls fonts → esbuild asset pain). Wire native HTML5 drag-drop + a hidden file input → `uppy.addFile({name,type,data:file})`; `autoProceed:true` + XHRUpload `{ endpoint, method:'POST', fieldName:'file', formData:true, headers: (): Record<string,string> => token ? {Authorization:\`Bearer \${token}\`} : {} }`. Render progress/list with your own Spartan UI from Uppy events (`upload-progress`/`upload-success`/`upload-error`/`complete`). NOTE: a bare`<img>` can't send a Bearer, so for auth-gated raw endpoints show a metadata card (kind/size/status), not a thumbnail. Reference: `pages/admin-v2/sections/media.component.ts`.
 - ⏳ **cropper.js** · **compressor.js** · **Tesseract.js** (OCR = untrusted output) — adopt per real media features.
 
+### Audio / TTS / STT
+
+- ✅ **Piper** (`rhasspy/piper`) — THE preferred TTS. Open-source neural TTS (ONNX voices, MIT), self-hosted as a CF Workers Container exposing an HTTP `/tts` endpoint (e.g. `tts.projectsites.dev`, same pattern as the listmonk/twenty containers). Fast, free, on-device-quality — aligns with `cloudflare-lock-in-is-leverage` + open-source-only + cost doctrine. Use for podcast-per-page, page-audio, voice-tour, and the LiveKit/Twilio voice-agent TTS leg.
+- ❌ **ElevenLabs** — paid/proprietary TTS. **Brian directive 2026-06-27: use Piper instead.** Existing `media.ts` ElevenLabs TTS + any voice surface → migrate to the Piper container (`ELEVENLABS_API_KEY` stays only until the swap lands). OpenAI TTS is the hosted fallback if Piper is unavailable.
+- ✅ **Deepgram** (STT) — unchanged; the speech-to-text leg stays Deepgram (`DEEPGRAM_API_KEY`). Whisper (self-host / Workers AI) is the open-source STT fallback.
+
 ### Diagrams / viz / maps
 
 - ✅ **Apache ECharts** — dashboard chart lib (Apache-2.0). INSTALLED in projectsites.dev v2 (`echarts ^6.1.0`, 2026-05-30). **Lazy-load contract:** dynamic `import('echarts')` inside `afterNextRender` → own chunk (~1.16MB, never initial). Theme transparent canvas + helm hex; `prefers-reduced-motion` → `animation:false`; ResizeObserver + `dispose()` on destroy; `role="img"` + data-derived `aria-label`. Reference: `pages/admin-v2/sections/donut-chart.component.ts`.
