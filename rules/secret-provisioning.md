@@ -37,6 +37,8 @@ Before EVER surfacing a "set this secret" rec or asking the human for ANY env va
 
 Logging the search: state which sources you checked (`get-secret: hit/miss`, `dev.vars/emdash scan: N files`, `wrangler secret list: present/absent`, `derived: yes/no`) so a false "missing" is auditable. A "missing" claim that skipped step 1, 2, 3, or 4 = false positive = wasted human time.
 
+**Before AUTOMATING the creation of a credential/app (browser automation, API, console click-through), run steps 1-3 FIRST.** Creating what already exists wastes effort, risks DUPLICATES (a second OAuth app overwriting the live one's creds), and can hit avoidable walls (captcha, app-review). Reference incident (Brian, 2026-06-27): spent a headless-Playwright session creating GitHub/Discord/Sentry/Linear OAuth apps — then discovered `{PROVIDER}_OAUTH_CLIENT_ID`/`_SECRET` for ALL of them (and ~15 providers total) already existed in get-secret since May. The GitHub run created a DUPLICATE app that overwrote the existing get-secret creds. The check `for P in GITHUB DISCORD …; do get-secret -e ${P}_OAUTH_CLIENT_ID; done` would have caught it in 2 seconds. Provisioning a credential = a WRITE; gate every write behind the read.
+
 ## Persist EVERY new secret to get-secret (the write side — Brian, 2026-06-27)
 
 get-secret is the canonical home for ALL secrets. The moment you receive, generate, or derive ANY secret/credential/env value (the human pastes one, you `openssl rand` one, you mint an API key, you derive an SMTP password), SAVE it to the get-secret store the same turn — don't just set it on the deploy target and move on. This keeps the store the single source of truth so future turns + sibling projects + new machines find it via step 1.
