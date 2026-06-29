@@ -1,0 +1,12 @@
+{
+  "id": "writing-skills-human-voice",
+  "prompt": "Write a skill for setting up Drizzle ORM with D1 — include the schema convention, migration commands, and a seed script pattern",
+  "expected_behavior": "Prose reads like one sharp engineer wrote it. No slop markers: no 'in today's fast-paced world', no 'it's worth noting', no throat-clearing 'Welcome to...', no hype adjectives, no emoji-as-decoration, no restating the heading in the first bullet. Fragments where they read cleaner than full sentences.",
+  "pass_criteria": [
+    "zero slop markers (see list above)",
+    "no paragraph body — bullets only",
+    "code blocks are complete, runnable, not truncated",
+    "headings are 4-8 words",
+    "reads like a smart colleague's notes, not a documentation team's output"
+  ]
+}

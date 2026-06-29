@@ -1,0 +1,11 @@
+{
+  "id": "writing-skills-ordered-by-weight",
+  "prompt": "Create a skill for deploying to Cloudflare Workers — include at least: rollback procedure, health-check URL, wrangler deploy command, and a pre-deploy checklist",
+  "expected_behavior": "The scope/requirements section uses a NUMBERED list with THE MOST LOAD-BEARING constraint #1 (e.g. the pre-deploy checklist or the health-check gate), not the trivial command first. Unordered peers are - bullets.",
+  "pass_criteria": [
+    "scope/requirements uses 1. 2. 3. numbering, most important #1",
+    "the most load-bearing item (gate, checklist, or health-check) is #1",
+    "the wrangler deploy command is NOT #1 unless it IS the most load-bearing",
+    "- bullets reserved for unordered peers"
+  ]
+}

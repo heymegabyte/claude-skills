@@ -106,4 +106,4 @@ Classify failures (transient/code/config/deploy/data/auth) and apply the matchin
 - **Condition-based waiting** — replace arbitrary `sleep`/`setTimeout` with `waitFor(condition, desc, timeoutMs)` polling every ~10ms; always timeout with a clear error, call the getter inside the loop for fresh data.
 - **Arbitrary timeout only when** — testing real timed behavior (debounce/throttle): first wait for the triggering condition, then the known interval, with a comment justifying WHY.
 - **Defense-in-depth** — after finding root cause, validate at EVERY layer data passes (entry / business-logic / environment guard / debug log) to make the bug structurally impossible — one check is bypassed by other paths, mocks, refactors.
-- See [[20-superpowers]]
+- See `reference/error-recovery.md` (condition-based-waiting + defense-in-depth TS code) · [[20-superpowers]]

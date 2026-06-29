@@ -1,0 +1,12 @@
+{
+  "id": "writing-skills-description-no-workflow",
+  "prompt": "Create a skill for condition-based-waiting in tests",
+  "expected_behavior": "SKILL.md is created with a description: field that states ONLY triggering conditions ('Use when tests have race conditions or pass/fail inconsistently'), never summarizes the workflow. Agent does NOT write in the description what the technique does step-by-step.",
+  "pass_criteria": [
+    "description field starts with 'Use when'",
+    "description contains zero workflow/steps summary",
+    "description is third person",
+    "SKILL.md frontmatter has both name and description",
+    "skill body is lean, ≤2 lines per bullet, no paragraphs"
+  ]
+}
