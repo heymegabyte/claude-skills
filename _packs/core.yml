@@ -71,6 +71,9 @@ members:
   - rules/skill-authoring-contract
   - rules/vendored-skill-compression
   - rules/micro-test-instruction-wording
+  - bin/check-skill-length
+  - bin/check-rationalization-table
+  - bin/check-description-sdo
   - rules/projectsites-cloudflare-first
   - rules/projectsites-recommended-stack
   - rules/emdash-fleet
