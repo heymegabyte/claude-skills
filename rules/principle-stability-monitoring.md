@@ -1,4 +1,5 @@
 ---
+name: principle-stability-monitoring
 priority: 2
 pack: core
 triggers:
@@ -11,6 +12,8 @@ triggers:
 paths:
   - ".github/workflows/**"
   - "rules/**"
+last_reviewed: 2026-06-28
+superseded_by: null
 ---
 
 # Principle Stability Monitoring

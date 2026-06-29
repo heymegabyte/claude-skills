@@ -1,4 +1,6 @@
 ---
+last_reviewed: 2026-06-29
+superseded_by: null
 name: "audit-arc-maturity-ladder"
 priority: 3
 pack: "core"

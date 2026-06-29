@@ -1,4 +1,6 @@
 ---
+last_reviewed: 2026-06-29
+superseded_by: null
 name: "competitor-research"
 priority: 3
 pack: "website-build"

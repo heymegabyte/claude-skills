@@ -1,4 +1,6 @@
 ---
+last_reviewed: 2026-06-29
+superseded_by: null
 name: "i18n-by-demographics"
 priority: 3
 pack: "website-build"

@@ -1,3 +1,17 @@
+---
+last_reviewed: 2026-06-29
+superseded_by: null
+name: validator-precision-discipline
+description: Validator Precision Discipline
+pack: "testing"
+priority: 2
+triggers:
+  - "validator"
+  - "regex"
+  - "false positive"
+  - "lint rule"
+---
+
 # Validator Precision Discipline
 
 Validators are force-multipliers only when signal-to-noise stays near 1.0. A 10% false-positive rate halves effective sensitivity — engineers discount output proportionally. This rule codifies lessons from four false-positive clusters (Jun-18 arc): github-hardened (1,134), posthog-hardened (13), stripe-hardened (555) — all caused by regex syntax assumptions.

@@ -12,6 +12,8 @@ triggers:
   - "isolation worktree"
 paths:
   - "*"
+last_reviewed: 2026-06-28
+superseded_by: null
 ---
 
 # Emdash Fleet

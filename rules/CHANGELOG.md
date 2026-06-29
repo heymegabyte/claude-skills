@@ -1,3 +1,9 @@
+---
+name: "CHANGELOG"
+last_reviewed: 2026-06-29
+superseded_by: null
+---
+
 # Rules Changelog — auto-maintained by the router-reconcile hook.
 
 ## 2026-06-29

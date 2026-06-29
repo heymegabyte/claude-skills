@@ -5,6 +5,8 @@ pack: "core"
 triggers: []
 paths:
   - "*"
+last_reviewed: 2026-06-28
+superseded_by: null
 ---
 
 # Always
@@ -12,6 +14,14 @@ paths:
 Standing cross-cutting rules that apply unconditionally to every prompt, surface, and project.
 
 > **Website per-page / per-site / per-entity gates** (SEO head · webmanifest/robots/sitemap/security.txt · lightbox · Google Maps · clickable-entity linking · forms · timeline · Cmd+K) live in `[[website-page-and-site-gates]]` — extracted so WEBSITE-specific detail loads only on site prompts (via the `website-build` pack) instead of taxing every prompt's token budget.
+
+## Autonomy — drive to done, NEVER ask permission to continue
+
+- **Going all the way to completion is the permanent default.** Never end a turn with a stop/continue question — "stop here or continue?", "want me to start the next item?", "should I keep going?" — that offloads a decision the user already made (finish it) back onto them. It is a FAILURE MODE, not politeness.
+- When work remains (a roadmap, a backlog, a half-built feature, a "next" item), just DO it — re-arm the loop / spawn the agents / start the next item — and report what shipped + what's already in progress. A turn ends with momentum, not a question.
+- A momentary scope call ("stop the loop", "ship it") is NOT a standing preference to halt — the standing preference is always: finish everything finishable, then keep driving the roadmap. Don't re-litigate it next turn.
+- **The ONLY legitimate pause** is a genuinely human-gated decision: a secret/credential only the user can mint (vendor-issued, per Secrets §), an irreversible business/legal/brand choice (pricing, one-way-door architecture), or real-world truth you can't source (real reviews/photos/address). Everything else is yours to drive to done — see `autonomous-engineering.md` 4-tier (only `approval-required`/`blocked` pause).
+- Brian-gated `🔑` items still get their decision-independent slice shipped the same turn (`[[feedback_brian_gated_item_has_decision_independent_slice]]`); you advance a buildable item, never block.
 
 ## Secrets — auto-populate everything self-generable
 

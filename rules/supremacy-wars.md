@@ -1,3 +1,10 @@
+---
+name: "supremacy-wars"
+last_reviewed: 2026-06-29
+superseded_by: null
+pack: "core"
+---
+
 # Supremacy Wars
 
 Hooks > rules > skills > prompts. Every time a hook catches what CLAUDE.md said but the model ignored, it goes here.

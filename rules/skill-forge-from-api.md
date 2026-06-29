@@ -1,3 +1,17 @@
+---
+last_reviewed: 2026-06-29
+superseded_by: null
+name: skill-forge-from-api
+description: Skill Forge from API
+pack: "backend"
+priority: 3
+triggers:
+  - "openapi"
+  - "forge"
+  - "api skill"
+  - "spec"
+---
+
 # Skill Forge from API
 
 Auto-generate Claude Code skills from OpenAPI specs. Rule: whenever a new API enters the stack, forge first, hand-edit second.

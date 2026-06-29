@@ -1,4 +1,6 @@
 ---
+last_reviewed: 2026-06-29
+superseded_by: null
 name: "legal-and-error-surfaces"
 priority: 2
 pack: "website-build"

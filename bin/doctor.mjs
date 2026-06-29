@@ -20,14 +20,23 @@ function check(name, pass, detail) {
 }
 
 // 1. Hook wiring
+function hookGroupsHaveExistingPath(groups) {
+  if (!Array.isArray(groups)) return false;
+  return groups.some(group => {
+    if (!group || !Array.isArray(group.hooks)) return false;
+    return group.hooks.some(entry => {
+      const cmd = entry && entry.command;
+      if (typeof cmd !== 'string') return false;
+      return cmd.split(' ').some(part => existsSync(part.replace(/^~/, HOME).replace(/^\$HOME\b/, HOME)));
+    });
+  });
+}
+
 try {
   const settings = JSON.parse(readFileSync(resolve(HOME, '.claude/settings.json'), 'utf8'));
   const hooks = settings.hooks || {};
   const hookNames = Object.keys(hooks);
-  const existing = hookNames.filter(h => {
-    const cmd = hooks[h];
-    return cmd && existsSync(cmd.split(' ')[0].replace('~', HOME));
-  });
+  const existing = hookNames.filter(h => hookGroupsHaveExistingPath(hooks[h]));
   check('Hook wiring', hookNames.length === existing.length,
     `${existing.length}/${hookNames.length} hooks executable`);
 } catch (e) {
@@ -76,9 +85,7 @@ let integrityOk = true;
 try {
   const s = JSON.parse(readFileSync(resolve(HOME, '.claude/settings.json'), 'utf8'));
   for (const h of Object.keys(s.hooks || {})) {
-    const cmd = s.hooks[h];
-    const exe = cmd.split(' ')[0].replace('~', HOME);
-    if (!existsSync(exe)) { integrityOk = false; break; }
+    if (!hookGroupsHaveExistingPath(s.hooks[h])) { integrityOk = false; break; }
   }
   check('Settings integrity', integrityOk, 'all hook references resolve');
 } catch {
@@ -95,16 +102,16 @@ try {
 }
 
 // 7. Git status
-const agentskills = resolve(HOME, '.agentskills');
-if (existsSync(agentskills)) {
+const pluginDir = resolve(HOME, '.claude/plugins/heymegabyte-claude-skills');
+if (existsSync(pluginDir)) {
   try {
-    const status = execSync('git status --porcelain', { cwd: agentskills, encoding: 'utf8' }).trim();
+    const status = execSync('git status --porcelain', { cwd: pluginDir, encoding: 'utf8' }).trim();
     check('Git status', !status, status ? `${status.split('\n').length} uncommitted files` : 'clean');
   } catch {
     check('Git status', false, 'not a git repo');
   }
 } else {
-  check('Git status', false, '~/.agentskills missing');
+  check('Git status', false, 'plugin dir missing');
 }
 
 // Summary

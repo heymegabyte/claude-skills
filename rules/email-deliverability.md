@@ -1,4 +1,6 @@
 ---
+last_reviewed: 2026-06-29
+superseded_by: null
 name: "email-deliverability"
 priority: 3
 pack: "infra"

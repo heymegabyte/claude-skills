@@ -1,3 +1,10 @@
+---
+name: "agpl-isolation-via-http-boundary"
+last_reviewed: 2026-06-29
+superseded_by: null
+pack: "compliance"
+---
+
 # AGPL Isolation via HTTP Boundary
 
 When integrating an AGPL (or any strong-copyleft) service into a non-open codebase, isolate it behind a network boundary so copyleft never propagates to your application. The HTTP boundary is the license firewall.

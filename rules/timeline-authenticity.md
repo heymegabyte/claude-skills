@@ -1,4 +1,6 @@
 ---
+last_reviewed: 2026-06-29
+superseded_by: null
 name: "timeline-authenticity"
 priority: 3
 pack: "website-build"

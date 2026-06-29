@@ -1,3 +1,17 @@
+---
+last_reviewed: 2026-06-29
+superseded_by: null
+name: mcp-error-semantics
+description: MCP Error Semantics
+pack: "backend"
+priority: 2
+triggers:
+  - "mcp"
+  - "isError"
+  - "tool handler"
+  - "mcp server"
+---
+
 # MCP Error Semantics
 
 MCP tool results carry an `isError` boolean. Getting it wrong causes Claude to

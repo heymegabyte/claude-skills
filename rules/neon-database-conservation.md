@@ -1,3 +1,18 @@
+---
+last_reviewed: 2026-06-29
+superseded_by: null
+name: neon-database-conservation
+description: Neon Database Conservation
+pack: "infra"
+priority: 2
+triggers:
+  - "neon"
+  - "postgres"
+  - "database"
+  - "project provisioning"
+---
+
+<!-- grow-ok -- frontmatter grew with triggers/paths during 50-idea sweep; content is essential mandate -->
 # Neon Database Conservation
 
 Neon's unit hierarchy is **organization → project → database → branch**. A single Neon **project holds ~100 databases**. So the way to host *thousands* of Postgres databases is to pack ~100 databases into each project and spin up only ~dozens of projects — NOT one project per app. The database is the cheap, abundant unit; the project is the scarce one. Conserve projects; allocate databases freely but deliberately.

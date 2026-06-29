@@ -1,4 +1,6 @@
 ---
+last_reviewed: 2026-06-29
+superseded_by: null
 name: "collaboration-sync-supervisor"
 priority: 4
 pack: "backend"

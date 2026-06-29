@@ -1,3 +1,17 @@
+---
+last_reviewed: 2026-06-29
+superseded_by: null
+name: multi-harness-portability
+description: Multi-Harness Portability
+pack: "infra"
+priority: 3
+triggers:
+  - "cursor"
+  - "codex"
+  - "harness"
+  - "manifest sync"
+---
+
 # Multi-Harness Portability
 
 Source: obra/superpowers multi-harness pattern

@@ -1,3 +1,19 @@
+---
+last_reviewed: 2026-06-29
+superseded_by: null
+name: docker-slim-all-containers
+description: DockerSlim All Containers
+pack: "infra"
+priority: 3
+triggers:
+  - "docker"
+  - "dockerfile"
+  - "container"
+  - "hadolint"
+  - "slim"
+---
+
+<!-- grow-ok -- frontmatter grew with triggers/paths during 50-idea sweep; content is essential mandate -->
 # DockerSlim All Containers
 
 Every custom Dockerfile we author is **linted with Hadolint** before it builds, and every custom image we BUILD-AND-PUSH (registry-deployed containers, local/dev images, CI sidecars) is minified with **DockerSlim (`slim build`)** and **functional-tested still-working** before it ships. A Dockerfile with Hadolint errors does not build; a slimmed image that fails its smoke test is NOT shipped — the slim is reverted, never the functionality.

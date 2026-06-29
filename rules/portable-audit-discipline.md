@@ -1,3 +1,16 @@
+---
+last_reviewed: 2026-06-29
+superseded_by: null
+name: portable-audit-discipline
+description: Portable Audit Discipline
+pack: "testing"
+priority: 2
+triggers:
+  - "audit command"
+  - "portable"
+  - "inline fallback"
+---
+
 # Portable Audit Discipline
 
 Audit commands in a plugin are consumed by N independent projects, none of which

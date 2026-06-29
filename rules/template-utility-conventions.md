@@ -1,3 +1,17 @@
+---
+last_reviewed: 2026-06-29
+superseded_by: null
+name: template-utility-conventions
+description: Template Utility Conventions
+pack: "core"
+priority: 2
+triggers:
+  - "template/utils"
+  - "utility"
+  - "jsdoc"
+  - "vitest"
+---
+
 # Template Utility Conventions
 
 Codifies the authoring contract for every file under `template/utils/`. Enforced by `bin/validate-template-utils.mjs`. Violations are drift — fix in-turn per `drift-detection`.

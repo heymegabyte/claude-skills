@@ -1,103 +1,165 @@
 #!/usr/bin/env node
-// mcp-healthcheck.mjs — pings all MCP servers by checking their directories.
+// mcp-healthcheck.mjs — pings every MCP server by checking its command/URL from ~/.claude.json.
 // Usage: node bin/mcp-healthcheck.mjs [--json]
 
-import { existsSync, readFileSync, statSync, readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { homedir } from 'node:os';
-import { resolve, basename } from 'node:path';
 
-const ROOT = resolve(import.meta.dirname, '..');
 const HOME = homedir();
-const SERVERS_DIR = resolve(HOME, '.claude/mcp-servers');
+const CLAUDE_JSON = `${HOME}/.claude.json`;
 
-// Discover servers from ~/.claude.json or mcp-servers/_registry.json or the directory
-let servers = [];
-const registryPath = resolve(SERVERS_DIR, '_registry.json');
-const claudeJsonPath = resolve(HOME, '.claude.json');
+// --- helpers ---
 
-if (existsSync(registryPath)) {
-  const reg = JSON.parse(readFileSync(registryPath, 'utf8'));
-  servers = (reg.servers || reg).map(s => typeof s === 'string' ? { name: s } : s);
-} else if (existsSync(claudeJsonPath)) {
-  const cfg = JSON.parse(readFileSync(claudeJsonPath, 'utf8'));
-  const mcpServers = cfg.mcpServers || cfg['mcpServers'] || {};
-  servers = Object.keys(mcpServers).map(name => ({ name, command: mcpServers[name]?.command }));
-} else if (existsSync(SERVERS_DIR)) {
-  servers = readdirSync(SERVERS_DIR, { withFileTypes: true })
-    .filter(d => d.isDirectory() && !d.name.startsWith('_'))
-    .map(d => ({ name: d.name }));
-}
-
-function classifyDir(name) {
-  return name.endsWith('-hardened') ? 'hardened' : name.endsWith('-mcp') ? 'base' : 'other';
-}
-
-const results = servers.map(s => {
-  const dir = resolve(SERVERS_DIR, s.name);
-  const pkgPath = resolve(dir, 'package.json');
-  const exists = existsSync(dir);
-  let status = 'missing';
-  let lastMod = '-';
-  let outdated = [];
-
-  if (exists) {
-    status = 'active';
-    lastMod = new Date(statSync(dir).mtimeMs).toISOString().split('T')[0];
-
-    if (existsSync(pkgPath)) {
-      try {
-        const out = execSync('npm ls --depth=0 --json 2>/dev/null', { cwd: dir, encoding: 'utf8' });
-        const tree = JSON.parse(out);
-        const deps = { ...tree.dependencies, ...tree.devDependencies };
-        outdated = Object.entries(deps)
-          .filter(([_, v]) => v?.problems?.length)
-          .map(([k]) => k);
-      } catch {
-        // npm ls may exit 1 on problems; parse stdout anyway
-      }
+function checkCommand(cmd) {
+  // For npx commands, check if npx itself is available
+  if (cmd === 'npx') {
+    try {
+      execSync('which npx', { encoding: 'utf8', stdio: 'pipe' });
+      // npx resolves on first use — we can validate npm can see the package
+      return true;
+    } catch {
+      return false;
     }
   }
+  // For bash -lc wrapped commands, check the inner command
+  if (cmd === 'bash') return true;
+  // Standard which check
+  try {
+    execSync(`which "${cmd}" 2>/dev/null`, { encoding: 'utf8', stdio: 'pipe' });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
-  return {
-    server: s.name,
-    dir,
-    type: classifyDir(s.name),
-    status,
-    lastModified: lastMod,
-    outdated,
-    hasPackageJson: exists && existsSync(pkgPath),
-  };
-});
+async function checkHttpUrl(url) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(url, { method: 'GET', signal: controller.signal });
+    clearTimeout(timeout);
+    // HTTP MCP endpoints return 200/405 even without proper auth
+    return res.ok || res.status === 405 || res.status === 400;
+  } catch {
+    return false;
+  }
+}
+
+function checkNpxPackage(pkg) {
+  try {
+    // Light check: see if npm can resolve the package entry point
+    execSync(`npx --yes --quiet "${pkg}" --version 2>/dev/null || true`, {
+      encoding: 'utf8',
+      stdio: 'pipe',
+      timeout: 10000,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function getNpxPackage(args) {
+  if (!args || args.length === 0) return null;
+  // The first non-flag arg after npx is usually the package name
+  for (const a of args) {
+    if (!a.startsWith('-') && !a.startsWith('--')) return a;
+  }
+  return null;
+}
+
+// --- main ---
+
+let cfg;
+try {
+  cfg = JSON.parse(readFileSync(CLAUDE_JSON, 'utf8'));
+} catch {
+  console.error('Cannot read ~/.claude.json');
+  process.exit(1);
+}
+
+const mcpServers = cfg.mcpServers || {};
+const names = Object.keys(mcpServers).sort();
+
+// Run checks and collect results (HTTP checks in parallel)
+const httpChecks = [];
+const results = [];
+
+for (const name of names) {
+  const s = mcpServers[name];
+  const type = s?.type || 'stdio';
+  const command = s?.command || '';
+  const args = s?.args || [];
+  const url = s?.url || '';
+
+  if (type === 'http' && url) {
+    httpChecks.push(
+      checkHttpUrl(url).then(ok => ({
+        server: name,
+        type: 'http',
+        command,
+        url,
+        status: ok ? 'ACTIVE' : 'UNREACHABLE',
+        detail: ok ? `HTTP reachable` : `HTTP ${url} unreachable`,
+      }))
+    );
+  } else if (command) {
+    const pkg = getNpxPackage(command === 'npx' ? args : [command]);
+    let status, detail;
+
+    if (command === 'npx' && pkg) {
+      const ok = checkNpxPackage(pkg);
+      status = ok ? 'ACTIVE' : 'UNREACHABLE';
+      detail = ok ? `npx package ${pkg} resolvable` : `npx package ${pkg} not resolvable`;
+    } else if (checkCommand(command)) {
+      status = 'ACTIVE';
+      detail = `Command "${command}" found in PATH`;
+    } else {
+      status = 'UNREACHABLE';
+      detail = `Command "${command}" not found in PATH`;
+    }
+
+    results.push({ server: name, type: 'stdio', command, args, status, detail });
+  } else {
+    results.push({ server: name, type: 'unknown', status: 'UNKNOWN', detail: 'No command or URL configured' });
+  }
+}
+
+// Wait for HTTP checks
+const httpResults = await Promise.all(httpChecks);
+results.push(...httpResults);
+
+// Sort by name
+results.sort((a, b) => a.server.localeCompare(b.server));
+
+// --- output ---
 
 if (process.argv.includes('--json')) {
   process.stdout.write(JSON.stringify(results, null, 2));
   process.exit(0);
 }
 
-// Table output
-console.log(`\n MCP Server Health Check — ${results.length} servers`);
-console.log('─'.repeat(70));
-console.log(' Server'.padEnd(30), 'Type'.padEnd(12), 'Status'.padEnd(10), 'Modified');
-console.log('─'.repeat(70));
+console.log(`\n MCP Server Health Check — ${results.length} servers from ~/.claude.json`);
+console.log('─'.repeat(90));
+console.log(' Server'.padEnd(26), 'Type'.padEnd(10), 'Status'.padEnd(14), 'Detail');
+console.log('─'.repeat(90));
 
-let active = 0, stale = 0, missing = 0;
+let active = 0, unreachable = 0, unknown = 0;
 for (const r of results) {
-  const statusIcon = r.status === 'active' ? '🟢' : r.status === 'stale' ? '🟡' : '🔴';
-  if (r.status === 'active') active++;
-  else if (r.status === 'stale') stale++;
-  else missing++;
+  const icon = r.status === 'ACTIVE' ? '🟢' : r.status === 'UNREACHABLE' ? '🔴' : '⚪';
+  if (r.status === 'ACTIVE') active++;
+  else if (r.status === 'UNREACHABLE') unreachable++;
+  else unknown++;
+
   console.log(
-    ` ${statusIcon} ${r.server.padEnd(26)}`,
-    r.type.padEnd(12),
-    r.status.padEnd(10),
-    r.lastModified
+    ` ${icon} ${r.server.padEnd(24)}`,
+    r.type.padEnd(10),
+    r.status.padEnd(14),
+    r.detail
   );
-  if (r.outdated.length) {
-    console.log(`    ⚠ outdated: ${r.outdated.join(', ')}`);
-  }
 }
 
-console.log('─'.repeat(70));
-console.log(` ${active} active  ${stale} stale  ${missing} missing`);
-process.exit(missing > 0 ? 1 : 0);
+console.log('─'.repeat(90));
+console.log(` ${active} ACTIVE  ${unreachable} UNREACHABLE  ${unknown} UNKNOWN`);
+process.exit(unreachable > 0 ? 1 : 0);

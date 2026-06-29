@@ -1,4 +1,6 @@
 ---
+last_reviewed: 2026-06-29
+superseded_by: null
 name: "tool-design-as-api"
 priority: 3
 pack: "ai"
