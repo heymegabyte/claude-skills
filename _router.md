@@ -23,6 +23,7 @@ Route prompts to smallest useful subset. Load `01-operating-system` FIRST always
 - **17 — Non-Engineering Verticals** — `c-suite-personas`, `compliance-os`, `finance-domain`, `pm-domain`
 - **18 — Document Processing** — `docx-xlsx`, `pdf-generation`, `pdf-parsing`, `pptx-generation`
 - **19 — MCP Authoring** — `forge-mcp-from-openapi`, `http-server-on-workers`, `stdio-server-template`
+- **20 — Superpowers** — `brainstorming`, `writing-plans`, `subagent-driven-development`, `using-git-worktrees`, `finishing-a-development-branch`, `requesting-code-review`, `receiving-code-review`, `writing-skills` — process discipline vendored from obra/Superpowers (MIT); TDD/debug/verify/parallel folded into `rules/`
 
 ## Task Routing
 
@@ -37,7 +38,8 @@ Route prompts to smallest useful subset. Load `01-operating-system` FIRST always
 - **File uploads / admin / data grids** → `06/file-uploads-and-storage`, `admin-dashboard`, `data-tables`
 - **Realtime / AI features** → `05/ai-technology-integration`, `06/realtime-and-websockets`, `ai-chat-widget`, `copilot-and-ai-features`
 - **Growth / analytics** → `13` — add `09/social-automation` when publishing
-- **Brainstorm / ideas** → `14`, `03`
+- **Brainstorm / ideas** → `20` brainstorming (process, before ANY creative work), `14`, `03`
+- **Plan / code review / worktree / finish branch (process)** → `20` — `writing-plans`, `subagent-driven-development`, `using-git-worktrees`, `requesting-code-review`, `receiving-code-review`, `finishing-a-development-branch`
 - **Motion / animation** → `11`, `10`
 - **Chat / messaging UI** → `06/chat-native-dashboard`, `06/realtime-and-websockets`, `06/notification-center`
 - **Microcopy / UX writing** → `06/microcopy-library`, `09`

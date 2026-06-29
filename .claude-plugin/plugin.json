@@ -1,6 +1,6 @@
 {
   "name": "claude-skills",
-  "description": "19-category solo-SaaS-founder platform — autonomous engineering OS, 18+ agents, 117 doctrine rules, 20+ slash commands, production forge script, LLM eval harness, MCP registry, DO agent scaffolding, RAG pipeline, multi-tenant subdomain provisioning, full-document processing (DOCX/XLSX/PDF/PPTX), and 32 AI-tool platform variants. One-line prompts to deployed Cloudflare Workers products.",
+  "description": "20-category solo-SaaS-founder platform — autonomous engineering OS, 18+ agents, 117 doctrine rules, 20+ slash commands, production forge script, LLM eval harness, MCP registry, DO agent scaffolding, RAG pipeline, multi-tenant subdomain provisioning, full-document processing (DOCX/XLSX/PDF/PPTX), and 32 AI-tool platform variants. One-line prompts to deployed Cloudflare Workers products.",
   "version": "7.2.1",
   "author": {
     "name": "Brian Zalewski",
@@ -44,7 +44,8 @@
     "16-cinematic-website-prime-directive",
     "17-non-engineering-verticals",
     "18-document-processing",
-    "19-mcp-authoring"
+    "19-mcp-authoring",
+    "20-superpowers"
   ],
   "outputStyles": ["output-styles/emdash-concise.md"],
   "monitors": "monitors/monitors.json",

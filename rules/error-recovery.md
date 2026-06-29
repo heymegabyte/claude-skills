@@ -92,3 +92,18 @@ Classify failures (transient/code/config/deploy/data/auth) and apply the matchin
   - TTL choice (5m default vs 1h with `{"ttl":"1h"}`)
   - 4-breakpoint limit
 - Don't place `cache_control` on per-request varying content (timestamps)
+
+## Folded from Superpowers — systematic-debugging
+
+*Vendored discipline from [obra/Superpowers](https://github.com/obra/Superpowers) (MIT, Jesse Vincent). Full skill: [[20-superpowers]] → systematic-debugging/SKILL.md.*
+
+- **Iron Law** — no fix without root-cause investigation first. Symptom patches are failure, even under time pressure.
+- **4-phase method** — (1) read the error + stack trace completely (2) reproduce reliably; if not reproducible, gather data, never guess (3) trace to root cause (4) fix the cause + add a failing-then-passing regression test.
+- **Single-hypothesis testing** — state "X is root cause because Y", make the SMALLEST change to test it, one variable at a time; failed → form NEW hypothesis, don't stack fixes.
+- **3-fix architecture stop** — after 3 failed fixes, stop fixing and question the architecture; cascading new symptoms = wrong pattern, not a bad hypothesis.
+- **Root-cause tracing** — bug deep in the call stack: trace backward up the call chain to the original trigger, fix at the source, never at the symptom point.
+- **Stack-trace instrumentation** — when manual tracing dead-ends, log `new Error().stack` + context BEFORE the dangerous op; in tests use `console.error` (logger may be suppressed).
+- **Condition-based waiting** — replace arbitrary `sleep`/`setTimeout` with `waitFor(condition, desc, timeoutMs)` polling every ~10ms; always timeout with a clear error, call the getter inside the loop for fresh data.
+- **Arbitrary timeout only when** — testing real timed behavior (debounce/throttle): first wait for the triggering condition, then the known interval, with a comment justifying WHY.
+- **Defense-in-depth** — after finding root cause, validate at EVERY layer data passes (entry / business-logic / environment guard / debug log) to make the bug structurally impossible — one check is bypassed by other paths, mocks, refactors.
+- See [[20-superpowers]]

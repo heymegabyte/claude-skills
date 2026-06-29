@@ -98,3 +98,16 @@ On this rule being updated:
 - [ ] Rule changes committed same turn
 
 See: `always` § Post-work, `verification-loop`, `full-autonomy` § Sub-agent prompts, `prompt-as-training-signal` (SUPREME universal).
+
+## Folded from Superpowers — executing-plans
+
+*Vendored discipline from [obra/Superpowers](https://github.com/obra/Superpowers) (MIT, Jesse Vincent). Full skill: [[20-superpowers]] → writing-plans/SKILL.md (plan authoring) + subagent-driven-development.*
+
+- Before executing a written plan: read it whole, **review critically**, raise concerns with the user BEFORE starting — not mid-execution.
+- Create one todo per plan item; execute each step exactly (plans carry bite-sized steps); run the step's specified verification before marking done.
+- **Stop and ask, don't guess** when blocked: missing dependency, failing test, unclear instruction, or repeated verification failure.
+- Return to plan-review when the approach needs rethinking or the user revises the plan.
+- Never start implementation on `main` without explicit consent (this repo: worktree-isolate per `[[main-only-branch]]`).
+- On completion → `[[20-superpowers]]` → finishing-a-development-branch (verify tests, choose merge/PR/cleanup).
+- Where subagents exist, prefer `[[20-superpowers]]` → subagent-driven-development over solo serial execution.
+- See [[20-superpowers]]

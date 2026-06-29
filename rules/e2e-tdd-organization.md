@@ -101,3 +101,31 @@ See `reference/e2e-tdd-organization.md` for the full triage protocol and referen
 - **SessionStart hook** at `~/.claude/hooks/session-start-reminders.py` emits one-line reminder of four SUPREME rules at top of every fresh session.
 - Wired in `~/.claude/settings.json` § `hooks.PostToolUse` + `hooks.SessionStart`.
 - Per `01-operating-system` philosophy `hooks > rules > skills > prompts` — hooks turn this from documentation-I-might-read into enforcement-the-harness-applies.
+
+<!-- grow-ok -->
+<!-- Growth justified: folded vendored Superpowers TDD discipline (2026-06-28, user request) — net-new doctrine, not redundancy. -->
+
+## Folded from Superpowers — test-driven-development
+
+*Vendored discipline from [obra/Superpowers](https://github.com/obra/Superpowers) (MIT, Jesse Vincent). Full skill: [[20-superpowers]] → test-driven-development/SKILL.md.*
+
+- The Iron Law: NO production code without a failing test first. Wrote code before the test? Delete it — don't keep it as "reference", don't adapt it, don't even look at it.
+- Watch RED fail for the RIGHT reason — feature missing, not a typo/import error. A test that errors isn't RED; fix until it fails on the assertion.
+- Test passes on first run? You're testing existing behavior — the test is wrong, not the code.
+- GREEN means minimal code to pass — no extra options, params, or "improvements" beyond what the test demands (YAGNI).
+- Test fails after GREEN? Fix the CODE, never the test. Modifying a test to make it pass is the cardinal sin.
+- REFACTOR only after green: dedupe, rename, extract — never add behavior; stay green throughout.
+- "Tests-after" is not TDD: it answers "what does this do?" (biased by your impl) not "what should this do?" — you lose the proof the test can catch the bug.
+- Hard-to-test = hard-to-use: a complicated test signals a coupled design. Fix the interface (dependency injection), don't pile on mocks.
+
+### Testing anti-patterns catalog (avoid all)
+
+- Testing mock behavior — asserting a `*-mock` testid renders proves the mock exists, not that the component works. Test real behavior or don't mock it.
+- Test-only methods in production — a `destroy()`/cleanup method only tests call pollutes the prod class; move it to test utilities.
+- Mocking without understanding — mocking a method whose side-effect the test depends on makes it pass/fail for the wrong reason. Run with the real impl first, then mock minimally at the lowest level.
+- Incomplete mocks — partial mock with only the fields you think you need; mirror the COMPLETE real response shape or downstream code breaks silently.
+- Over-mocking "to be safe" — mock setup longer than the test, or test breaks when a mock changes, means prefer integration tests with real components.
+- Asserting on implementation details — verify behavior/output, not internal call counts or private structure.
+- Tests as afterthought — "implementation complete, ready for testing" is a TDD violation; testing IS implementation, not a follow-up.
+
+- See [[20-superpowers]]

@@ -89,6 +89,7 @@ Phrase → action:
 - Skill 09 (brand) drives skills 10, 11, 12
 - Skill 13 (observability) wires into every shipped feature
 - Skill 16 (cinematic-website-prime-directive) trumps generic 06 for one-line site prompts
+- Skill 20 (superpowers) holds PROCESS discipline — brainstorm/plan/worktree/code-review/finish-branch — invoked BEFORE implementation skills; TDD/debug/verify/parallel techniques are folded into `rules/` (see `20-superpowers/NOTICE.md`)
 
 ## Done definitions
 

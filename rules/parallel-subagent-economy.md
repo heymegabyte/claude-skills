@@ -106,3 +106,14 @@ Examples: 2×8 min → saves ~6 → **fan out**. 3×4 min → saves ~6 → **fan
 - **`CLAUDE_CODE_SUBAGENT_MODEL=claude-sonnet-4-6` — SET (standing default).** Highest-ROI single change.
 - **`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` — LEAVE UNSET.** Adds inter-agent chatter; independent batches don't need coordination.
 - **`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` + `CLAUDE_CODE_DISABLE_WORKFLOWS` — LEAVE UNSET.**
+
+## Folded from Superpowers — dispatching-parallel-agents
+
+*Vendored discipline from [obra/Superpowers](https://github.com/obra/Superpowers) (MIT, Jesse Vincent). Full skill: [[20-superpowers]] → dispatching-parallel-agents/SKILL.md.*
+
+- **Explicit trigger:** 2+ tasks that can be worked WITHOUT shared state or sequential dependency → dispatch in parallel; this complements the ≥5-min wall-clock test above.
+- **Independence test BEFORE parallelizing:** prove no shared mutable state AND no ordering dependency. Either fails → single agent or serial waves, not parallel.
+- **Group failures by problem domain first** — one agent per independent domain (distinct test file / subsystem / bug). Related failures (fixing one may fix others) → investigate together, don't fan out.
+- **Constrain scope in the brief** — name the exact files and add "do NOT touch other code / production code"; an unconstrained agent refactors everything.
+- **Collect + reconcile, don't just merge** — read each summary, check agents didn't edit the same code, run the FULL suite once, spot-check for systematic errors before declaring done.
+- See [[20-superpowers]]
