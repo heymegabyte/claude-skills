@@ -24,15 +24,17 @@
 
 ### Process skills — add the flow
 
-For any project type, when the work is **multi-step** (plan→build→review→merge), add the Superpowers process chain directly after `01`:
+For any project type, when the work is **multi-step** (plan→build→review→merge), add pack `20` (the Superpowers process chain) directly after `01`:
 
-1. `20/brainstorming` — before ANY creative work
-2. `20/writing-plans` — turn spec into a plan
-3. `20/using-git-worktrees` — isolate the workspace
-4. `20/subagent-driven-development` — execute per-task via subagents
-5. `20/requesting-code-review` — dispatch reviewer before merge
-6. `20/receiving-code-review` — verify feedback, then act
-7. `20/finishing-a-development-branch` — merge, push, clean up
+1. brainstorm — before ANY creative work
+2. write the plan — bite-sized verifiable steps
+3. isolate the workspace — native worktree or git worktree
+4. build — one subagent per independent task, task review after each
+5. code review — dispatch reviewer before merge (Agent Diversity Review gate)
+6. receive feedback — verify technically, then act
+7. finish — merge, push, clean up (`[[no-staging-doctrine]]` auto-push)
+
+See `commands/process.md` — `/process` runs the full chain in one keystroke.
 
 Not every project needs every step — skip finished-branch on solo-work (`[[no-staging-doctrine]]` auto-push), skip worktrees when already isolated. But the chain's order is inviolable: brainstorm → plan → isolate → build → review → finish.
 
