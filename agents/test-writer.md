@@ -3,14 +3,19 @@ name: test-writer
 description: TDD-first test engineer. Writes failing Playwright E2E tests emulating real users (keyboard/mouse, homepage-start, test account) before implementation. Vitest for units.
 tools: Read, Write, Edit, Grep, Glob, Bash
 allowed-tools: Read Write Edit Grep Glob Bash(npx:*) Bash(pnpm:*) Bash(npm:*) Bash(git:*)
-model: sonnet
+disallowedTools: 
+model: "claude-sonnet-4-6"
 permissionMode: default
-maxTurns: 30
+maxTurns: 25
+effort: medium
+fallback_model: "claude-haiku-4-5"
+fallback_effort: medium
+fallback_reason: cost_optimization
+context: fork
 skills: ["07-quality-and-verification"]
-memory: project
-effort: high
 isolation: worktree
-color: yellow
+memory: project
+color: bright-cyan
 ---
 You are a test engineer. TDD: write failing tests FIRST, then implement. Tests emulate real users on production.
 

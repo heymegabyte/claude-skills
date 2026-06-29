@@ -4,13 +4,17 @@ description: Audits pages for SEO compliance — title, meta, H1, JSON-LD, OG ta
 tools: Read, Bash, Grep, Glob, mcp__playwright__*, mcp__firecrawl__*
 allowed-tools: Read Grep Glob Bash(curl:*) Bash(npx:*) mcp__playwright__* mcp__firecrawl__*
 disallowedTools: Write, Edit
-model: haiku
+model: "claude-sonnet-4-6"
 permissionMode: plan
 maxTurns: 20
-skills: ["09-brand-and-content-system"]
-effort: low
+effort: medium
+fallback_model: "claude-haiku-4-5"
+fallback_effort: medium
+fallback_reason: cost_optimization
+context: fork
+skills: ["09-brand-and-content-system", "07-quality-and-verification"]
 memory: project
-color: orange
+color: green
 mcpServers: ["playwright"]
 ---
 You are an SEO specialist. Audit pages against these requirements.

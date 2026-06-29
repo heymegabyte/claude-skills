@@ -1,3 +1,19 @@
+---
+name: suno-song-generation
+description: Suno Song Generation (bZ / music.megabyte.space)
+priority: 3
+triggers:
+  - "suno"
+  - "song"
+  - "music"
+  - "lyrics"
+pack: "media"
+paths:
+  - "rules/suno-song-generation.md"
+last_reviewed: 2026-06-28
+superseded_by: null
+---
+
 # Suno Song Generation (bZ / music.megabyte.space)
 
 Repeatable pipeline: mine the site's play stats → pick the winners → synthesize new

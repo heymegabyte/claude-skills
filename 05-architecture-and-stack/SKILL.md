@@ -26,6 +26,7 @@ submodules:
   - shared-api-pool.md
 priority: 2
 pack: "backend"
+stage: stable
 triggers:
   - "architecture"
   - "stack"

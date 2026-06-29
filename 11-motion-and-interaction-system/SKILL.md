@@ -14,6 +14,7 @@ submodules:
   - build-breaking-rules.md
 priority: 3
 pack: "design"
+stage: beta
 triggers:
   - "motion"
   - "animation"

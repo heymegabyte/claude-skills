@@ -10,6 +10,8 @@ triggers:
   - "meta perfect"
 paths:
   - "org:website_build"
+last_reviewed: 2026-06-29
+superseded_by: null
 ---
 
 # Supreme Polish + 100-Ideas Audit

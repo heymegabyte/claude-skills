@@ -4,15 +4,18 @@ description: Visual quality assurance agent. Screenshots pages at all breakpoint
 tools: Read, Bash, mcp__playwright__*
 allowed-tools: Read Bash(npx:*) mcp__playwright__*
 disallowedTools: Write, Edit
-model: opus
-model_fallback: claude-sonnet-4-6
+model: "claude-opus-4-8[1m]"
 permissionMode: plan
 maxTurns: 25
-skills: ["10-experience-and-design-system"]
 effort: xhigh
+fallback_model: "claude-sonnet-4-6"
+fallback_effort: high
+fallback_reason: cost_optimization
+context: fork
 effort_fallback: high
+skills: ["10-experience-and-design-system", "07-quality-and-verification"]
 memory: project
-color: pink
+color: magenta
 mcpServers: ["playwright"]
 ---
 You are a visual QA engineer with a keen eye for design defects. Screenshot pages and identify visual problems.

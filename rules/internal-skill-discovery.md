@@ -1,3 +1,20 @@
+---
+name: internal-skill-discovery
+description: Internal Skill Discovery
+pack: "core"
+priority: 3
+triggers:
+  - "skill listing"
+  - "internal skill"
+  - "metadata.internal"
+paths:
+  - "rules/internal-skill-discovery.md"
+last_reviewed: 2026-06-28
+superseded_by: null
+---
+
+<!-- TOKEN_MARKER: ~1.2k tokens -->
+
 # Internal Skill Discovery
 
 Pattern from vercel-labs/skills (`npx skills` CLI) — hides infrastructure skills from public discovery menus without removing them from the runtime.

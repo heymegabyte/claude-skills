@@ -40,6 +40,7 @@ submodules:
   - webhook-system.md
 priority: 2
 pack: "core"
+stage: stable
 triggers:
   - "build feature"
   - "implement"

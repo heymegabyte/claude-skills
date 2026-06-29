@@ -6,6 +6,7 @@ effort: "high"
 model: "inherit"
 priority: 4
 pack: "business"
+stage: stable
 triggers:
   - "board deck"
   - "investor"

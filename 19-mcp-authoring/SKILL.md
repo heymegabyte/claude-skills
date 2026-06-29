@@ -6,6 +6,7 @@ effort: "high"
 model: "sonnet"
 priority: 5
 pack: "ai"
+stage: stable
 triggers:
   - "MCP server"
   - "model context protocol"

@@ -6,6 +6,7 @@ effort: "xhigh"
 model: "inherit"
 priority: 2
 pack: "website-build"
+stage: stable
 triggers:
   - "make a website"
   - "build a site"

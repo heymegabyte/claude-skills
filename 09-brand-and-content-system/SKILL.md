@@ -21,6 +21,7 @@ submodules:
   - social-automation.md
 priority: 3
 pack: "content"
+stage: stable
 triggers:
   - "brand"
   - "content"

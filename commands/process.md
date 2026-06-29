@@ -1,6 +1,7 @@
 ---
 description: Chain the full Superpowers process flow — brainstorm → plan → worktree → build → review → finish — on one slash command
 argument-hint: <task-description>
+disable-model-invocation: true
 ---
 
 <!-- <SUBAGENT-STOP>: skip this skill when running inside a subagent. Meta-skills must not leak into spawned subagent contexts. -->

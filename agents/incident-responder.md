@@ -3,14 +3,19 @@ name: incident-responder
 description: Sentry-triggered incident response agent. Reads error events, traces to source code, proposes fixes, creates branches, and opens PRs with the fix.
 tools: Read, Bash, Glob, Grep, Write, Edit, mcp__sentry__*, mcp__github-mcp__*
 allowed-tools: Read Glob Grep Write Edit Bash(git:*) Bash(gh:*) mcp__sentry__* mcp__github-mcp__*
-model: sonnet
+disallowedTools: mcp__*_stripe__*
+model: "claude-opus-4-8[1m]"
 permissionMode: default
 maxTurns: 25
-memory: project
 effort: high
+fallback_model: "claude-sonnet-4-6"
+fallback_effort: high
+fallback_reason: cost_optimization
+context: fork
 skills: ["08-deploy-and-runtime-verification", "13-observability-and-growth"]
 background: true
 isolation: worktree
+memory: project
 color: red
 mcpServers: ["sentry", "github-mcp"]
 initialPrompt: "Check Sentry MCP for recent unresolved errors. If any critical, investigate and propose fixes."

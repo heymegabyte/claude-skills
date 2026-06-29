@@ -1,13 +1,18 @@
 ---
 name: motion-choreographer
-description: Implements cinematic motion — View Transitions, scroll-driven animations, @starting-style entrances, kinetic typography — all reduced-motion-safe and INP-budget-safe. Phase-5 swarm Agent-G.
-tools: Read, Write, Edit, Glob, Grep
-allowed-tools: Read Write Edit Glob Grep
-model: sonnet
+description: CSS animation and motion designer. Implements View Transitions API, scroll-driven animations, CSS keyframes, FLIP, staggered reveals, and reduced-motion respected animations.
+tools: Read, Write, Edit, Bash, Glob, Grep
+allowed-tools: Read Write Edit Bash Glob Grep
+disallowedTools: 
+model: "claude-sonnet-4-6"
 permissionMode: default
 maxTurns: 18
-skills: ["11-motion-and-interaction-system"]
 effort: medium
+fallback_model: "claude-haiku-4-5"
+fallback_effort: medium
+fallback_reason: cost_optimization
+context: fork
+skills: ["11-motion-and-interaction-system"]
 memory: project
 color: cyan
 ---

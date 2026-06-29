@@ -10,6 +10,8 @@ triggers:
 paths:
   - "stack:react-vite"
   - "stack:angular-nx"
+last_reviewed: 2026-06-29
+superseded_by: null
 ---
 
 # Frontend Stack

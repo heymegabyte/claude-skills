@@ -6,6 +6,7 @@ effort: "high"
 model: "inherit"
 priority: 2
 pack: "core"
+stage: stable
 triggers:
   - "brainstorm"
   - "let's build"

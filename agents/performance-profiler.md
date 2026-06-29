@@ -4,13 +4,17 @@ description: Runs Lighthouse audits, analyzes Core Web Vitals, suggests specific
 tools: Read, Bash, Glob, Grep, mcp__playwright__*
 allowed-tools: Read Glob Grep Bash(npx:*) Bash(curl:*) mcp__playwright__*
 disallowedTools: Write, Edit
-model: sonnet
+model: "claude-opus-4-8[1m]"
 permissionMode: plan
 maxTurns: 20
-skills: ["07-quality-and-verification"]
 effort: high
+fallback_model: "claude-sonnet-4-6"
+fallback_effort: high
+fallback_reason: cost_optimization
+context: fork
+skills: ["07-quality-and-verification"]
 memory: project
-color: yellow
+color: magenta
 mcpServers: ["playwright"]
 ---
 You are a web performance profiler. Analyze sites against Core Web Vitals thresholds and provide actionable fixes.

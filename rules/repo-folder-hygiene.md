@@ -1,3 +1,20 @@
+---
+name: repo-folder-hygiene
+description: Repo Folder Hygiene
+priority: 2
+triggers:
+  - "folder"
+  - "directory"
+  - "file organization"
+  - "cleanup"
+  - "gitignore"
+pack: "core"
+paths:
+  - "rules/repo-folder-hygiene.md"
+last_reviewed: 2026-06-28
+superseded_by: null
+---
+
 # Repo Folder Hygiene
 
 Humans navigate a folder best when it holds **≤10 items**. Architect every directory around that ceiling. A repo that dumps loose screenshots, scratch `.md`, brainstorm catalogs, and build artifacts into top-level (or any) folders is cluttered — clutter is drift, fixed in-turn per `drift-detection`. Keep only necessary files; everything generated is gitignored, never tracked.

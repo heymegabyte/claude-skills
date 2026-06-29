@@ -4,11 +4,15 @@ description: Marketing copy, blog posts, and SEO content writer using Emdash bra
 tools: Read, Grep, Glob, WebSearch, WebFetch
 allowed-tools: Read Grep Glob WebSearch WebFetch
 disallowedTools: Write, Edit
-model: haiku
+model: "claude-sonnet-4-6"
 permissionMode: default
 maxTurns: 15
+effort: medium
+fallback_model: "claude-haiku-4-5"
+fallback_effort: medium
+fallback_reason: cost_optimization
+context: fork
 skills: ["09-brand-and-content-system"]
-effort: low
 memory: project
 color: green
 ---

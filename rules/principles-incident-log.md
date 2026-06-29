@@ -10,6 +10,8 @@ triggers:
   - "principle audit"
 paths:
   - "concern:observability"
+last_reviewed: 2026-06-29
+superseded_by: null
 ---
 
 # Principles Incident Log

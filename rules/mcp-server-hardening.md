@@ -18,6 +18,8 @@ paths:
   - "**/src/index.ts"
   - "**/wrangler.toml"
   - "forge-templates/**"
+last_reviewed: 2026-06-29
+superseded_by: null
 ---
 
 # MCP Server Hardening

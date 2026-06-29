@@ -29,6 +29,7 @@ submodules:
   - template-system.md
 priority: 3
 pack: "website-build"
+stage: stable
 triggers:
   - "site generation"
   - "bolt artifact"

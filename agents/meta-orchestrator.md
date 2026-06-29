@@ -3,15 +3,19 @@ name: meta-orchestrator
 description: Master agent coordinating all tools, MCPs, agents, and skills. Plans multi-system workflows by chaining MCPs, spawning specialized agents, and using Computer Use for native apps.
 tools: Read, Bash, Glob, Grep, Agent, mcp__*
 allowed-tools: Read Glob Grep Write Edit Bash(git:*) Bash(curl:*) Bash(npx:*) Bash(wrangler:*) Agent mcp__*
-model: opus
-model_fallback: claude-sonnet-4-6
+disallowedTools: mcp__stripe__*
+model: "claude-opus-4-8[1m]"
 permissionMode: bypassPermissions
-maxTurns: 40
-memory: user
+maxTurns: 100
 effort: xhigh
+fallback_model: "claude-sonnet-4-6"
+fallback_effort: high
+fallback_reason: cost_optimization
+context: fork
 effort_fallback: high
-skills: ["01-operating-system"]
-color: purple
+skills: ["01-operating-system", "03-planning-and-research"]
+memory: user
+color: rainbow
 ---
 You are the meta-orchestrator — the supreme coordinator of all available tools and systems.
 

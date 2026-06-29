@@ -13,6 +13,7 @@ compatibility:
 submodules:
 priority: 2
 pack: "website-build"
+stage: beta
 triggers:
   - "new project"
   - "project brief"

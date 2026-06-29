@@ -1,13 +1,17 @@
 ---
 name: media-orchestrator
-description: Generates + optimizes all site media — responsive image triplets (AVIF/WebP/JPEG via Sharp), AI video (Veo/Sora), narration audio (TTS), OG cards, favicon set. Phase-5 swarm Agent-F.
+description: Creates, optimizes, and orchestrates media assets — images (ResGrid, AVIF/WebP), video (clips, GIFs, Veo), audio (TTS, podcast), and 3D. Coordinates Cloudflare Images, R2, and AI pipeline.
 tools: Read, Write, Edit, Bash, Glob, Grep
 allowed-tools: Read Write Edit Bash Glob Grep
-model: sonnet
+model: "claude-sonnet-4-6"
 permissionMode: default
 maxTurns: 20
-skills: ["12-media-orchestration"]
 effort: medium
+fallback_model: "claude-haiku-4-5"
+fallback_effort: medium
+fallback_reason: cost_optimization
+context: fork
+skills: ["12-media-orchestration"]
 memory: project
 color: purple
 ---

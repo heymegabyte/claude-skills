@@ -4,12 +4,15 @@ description: Post-implementation verification agent. Runs Feature Completeness E
 tools: Read, Bash, Glob, Grep, mcp__playwright__*
 allowed-tools: Read Glob Grep Bash(grep:*) Bash(npx:*) Bash(git:*) mcp__playwright__*
 disallowedTools: Write, Edit
-model: opus
-model_fallback: claude-sonnet-4-6
+model: "claude-opus-4-8[1m]"
 permissionMode: plan
 maxTurns: 30
 memory: project
 effort: xhigh
+fallback_model: "claude-sonnet-4-6"
+fallback_effort: high
+fallback_reason: cost_optimization
+context: fork
 effort_fallback: high
 skills: ["07-quality-and-verification"]
 color: green

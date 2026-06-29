@@ -12,6 +12,7 @@ compatibility:
   agentskills: ">=1.0.0"
 priority: 2
 pack: "research"
+stage: beta
 triggers:
   - "research"
   - "plan"

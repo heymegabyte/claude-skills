@@ -13,6 +13,7 @@ compatibility:
   agentskills: ">=1.0.0"
 priority: 1
 pack: "core"
+stage: stable
 triggers: []
 paths:
   - "*"

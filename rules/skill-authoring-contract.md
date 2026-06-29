@@ -10,6 +10,8 @@ triggers:
 paths:
   - "NN-*/SKILL.md"
   - "rules/*.md"
+last_reviewed: 2026-06-29
+superseded_by: null
 ---
 
 # Skill Authoring Contract
