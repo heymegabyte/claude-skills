@@ -25,11 +25,10 @@ const ci = args.has('--ci');
 // Workflow-summary red flags — if ANY of these appear in the description, it's
 // summarizing WHAT the skill does instead of WHEN to use it.
 const WORKFLOW_MARKERS = [
-  'write a test', 'watch it fail', 'write minimal code', 'refactor',
-  'dispatches', 'dispatch', 'subagent per task', 'code review between',
-  'step by step', 'step-by-step', 'first you', 'then you', 'finally',
+  'write a test', 'watch it fail', 'write minimal code',
+  'dispatches a subagent', 'subagent per task', 'code review between',
+  'step by step', 'step-by-step', 'first you', 'then you',
   'RED-GREEN-REFACTOR', 'red green refactor',
-  'brainstorm', 'plan', 'implement', 'verify', 'deploy',
   'this skill covers', 'this skill provides', 'this skill helps',
   'how to', 'guide to', 'workflow for',
 ];
