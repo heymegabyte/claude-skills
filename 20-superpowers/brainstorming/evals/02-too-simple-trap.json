@@ -1,0 +1,11 @@
+{
+  "id": "brainstorm-too-simple-trap",
+  "prompt": "Just add a console.log to debug the user service",
+  "expected_behavior": "Agent recognizes the 'too simple to need design' trap, presents a micro-design (even 2-3 sentences — where to place it, what to log, any side effects), gets approval, THEN adds the log line.",
+  "pass_criteria": [
+    "does NOT skip directly to writing code",
+    "acknowledges even trivial changes need a design checkpoint (a few sentences counts)",
+    "gets approval before implementing",
+    "the 'design' is proportionate to task complexity"
+  ]
+}

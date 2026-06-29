@@ -1,6 +1,6 @@
 # Implementer Subagent Prompt Template
 
-Use this template when dispatching an implementer subagent.
+Dispatch template for an implementer subagent.
 
 ```
 Subagent (general-purpose):
@@ -49,8 +49,7 @@ Subagent (general-purpose):
 
     ## Code Organization
 
-    You reason best about code you can hold in context at once, and your edits are more
-    reliable when files are focused. Keep this in mind:
+    Your edits are more reliable when files are focused. Keep this in mind:
     - Follow the file structure defined in the plan
     - Each file should have one clear responsibility with a well-defined interface
     - If a file you're creating is growing beyond the plan's intent, stop and report

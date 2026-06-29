@@ -1,10 +1,6 @@
 # Plan Document Reviewer Prompt Template
 
-Use this template when dispatching a plan document reviewer subagent.
-
-**Purpose:** Verify the plan is complete, matches the spec, and has proper task decomposition.
-
-**Dispatch after:** The complete plan is written.
+Dispatch after the complete plan is written — verifies completeness, spec match, and task decomposition.
 
 ```
 Subagent (general-purpose):

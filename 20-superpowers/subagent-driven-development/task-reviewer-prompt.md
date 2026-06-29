@@ -1,8 +1,7 @@
 # Task Reviewer Prompt Template
 
-Use this template when dispatching a task reviewer subagent. The reviewer
-reads the task's diff once and returns two verdicts: spec compliance and
-code quality.
+Dispatch template for a task reviewer subagent. The reviewer reads the task's
+diff once and returns two verdicts: spec compliance and code quality.
 
 **Purpose:** Verify one task's implementation matches its requirements (nothing
 more, nothing less) and is well-built (clean, tested, maintainable)

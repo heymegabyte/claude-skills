@@ -68,6 +68,8 @@ Each entry: `<symptom>` → `<root cause>` → `<rule that prevents it>`.
 9. **Parallel spawns defaulted to `general-purpose` workers** → no diversity check → `agent-selection` (taxonomy + classify-before-spawn + assignment table + rejected-agent note + **Agent Diversity Review gate**). Emit assignment table before spawning; diversity gate before DONE.
 10. **`/loop`-driven sessions accumulate 15+ serial passes — NOT always a shortcoming.** Per `parallel-subagent-economy` (<5-min gain → serial-correct), bounded iterative `/loop` passes that each close prior Recs are healthy. "Follow-up = shortcoming" applies when prior turn under-delivered, NOT when prior turn deliberately scoped one slice. Diagnostic: if pass-N Recs → pass-(N+1) Next AND CHANGELOG grows linearly → healthy iteration.
 
+11. **Vendored third-party skills committed verbatim (7K lines of upstream prose)** → fidelity over-indexed, compression skipped → `[[vendored-skill-compression]]` (compress on the way in, reference public content, fold overlaps); re-prompt "absorb while compressing" was the correction.
+
 ## Healthy iteration patterns (NOT shortcomings)
 
 1. **`/loop N{m,h}` cron + bounded iterative prompt** — serial main-thread passes each scoping one coherent slice; pass-N Recs become pass-(N+1) Next; CHANGELOG grows one § per pass; diff ~5-200 LOC/pass.

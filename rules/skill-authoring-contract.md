@@ -140,9 +140,42 @@ Human-readable **bullets** (unordered) or **numbered lists** (when priority/weig
 
 Use `### Do` / `### Don't` subheaders so contrast is scannable.
 
+<!-- grow-ok -->
+<!-- Growth justified: absorbed the four best writing-skills insights from vendored Superpowers (2026-06-29) into the canonical authoring rule rather than leaving them in a verbose vendored skill — net token reduction, one canonical home. -->
+
+## Ordered by weight (scope & requirements)
+
+- Write scope/requirements as **numbered lists, most important #1** — order encodes priority and survives compression. Reserve `-` bullets for unordered peers.
+- Front-load the one constraint that most changes behavior; echo it in the last lines (middle-context recall is worst).
+
+## Human voice (anti-slop)
+
+- Sound like one sharp engineer wrote it. No "in today's fast-paced world", no throat-clearing, no "it's worth noting".
+- Fragments beat full sentences when they read clean. Cut every word that survives its own deletion.
+- No emoji-as-decoration, no hype adjectives, no restating the heading in the first bullet.
+
+## Description SDO — the discovery trap
+
+1. **NEVER summarize the workflow in `description:`.** Agents follow the description and skip the body. State *only* triggering conditions ("Use when…"), not steps.
+2. Cover ≥3 trigger phrases: error strings, symptoms, synonyms, tool/file names an agent would grep.
+3. Third person, ≤1024 chars, name the primary artifact. The description is the only part loaded every session — spend the effort here.
+
+## Match the form to the failure
+
+Classify the baseline failure first; the form that fixes one backfires on another.
+
+1. **Skips a rule under pressure** → prohibition + rationalization table + red-flags. (Soft "prefer…" loses.)
+2. **Wrong-shaped output** (bloated, buried verdict) → positive recipe: state what the output IS, in order. (Prohibitions backfire here — agents negotiate with "don't X".)
+3. **Omits a required element** → structural REQUIRED slot in the template, not a prose reminder.
+4. **Behavior should be conditional** → conditional keyed to an observable predicate, not a rule + exemption clauses.
+
+- No nuance clauses ("don't X unless…") — they reopen the negotiation. Express a real exception as its own conditional.
+
 ## Cross-links
 
 - [[instruction-compression-playbook]] — token-efficient skill prose style
+- [[vendored-skill-compression]] — compress third-party skills on the way in
+- [[micro-test-instruction-wording]] — prove guidance wording works before shipping it
 - [[brian-preferences]] — communication, output, git, deploy preferences (file format now lives here)
 - [[validator-precision-discipline]] — keep audit false-positive rate near zero
 - [[drift-detection]] — authoring violations are drift, fixed in-turn

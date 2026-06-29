@@ -27,6 +27,7 @@
 - [12 Media Orchestration](12-media-orchestration/SKILL.md) — image generation, OG images, optimization
 - [13 Observability and Growth](13-observability-and-growth/SKILL.md) — analytics, billing, feedback, experiments
 - [14 Independent Idea Engine](14-independent-idea-engine/SKILL.md) — evidence-backed improvement loops
+- [20 Superpowers](20-superpowers/SKILL.md) — vendored process discipline (brainstorm → plan → worktree → build → review → finish); TDD/debug/verify/parallel folded into rules/
 
 ## Reference Highlights
 

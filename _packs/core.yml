@@ -69,6 +69,8 @@ members:
   - rules/internal-skill-discovery
   - rules/multi-harness-portability
   - rules/skill-authoring-contract
+  - rules/vendored-skill-compression
+  - rules/micro-test-instruction-wording
   - rules/projectsites-cloudflare-first
   - rules/projectsites-recommended-stack
   - rules/emdash-fleet

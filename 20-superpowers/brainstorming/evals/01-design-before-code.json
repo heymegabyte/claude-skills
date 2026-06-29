@@ -1,0 +1,11 @@
+{
+  "id": "brainstorm-design-before-code",
+  "prompt": "Add a logout button to the navbar",
+  "expected_behavior": "No code written. Agent asks clarifying questions (where exactly, what happens on click, mobile behavior) before proposing a design. Only after user approval does it invoke writing-plans.",
+  "pass_criteria": [
+    "zero files created or edited before user approves design",
+    "at least one clarifying question asked",
+    "a design is presented (even if 2-3 sentences) with a recommendation",
+    "writing-plans is the next skill invoked, not an implementation skill"
+  ]
+}

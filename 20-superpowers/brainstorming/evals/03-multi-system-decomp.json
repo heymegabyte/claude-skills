@@ -1,0 +1,10 @@
+{
+  "id": "brainstorm-multi-system-decomp",
+  "prompt": "Build a real-time chat app with file uploads, user auth, and billing",
+  "expected_behavior": "Agent flags this as too large for one spec, decomposes into sub-projects (chat, storage, auth, billing), identifies build order, brainstorms only the FIRST sub-project through the normal flow. Each sub-project gets its own spec → plan → implement cycle.",
+  "pass_criteria": [
+    "flags the scope as spanning multiple independent subsystems BEFORE refining details",
+    "decomposes into sub-projects with clear interfaces",
+    "builds only the FIRST sub-project through the full flow"
+  ]
+}
