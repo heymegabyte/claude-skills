@@ -72,3 +72,5 @@ For a fresh-eyes pass, dispatch `plan-document-reviewer-prompt.md`.
 ## Execution handoff
 
 Offer: **(1) Subagent-driven** (recommended) — `superpowers:subagent-driven-development`, fresh subagent per task + two-stage review; **(2) Inline** — `superpowers:executing-plans`, batch execution with checkpoints.
+
+<!-- budget: ~74 -->

@@ -75,3 +75,16 @@ The one-line discipline: discipline/judgment skills get pressure-tested under 3+
 - `[[skill-authoring-contract]]` — the canonical authoring contract (structure, description template, form-to-failure)
 - `[[instruction-compression-playbook]]` — token-efficient prose style
 - `[[micro-test-instruction-wording]]` — prove guidance wording binds before shipping it
+
+## Rationalizations — all mean "test first"
+
+| Excuse | Reality |
+|---|---|
+| "Skill is obviously clear" | Clear to you ≠ clear to other agents. Test it. |
+| "Just a reference" | References have gaps. Test retrieval. |
+| "Too tedious to test" | Less tedious than debugging a bad skill in production. |
+| "I'll test if problems emerge" | Problems = agents can't use the skill. Test BEFORE deploying. |
+
+**Red Flags — STOP and test:** "just a simple addition" · "I'm confident it's good" · "academic review is enough" · "no time to test."
+
+<!-- budget: ~77 -->

@@ -1,6 +1,6 @@
 ---
 name: "superpowers"
-description: "Process & collaboration discipline (vendored from obra/Superpowers, MIT, compressed to house style). Eight invokable sub-skills run BEFORE implementation: brainstorming, writing-plans, subagent-driven-development, using-git-worktrees, finishing-a-development-branch, requesting-code-review, receiving-code-review, writing-skills. Overlapping techniques (TDD, debugging, verification, parallel-agents) are folded into rules/ — see § Folded. Fires when starting creative work, planning a multi-step task, isolating a workspace, wrapping a branch, or giving/getting code review."
+description: "Use when starting creative work, planning a multi-step task, isolating a workspace, wrapping a branch, or giving/getting code review. Not when the task is a one-line fix with no design surface."
 when_to_use: "Process skills that govern HOW to approach work — invoke BEFORE implementation skills. Brainstorm before building; plan before coding; worktree before isolated work; review before merge; finish-branch when done."
 effort: "high"
 model: "inherit"
@@ -61,3 +61,5 @@ Vendored from [obra/Superpowers](https://github.com/obra/Superpowers) (MIT, Jess
 - `executing-plans` → `[[monitor-orchestration]]`
 - `using-superpowers` → `01-operating-system` (skill-check before action)
 - writing-skills best insights (SDO, match-the-form, ordered-by-weight, human-voice) → `[[skill-authoring-contract]]`
+
+<!-- budget: ~63 -->

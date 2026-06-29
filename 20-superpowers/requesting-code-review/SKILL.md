@@ -38,3 +38,5 @@ Optional: when stuck (fresh eyes), before a refactor (baseline), after a complex
 - Skip review because "it's simple".
 - Ignore Critical, or proceed with unfixed Important.
 - Argue with valid technical feedback.
+
+<!-- budget: ~40 -->

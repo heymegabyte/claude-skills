@@ -61,3 +61,16 @@ Feedback is suggestions to evaluate, not orders to follow. **Verify before imple
 Reply inline in the comment thread (`gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies`), not as a top-level PR comment.
 
 **Verify. Question. Then implement.**
+
+## Rationalizations — stop, these are wrong
+
+| Excuse | Reality |
+|---|---|
+| "Reviewer is more senior" | Senior reviewers make mistakes. Verify technically. |
+| "I'll just apply it and move on" | Blind agreement ships bugs the reviewer didn't catch. |
+| "The feedback is obviously right" | Obvious things are often wrong. Open the code. |
+| "Pushing back is rude" | Shipping bad code is rude. Push back with evidence. |
+
+**Red Flags — STOP and re-read the code yourself:** agreeing without opening a file · "they probably checked" · gratitude instead of verification · applying feedback you don't understand.
+
+<!-- budget: ~63 -->

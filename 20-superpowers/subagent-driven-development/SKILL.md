@@ -99,3 +99,15 @@ Everything pasted into a dispatch — and everything a subagent prints back — 
 
 - `implementer-prompt.md` · `task-reviewer-prompt.md` · final review: `../requesting-code-review/code-reviewer.md`.
 - Workflow skills: `superpowers:using-git-worktrees` (isolated workspace), `superpowers:writing-plans` (creates the plan), `superpowers:finishing-a-development-branch` (completion). Subagents follow `superpowers:test-driven-development` per task.
+
+## Rationalizations — stop, these skip review
+
+| Excuse | Reality |
+|---|---|
+| "One more task, then review" | Stacked unreviewed tasks compound bugs. Review each before next. |
+| "Reviewer flagged it Minor" | Minor findings cascade. Fix or ledger-feed, don't ignore. |
+| "Close enough on spec" | "Close enough" is a gap. Let the reviewer adjudicate. |
+
+**Red Flags — STOP:** skipping task review · accepting a report missing either verdict · moving to next task with open Critical/Important · "just this once" · re-dispatching unchanged.
+
+<!-- budget: ~101 -->

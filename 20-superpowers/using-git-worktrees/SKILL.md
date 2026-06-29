@@ -25,7 +25,7 @@ BRANCH=$(git branch --show-current)
 
 ## Step 1 — create the workspace
 
-1. **Native tool (preferred)** — if a worktree tool/command/flag exists (`EnterWorktree`, `/worktree`, `--worktree`), use it and skip to Step 2. It owns placement, branch, and cleanup; `git worktree add` alongside it creates phantom state the harness can't see.
+1. **Native `EnterWorktree` tool (the default)** — call it first, always. It owns placement, branch, and cleanup; passing `name` creates, passing `path` switches into an existing one. On exit, `ExitWorktree` with `action: "remove"` or `"keep"`. Never mix with raw `git worktree add` — that creates phantom state the native tool can't see.
 2. **Git fallback (only if no native tool):**
    - Directory priority: declared instruction preference > existing `.worktrees/` (wins over `worktrees/`) > default `.worktrees/`.
    - Verify ignored before creating: `git check-ignore -q .worktrees`. If not ignored, add to `.gitignore` + commit first — else worktree contents get tracked.
@@ -41,3 +41,5 @@ BRANCH=$(git branch --show-current)
 
 - `[[main-only-branch]]` — worktrees for isolation, main always committed
 - `finishing-a-development-branch` — merge/PR/cleanup when work is done
+
+<!-- budget: ~43 -->

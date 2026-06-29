@@ -54,3 +54,5 @@ A browser tool, not a mode — available for visual questions, doesn't route eve
 - **Offer just-in-time, as its own message** — no other content. Wait for response. Accept → start server with `--open`. Decline → text-only, don't re-offer.
 - **Decide per question:** would the user understand this better seen than read? Browser for mockups / wireframes / layout comparisons / diagrams; terminal for requirements / concepts / tradeoffs / scope. A UI *topic* is not automatically a visual question.
 - On accept, read `visual-companion.md` before proceeding.
+
+<!-- budget: ~56 -->

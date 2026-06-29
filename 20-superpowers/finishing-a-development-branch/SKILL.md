@@ -60,3 +60,5 @@ WORKTREE_PATH=$(git rev-parse --show-toplevel)
 
 - `[[no-staging-doctrine]]` · `[[main-only-branch]]` · `[[verification-loop]]`
 - `using-git-worktrees` — the isolation setup this finishes
+
+<!-- budget: ~62 -->
