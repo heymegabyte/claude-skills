@@ -33,16 +33,23 @@ function checkCommand(cmd) {
   }
 }
 
-async function checkHttpUrl(url) {
+async function checkHttpUrl(url, serverConfig = {}) {
+  // HTTP MCP servers use SSE transport — bare GET/HEAD often hangs.
+  // Use a TCP socket connect as the reachability signal instead.
+  const u = new URL(url);
+  const host = u.hostname;
+  const port = u.port || (u.protocol === 'https:' ? 443 : 80);
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    const res = await fetch(url, { method: 'GET', signal: controller.signal });
-    clearTimeout(timeout);
-    // HTTP MCP endpoints return 200/405 even without proper auth
-    return res.ok || res.status === 405 || res.status === 400;
-  } catch {
-    return false;
+    const net = await import('node:net');
+    await new Promise((resolve, reject) => {
+      const sock = net.createConnection({ host, port }, () => { sock.end(); resolve(); });
+      sock.setTimeout(5000, () => { sock.destroy(); reject(new Error('timeout')); });
+      sock.on('error', reject);
+    });
+    return { reachable: true, status: 'ACTIVE', detail: `TCP ${host}:${port} reachable` };
+  } catch (e) {
+    if (e.message === 'timeout') return { reachable: false, status: 'UNREACHABLE', detail: `TCP ${host}:${port} timed out` };
+    return { reachable: false, status: 'UNREACHABLE', detail: `TCP ${host}:${port} unreachable: ${e.code || e.message?.slice(0, 40)}` };
   }
 }
 
@@ -95,13 +102,12 @@ for (const name of names) {
 
   if (type === 'http' && url) {
     httpChecks.push(
-      checkHttpUrl(url).then(ok => ({
+      checkHttpUrl(url, s).then(result => ({
         server: name,
         type: 'http',
-        command,
         url,
-        status: ok ? 'ACTIVE' : 'UNREACHABLE',
-        detail: ok ? `HTTP reachable` : `HTTP ${url} unreachable`,
+        status: result.status,
+        detail: result.detail,
       }))
     );
   } else if (command) {
