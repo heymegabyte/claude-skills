@@ -6,6 +6,10 @@ superseded_by: null
 
 # Rules Changelog — auto-maintained by the router-reconcile hook.
 
+## 2026-09-20
+
+- **browser-automation-routing** — feat(rules): new rule — default CF Browser Rendering + Stagehand for browser automation, fall back to the user's Chrome for cookie/session persistence; cross-linked into computer-use-safety + fetch-defaults + crawling-testing-browser-supervisor; added to infra pack + prompt-cache load order (Brian directive)
+
 ## 2026-06-29
 
 - **20-superpowers** — feat(20-superpowers): pass 4 — reference code + eval seeds + human-voice cross-link

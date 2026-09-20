@@ -18,7 +18,7 @@ paths:
 
 # Computer Use
 
-Select the fastest authorized automation path (MCP → Playwright → Chrome → Computer Use) and guard session-bound flows with explicit user confirmation.
+Select the fastest authorized automation path and guard session-bound flows with explicit user confirmation. For BROWSER work, route per `[[browser-automation-routing]]` — CF Browser Rendering + Stagehand by default, the user's own Chrome when cookies/sessions must persist. Desktop/native automation follows the MCP → Playwright → Chrome → Computer Use tiers below.
 
 ## Efficiency priority (pick fastest path — ALL tiers fully authorized)
 

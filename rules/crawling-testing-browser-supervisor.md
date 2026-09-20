@@ -31,6 +31,7 @@ Vitest for units, Playwright for E2E + browser automation, Crawlee for OSS crawl
 
 ## Rules
 
+- **Browser-instance routing** — default CF Browser Rendering + Stagehand; fall back to the user's Chrome for cookie/session persistence per `[[browser-automation-routing]]`
 - **TDD-first** — failing Playwright spec BEFORE implementation per `e2e-tdd-organization`; watch RED → GREEN
 - **Vitest** for every pure function / service method (mock D1/KV/R2/fetch — never real APIs in units)
 - **Playwright** E2E from the homepage outward, 6 breakpoints × 3 browsers, axe-clean, console-error-free per `verification-loop`

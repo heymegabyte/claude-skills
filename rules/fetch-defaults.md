@@ -59,6 +59,8 @@ Set a realistic browser User-Agent on every raw fetch/curl/WebFetch call to avoi
 
 ## Escalation when CF Protect still blocks (Turnstile/JS challenge)
 
+- Interactive automation defaults to CF Browser Rendering + Stagehand, then the user's Chrome for cookie persistence — see `[[browser-automation-routing]]`. This ladder is the "still blocked after that" proxy escalation.
+
 1. Playwright headless with `playwright.devices['Desktop Chrome']` (real browser fingerprint)
 2. Chrome MCP (real Chrome instance)
 3. Firecrawl (residential proxy + headless)
