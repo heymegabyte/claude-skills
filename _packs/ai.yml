@@ -22,4 +22,6 @@ members:
   - rules/mcp-error-semantics
   - rules/skill-forge-from-api
   - rules/portable-audit-discipline
+  - rules/agent-selection
+  - rules/multi-harness-portability
   - 19-mcp-authoring

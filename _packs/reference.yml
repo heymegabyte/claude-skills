@@ -1,0 +1,4 @@
+name: reference
+description: Incident + finding archives — loaded on cross-reference, never always-on
+members:
+  - rules/principles-incident-log

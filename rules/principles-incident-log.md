@@ -1,7 +1,7 @@
 ---
 name: "principles-incident-log"
 priority: 2
-pack: "core"
+pack: "reference"
 triggers:
   - "missed principles"
   - "principles incident log"

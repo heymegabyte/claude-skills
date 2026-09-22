@@ -24,3 +24,5 @@ members:
   - rules/inverted-abstraction-pyramid
   - rules/webhook-as-skill-pattern
   - rules/webhook-receiver-architecture
+  - rules/package-preference-registry
+  - rules/supervisor-skills-index

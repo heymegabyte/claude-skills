@@ -3,7 +3,7 @@ last_reviewed: 2026-06-29
 superseded_by: null
 name: "supervisor-skills-index"
 priority: 4
-pack: "core"
+pack: "backend"
 triggers: []
 paths:
   - "*"

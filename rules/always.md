@@ -130,3 +130,10 @@ Render as markdown in chat, NOT via bash:
 - Config/Repos lines ALWAYS present (print "none" if no changes)
 - Every URL: FULL deeplinked
 - Also run `source ~/.claude/hooks/prompt-report.sh && emdash_report` via Bash (bg)
+
+## Context budget — kill the autocompact thrash (2026-09-22)
+
+- **Main thread NEVER reads trackers/ledgers** (`SCOPE.md`, `DECISIONS.md`, `_LOOP_LEDGER.md`, `progress.md`, subagent `.output` transcripts) or any file it cannot act on directly. Delegate inventory reads to a fresh Explore agent with a <=150-line cap; hold conclusions only.
+- **Never ingest a giant file wholesale** (index.html/styles.css/app.js-class, >200KB): targeted grep/sed/Python extraction with capped output, or a windowed Read.
+- **Oversized tool outputs are the #1 refiller** — `guard-oversized-output.py` (PostToolUse) warns the moment one lands; heed it and shrink BEFORE the next request, never re-request the bytes.
+- **HARD STOP on `autocompact thrashing` / "Prompt is too long" / `subagent_tokens: 0`** → checkpoint to `progress.md`, continue in a FRESH session. Never retry in place.

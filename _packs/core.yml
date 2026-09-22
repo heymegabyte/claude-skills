@@ -18,7 +18,6 @@ members:
   - rules/instruction-compression-playbook
   - rules/error-recovery
   - rules/auto-meta-work
-  - rules/agent-selection
   - rules/parallel-subagent-economy
   - rules/feature-flags
   - rules/drift-detection
@@ -30,9 +29,7 @@ members:
   - rules/delegate-when-saturated
   - rules/god-tier-engineering
   - rules/naming-no-transient-prefixes
-  - rules/package-preference-registry
   - rules/solo-rituals-eliminated
-  - rules/supervisor-skills-index
   - rules/todos-are-roadmap
   - rules/lint-doctrine
   - rules/uniform-json-output
@@ -47,7 +44,6 @@ members:
   - rules/error-budget
   - rules/fail-fast-build-fail-soft-prod
   - rules/one-way-two-way-doors
-  - rules/principles-incident-log
   - rules/production-observability-default-on
   - rules/router-drift-auto-reconciliation
   - rules/state-is-the-enemy
@@ -67,7 +63,6 @@ members:
   - rules/uuid-version-discipline
   - rules/working-backwards
   - rules/internal-skill-discovery
-  - rules/multi-harness-portability
   - rules/skill-authoring-contract
   - rules/vendored-skill-compression
   - rules/micro-test-instruction-wording
