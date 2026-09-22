@@ -9,3 +9,4 @@ members:
   - rules/gorgeous-by-default
   - rules/motion-interaction-supervisor
   - rules/visualization-maps-diagrams-supervisor
+  - rules/embarrassingly-easy-to-use

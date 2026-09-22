@@ -43,7 +43,7 @@ Every user prompt is a training signal — and evidence the previous turn under-
 ### 4. Re-issuing a near-identical prompt
 
 - **Means:** prior turn was wrong-SHAPED (decomposition / monitor-fire / parallelization failed), not wrong-content.
-- **Write to:** `rules/monitor-orchestration.md` § Known shortcomings — new numbered entry: `<symptom>` → `<root cause>` → `<rule that prevents it>`.
+- **Write to:** `rules/monitor-orchestration.md` § Known shortcomings — new numbered entry: `<symptom>` → `<root cause>` → `<rule that prevents it>`. Cross-links: `[[monitor-orchestration]]` · `[[auto-integrate-recs]]`.
 
 ### 5. `"How can we improve ___"` / `"What else ___"` / `"Top N ideas"`
 

@@ -46,7 +46,10 @@ triggers:
   - "implement"
   - "slice"
 paths:
-  - "*"
+  - "src/**"
+  - "apps/**"
+  - "e2e/**"
+  - "package.json"
 ---
 
 # 06 — Build and Slice Loop

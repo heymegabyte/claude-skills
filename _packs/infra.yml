@@ -10,3 +10,4 @@ members:
   - rules/neon-database-conservation
   - rules/email-deliverability
   - rules/email-deliverability-implementation
+  - rules/cloudflare-native-provisioning

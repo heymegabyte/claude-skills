@@ -143,7 +143,7 @@ Pre-commit via **lefthook** (not husky). CI runs same checks (lint gates test).
 - `@hono/zod-validator`, `@hono/zod-openapi`, `hc`
 - `drizzle-orm` (v1 RQBv2), `drizzle-kit`
 - `@clerk/backend`, `zod`
-- `@editorjs/editorjs`, `@uppy/core`, `ag-grid`, `novu`, `copilotkit`
+- `@editorjs/editorjs`, `@uppy/core`, `ag-grid`, `copilotkit`
 - `eslint`, `prettier`, `typescript-eslint`, `angular-eslint`, `eslint-plugin-perfectionist`, `eslint-plugin-security`
 - `oxlint`, `knip`, `jscpd`, `dependency-cruiser`, `lefthook`
 - `msw`, `@faker-js/faker`, `@axe-core/playwright`, `@testing-library/dom`

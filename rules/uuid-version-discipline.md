@@ -29,7 +29,7 @@ Pick the right ID format at schema design time — migrations are painful.
 | Analytics events table              | **UUIDv7** | Time-series; prefix correlation                     |
 | Webhook event ID                    | **UUIDv7** | Idempotency dedupe is time-windowed                 |
 | Session token                       | **UUIDv4** | Max entropy; no timing leak                         |
-| Idempotency key (Stripe, Resend)    | **UUIDv4** | Provider-agnostic; no info in value                 |
+| Idempotency key (Stripe, SES)       | **UUIDv4** | Provider-agnostic; no info in value                 |
 | File upload name in R2              | **UUIDv4** | Unpredictable; cache-busting                        |
 | Feature flag override ID            | **UUIDv7** | Admin audit log is time-ordered                     |
 | ULID                                | **Skip**   | 26-char base32 doesn't fit any gap in this stack    |

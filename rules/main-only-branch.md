@@ -21,7 +21,7 @@ Pairs with `ai-seniority` § auto-merge — agent diffs that clear the gates lan
 - **No dev branches.** No `develop`, no `staging`, no `release/v1.2`. No mobile-team-cuts-a-release-branch ceremony per `no-staging-doctrine`.
 - **Worktrees > branches for parallel work.** When multiple agents need isolation, spawn worktrees per `full-autonomy` § sub-agent isolation (`isolation: "worktree"` on Agent calls). Worktrees give independent working copies without the merge-ceremony cost of long-lived branches.
 - **Conventional commits IS the PR description.** `feat(scope): summary` + 1-3 body lines explaining the why. The changelog-generator agent + auto-generated GitHub Releases handle the rest. No multi-paragraph PR descriptions.
-- **Commit + push the same turn.** Side repos (agentskills, saas-starter, plugins, tools, template repo) auto-commit + push to main per `brian-preferences` § Git policy. Emdash projects commit freely; Brian pushes from frontend/PR per his own policy — that's the one carve-out from this rule.
+- **Commit + push the same turn.** EVERY repo under `~/emdash/repositories/*` plus the side repos (agentskills, saas-starter, plugins, tools, template repo) auto-commit + push to main per `brian-preferences` § Git policy. Pushing is autonomous infrastructure, never a human-gated step — never emit "NEEDS BRIAN" for a `git push`. Only the legacy `~/emdash-projects/*` tree stays frontend/PR-managed.
 
 ## Worktree pattern (parallel work without branches)
 

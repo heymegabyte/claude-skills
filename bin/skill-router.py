@@ -44,8 +44,8 @@ DB_PATH = DATA_DIR / "skills.db"
 EMBED_MODEL = "text-embedding-3-small"  # $0.02 / 1M tokens
 EMBED_DIM = 1536
 
-# Token budget for preamble routing
-DEFAULT_BUDGET_TOKENS = 150_000
+# Token budget for preamble routing (aligned to the 1M context window)
+DEFAULT_BUDGET_TOKENS = 1_000_000
 
 # -----------------------------------------------------------------------------
 # Secrets

@@ -30,30 +30,6 @@
     "additionalDirectories": ["/Users/apple/.agentskills", "/Users/apple/emdash-projects"]
   },
   "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/session-start.sh",
-            "timeout": 10,
-            "statusMessage": "Loading Emdash environment..."
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/auto-value-extract.sh",
-            "timeout": 5,
-            "async": true
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -71,39 +47,6 @@
             "if": "Bash(DROP *)|Bash(TRUNCATE *)|Bash(git push --force *)|Bash(rm -rf *)"
           }
         ]
-      },
-      {
-        "matcher": "mcp__computer-use__.*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/computer-use-safety.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/format-on-save.sh",
-            "timeout": 15
-          }
-        ]
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/audit-log.sh",
-            "timeout": 3,
-            "async": true
-          }
-        ]
       }
     ],
     "PreCompact": [
@@ -111,151 +54,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/apple/.claude/hooks/pre-compact-save.sh",
+            "command": "python3 /Users/apple/.claude/hooks/precompact-snapshot.py",
             "timeout": 5,
             "statusMessage": "Saving critical state..."
-          }
-        ]
-      }
-    ],
-    "PostCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/post-compact.sh",
-            "timeout": 5,
-            "statusMessage": "Re-injecting critical context..."
-          }
-        ]
-      }
-    ],
-    "PostToolUseFailure": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/on-failure.sh",
-            "timeout": 3,
-            "asyncRewake": true
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/on-notification.sh",
-            "timeout": 5,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "TeammateIdle": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/teammate-idle.sh",
-            "timeout": 3,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/auto-learn-stop.sh",
-            "timeout": 30,
-            "statusMessage": "Analyzing session, syncing skills, notifying Slack..."
-          }
-        ]
-      }
-    ],
-    "FileChanged": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/on-file-changed.sh",
-            "timeout": 3,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "CwdChanged": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/on-cwd-changed.sh",
-            "timeout": 3,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "InstructionsLoaded": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/on-instructions-loaded.sh",
-            "timeout": 3,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "StopFailure": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/on-stop-failure.sh",
-            "timeout": 5,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/on-session-end.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "ConfigChange": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/audit-config-change.sh",
-            "timeout": 3,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/apple/.claude/hooks/permission-auto-approve.sh",
-            "timeout": 3
           }
         ]
       }

@@ -71,6 +71,7 @@ Each entry: `<symptom>` → `<root cause>` → `<rule that prevents it>`.
 10. **`/loop`-driven sessions accumulate 15+ serial passes — NOT always a shortcoming.** Per `parallel-subagent-economy` (<5-min gain → serial-correct), bounded iterative `/loop` passes that each close prior Recs are healthy. "Follow-up = shortcoming" applies when prior turn under-delivered, NOT when prior turn deliberately scoped one slice. Diagnostic: if pass-N Recs → pass-(N+1) Next AND CHANGELOG grows linearly → healthy iteration.
 
 11. **Vendored third-party skills committed verbatim (7K lines of upstream prose)** → fidelity over-indexed, compression skipped → `[[vendored-skill-compression]]` (compress on the way in, reference public content, fold overlaps); re-prompt "absorb while compressing" was the correction.
+12. **A "finish all the TODOs" mandate answered with an ever-growing audit arc** → the brief said *LAUNCH PARALLEL AGENTS and CLOSE the TODO items*; each turn instead found a real-but-adjacent defect (optional-chain crash, localStorage collection crash, doc drift) and fixed it serially, so the TODO inventory was never fanned out and the user re-issued the SAME prompt four times. Root cause: a defect found mid-flight was treated as higher priority than the mandate, and no bounded inventory existed to measure progress against. → Rule: on any completion mandate, the FIRST tool-call message must fan out read-only inventory agents (one per surface — editor `app/`, worker `src/`, Angular `frontend/`, `docs/`) to produce the TODO list, then fire mutation agents per item; adjacent defects found mid-flight are queued as items, never allowed to absorb the mandate. Progress is measured as `closed / total`, and the mandate is done only when that ratio is 1.0. Cross-links `[[prompt-as-training-signal]]` §4, `[[auto-integrate-recs]]`.
 
 ## Healthy iteration patterns (NOT shortcomings)
 
@@ -115,3 +116,21 @@ See: `always` § Post-work, `verification-loop`, `full-autonomy` § Sub-agent pr
 - On completion → `[[20-superpowers]]` → finishing-a-development-branch (verify tests, choose merge/PR/cleanup).
 - Where subagents exist, prefer `[[20-superpowers]]` → subagent-driven-development over solo serial execution.
 - See [[20-superpowers]]
+
+### 2026-09-21 — main-thread reconnaissance of large trackers (context thrash)
+
+- **What happened:** the orchestrator read `_LOOP_LEDGER.md` (large, multi-section) plus `SCOPE.md`/`DECISIONS.md` in-thread, then re-derived git state. The harness reported *"Autocompact is thrashing — the context refilled to the limit within 3 turns of the previous compact, 3 times in a row"* — after **0 agents spawned, 0 files edited, 0 deploys attempted**.
+- **Why it's a failure:** reconnaissance is not progress. The orchestrator retains file dumps it will never act on, burning the exact budget the subagents need.
+- **HARD RULE:** the main thread MUST NOT read a tracker/ledger/scope doc (`_LOOP_LEDGER.md`, `SCOPE.md`, `DECISIONS.md`, `progress.md`) or any file it cannot act on directly. Delegate every inventory read to a fresh-context `Explore` agent with a ≤150-line output cap. The main thread holds conclusions only.
+- **HARD STOP trigger:** an `autocompact thrashing` notice, a "Prompt is too long" spawn failure, or `subagent_tokens: 0` → checkpoint to `progress.md`, continue in a FRESH session. Never retry in place.
+
+### 2026-09-21 (same session) — the documentary fix above was INSUFFICIENT
+
+- **What happened:** the rule above was written, then the class RECURRED in the SAME session — a 257.9KB `Read` of a `tasks/*.output` path (a symlink to a full subagent JSONL transcript). It was stopped only by the harness's incidental 256KB guard, NOT by the rule. A rule that was authored minutes earlier did not prevent the recurrence.
+- **Why it's a failure:** a prose rule is advisory. It competes for attention with the very context bloat it warns about — and it loses exactly when the context is fullest. `hooks > rules > skills > prompts`: the lesson was re-learned the hard way.
+- **HARD RULE (now hook-enforced, not rule-advised):**
+  - Hook: `~/.claude/hooks/guard-oversized-read.py`
+  - Wired in `~/.claude/settings.json` under `hooks.PreToolUse`, matcher `Read`, WITHOUT the `2>/dev/null || true` suffix its three sibling hooks carry — that suffix would swallow exit 2 and silently disable the block.
+  - Env-tunable thresholds: `READ_GUARD_MAX_BYTES` 65536 (unwindowed) · `READ_GUARD_TASK_OUT_BYTES` 8192 (`*/tasks/*.output`, window or not) · `READ_GUARD_MIN_WINDOW` 2000 (a `limit` >= this is the whole file wearing a window's clothes).
+  - Proven 11/11 in a functional test, incl. `limit=99999` → exit 2 (a live bypass of the guard's first cut) and offset-only → exit 2.
+- **Supersedes** the rule-only mitigation above for the `Read` path; the HARD RULE + HARD STOP triggers above still apply to what the hook cannot see (git-state re-derivation, non-file reconnaissance). Cross-link `[[main-thread-recon-thrashes-context]]`.

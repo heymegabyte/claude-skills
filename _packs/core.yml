@@ -77,3 +77,5 @@ members:
   - rules/projectsites-cloudflare-first
   - rules/projectsites-recommended-stack
   - rules/emdash-fleet
+  - rules/supremacy-wars
+  - rules/CHANGELOG

@@ -10,7 +10,9 @@ triggers:
   - "haiku"
   - "claude model"
 paths:
-  - "*"
+  - ".claude/agents/**"
+  - ".claude/settings.json"
+  - "**/opus-quota*"
 ---
 
 # Model Routing

@@ -9,7 +9,9 @@ triggers:
   - "specialist"
   - "spawn"
 paths:
-  - "*"
+  - ".claude/agents/**"
+  - "**/plan*.md"
+  - "**/progress.md"
 ---
 
 # Agent Selection & Diversity

@@ -13,3 +13,8 @@ timeline-authenticity
 
 # Image-quality applies to content sourcing + media optimization + website builds
 image-quality
+# These two visual-quality rules legitimately live in 3 packs each
+# (design.yml, frontend.yml, website-build.yml) — cross-pack membership is
+# intentional; the router ranks them per prompt, so 3x listing is by design.
+text-contrast
+gorgeous-by-default

@@ -10,6 +10,7 @@ Five standalone Claude Code plugin packs extracted from the Emdash monorepo, ord
 **Pitch:** The foundational operating system for AI-assisted development — autonomous engineering discipline, verification loops, and monitor orchestration in one bundle.  
 **Audience:** Solo builders and small teams adopting AI-native workflows.  
 **Files:**
+
 - `01-operating-system/`
 - `rules/always.md`
 - `rules/autonomous-engineering.md`
@@ -26,6 +27,7 @@ Five standalone Claude Code plugin packs extracted from the Emdash monorepo, ord
 **Pitch:** One-liner marketing sites — competitor research, maximalist design, AI-native features, agent swarm, and deploy in a single slash command.  
 **Audience:** Freelancers, agency owners, and indie hackers who build 10+ sites/year.  
 **Files:**
+
 - `15-site-generation/`
 - `rules/competitor-research.md`
 - `rules/source-site-enhancement.md`
@@ -40,6 +42,7 @@ Five standalone Claude Code plugin packs extracted from the Emdash monorepo, ord
 **Pitch:** Pre-hydrated SPAs with View Transitions, bento grids, glass+grain textures, and motion choreography — everything needed for a stunning dark-first brand site.  
 **Audience:** Design-forward developers and agencies building premium brand presences.  
 **Files:**
+
 - `16-cinematic-website-prime-directive/`
 - `rules/image-quality.md`
 - `rules/text-contrast.md`
@@ -56,6 +59,7 @@ Five standalone Claude Code plugin packs extracted from the Emdash monorepo, ord
 **Pitch:** Auto-generate hardened MCP servers from any OpenAPI spec — register, deploy, eval, prune, and maintain with discipline-grade error semantics and mock-mode testing.  
 **Audience:** Backend engineers and platform teams shipping API wrappers at scale.  
 **Files:**
+
 - `19-mcp-authoring/`
 - `rules/mcp-error-semantics.md`
 - `rules/eval-mock-mode-discipline.md`
@@ -72,6 +76,7 @@ Five standalone Claude Code plugin packs extracted from the Emdash monorepo, ord
 **Pitch:** The full brainstorm-build-review-finish process chain without cargo-culting the deep-brainstorm cult — perfect for teams who want structured delivery without the ceremony.  
 **Audience:** Small engineering teams (2-8 people) wanting structured AI-assisted delivery.  
 **Files:**
+
 - `20-superpowers/`
 - `rules/multi-harness-portability.md`
 - `rules/context-spillover.md`

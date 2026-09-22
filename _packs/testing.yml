@@ -8,3 +8,4 @@ members:
   - rules/quality-metrics
   - rules/forge-with-test-scaffold-pattern
   - rules/validator-precision-discipline
+  - rules/verify-against-source-of-truth

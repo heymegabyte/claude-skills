@@ -3,7 +3,7 @@ last_reviewed: 2026-06-29
 superseded_by: null
 name: mcp-error-semantics
 description: MCP Error Semantics
-pack: "backend"
+pack: "ai"
 priority: 2
 triggers:
   - "mcp"

@@ -9,7 +9,10 @@ triggers:
   - "library"
   - "dep"
 paths:
-  - "*"
+  - "package.json"
+  - "**/package.json"
+  - "wrangler.toml"
+  - "scripts/**"
 ---
 
 # Package Preference Registry
@@ -82,7 +85,8 @@ Paid/pro-only deps · proprietary UI kits · non-commercial licenses · duplicat
 
 ### Audio / TTS / STT
 
-- ✅ **Piper** (`rhasspy/piper`) — THE preferred TTS. Open-source neural TTS (ONNX voices, MIT), self-hosted as a CF Workers Container exposing an HTTP `/tts` endpoint (e.g. `tts.projectsites.dev`, same pattern as the listmonk/twenty containers). Fast, free, on-device-quality — aligns with `cloudflare-lock-in-is-leverage` + open-source-only + cost doctrine. Use for podcast-per-page, page-audio, voice-tour, and the LiveKit/Twilio voice-agent TTS leg.
+- ✅ **MeloTTS on Workers AI** (`@cf/myshell-ai/melotts`, MIT) — **THE preferred TTS for anything running ON Cloudflare Workers.** Native `env.AI.run` OSS TTS, **ZERO infrastructure** (no container to stand up / maintain), edge-native — strictly better than a self-hosted Piper container when the workload is already on Workers, and aligns with `cloudflare-lock-in-is-leverage`. Returns a **WAV** (`RIFF`, ~350 KB/sentence → serve `content-type: audio/wav`). Brian-endorsed 2026-09-05 ("use MeloTTS or whatever is best for CloudFlare Workers"). ⚠️ **Whisper (`@cf/openai/whisper*`) is speech-to-TEXT (ASR), NOT TTS** — it can't generate audio. Deepgram Aura (`@cf/deepgram/aura-*`) is CF's *proprietary* TTS — avoid (not OSS). Reference impl: projectsites page-audio (`src/services/page_audio.ts` — AI-summarize → MeloTTS → R2 cache; `POST /api/page-audio/:slug`).
+- ✅ **Piper** (`rhasspy/piper`, MIT) — the preferred **self-hosted-container** OSS TTS: reach for it when the workload runs OFF Workers, or when you need specific Piper ONNX voices / cloning MeloTTS-on-Workers-AI doesn't cover. CF Workers Container exposing HTTP `/tts` (e.g. `tts.projectsites.dev`, same pattern as listmonk/twenty). For Workers-native surfaces (page-audio, podcast, voice-tour), prefer MeloTTS above — zero-infra.
 - ❌ **ElevenLabs** — paid/proprietary TTS. **Brian directive 2026-06-27: use Piper instead.** Existing `media.ts` ElevenLabs TTS + any voice surface → migrate to the Piper container (`ELEVENLABS_API_KEY` stays only until the swap lands). OpenAI TTS is the hosted fallback if Piper is unavailable.
 - ✅ **Deepgram** (STT) — unchanged; the speech-to-text leg stays Deepgram (`DEEPGRAM_API_KEY`). Whisper (self-host / Workers AI) is the open-source STT fallback.
 

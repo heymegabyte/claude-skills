@@ -3,7 +3,7 @@ last_reviewed: 2026-06-29
 superseded_by: null
 name: multi-harness-portability
 description: Multi-Harness Portability
-pack: "infra"
+pack: "core"
 priority: 3
 triggers:
   - "cursor"

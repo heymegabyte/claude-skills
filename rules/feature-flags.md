@@ -21,6 +21,7 @@ Every feature beyond a trivial one-file edit ships behind a flag. Default: `enab
 > feature-flag service (OpenFeature standard, KV + DO, edge-evaluated in-isolate, public
 > beta 2026) — `cloudflare-lock-in-is-leverage` applies: prefer the CF-native primitive.
 > Every project evaluates flags through Flagship via the native Workers binding (no HTTP).
+>
 > - **New builds**: define flags in Flagship from day one; bind `env.FLAGSHIP`; evaluate via
 >   the OpenFeature provider. No bespoke flag worker/admin to maintain.
 > - **Existing D1-flag projects**: keep the D1 engine as the **fallback + admin source-of-truth**

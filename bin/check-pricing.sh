@@ -48,7 +48,8 @@ TODAY_EPOCH=$(date -u +%s)
 # Pass-101: scripts/*.sh + bin/check-pricing.sh added per the scope-completeness
 # discipline (rules/lint-doctrine.md § Codified incidents row 12, pass-100).
 # Note: bin/check-pricing.sh self-scans intentionally to validate its own regex.
-mapfile -t HITS < <(
+HITS=()
+while IFS= read -r _hit; do HITS+=("$_hit"); done < <(
   grep -rnE '\$[0-9]+(\.[0-9]+)?(/MTok|/GB-month|/M (requests|extra requests|rows-read|rows-written|reads|writes|CPU-ms))' \
     rules/*.md \
     [0-9][0-9]-*/*.md \

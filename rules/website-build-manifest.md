@@ -113,7 +113,7 @@ The `validate-*.mjs` build-gates a rule names (and their `build_validators.ts` o
 
 - **Stack foundation**: `[[shadcn-design-system]]` (React default) OR `[[spartan-ui-design-system]]` (Angular) · `[[frontend-stack]]`
 - **Cinematic + design**: `[[cinematic-ui-patterns]]` (RollingCounter/Reveal, React+Angular) · `[[gorgeous-by-default]]` · `[[text-contrast]]` · `[[logo-contrast]]` · `[[image-quality]]`
-- **Content + brand**: `[[copy-writing]]` · `[[citations]]` · `[[timeline-authenticity]]` · `[[i18n-by-demographics]]` · `[[thin-source-amplification]]`
+- **Content + brand**: `[[copy-writing]]` · `[[citations]]` · `[[timeline-authenticity]]` · `[[i18n-by-demographics]]` · `[[thin-source-amplification]]` · `[[brand-asset-pipeline]]` (logo/wordmark/OG generation + trim + alpha gate)
 - **Forms + comms**: `[[email-deliverability]]` (every-form gate)
 - **Architecture + security**: `[[projectsites-cloudflare-first]]` (CF infra LAW — always) · `[[csp-trusted-types]]` (CSP L3 + nonce + Trusted Types + COOP/COEP/Permissions-Policy — every site) · `[[security-hardening]]` (HSTS/referrer-policy/nosniff) · `[[secret-provisioning]]` + `[[secret-auto-provisioning]]` (auto-generate signing/session/webhook secrets + provider DNS — every build wires integrations) · `[[ai-agent-security]]` (when the Phase-4 AI-native spiral ships chat-as-UI / tool-calls / agents) · `[[feature-flags]]` (every new feature flagged) · `[[production-observability-default-on]]` (analytics)
 - **Per-page/site/entity gates**: `[[website-page-and-site-gates]]` (SEO head · webmanifest/robots/sitemap/security.txt · lightbox · Maps · clickable-entity linking · forms · timeline · Cmd+K — extracted from `[[always]]`, loads only on site prompts)

@@ -9,3 +9,4 @@ node_modules/
 .claude/scheduled_tasks.lock
 *.pyc
 __pycache__/
+skills/

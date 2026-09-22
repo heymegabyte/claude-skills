@@ -31,7 +31,7 @@ Every third-party service used in a project is classified at integration time. T
 
 ### Load-bearing
 
-Replacing this vendor requires a **multi-week migration** touching data, auth contracts, or core infrastructure. Examples: Cloudflare (Workers, D1, R2, Durable Objects), Clerk (auth), Stripe (billing/payouts), Square (POS payments), Resend (transactional email).
+Replacing this vendor requires a **multi-week migration** touching data, auth contracts, or core infrastructure. Examples: Cloudflare (Workers, D1, R2, Durable Objects), Clerk (auth), Stripe (billing/payouts), Square (POS payments), Amazon SES (transactional email — sole rail; SendGrid break-glass only).
 
 **Overhead for load-bearing vendors:**
 
@@ -42,7 +42,7 @@ Replacing this vendor requires a **multi-week migration** touching data, auth co
 
 ### Replaceable
 
-Equivalent alternatives exist and migration would take **days**, not weeks. Examples: PostHog (→ Plausible / Amplitude), Sentry (→ Axiom / BugSnag), Upstash (→ CF KV directly), Inngest (→ CF Queues + Workflows).
+Equivalent alternatives exist and migration would take **days**, not weeks. Examples: PostHog (→ Plausible / Amplitude), Sentry (→ Axiom / BugSnag), Upstash (→ CF KV directly), Resend (→ Amazon SES, completed 2026-09-09).
 
 **Overhead for replaceable vendors:**
 
@@ -77,7 +77,7 @@ Is it CF (Workers / D1 / R2 / DO / KV / Queues / Cache)?
 - Consumers import from the service module only — never import the SDK directly elsewhere.
 - The module translates between vendor API shape and internal domain types.
 
-See `reference/vendor-risk-tiering.md` for the canonical Resend service module example.
+See `reference/vendor-risk-tiering.md` for the canonical load-bearing service module example.
 
 ---
 

@@ -12,7 +12,13 @@ triggers:
   - "semantic-release"
   - "commitizen"
 paths:
-  - "*"
+  - ".eslintrc*"
+  - "eslint.config.*"
+  - ".prettierrc*"
+  - "lefthook.yml"
+  - ".commitlintrc*"
+  - "commitlint.config.*"
+  - ".github/workflows/**"
 ---
 
 # Lint Doctrine

@@ -3,7 +3,7 @@ last_reviewed: 2026-06-29
 superseded_by: null
 name: portable-audit-discipline
 description: Portable Audit Discipline
-pack: "testing"
+pack: "ai"
 priority: 2
 triggers:
   - "audit command"
