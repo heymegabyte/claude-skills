@@ -29,6 +29,7 @@ members:
   - rules/delegate-when-saturated
   - rules/god-tier-engineering
   - rules/naming-no-transient-prefixes
+  - rules/style-guide-driven-decisions
   - rules/solo-rituals-eliminated
   - rules/todos-are-roadmap
   - rules/lint-doctrine
