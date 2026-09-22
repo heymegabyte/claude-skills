@@ -74,6 +74,5 @@ projectsites.dev template `Header.tsx` — the HTML text-wordmark fallback (`<sp
 
 ## Cross-Links
 
-- [[text-contrast]] — companion rule for text accessibility
 - [[image-quality]] — logo sizing and format guidance
-- [[text-contrast]] — brand color palette
+- [[text-contrast]] — brand color palette + accessibility guidance

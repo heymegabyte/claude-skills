@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude.megabyte.space/schemas/marketplace.schema.json",
+  "title": "Claude Code Marketplace Manifest",
+  "description": "Validates .claude-plugin/marketplace.json. Pattern from secondsky/claude-skills.",
+  "type": "object",
+  "required": ["name", "displayName", "description", "version", "author", "repository", "license"],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$",
+      "maxLength": 64
+    },
+    "displayName": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1024,
+      "minLength": 10
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "author": { "type": "string" },
+    "repository": { "type": "string" },
+    "homepage": { "type": "string", "format": "uri" },
+    "license": { "type": "string" },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "development",
+          "deployment",
+          "testing",
+          "design",
+          "content",
+          "security",
+          "observability",
+          "productivity"
+        ]
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 20
+    },
+    "compatibility": {
+      "type": "object",
+      "properties": {
+        "claude-code": { "type": "string", "description": "Semver range, e.g. >=2.0.0" }
+      }
+    },
+    "install": {
+      "type": "object",
+      "required": ["type", "repo"],
+      "properties": {
+        "type": { "type": "string", "enum": ["github", "gitlab", "npm", "local"] },
+        "repo": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "projectsites-mcp",
+  "version": "1.0.0",
+  "description": "Project Sites MCP server — one-prompt site launch via projectsites.dev API. Exposes create_site, deploy_site, provision_d1/kv/r2, get_site_status, add_domain.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "node --loader ts-node/esm src/index.ts",
+    "dev": "node --watch --loader ts-node/esm src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.0"
+  }
+}

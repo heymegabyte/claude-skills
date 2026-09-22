@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude.megabyte.space/schemas/plugin.schema.json",
+  "title": "Claude Code Plugin Manifest",
+  "description": "Validates .claude-plugin/plugin.json. Pattern from secondsky/claude-skills.",
+  "type": "object",
+  "required": ["name", "description", "version", "author", "skills", "agents"],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$",
+      "maxLength": 64,
+      "description": "Lowercase, hyphens only, no leading/trailing hyphens."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1024,
+      "minLength": 10
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semver X.Y.Z"
+    },
+    "author": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": { "type": "string" },
+            "url": { "type": "string", "format": "uri" }
+          }
+        }
+      ]
+    },
+    "homepage": { "type": "string", "format": "uri" },
+    "repository": { "type": "string" },
+    "license": { "type": "string" },
+    "keywords": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "skills": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Relative paths to skill directories."
+    },
+    "agents": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Relative paths to agent .md files."
+    },
+    "outputStyles": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "monitors": { "type": "string" },
+    "strict": { "type": "boolean" }
+  }
+}

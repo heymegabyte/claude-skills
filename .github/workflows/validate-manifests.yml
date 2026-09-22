@@ -1,0 +1,180 @@
+name: Validate Manifests + MCP Tools + Principle Stability
+
+# Validates plugin.json + marketplace.json against JSON Schema, MCP tool surface,
+# and principle-stability baselines on every PR and push to main.
+# All gates are conditional (fail-open) per rules/conditional-ci-gates.md — absence
+# of a guarded artifact is NOT a failure; gates activate when the feature lands.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".claude-plugin/plugin.json"
+      - ".claude-plugin/marketplace.json"
+      - ".claude-plugin/plugin.schema.json"
+      - ".claude-plugin/marketplace.schema.json"
+      - "mcp-servers/*/mcp-server/src/index.ts"
+      - "bin/validate-mcp-tools.mjs"
+      - "rules/audit-baselines/30-30-true-saturated-*.json"
+  pull_request:
+    paths:
+      - ".claude-plugin/plugin.json"
+      - ".claude-plugin/marketplace.json"
+      - ".claude-plugin/plugin.schema.json"
+      - ".claude-plugin/marketplace.schema.json"
+      - "mcp-servers/*/mcp-server/src/index.ts"
+      - "bin/validate-mcp-tools.mjs"
+      - "rules/audit-baselines/30-30-true-saturated-*.json"
+
+jobs:
+  validate:
+    name: Validate Manifests + MCP Tools + Principle Stability
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ajv-cli
+        run: npm install -g ajv-cli ajv-formats
+
+      - name: Validate plugin.json
+        run: |
+          ajv validate \
+            --spec=draft2020 \
+            -c ajv-formats \
+            -s .claude-plugin/plugin.schema.json \
+            -d .claude-plugin/plugin.json
+          echo "plugin.json PASS"
+
+      - name: Validate marketplace.json
+        run: |
+          ajv validate \
+            --spec=draft2020 \
+            -c ajv-formats \
+            -s .claude-plugin/marketplace.schema.json \
+            -d .claude-plugin/marketplace.json
+          echo "marketplace.json PASS"
+
+      - name: Structural check — skill paths exist
+        run: |
+          node - <<'EOF'
+          const fs = require('fs');
+          const plugin = JSON.parse(fs.readFileSync('.claude-plugin/plugin.json', 'utf8'));
+          let failed = false;
+          for (const skill of plugin.skills ?? []) {
+            if (!fs.existsSync(skill)) {
+              console.error(`FAIL: skill path missing: ${skill}`);
+              failed = true;
+            }
+          }
+          for (const agent of plugin.agents ?? []) {
+            if (!fs.existsSync(agent)) {
+              console.error(`FAIL: agent path missing: ${agent}`);
+              failed = true;
+            }
+          }
+          if (failed) process.exit(1);
+          console.log('All skill + agent paths exist. PASS');
+          EOF
+
+      # ── plugin.json schema (conditional) ───────────────────────────────────
+      # Runs only when .claude-plugin/plugin.json exists — bare clones without the
+      # plugin manifest skip this gate entirely (fail-open per conditional-ci-gates).
+      - name: Validate plugin.json against schema (conditional)
+        if: hashFiles('.claude-plugin/plugin.json') != ''
+        run: |
+          npx --yes ajv-cli validate \
+            --spec=draft2020 \
+            -c ajv-formats \
+            -s .claude-plugin/plugin.schema.json \
+            -d .claude-plugin/plugin.json
+          echo "plugin.json schema PASS"
+
+      # ── marketplace.json schema (conditional) ───────────────────────────────
+      # Same pattern — gate fires only when marketplace.json is present.
+      - name: Validate marketplace.json against schema (conditional)
+        if: hashFiles('.claude-plugin/marketplace.json') != ''
+        run: |
+          npx --yes ajv-cli validate \
+            --spec=draft2020 \
+            -c ajv-formats \
+            -s .claude-plugin/marketplace.schema.json \
+            -d .claude-plugin/marketplace.json
+          echo "marketplace.json schema PASS"
+
+      # ── MCP tool-surface validator (conditional) ─────────────────────────────
+      # Runs when any MCP server entry-point exists AND bin/validate-mcp-tools.mjs
+      # has landed (Task #58). Skipped on repos without MCP servers.
+      # Validates: tool name uniqueness, Zod schema presence, description length,
+      # no wildcard input schemas, idempotency annotation.
+      - name: Validate MCP tool surface (conditional)
+        if: hashFiles('mcp-servers/*/mcp-server/src/index.ts') != ''
+        run: |
+          if [ -f "bin/validate-mcp-tools.mjs" ]; then
+            node bin/validate-mcp-tools.mjs --ci
+            echo "MCP tool surface PASS"
+          else
+            echo "bin/validate-mcp-tools.mjs not present — skipping MCP tool gate (Task #58 pending)"
+          fi
+
+      # ── Principle-stability gate (conditional) ───────────────────────────────
+      # Blocks on LOST principles per [[principle-stability-monitoring]].
+      # Reads baseline JSON from rules/audit-baselines/30-30-true-saturated-*.json
+      # and diffs against live principle count + text hash.
+      # Fails only if a principle disappears or its text hash changes (regression).
+      # Adding new principles is always allowed. Gate is skipped when no baselines exist.
+      - name: Audit doctrine — principle stability gate (conditional)
+        if: hashFiles('rules/audit-baselines/30-30-true-saturated-*.json') != ''
+        run: |
+          # Determine most recent baseline
+          BASELINE=$(ls rules/audit-baselines/30-30-true-saturated-*.json | sort | tail -1)
+          echo "Using baseline: $BASELINE"
+
+          # Detect audit-doctrine command — prefer pnpm exec, fall back to npx
+          if command -v pnpm &>/dev/null && [ -f "pnpm-lock.yaml" ]; then
+            RUNNER="pnpm exec"
+          else
+            RUNNER="npx --yes"
+          fi
+
+          # Run gate mode: exit 1 if any principle regressed/removed vs baseline
+          if [ -f "bin/audit-doctrine.mjs" ]; then
+            node bin/audit-doctrine.mjs --milestone=30-30-true-saturated --gate --baseline="$BASELINE"
+          elif [ -f "commands/audit-doctrine.md" ]; then
+            echo "audit-doctrine.md exists but no bin/audit-doctrine.mjs — principle diff skipped (add bin/ runner to graduate gate)"
+          else
+            echo "No audit-doctrine runner found — gate skipped (not yet graduated per audit-arc-maturity-ladder)"
+          fi
+        env:
+          # Needed if audit-doctrine queries CF for live principle count
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      # ── Email auth gate ─────────────────────────────────────────────────────
+      # Gate SPF/DKIM/DMARC DNS records per rules/email-deliverability-implementation.md.
+      # Runs only when the validator script exists in the project.
+      - name: Check email auth DNS (SPF/DKIM/DMARC)
+        if: hashFiles('scripts/validate-email-auth.mjs') != ''
+        run: node scripts/validate-email-auth.mjs
+        env:
+          # Provide CF zone ID + token if the script needs to query the CF Zones API
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      # ── LLM eval gate ───────────────────────────────────────────────────────
+      # Runs the eval suite in CI mode (exit 1 on any FAIL or regression >0.5).
+      # Skipped automatically when tools/evals/cases/ does not exist.
+      # Per commands/run-evals.md + 07-quality-and-verification/llm-evals.md.
+      - name: Run LLM evals (CI gate)
+        if: hashFiles('tools/evals/cases/*.json') != ''
+        run: |
+          # Prefer pnpm; fall back to npx tsx for projects without a lockfile
+          if [ -f "pnpm-lock.yaml" ]; then
+            pnpm evals:ci
+          elif [ -f "package.json" ] && node -e "require('./package.json').scripts['evals:ci']" 2>/dev/null; then
+            npm run evals:ci
+          else
+            echo "No evals:ci script found in package.json — running raw tsx runner"
+            npx --yes tsx tools/evals/run.ts --ci
+          fi
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

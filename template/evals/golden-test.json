@@ -1,0 +1,79 @@
+[
+  {
+    "id": "copy-gen-hero-001",
+    "slug": "copy-gen-hero",
+    "prompt_version": "v1.0",
+    "model_under_test": "@cf/meta/llama-3.1-8b-instruct",
+    "input": {
+      "system": "You are a conversion copywriter for a nonprofit SaaS. Write punchy, specific, slop-free hero headlines. Return a JSON object with keys: headline (≤8 words), subhead (≤160 chars), cta (≤4 words).",
+      "user": "Product: volunteer scheduling platform for food banks. Audience: nonprofit operations directors. Key benefit: cut scheduling time from 4 hours/week to 20 minutes."
+    },
+    "expected": {
+      "max_chars": 500,
+      "contains_all": ["20 minutes"],
+      "regex": "\\{[\\s\\S]*\"headline\"[\\s\\S]*\\}"
+    },
+    "scoring_rubric": {
+      "instruction_following": "Response is valid JSON with headline/subhead/cta keys and correct structure. 0=malformed JSON or missing keys, 3=valid but incomplete, 5=perfectly structured.",
+      "specificity": "Copy references concrete numbers (20 minutes, 4 hours) rather than vague claims. 0=no numbers, 3=partial, 5=numbers woven in naturally.",
+      "slop_free": "No AI slop words: leverage, unleash, seamlessly, revolutionize, empower, discover, transform. 0=2+ slop words, 2=1 slop word, 5=clean.",
+      "headline_length": "Headline is 4-8 words. 0=outside range, 5=within range.",
+      "brand_voice": "Punchy, active voice, not corporate. 0=passive/corporate, 3=neutral, 5=sharp and irreverent."
+    },
+    "thresholds": {
+      "per_dimension_min": 3,
+      "composite_min": 4.0
+    },
+    "tags": ["copy", "hero", "nonprofit", "workers-ai"]
+  },
+  {
+    "id": "summarize-donor-brief-001",
+    "slug": "summarize-donor-brief",
+    "prompt_version": "v2.1",
+    "model_under_test": "claude-haiku-4-5-20251001",
+    "input": {
+      "system": "You are a nonprofit brief summarizer. Summarize the following in exactly 2 sentences. Be factual. Include all dollar figures and dates verbatim.",
+      "user": "In Q1 2026, donors contributed $142,000 toward the Newark Soup Kitchen expansion project. Of that total, $87,500 came from the annual gala held on March 12. The remaining $54,500 arrived via 340 online donations averaging $160 each. Construction is scheduled to begin June 30, 2026, pending permitting from the city of Newark."
+    },
+    "expected": {
+      "contains_all": ["$142,000", "Q1 2026", "Newark", "$87,500", "$54,500"],
+      "max_chars": 450
+    },
+    "scoring_rubric": {
+      "factual_accuracy": "All 5 dollar figures and dates from input appear in output verbatim. 0=missing 3+, 2=missing 1-2, 5=all present.",
+      "conciseness": "Output is exactly 2 sentences and ≤450 chars. 0=wrong count or over char limit, 5=both correct.",
+      "no_hallucination": "No facts in the output that are absent from the input. 0=invented facts, 5=fully grounded.",
+      "tone": "Professional, neutral, no promotional language, no superlatives. 0=promotional, 3=neutral, 5=appropriately clinical."
+    },
+    "thresholds": {
+      "per_dimension_min": 3,
+      "composite_min": 4.0
+    },
+    "tags": ["summarization", "donor", "nonprofit", "haiku"]
+  },
+  {
+    "id": "rag-answer-grounded-001",
+    "slug": "rag-answer-grounded",
+    "prompt_version": "v1.2",
+    "model_under_test": "@cf/meta/llama-3.1-8b-instruct",
+    "input": {
+      "system": "Answer the user's question using ONLY the provided context. If the answer is not in the context, say 'I don't have that information.' Do not invent facts.",
+      "user": "Context:\n---\nThe Newark Soup Kitchen serves 850 meals daily. Hours: Mon-Sat 11am-2pm. Volunteers must be 16+. Contact: volunteer@newarksk.org\n---\n\nQuestion: What are the age requirements for volunteering?"
+    },
+    "expected": {
+      "contains_all": ["16"],
+      "regex": "(?i)(16|sixteen)"
+    },
+    "scoring_rubric": {
+      "groundedness": "Answer is derived from context only, no invented facts. 0=hallucinated facts, 3=partially grounded, 5=fully grounded.",
+      "completeness": "Answer includes the age requirement (16+) and nothing contradictory. 0=missing, 3=partial, 5=complete.",
+      "conciseness": "Answer is brief (≤3 sentences). 0=>5 sentences, 3=3-5, 5=1-2.",
+      "instruction_following": "Did not answer questions not in context, used fallback phrase if info missing. 0=hallucinated absent info, 5=correct behavior."
+    },
+    "thresholds": {
+      "per_dimension_min": 4,
+      "composite_min": 4.5
+    },
+    "tags": ["rag", "grounding", "workers-ai", "workers-ai-search"]
+  }
+]

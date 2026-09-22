@@ -1,0 +1,20 @@
+{
+  "name": "skills-gateway-mcp",
+  "version": "1.0.0",
+  "description": "MCP Gateway that indexes all heymegabyte/claude-skills behind 3 meta-tools — cuts context from ~50K tokens to ~1K",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node --loader ts-node/esm src/index.ts",
+    "dev": "node --watch --loader ts-node/esm src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "ts-node": "^10.9.0"
+  }
+}

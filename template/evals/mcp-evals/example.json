@@ -1,0 +1,126 @@
+{
+  "server": "resend-mcp",
+  "_comment": "Golden tests for the resend-mcp MCP server. Run via /run-mcp-evals resend [--ci] [--mock-only] [--live-only]. Scoring tiers: exact-match | exact-match-keys | exact-match-keys+id-pattern-regex | error-shape | schema-valid | llm-judge:<rubric>. See commands/run-mcp-evals.md § Step 4. Mock-mode: when mock_response is present the harness returns it instead of calling the live API (no API key needed). See rules/eval-mock-mode-discipline.md.",
+  "tests": [
+    {
+      "id": "list-tools-presence",
+      "_comment": "__meta_ prefix = MCP list_tools call, no tool invocation. Validates the server advertises the expected surface. Always safe to run live — no API key needed for list_tools.",
+      "tool": "__meta_list_tools",
+      "expected_tool_count_min": 10,
+      "expected_tool_names_include": [
+        "post-emails",
+        "get-emails-email-id",
+        "get-audiences",
+        "post-contacts",
+        "delete-contacts-id"
+      ],
+      "scoring": "__meta_list_tools"
+    },
+    {
+      "id": "send-email-happy-path",
+      "_comment": "Happy path: send an email. mock_response lets CI run without a Resend API key. The MCP server checks MCP_MOCK_RESPONSE_JSON env var and short-circuits fetch when set. Live run requires RESEND_API_KEY.",
+      "tool": "post-emails",
+      "input": {
+        "body": {
+          "from": "test@example.com",
+          "to": ["you@example.com"],
+          "subject": "MCP Eval Test",
+          "html": "<p>Hello from the eval harness</p>"
+        }
+      },
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "id": "re_abc123def456ghi7",
+          "object": "email"
+        }
+      },
+      "expected": {
+        "object": "email",
+        "id_pattern": "^re_[a-z0-9]+$"
+      },
+      "scoring": "exact-match-keys+id-pattern-regex"
+    },
+    {
+      "id": "send-email-missing-from-error",
+      "_comment": "Error path: omit required 'from' field. Resend returns HTTP 422 with a validation error shape. mock_response simulates the 422 so CI can assert error-shape handling without a real API key.",
+      "tool": "post-emails",
+      "input": {
+        "body": {
+          "to": ["you@example.com"],
+          "subject": "Missing from"
+        }
+      },
+      "mock_response": {
+        "status": 422,
+        "body": {
+          "statusCode": 422,
+          "name": "validation_error",
+          "message": "The 'from' field is required."
+        }
+      },
+      "expected": {
+        "isError": true,
+        "code": "validation_error"
+      },
+      "expected_message_contains": "from",
+      "scoring": "error-shape"
+    },
+    {
+      "id": "get-email-by-id-schema-valid",
+      "_comment": "Schema validation: retrieve a known email. mock_response returns a plausible email object so CI can verify the MCP server passes the schema gate without a real email ID.",
+      "tool": "get-emails-email-id",
+      "input": {
+        "email_id": "00000000-0000-0000-0000-000000000001"
+      },
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "id": "00000000-0000-0000-0000-000000000001",
+          "object": "email",
+          "created_at": "2026-06-18T00:00:00.000Z",
+          "subject": "Mock email subject",
+          "from": "sender@example.com",
+          "to": ["recipient@example.com"],
+          "html": "<p>Mock body</p>",
+          "text": null,
+          "bcc": null,
+          "cc": null,
+          "reply_to": null,
+          "last_event": "delivered"
+        }
+      },
+      "expected_schema": {
+        "type": "object",
+        "required": ["id", "object", "created_at", "subject", "from", "to"],
+        "properties": {
+          "id": { "type": "string" },
+          "object": { "type": "string", "enum": ["email"] },
+          "created_at": { "type": "string" },
+          "subject": { "type": "string" },
+          "from": { "type": "string" },
+          "to": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "scoring": "schema-valid"
+    },
+    {
+      "id": "list-audiences-exact-shape",
+      "_comment": "Exact-match-keys: list audiences returns { object, data }. mock_response returns the empty-list envelope so CI can assert the MCP server proxies the shape correctly without a real API key.",
+      "tool": "get-audiences",
+      "input": {},
+      "mock_response": {
+        "status": 200,
+        "body": {
+          "object": "list",
+          "data": []
+        }
+      },
+      "expected": {
+        "object": "list",
+        "data": []
+      },
+      "scoring": "exact-match-keys"
+    }
+  ]
+}

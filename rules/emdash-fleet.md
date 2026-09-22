@@ -51,7 +51,7 @@ Cross-links: `[[parallel-subagent-economy]]` `[[delegate-when-saturated]]` `[[op
 
 ## Verification + merge in a fleet
 
-- Each worktree agent runs `npm run lint` (17 gates + the advisory `audit-all` dashboard) before its slice merges.
+- Each worktree agent runs `npm run lint` (24 gates + the advisory `audit-all` dashboard) before its slice merges.
 - Diffs clearing all gates auto-merge to `main` (`[[solo-builder-doctrine]]`, `[[main-only-branch]]`) — no PR ritual.
 - Safety hooks fire in every worktree: `secret-scan-prewrite` (Write/Edit) + `destructive-bash-guard` (Bash), logged to `~/.claude/hooks/.hook-execution.log`.
 - Post-deploy: prod-E2E per `[[verification-loop]]` from each merged slice.
