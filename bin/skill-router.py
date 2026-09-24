@@ -17,6 +17,10 @@ Usage:
                                        # Resolve full skill manifest for a prompt
   skill-router.py track <skill_id>     # Append used skill to session cache
 """
+# PEP 563: defer annotation evaluation so PEP-604 unions (`str | None`) parse on
+# Python 3.9 (system python3), not just 3.10+. Keeps the router runnable by hooks.
+from __future__ import annotations
+
 import hashlib
 import json
 import os
