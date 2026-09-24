@@ -1,8 +1,15 @@
 ---
 name: "agpl-isolation-via-http-boundary"
+description: "Isolate an AGPL / strong-copyleft service behind an HTTP/RPC network boundary so copyleft never propagates into a proprietary codebase — own process, no imports, no shared types or DB schema, no AGPL packages. The network boundary is the license firewall."
 last_reviewed: 2026-06-29
 superseded_by: null
 pack: "compliance"
+triggers:
+  - "agpl"
+  - "copyleft license"
+  - "strong copyleft"
+  - "license isolation"
+  - "vendor license boundary"
 ---
 
 # AGPL Isolation via HTTP Boundary

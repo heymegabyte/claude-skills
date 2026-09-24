@@ -4,6 +4,12 @@ superseded_by: null
 name: cloudflare-native-provisioning
 description: Provision Cloudflare-native products (Turnstile widgets, DNS zones + records, custom domains) programmatically via the CF REST API using CLOUDFLARE_API_KEY + CLOUDFLARE_EMAIL — never hand-create in the dashboard or ask the user for keys CF itself mints.
 pack: "infra"
+triggers:
+  - "turnstile widget"
+  - "provision cloudflare"
+  - "cloudflare dns zone"
+  - "cloudflare custom domain"
+  - "cf rest api provision"
 metadata:
   type: reference
 ---
