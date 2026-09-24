@@ -4,6 +4,7 @@ members:
   - 01-operating-system
   - 04-preference-and-memory
   - 06-build-and-slice-loop
+  - 20-superpowers
   - rules/brian-preferences
   - rules/always
   - rules/full-autonomy
