@@ -36,39 +36,7 @@ Every `--json`-emitting helper in `~/.agentskills/bin/` SHOULD produce the same 
 
 ## Canonical examples
 
-### `bin/security-supply-chain.sh --json`
-
-```json
-{
-  "meta": {
-    "skills_root": "/Users/.../heymegabyte-claude-skills",
-    "project": "/Users/.../my-project",
-    "timestamp": "2026-06-09T07:03:29Z",
-    "git_sha": "e663398"
-  },
-  "checks": [
-    {"name": "sha-pin", "status": "pass", "details": "all action refs SHA-pinned"}
-  ],
-  "summary": {"pass": 3, "fail": 0, "skip": 2, "exit": 0}
-}
-```
-
-### `bin/session-recap.sh --json`
-
-```json
-{
-  "meta": {
-    "repo": "/Users/.../heymegabyte-claude-skills",
-    "generated_at": "2026-06-09T09:03:38Z",
-    "git_sha": "5d3753c",
-    "filter": "today"
-  },
-  "entries": [
-    {"date": "2026-06-09", "pass_id": "pass-35", "summary": "...", "body_preview": [...]}
-  ],
-  "total": 17
-}
-```
+See `reference/uniform-json-output.md` § Canonical examples for the full `security-supply-chain.sh` (`checks` + `summary`) and `session-recap.sh` (`entries` + `total`) envelopes.
 
 ## Rules
 
@@ -87,22 +55,7 @@ Every `--json`-emitting helper in `~/.agentskills/bin/` SHOULD produce the same 
 
 ## Composed envelopes (since pass-69)
 
-When one helper orchestrates others, aggregate sub-envelopes into an `info[]` array. Each entry embeds the sub-script's full envelope as its `payload`:
-
-```json
-{
-  "meta": { ... },
-  "gates": [ /* parent's own gate results */ ],
-  "info": [
-    {
-      "name": "pricing",
-      "status": "clean" | "drift",
-      "payload": { "meta": {...}, "refs": [...], "summary": {...} }
-    }
-  ],
-  "summary": { "pass": N, "fail": N, "skip": N, "info_drift": N, "exit": 0 }
-}
-```
+When one helper orchestrates others, aggregate sub-envelopes into an `info[]` array. Each entry embeds the sub-script's full envelope as its `payload`. See `reference/uniform-json-output.md` § Composed envelope shape for the full JSON.
 
 ### Rules for composed envelopes
 
@@ -113,28 +66,11 @@ When one helper orchestrates others, aggregate sub-envelopes into an `info[]` ar
 
 ### `jq` recipes for composed envelopes
 
-```bash
-# Did any sub-envelope drift?
-... | jq '.summary.info_drift'
-
-# Drill into one sub-envelope's payload
-... | jq '.info[] | select(.name=="pack-frontmatter") | .payload.drift'
-
-# Treat parent + sub-envelopes as a single flat array
-... | jq '[.gates[], (.info[] | {name, status})]'
-```
+See `reference/uniform-json-output.md` § jq recipes for drift-check, drill-into-payload, and flatten one-liners.
 
 ## Shared library
 
-`bin/lib/emit-json.sh` (since pass-38) — source in every new helper. Drops ~12 lines of boilerplate to 3:
-
-```bash
-SKILLS_ROOT="${SKILLS_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
-# shellcheck source=lib/emit-json.sh
-. "$SKILLS_ROOT/bin/lib/emit-json.sh"
-META_BLOCK=$(emit_meta_block "$PWD" "$(emit_iso_ts)" "$(emit_git_sha)" "default")
-printf '{%s,"entries":[…]}\n' "$META_BLOCK"
-```
+`bin/lib/emit-json.sh` (since pass-38) — source in every new helper; drops ~12 lines of boilerplate to 3 (`. emit-json.sh` → `emit_meta_block` → `printf`). See `reference/uniform-json-output.md` § emit-json.sh usage for the snippet.
 
 Exposed helpers: `json_escape` · `emit_iso_ts` · `emit_git_sha [project-dir]` · `emit_meta_block <repo> <ts> <sha> [filter]` · `emit_kv_string <key> <value>` · `emit_kv_int <key> <value>`.
 
