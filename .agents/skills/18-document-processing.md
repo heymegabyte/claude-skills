@@ -6,6 +6,7 @@ effort: "high"
 model: "inherit"
 priority: 5
 pack: "documents"
+stage: stable
 triggers:
   - "PDF"
   - "invoice"

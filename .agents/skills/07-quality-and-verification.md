@@ -40,6 +40,7 @@ submodules:
   - wcag-2-2-2026.md
 priority: 2
 pack: "testing"
+stage: stable
 triggers:
   - "test"
   - "verify"

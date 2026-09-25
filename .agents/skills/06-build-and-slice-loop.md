@@ -28,7 +28,6 @@ submodules:
   - keyboard-shortcuts-and-command-palette.md
   - microcopy-library.md
   - notification-center.md
-  - notification-system.md
   - onboarding-and-first-run.md
   - pre-digested-builds.md
   - pwa-kit.md
@@ -40,12 +39,16 @@ submodules:
   - webhook-system.md
 priority: 2
 pack: "core"
+stage: stable
 triggers:
   - "build feature"
   - "implement"
   - "slice"
 paths:
-  - "*"
+  - "src/**"
+  - "apps/**"
+  - "e2e/**"
+  - "package.json"
 ---
 
 # 06 — Build and Slice Loop

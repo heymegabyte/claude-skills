@@ -5,7 +5,7 @@ Load CONVENTIONS.md for stack defaults. Load _router.md for skill routing.
 
 ## Stack
 
-CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
 ## Rules
 

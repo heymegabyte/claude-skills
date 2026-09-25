@@ -16,6 +16,7 @@ submodules:
   - design-tokens.md
 priority: 3
 pack: "design"
+stage: stable
 triggers:
   - "design"
   - "ui"

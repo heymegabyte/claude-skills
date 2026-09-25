@@ -25,6 +25,7 @@ submodules:
   - technical-diagramming.md
 priority: 3
 pack: "media"
+stage: stable
 triggers:
   - "image gen"
   - "dalle"

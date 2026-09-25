@@ -12,6 +12,7 @@ compatibility:
   agentskills: ">=1.0.0"
 priority: 3
 pack: "polish"
+stage: beta
 triggers:
   - "what else"
   - "ideas"

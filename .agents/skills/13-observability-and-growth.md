@@ -22,6 +22,7 @@ submodules:
   - workers-tracing-otlp.md
 priority: 2
 pack: "backend"
+stage: stable
 triggers:
   - "posthog"
   - "sentry"

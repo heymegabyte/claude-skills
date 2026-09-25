@@ -24,6 +24,7 @@ submodules:
   - uptime-and-health.md
 priority: 2
 pack: "backend"
+stage: stable
 triggers:
   - "deploy"
   - "wrangler deploy"
