@@ -1,11 +1,11 @@
 ---
 name: "emdash-skills"
-description: "14-category product-building OS. CF Workers+Hono, Angular, D1, Drizzle, Clerk, Stripe. 94 reference docs, 18 agents."
+description: "14-category product-building OS. CF Workers+Hono, Angular, D1, Drizzle, Clerk, Stripe. 163 reference docs, 26 agents."
 ---
 # Emdash Skills for Devin
 
 Load CONVENTIONS.md for stack defaults. Load _router.md for skill routing.
-14 categories (01-14), 94 reference docs, 18 agents.
+20 categories (01-20), 163 reference docs, 26 agents.
 
 ## Stack
 CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry

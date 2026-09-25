@@ -1,7 +1,7 @@
 # Emdash Skills for Amp
 
 Load CONVENTIONS.md for stack defaults. Load _router.md for skill routing.
-14 categories (01-14), 94 reference docs, 18 agents.
+20 categories (01-20), 163 reference docs, 26 agents.
 
 ## Stack
 
