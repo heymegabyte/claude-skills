@@ -6,6 +6,7 @@ priority: 3
 pack: "backend"
 triggers:
   - "psnotify"
+  - "novu"
   - "notification"
   - "webhook"
   - "email"
