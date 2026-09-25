@@ -1,0 +1,47 @@
+---
+name: "app-foundation"
+description: "Every delivered app — the non-inferable business requirements + exact stack/brand choices every build must satisfy. Loads on every app/site build."
+triggers:
+  - "build"
+  - "app"
+  - "site"
+  - "saas"
+  - "project"
+priority: 2
+pack: "core"
+stage: stable
+---
+
+# App Foundation — every delivered app must satisfy
+
+## Platform (exact, non-inferable)
+
+- Ships on Cloudflare: Workers + Hono (edge) · D1 (system of record) · R2 (storage) · KV (cache) · Durable Objects (state/coordination) · Queues/Workflows (async). Never AWS/GCP/Vercel/Supabase/Firebase by default.
+- Frontend: React 19 + Vite + TanStack Router + Tailwind v4 + shadcn/ui (default) OR Angular 21 + Spartan UI (when explicitly chosen). Never hand-rolled `public/{page}.html`.
+- Auth: Clerk. Data: parameterized SQL / Drizzle v1 + Zod at every boundary.
+- Live at a real SSL'd URL in <15 min. Folder name = domain.
+
+## Payments (route by model)
+
+- Donations / POS / one-time / sub-$100 / in-person → **Square**.
+- Recurring SaaS (seat · usage · entitlements · net-30 · multi-currency) → **Stripe Billing**.
+- Payouts to contractors / vendors / volunteers → **Stripe Connect Express**.
+
+## Email & notifications (exact)
+
+- **Amazon SES** = sole transactional rail (SendGrid break-glass only). **Listmonk** for bulk/newsletters.
+- In-app / push notifications → **psnotify** (in-house, Durable-Object-backed). Never Novu or OneSignal.
+
+## Brand (exact)
+
+- Colors: `#060610` bg · `#00E5FF` accent · `#50AAE3` · `#7C3AED`. Dark-first.
+- Fonts: Sora · Space Grotesk · JetBrains Mono. Tone: bold, anti-slop.
+
+## Scope (org-type → page-set floor)
+
+- Infer the org type; deliver its standard page set (nonprofit floor = 24 routes: 14 standard + 10 jewels; SaaS / marketing / local-business each their floor). Missing standard pages = incomplete.
+
+## Experience baseline (non-negotiable)
+
+- Embarrassingly easy for a busy non-technical owner: succeeds first try, no manual. ≤3 steps to any outcome · one primary CTA per screen · empty states become first-action launchpads · instant feedback + undo.
+- AI is foundational to every surface, never optional.

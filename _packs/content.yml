@@ -2,6 +2,7 @@ name: content
 description: Copy + brand voice + citations + anti-slop
 members:
   - 09-brand-and-content-system
+  - 23-content-seo
   - rules/copy-writing
   - rules/citations
   - rules/timeline-authenticity

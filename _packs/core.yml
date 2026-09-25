@@ -5,6 +5,8 @@ members:
   - 04-preference-and-memory
   - 06-build-and-slice-loop
   - 20-superpowers
+  - 21-app-foundation
+  - 24-functional
   - rules/brian-preferences
   - rules/always
   - rules/full-autonomy
