@@ -44,7 +44,14 @@
     "16-cinematic-website-prime-directive",
     "18-document-processing",
     "19-mcp-authoring",
-    "20-superpowers"
+    "20-superpowers",
+    "21-app-foundation",
+    "22-visual-experience",
+    "23-content-seo",
+    "24-functional",
+    "25-quality-performance",
+    "26-platform-delivery",
+    "27-trust-compliance"
   ],
   "outputStyles": ["output-styles/emdash-concise.md"],
   "monitors": "monitors/monitors.json",
