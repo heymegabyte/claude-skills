@@ -41,7 +41,7 @@ Cloudflare-native products are provisionable by API with the global key — do N
 
 - Per Brian (2026-06-27): PostHog is one of the FEW services we do NOT self-host — we use **PostHog Cloud** (US region: ingestion `https://us.i.posthog.com`, assets `https://us-assets.i.posthog.com`). Do not stand up a self-hosted PostHog.
 - Public project key `phc_…` is client-embedded by design (build-env-gated `VITE_POSTHOG_KEY`); the personal API key is a secret.
-- A **PostHog MCP** is connected — verify ingestion by querying the backend (`$pageview` trends), NEVER by headless browser (posthog-js bot-filters automation → 0 events is an artifact, not a bug). Cross-ref `[[auto-meta-work]]` § PostHog.
+- A **PostHog MCP** is connected — verify ingestion by querying the backend (`$pageview` trends), NEVER by headless browser (posthog-js bot-filters automation → 0 events is an artifact, not a bug). Cross-ref ``auto-meta-work`` § PostHog.
 
 ## SES email auth caveat
 

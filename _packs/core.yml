@@ -20,7 +20,6 @@ members:
   - rules/code-style
   - rules/instruction-compression-playbook
   - rules/error-recovery
-  - rules/auto-meta-work
   - rules/parallel-subagent-economy
   - rules/feature-flags
   - rules/drift-detection
@@ -63,7 +62,6 @@ members:
   - rules/oauth2-provider-discipline
   - rules/principle-stability-monitoring
   - rules/root-cause-validator-findings
-  - rules/template-utility-conventions
   - rules/uuid-version-discipline
   - rules/working-backwards
   - rules/internal-skill-discovery

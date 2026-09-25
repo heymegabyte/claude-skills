@@ -118,4 +118,4 @@ Cross-links: `[[brian-preferences]]` `[[always]]` `[[drift-detection]]` `[[repo-
 
 - `[[skill-authoring-contract]]` § File format — the canonical bullet style
 - `retrospectives/arc-2026-06-18-compression-optimization.md` — live arc tracker + 50-idea roadmap
-- `[[validator-precision-discipline]]` — when codifying these as a linter, prefer false-negatives
+- ``validator-precision-discipline`` — when codifying these as a linter, prefer false-negatives

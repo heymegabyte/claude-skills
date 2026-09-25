@@ -96,6 +96,6 @@ Audit every use before enforcing. Run `grep -rn 'innerHTML\|outerHTML\|insertAdj
 - `[[always]]` — CSP Level 3 strict-dynamic + nonce mandate (§ Security headers)
 - `[[quality-metrics]]` — CSP gate in the quality checklist
 - `[[supreme-polish]]` Agent-H — runs this implementation as part of security hardening
-- `[[auto-meta-work]]` — analytics-specific connect-src entries (PostHog, GA4)
+- ``auto-meta-work`` — analytics-specific connect-src entries (PostHog, GA4)
 - `[[verification-loop]]` — browser console CSP violation = build fail
 - `[[hono-api]]` — Hono middleware chain order; CSP goes first

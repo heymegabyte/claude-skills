@@ -179,6 +179,6 @@ Classify the baseline failure first; the form that fixes one backfires on anothe
 - [[vendored-skill-compression]] — compress third-party skills on the way in
 - [[micro-test-instruction-wording]] — prove guidance wording works before shipping it
 - [[brian-preferences]] — communication, output, git, deploy preferences (file format now lives here)
-- [[validator-precision-discipline]] — keep audit false-positive rate near zero
+- `validator-precision-discipline` — keep audit false-positive rate near zero
 - [[drift-detection]] — authoring violations are drift, fixed in-turn
 - [[internal-skill-discovery]] — `metadata.internal: true` for OS-layer skills
