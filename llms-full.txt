@@ -15,7 +15,6 @@
 
 - [01 Operating System](01-operating-system/SKILL.md) — policy, execution cadence, emphasis handling
 - [02 Goal and Brief](02-goal-and-brief/SKILL.md) — thesis, users, business model
-- [03 Planning and Research](03-planning-and-research/SKILL.md) — research, decomposition, competitive analysis
 - [04 Preference and Memory](04-preference-and-memory/SKILL.md) — preferences, VoC, decision models
 - [05 Architecture and Stack](05-architecture-and-stack/SKILL.md) — platform, auth, data, MCP, API design
 - [06 Build and Slice Loop](06-build-and-slice-loop/SKILL.md) — feature slices and product surface area
