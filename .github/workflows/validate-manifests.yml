@@ -125,16 +125,9 @@ jobs:
       - name: Audit doctrine — principle stability gate (conditional)
         if: hashFiles('rules/audit-baselines/30-30-true-saturated-*.json') != ''
         run: |
-          # Determine most recent baseline
-          BASELINE=$(ls rules/audit-baselines/30-30-true-saturated-*.json | sort | tail -1)
+          # Determine most recent baseline (find, not ls — SC2012)
+          BASELINE=$(find rules/audit-baselines -maxdepth 1 -name '30-30-true-saturated-*.json' | sort | tail -1)
           echo "Using baseline: $BASELINE"
-
-          # Detect audit-doctrine command — prefer pnpm exec, fall back to npx
-          if command -v pnpm &>/dev/null && [ -f "pnpm-lock.yaml" ]; then
-            RUNNER="pnpm exec"
-          else
-            RUNNER="npx --yes"
-          fi
 
           # Run gate mode: exit 1 if any principle regressed/removed vs baseline
           if [ -f "bin/audit-doctrine.mjs" ]; then
