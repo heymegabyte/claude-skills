@@ -21,12 +21,12 @@ Never write hand-rolled HTML files for any user-facing surface.
 ## Mandate
 
 - Every user-facing surface (marketing, web apps, dashboards, admin, generated sites, landing, microsites, blogs) MUST use ONE of two stacks:
-  - **React 19 + Vite + SSR/SSG + TanStack Router + Tailwind v4** (default)
-  - **Angular 21+ + Nx 20 + Ionic 8 + Capacitor 6 + PrimeNG + SSR (`@angular/ssr` on Cloudflare Workers) + Tailwind v4 + Angular CDK** (when explicitly chosen; ProjectSites.dev pinned here). RxJS-first per `rxjs-first-angular.md`.
+  - **Angular 21+ + Nx 20 + Spartan UI + Ionic 8 + Capacitor 6 + SSR (`@angular/ssr` on Cloudflare Workers) + Tailwind v4 + Angular CDK** (PREFERRED for applications; ProjectSites.dev pinned here). RxJS-first per `rxjs-first-angular.md`.
+  - **React 19 + Vite + SSR/SSG + TanStack Router + Tailwind v4** (the bolt.diy stack — use when appropriate)
 - Hand-rolling `public/index.html` + `public/pricing.html` + `public/about.html` etc. = build fail.
 - No "just one static HTML file" exceptions. Even 1-page site uses the Vite or Angular scaffold.
 
-## React 19 + Vite + SSR (default)
+## React 19 + Vite + SSR (bolt.diy stack — when appropriate)
 
 ### Core
 
