@@ -24,7 +24,7 @@ Spartan UI (shadcn-for-Angular) is THE complete dashboard foundation for every A
 ## Reusable pattern library (build once, compose everywhere)
 
 Shell: **app-shell · responsive sidebar · top command bar · breadcrumbs · command palette · global search · tenant switcher · project/site switcher · theme switcher · language switcher** (Angular i18n).
-Feedback: **notification center** (Novu per `notifications-email-webhooks-supervisor`) **· toast system · modal/dialog · drawer · shortcut overlay**.
+Feedback: **notification center** (psnotify per `notifications-email-webhooks-supervisor`) **· toast system · modal/dialog · drawer · shortcut overlay**.
 State system (the 4 states, NON-NEGOTIABLE per surface): **loading skeleton · empty state (→ first action) · error state (→ retry + correlation id) · success state**.
 Data: **smart list · smart table** (TanStack Table) **· advanced grid wrapper** (AG Grid Community only for 100k+ rows) **· virtualized list** (TanStack Virtual) **· saved views/filter presets · bulk-actions toolbar**.
 Media/editors: **media picker · uploader** (Uppy) **· code editor panel** (Monaco+Shiki) **· preview panel · visual editor panel** (GrapesJS) **· rich text panel** (Lexical) — per `forms-editors-content-supervisor`.

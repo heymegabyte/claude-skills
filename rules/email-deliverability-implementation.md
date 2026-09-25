@@ -110,4 +110,4 @@ Set up both before the first marketing send (both are free).
 - `[[right-to-deletion]]` — unsubscribe suppression list feeds into deletion cascade
 - `[[secret-provisioning]]` — RESEND_API_KEY + UNSUBSCRIBE_HMAC_KEY + CF_API_TOKEN provisioning
 - `[[hono-api]]` — one-click unsubscribe Hono route patterns
-- `[[notifications-email-webhooks-supervisor]]` — Resend as the email adapter, Novu backbone
+- `[[notifications-email-webhooks-supervisor]]` — Amazon SES as the sole email rail, psnotify backbone

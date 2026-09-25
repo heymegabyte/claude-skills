@@ -112,12 +112,12 @@ Paid/pro-only deps · proprietary UI kits · non-commercial licenses · duplicat
 
 ### Notifications / email / webhooks
 
-- ⏳ **Novu** — full notification center/inbox/preferences (in-app+email+push) when notifications are a feature.
+- ✅ **psnotify** (in-house, Durable-Object-backed) — full notification center/inbox/preferences (in-app+email+push) when notifications are a feature. Novu removed, never reintroduce (no `@novu/*` dep) per `notifications-email-webhooks-supervisor`.
 - ⏳ **svix** — webhook management + signature verify.
 - ⏳ **postal-mime** · **web-push**.
 - ✅ **Amazon SES** — transactional email (SigV4 raw-send from Workers, zero npm dep) + ⏳ **listmonk** (self-hosted, relays via SES SMTP) for newsletters/campaigns.
 - ❌ **Resend** (removed 2026-06-19).
-- ✅ **react-email** (`@react-email/components` + `render()`) — ACCEPTED 2026-06-19 for (a) React/Vite sites and any React surface, and (b) **server-side transactional email templating** (`render()` returns HTML string, framework-agnostic — runs in the Worker, never imported into the Angular admin bundle). Pairs with SES/listmonk send path + Novu email adapter. Still ❌ inside the Angular admin SPA bundle.
+- ✅ **react-email** (`@react-email/components` + `render()`) — ACCEPTED 2026-06-19 for (a) React/Vite sites and any React surface, and (b) **server-side transactional email templating** (`render()` returns HTML string, framework-agnostic — runs in the Worker, never imported into the Angular admin bundle). Pairs with SES/listmonk send path + psnotify email adapter. Still ❌ inside the Angular admin SPA bundle.
 
 ### Database / backend / search / analytics
 
