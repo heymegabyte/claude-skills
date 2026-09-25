@@ -21,7 +21,7 @@ ProjectSites.dev is **Cloudflare-first + TypeScript-first**. Use ONLY the select
 
 ## Selected packages
 
-- **Backend/API:** Hono · Effect · Zod · hono-openapi · @hono/zod-openapi · zod-openapi · zod-to-openapi · Drizzle ORM · Drizzle Kit · OpenFGA · Unkey · OpenFeature · CloudEvents · DOMPurify.
+- **Backend/API:** Hono · Effect · Zod · hono-openapi · @hono/zod-openapi · zod-openapi · zod-to-openapi · Drizzle ORM · Drizzle Kit · OpenFGA · OpenFeature · CloudEvents · DOMPurify.
 - **Builder/editor/admin:** TanStack Virtual · Radix UI · shadcn/ui · cmdk · Storybook · Plate.js · React Flow / XYFlow · Monaco Editor · Satori · Shiki · GrapesJS (only when justified for HTML/email/template-builder) · NgRx + RxJS (Angular admin surfaces only).
 - **Search:** Orama = default for **generated child-site** search (ships in the site bundle). **Platform/admin** search (submissions, sites, leads, logs) uses **Cloudflare AI Search (AutoRAG)** — CF-native, NOT Orama.
 - **AI/LLM/observability:** MCP TypeScript SDK · Langfuse · LiteLLM (internal gateway service, not a per-app dep) · OpenTelemetry · Sentry.
