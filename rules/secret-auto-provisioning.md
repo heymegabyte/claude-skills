@@ -122,7 +122,7 @@ Opt-in: `--computer-use` flag. Not auto-fired.
 
 Surface deeplinked URL + reason. Never autopilot.
 
-- `TRUSTPILOT_API_KEY` — paid Business plan.
+- `TRUSTPILOT_API_KEY` — paid Business plan; alternative: reviews.io.
 - `OPENSRS_USERNAME` / `OPENSRS_API_KEY` — reseller approval (~1 day).
 - `DOMAINR_API_KEY` — RapidAPI subscription.
 - `STRIPE_CONNECT_CLIENT_ID` — Connect platform brand review.
@@ -135,11 +135,8 @@ Surface deeplinked URL + reason. Never autopilot.
 Symptom of gated API: logged in, no "API Keys" / "Developer Settings" / "Create Key" button anywhere — it's gated, not hidden.
 
 - Self-serve instant: Stripe, Twilio, Resend, Anthropic, OpenAI, Cloudflare, Mailchimp (Marketing API).
-- `Checkr` — sales call; alternatives: Persona, Onfido.
-- `Plaid` — Sandbox instant; Development + Production require approval.
-- `Trustpilot` — paid only; alternative: reviews.io.
-- `Stripe Connect` — brand review for platform enablement.
-- `Apple Developer` — $99/yr + manual review.
+- Gated — keys + alternatives are in Tier 4 above (Checkr, Trustpilot, Stripe Connect, Apple Developer, OpenSRS, Domainr).
+- `Plaid` — Sandbox instant; Development + Production require approval (not a secret we mint — app-review gate).
 
 Update as vendor reality surfaces (per `prompt-as-training-signal` §6).
 
