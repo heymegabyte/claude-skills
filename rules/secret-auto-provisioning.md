@@ -98,9 +98,9 @@ Generates and age-encrypts via chezmoi → `~/.local/share/chezmoi/home/.chezmoi
 - Installation tokens: `gh api -X POST /users/{user}/installations/{id}/access_tokens` (60min TTL, auto-rotate).
 - Classic PAT requires browser → Tier 3.
 
-**Resend domains** (parent: `RESEND_API_KEY`):
+**Amazon SES domain identity** (creds: `AWS_SES_ACCESS_KEY_ID` + `AWS_SES_SECRET_ACCESS_KEY` + `AWS_SES_REGION`):
 
-- `POST https://api.resend.com/domains` → DNS records → add via CF zone API in same script.
+- SES v2 `CreateEmailIdentity` (SigV4-signed) → returns DKIM CNAME tokens + verification → add via CF zone API in same script.
 
 ### Tier 3 — Computer Use (OAuth-app registration)
 
@@ -180,14 +180,14 @@ Update as vendor reality surfaces (per `prompt-as-training-signal` §6).
 ## Chained provisioning
 
 - Stripe webhook → `STRIPE_WEBHOOK_SECRET` → push to Worker → deploy → verify callback.
-- Resend domain → DNS records → CF zone API → wait for verification → mark `verified`.
+- SES domain identity → DKIM CNAME tokens → CF zone API → poll `GetEmailIdentity` until verified → mark `verified`.
 - CF scoped token → push to Worker → swap `wrangler.toml [vars]` → smoke-test `/v4/user/tokens/verify` → reject if scope-mismatched.
 
 ## Idempotency contract
 
 - Tier 1 + Tier 2 safe to re-run forever.
 - chezmoi: `tryGetSecret(key) ?? mint()`.
-- Vendor pre-check: `GET ?lookup_keys=` (Stripe), `GET /tokens?name=` (CF), `GET /domains?domain=` (Resend) before POST.
+- Vendor pre-check: `GET ?lookup_keys=` (Stripe), `GET /tokens?name=` (CF), `GetEmailIdentity` (SES) before create.
 - Failed runs leave no orphans (rollback created products if mid-flow).
 
 ## Reusable helper
