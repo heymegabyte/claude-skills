@@ -123,7 +123,7 @@ Scope:
 
 ## Routing
 
-- **Skills 16** — `01-OS` → `14-Ideas` + `15-site-generation` + `16-cinematic-website-prime-directive`
+- **Skills 20** — `01-OS` → `14-Ideas` + `15-site-generation` + `16-cinematic-website-prime-directive` + `17-non-engineering-verticals` + `18-document-processing` + `19-mcp-authoring` + `20-superpowers`
 - **Agents 26** — `architect`, `code-simplifier`, `completeness-checker`, `deploy-verifier`, `security-reviewer`, `test-writer`, `seo-auditor`, `visual-qa`, `computer-use-operator`, `dependency-auditor`, `meta-orchestrator`, `migration-agent`, `content-writer`, `performance-profiler`, `incident-responder`, `accessibility-auditor`, `cost-estimator`, `changelog-generator`, `media-orchestrator`, `motion-choreographer`, `changelog-drafter`, `dead-code-remover`, `formatter`, `model-router`, `renamer`, `transcriber`
 - **Template** — `megabytespace/saas-starter`. Clone for new projects. Update when stack/patterns change.
 
