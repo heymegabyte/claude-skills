@@ -20,7 +20,7 @@ Second pass on the obra/Superpowers vendoring. Pass 1 (2026-06-28) vendored verb
 
 ### Authoring leverage
 
-6. ★ Absorb writing-skills' best 4 insights into `[[skill-authoring-contract]]`: SDO (no workflow-summary in description), match-the-form-to-the-failure, ordered-by-weight, human-voice.
+6. ★ Absorb writing-skills' best 4 insights into ``skill-authoring-contract``: SDO (no workflow-summary in description), match-the-form-to-the-failure, ordered-by-weight, human-voice.
 7. ★ `[[micro-test-instruction-wording]]` rule — 5-rep + no-guidance-control wording test before shipping guidance.
 8. ★ Pack `SKILL.md` as a decision-flow dispatcher (brainstorm→plan→worktree→build→review→finish) + agent map.
 9. A `/forge-skill-from-vendored <repo>` command — any third-party skill repo → compressed house-style pack automatically.

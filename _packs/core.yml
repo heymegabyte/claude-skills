@@ -64,7 +64,6 @@ members:
   - rules/uuid-version-discipline
   - rules/working-backwards
   - rules/internal-skill-discovery
-  - rules/skill-authoring-contract
   - rules/vendored-skill-compression
   - rules/micro-test-instruction-wording
   - bin/check-skill-length

@@ -20,7 +20,7 @@ paths:
 
 When you pull a third-party skill/plugin/doc into the owned layer (`~/.agentskills`), it lands **compressed to house style in the SAME turn** — never verbatim. Verbatim vendoring imports another author's verbosity into a budget every prompt pays. The value is the *technique*, not the prose.
 
-Cross-links: `[[instruction-compression-playbook]]` `[[skill-authoring-contract]]` `[[repo-folder-hygiene]]` `[[prompt-as-training-signal]]`
+Cross-links: `[[instruction-compression-playbook]]` ``skill-authoring-contract`` `[[repo-folder-hygiene]]` `[[prompt-as-training-signal]]`
 
 ## The law
 

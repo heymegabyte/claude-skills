@@ -35,7 +35,7 @@ Write sharp, punchy, Flesch ≥60 copy with action-verb CTAs, servant framing, a
 
 ## Human voice (anti-slop)
 
-For instructional/technical prose (skills, rules, docs) — not marketing copy, but the same slop-removal discipline applies. From `[[skill-authoring-contract]]`:
+For instructional/technical prose (skills, rules, docs) — not marketing copy, but the same slop-removal discipline applies. From ``skill-authoring-contract``:
 
 - Sound like one sharp engineer wrote it. No throat-clearing, no "it's worth noting."
 - Fragments beat full sentences when they read clean.
@@ -43,7 +43,7 @@ For instructional/technical prose (skills, rules, docs) — not marketing copy, 
 - No emoji-as-decoration, no hype adjectives, no restating the heading in the first bullet.
 - No "in today's fast-paced world" / "unlock the power of" / "seamlessly integrate" — these are the copy equivalent of `sleep(300)` in a test. Delete them.
 
-See `[[skill-authoring-contract]]` § Human voice for the canonical version; `[[micro-test-instruction-wording]]` for proving guidance wording actually binds.
+See ``skill-authoring-contract`` § Human voice for the canonical version; `[[micro-test-instruction-wording]]` for proving guidance wording actually binds.
 
 ## Banned words (grep before ship, replace with concrete)
 

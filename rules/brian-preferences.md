@@ -101,4 +101,4 @@ Every URL clickable, every URL specific.
 
 ## Skill/Rule File Format
 
-- Moved to `[[skill-authoring-contract]]` § File format — it's authoring guidance, only needed when editing skill/rule `.md` files, so it lives in the authoring rule (loads on rule/skill edits) instead of taxing every prompt's budget here. Bullets-not-paragraphs · ≤2 lines/bullet · no pipe-delimited one-liners.
+- Moved to ``skill-authoring-contract`` § File format — it's authoring guidance, only needed when editing skill/rule `.md` files, so it lives in the authoring rule (loads on rule/skill edits) instead of taxing every prompt's budget here. Bullets-not-paragraphs · ≤2 lines/bullet · no pipe-delimited one-liners.

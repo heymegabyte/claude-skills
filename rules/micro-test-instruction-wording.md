@@ -19,7 +19,7 @@ paths:
 
 Before shipping a rule/skill/prompt line whose job is to change AI behavior, prove the *wording* actually binds — cheaply, before slow full pressure-scenarios. Most "the AI ignored my instruction" bugs are wording bugs, not model bugs.
 
-Cross-links: `[[skill-authoring-contract]]` `[[instruction-compression-playbook]]` `[[evals]]` `[[vendored-skill-compression]]`
+Cross-links: ``skill-authoring-contract`` `[[instruction-compression-playbook]]` `[[evals]]` `[[vendored-skill-compression]]`
 
 ## The method (ordered)
 
@@ -33,12 +33,12 @@ Cross-links: `[[skill-authoring-contract]]` `[[instruction-compression-playbook]
 
 - Authoring or editing any discipline/shaping instruction (a rule, a SKILL.md section, a dispatch prompt).
 - A live instruction is being ignored or followed inconsistently.
-- Choosing between two phrasings ("recipe vs prohibition", per `[[skill-authoring-contract]]` § Match the form to the failure).
+- Choosing between two phrasings ("recipe vs prohibition", per ``skill-authoring-contract`` § Match the form to the failure).
 
 ## Limits
 
 - Micro-tests verify *wording*; they do NOT replace full pressure-scenarios for discipline skills (time + sunk-cost + authority + exhaustion). They are the fast first gate, not the last.
-- Graduate to ≥3 co-located eval cases before a skill is `stable` (per `[[skill-authoring-contract]]` § Eval-first).
+- Graduate to ≥3 co-located eval cases before a skill is `stable` (per ``skill-authoring-contract`` § Eval-first).
 
 ## See
 
