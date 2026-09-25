@@ -1,54 +1,32 @@
 ---
 name: "Notification Center"
-version: "2.0.0"
-updated: "2026-04-23"
-description: "Novu for multi-channel notifications: in-app bell, push, email (via Resend), SMS. Notification center component, preference management, workflow triggers from Hono, subscriber management, template variables, digest/batching, and Angular 21 integration."
+version: "3.0.0"
+updated: "2026-09-25"
+description: "Build the notification feature on psnotify (our DO-backed engine): in-app bell + unread badge, notification center (history/filter/mark-read), per-channel/per-category preferences, web-push (permission after value moment), Amazon SES email, digest/batching, and Angular 21 integration. When product has returning users who benefit from updates."
 ---
 
 # Notification Center
 
-## Novu Setup (Server-Side)
+> **Doctrine (SoT): `rules/notifications-email-webhooks-supervisor`.** psnotify — our in-house, Durable-Object-backed engine — is THE notification layer for every app (in-app inbox + center + preferences + multi-channel). Novu and OneSignal are removed vendors — never reintroduce (`@novu/*`, `NOVU_SECRET_KEY`, OneSignal SDK). The durable record is the psnotify DO, **NOT** a D1 `notifications` table. This skill is the build HOW; the rule owns the architecture + the state-transition trigger map.
 
-```typescript
-// src/services/notifications.ts
-import { Novu } from '@novu/node';
+## When to include
 
-function createNovu(env: Env): Novu {
-  return new Novu(env.NOVU_API_KEY);
-}
+- SaaS products where users return regularly
+- Donation campaigns with milestones · products with content updates (blog, features)
+- **NOT for** simple marketing sites with no return visitors
 
-// Create/update subscriber on user signup
-async function syncSubscriber(user: { id: string; email: string; name: string; phone?: string }, env: Env): Promise<void> {
-  const novu = createNovu(env);
-  await novu.subscribers.identify(user.id, {
-    email: user.email,
-    firstName: user.name.split(' ')[0],
-    lastName: user.name.split(' ').slice(1).join(' '),
-    phone: user.phone,
-    data: { plan: 'free' },
-  });
-}
+## Architecture
 
-// Trigger notification workflow
-async function notify(subscriberId: string, workflowId: string, payload: Record<string, unknown>, env: Env): Promise<void> {
-  const novu = createNovu(env);
-  await novu.trigger(workflowId, {
-    to: { subscriberId },
-    payload,
-  });
-}
-
-// Trigger to multiple subscribers (e.g. team notification)
-async function notifyMany(subscriberIds: string[], workflowId: string, payload: Record<string, unknown>, env: Env): Promise<void> {
-  const novu = createNovu(env);
-  await novu.trigger(workflowId, {
-    to: subscriberIds.map((id) => ({ subscriberId: id })),
-    payload,
-  });
-}
+```
+Event occurs → NotifyService.notify(eventId, {to, payload})
+             → psnotify DO persists (append-only durable record) + fans out per stored prefs
+             → in-app bell (/api/notifications) · web-push · Amazon SES email
 ```
 
-## Hono Notification Routes
+- Triggers are typed + Zod-validated (`contract-first-ai` / `zod-everywhere`); every payload carries `{ orgId, userId, featureSlug }`.
+- Example events (full map in the rule): `payment.succeeded` · `build.failed` · `domain.active` · `ai.job.completed` · `member.invited` · `draft.published`.
+
+## Hono routes (vendor-neutral — the bell reads these)
 
 ```typescript
 // src/routes/notifications.ts
@@ -58,67 +36,38 @@ import { z } from 'zod';
 
 const notifications = new Hono<{ Bindings: Env }>();
 
-// Trigger notification from API
-notifications.post('/send', zValidator('json', z.object({
-  subscriberId: z.string(),
-  workflow: z.string(),
-  payload: z.record(z.unknown()).optional(),
-})), async (c) => {
-  const { subscriberId, workflow, payload } = c.req.valid('json');
-  await notify(subscriberId, workflow, payload || {}, c.env);
-  return c.json({ sent: true });
+// List for the signed-in user (feed + unread count) — served by the psnotify DO
+notifications.get('/', async (c) => {
+  const userId = c.get('userId'); // from auth middleware
+  const { items, unreadCount } = await c.env.NOTIFY.list(userId, { limit: 20 });
+  return c.json({ notifications: items, unreadCount });
 });
 
-// Get notification preferences
-notifications.get('/preferences/:subscriberId', async (c) => {
-  const novu = createNovu(c.env);
-  const prefs = await novu.subscribers.getPreference(c.req.param('subscriberId'));
-  return c.json(prefs.data);
+notifications.post('/:id/read', async (c) => {
+  await c.env.NOTIFY.markRead(c.get('userId'), c.req.param('id'));
+  return c.json({ success: true });
 });
 
-// Update preferences
-notifications.patch('/preferences/:subscriberId', zValidator('json', z.object({
-  templateId: z.string(),
-  channel: z.object({
-    email: z.boolean().optional(),
-    inApp: z.boolean().optional(),
-    push: z.boolean().optional(),
-    sms: z.boolean().optional(),
-  }),
+notifications.post('/read-all', async (c) => {
+  await c.env.NOTIFY.markAllRead(c.get('userId'));
+  return c.json({ success: true });
+});
+
+// Per-channel / per-category preferences (stored in the DO, never hard-coded routing)
+notifications.patch('/preferences', zValidator('json', z.object({
+  category: z.enum(['milestones', 'content', 'account', 'digest']),
+  channel: z.object({ inApp: z.boolean().optional(), email: z.boolean().optional(), push: z.boolean().optional() }),
 })), async (c) => {
-  const novu = createNovu(c.env);
-  const { templateId, channel } = c.req.valid('json');
-  await novu.subscribers.updatePreference(c.req.param('subscriberId'), templateId, { channel });
+  await c.env.NOTIFY.setPreference(c.get('userId'), c.req.valid('json'));
   return c.json({ updated: true });
 });
 
 export { notifications };
 ```
 
-## Notification Workflows (Novu Dashboard or code)
+`c.env.NOTIFY` is the psnotify DO binding wrapped by `NotifyService` (see the rule). No third-party notification SDK.
 
-- **`welcome-email`** — Email (via Resend integration). Template variables — `{{firstName}}`, `{{productName}}`, `{{loginUrl}}`
-- **`invoice-paid`** — In-App + Email. Digest — batch per subscriber, 1hr window. Template — "{{count}} invoices paid totaling {{totalAmount}}"
-- **`team-invite`** — Email + In-App. Template — "{{inviterName}} invited you to {{teamName}}"
-- **`usage-alert`** — In-App + Email + Push. Template — "You've used {{percentage}}% of your {{resource}} quota"
-
-## Novu + Resend Email Integration
-
-```typescript
-// In Novu Dashboard: Integrations → Email → Custom (Resend)
-// Or configure via API:
-async function setupResendIntegration(env: Env): Promise<void> {
-  const novu = createNovu(env);
-  await novu.integrations.create({
-    providerId: 'resend',
-    channel: 'email',
-    credentials: { apiKey: env.RESEND_API_KEY, from: 'notifications@example.com' },
-    active: true,
-  });
-}
-```
-
-## Angular In-App Notification Center
+## Angular in-app notification bell
 
 ```typescript
 // notification-bell.component.ts
@@ -174,14 +123,13 @@ export class NotificationBellComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.fetchNotifications();
-    // Poll every 30s or use WebSocket from realtime skill
-    setInterval(() => this.fetchNotifications(), 30000);
+    setInterval(() => this.fetchNotifications(), 30000); // or a WebSocket from the realtime skill
   }
 
   toggle(): void { this.open.update((v) => !v); }
 
   async markAllRead(): Promise<void> {
-    await fetch('/api/notifications/mark-read', { method: 'POST' });
+    await fetch('/api/notifications/read-all', { method: 'POST' });
     this.notifications.update((list) => list.map((n) => ({ ...n, read: true })));
   }
 
@@ -191,7 +139,7 @@ export class NotificationBellComponent implements OnInit {
   }
 
   private async fetchNotifications(): Promise<void> {
-    const res = await fetch('/api/notifications/feed');
+    const res = await fetch('/api/notifications');
     const data = await res.json();
     this.notifications.set(data.notifications);
   }
@@ -203,11 +151,61 @@ export class NotificationBellComponent implements OnInit {
 }
 ```
 
-## Digest/Batching Pattern
+## Web push — request permission AFTER the value moment
 
-- Novu workflow with digest step:
-  1. Trigger event fires per-item (e.g. each comment)
-  2. Digest step collects events for 1 hour
-  3. Single notification sent — "You have 5 new comments on Project X"
-- Configure in Novu Dashboard — Add Digest Step → Regular → 1 hour
-- Access digested events in template — `{{#each events}} {{payload.comment}} {{/each}}`
+Never ask on first visit. Ask after the user gets value (first donation, first feature use, 3rd visit). psnotify's push channel uses standard **web-push** (service worker + `PushManager`) — no third-party push SDK.
+
+```javascript
+// Show a custom value-framed prompt, then register the browser push subscription
+async function requestPushAfterValue() {
+  if (Notification.permission !== 'default') return; // already granted/denied
+  showPushPrompt(); // custom UI explaining the value ("donation milestones + new features")
+}
+
+async function enablePush() {
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') return;
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: window.VAPID_PUBLIC_KEY, // psnotify VAPID key
+  });
+  await fetch('/api/notifications/push/subscribe', { method: 'POST', body: JSON.stringify(sub) });
+}
+```
+
+## Notification types (channel matrix)
+
+| Event | Push | In-App | Email |
+|-------|------|--------|-------|
+| Donation goal reached | Yes | Yes | Yes |
+| New blog post | Yes | Yes | No |
+| Feature update | Yes | Yes | No |
+| Account activity | No | Yes | Yes |
+| Weekly digest | No | No | Yes |
+| Testimonial approved | No | Yes | Yes |
+
+## Preferences (stored in the psnotify DO)
+
+Per-channel × per-category, surfaced in app settings; the DO stores them and the fan-out reads them — the app never hard-codes routing.
+
+```typescript
+interface NotificationPreferences {
+  push: boolean;   email: boolean;        // channel master switches
+  milestones: boolean; content: boolean;  // category opt-in/out
+  account: boolean;    digest: boolean;
+}
+```
+
+## Digest / batching
+
+- Collect per-item events over a window (e.g. each comment) → emit ONE grouped notification: "You have 5 new comments on Project X".
+- psnotify digest step: trigger fires per-item → digest collects for the window (e.g. 1 hour) → single fan-out with the collected events in the payload.
+
+## Best practices
+
+- Never ask for push on first visit — ask after a value moment.
+- Limit to 2–3 pushes per week max · always include a preferences/unsubscribe link.
+- In-app notifications clear on click · badge updates in real-time (or on page load).
+- Amazon SES email fallback for critical notifications when push is disabled.
+- Toasts are ephemeral; the notification center is the durable record (the DO).

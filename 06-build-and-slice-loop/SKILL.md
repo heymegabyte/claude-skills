@@ -28,7 +28,6 @@ submodules:
   - keyboard-shortcuts-and-command-palette.md
   - microcopy-library.md
   - notification-center.md
-  - notification-system.md
   - onboarding-and-first-run.md
   - pre-digested-builds.md
   - pwa-kit.md
