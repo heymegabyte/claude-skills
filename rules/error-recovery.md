@@ -70,7 +70,7 @@ Classify failures (transient/code/config/deploy/data/auth) and apply the matchin
 
 ## MCP limits + priority
 
-- **Rate limits**: Stripe 25/sec, GitHub 5000/hr, Firecrawl 1/sec/domain, Postiz 100/day
+- **Rate limits**: Stripe 25/sec, GitHub 5000/hr, Firecrawl 1/sec/domain
 - **Priority order**:
   1. Dedicated MCP
   2. Bash + API
