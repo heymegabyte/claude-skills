@@ -152,7 +152,7 @@ Never write hand-rolled HTML files for any user-facing surface.
 
 ## ALWAYS
 
-- React+Vite default. Angular+Ionic+Capacitor+Cordova when chosen.
+- Angular+Ionic+Capacitor+Cordova preferred. React+Vite (bolt.diy) when appropriate.
 - SSR or SSG for every marketing surface (build-time prerender min).
 - TypeScript strict. Zod at boundaries.
 - Tailwind v4 + design tokens via CSS-first config.

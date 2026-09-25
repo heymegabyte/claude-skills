@@ -15,7 +15,7 @@ paths:
 
 # Cinematic UI Patterns
 
-<!-- grow-ok --> <!-- React (default-stack) equivalents added; was Angular-only -->
+<!-- grow-ok --> <!-- React-path equivalents added alongside Angular -->
 
 Mandate `<app-rolling-counter>` for every numeric stat and `[appReveal]` fade-in for every section on all projectsites.dev surfaces; no static alternatives.
 
@@ -109,9 +109,9 @@ Mandate `<app-rolling-counter>` for every numeric stat and `[appReveal]` fade-in
 - `clip-path: inset(0 X% 0 0)` reveals the after-image; cyan rule + circular grab-handle ring
 - `prefers-reduced-motion: reduce` → instant snap, no clip-path transition
 
-## React (DEFAULT stack — React 19 + Vite) equivalents
+## React path (React 19 + Vite) equivalents
 
-The mandate is stack-agnostic; the behavior contracts above apply IDENTICALLY. On the default React stack, ship these as the parallel set (not Angular):
+The mandate is stack-agnostic; the behavior contracts above apply IDENTICALLY. On the React path, ship these as the parallel set (not Angular):
 
 - `<RollingCounter>` — `src/components/RollingCounter.tsx` (replaces `<app-rolling-counter>`)
 - `<Reveal>` wrapper or `useReveal()` hook — `src/components/Reveal.tsx` (replaces `appReveal` directive)

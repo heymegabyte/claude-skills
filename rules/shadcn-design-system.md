@@ -17,7 +17,7 @@ paths:
 
 # shadcn/ui Design System
 
-shadcn/ui (Radix primitives) is THE design-system foundation for every React surface — the default-stack parallel to `[[spartan-ui-design-system]]` (Angular). OSS, owns-the-code (components copied in via CLI, not a black-box dependency), Tailwind v4-composed. No MUI / Chakra / Ant / Mantine / other kits. Per `[[frontend-stack]]` + `[[stack-selector]]`.
+shadcn/ui (Radix primitives) is THE design-system foundation for every React surface — the React-path counterpart to `[[spartan-ui-design-system]]` (Angular). OSS, owns-the-code (components copied in via CLI, not a black-box dependency), Tailwind v4-composed. No MUI / Chakra / Ant / Mantine / other kits. Per `[[frontend-stack]]` + `[[stack-selector]]`.
 Cross-links: `[[frontend-stack]]` `[[cinematic-ui-patterns]]` `[[gorgeous-by-default]]` `[[10-experience-and-design-system]]` `[[text-contrast]]`
 
 ## Standing rule
