@@ -28,7 +28,7 @@ No payment feature merges without automated refund + dispute paths wired up. A s
 - **Stripe subscription cancellation** — prorated refund for unused days when cancelled within 30 days; `cancel_at_period_end` outside that window.
 - **Square `DISPUTE_CREATED`** — auto-accept disputes ≤ $25, same threshold.
 - **Both rails** — D1 `payment_events` dedupe table prevents double-refund on webhook replay.
-- **Both rails** — Resend receipt issued within 30 seconds of webhook processing via `ctx.waitUntil()`.
+- **Both rails** — Amazon SES receipt issued within 30 seconds of webhook processing via `ctx.waitUntil()`.
 
 ## Handler requirements
 
@@ -59,7 +59,7 @@ See `reference/refund-automation.md` for the full `handleSquareDispute` handler.
 
 ### Refund receipt email
 
-- Send via Resend inside `ctx.waitUntil()` — never block the API response.
+- Send via Amazon SES inside `ctx.waitUntil()` — never block the API response.
 - Format amount with `Intl.NumberFormat` using the charge's currency.
 - From address must pass `email-deliverability.md` gate (SPF+DKIM+DMARC).
 
@@ -81,8 +81,8 @@ See `reference/refund-automation.md` for code examples of each anti-pattern.
 - Auto-accept threshold: $25 (2500 cents) — review annually against dispute volume.
 - Subscription cancellation: prorated refund within 30 days, `cancel_at_period_end` outside.
 - Square `DISPUTE_CREATED` webhook wired if Square is the accept-money rail.
-- Refund receipt via Resend in `ctx.waitUntil()` — never blocking the API response.
-- Resend from address passes `email-deliverability.md` gate (SPF+DKIM+DMARC).
+- Refund receipt via Amazon SES in `ctx.waitUntil()` — never blocking the API response.
+- Amazon SES from address passes `email-deliverability.md` gate (SPF+DKIM+DMARC).
 - `charge.refunded` and `payment.refund.updated` logged to D1 for audit trail.
 
 ## D1 schema

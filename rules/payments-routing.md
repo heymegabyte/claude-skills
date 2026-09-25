@@ -92,7 +92,7 @@ If ≥2 match → Stripe Billing owns the subscription rail. Square is not force
 - "Anonymous" toggle (donor wall opt-out)
 - Employer-match search box (Double the Donation API or Benevity API)
 - Donor-Advised Fund button (DAFpay or Chariot.co → Fidelity/Schwab/Vanguard/National Christian Foundation routing)
-- Tax receipt auto-issued via Resend within 30 sec of webhook fire
+- Tax receipt auto-issued via Amazon SES within 30 sec of webhook fire
 - Cents-off displayed in tier copy ("$8.50 covers one hot meal — round up to $10")
 
 ## PayPal Giving Fund
