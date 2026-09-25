@@ -58,25 +58,7 @@ Run `/audit-router --fix` for stale pruning or task routing updates (monthly cad
 
 ## Wiring in settings.json
 
-```json
-"PostToolUse": [
-  {
-    "matcher": "Write|Edit|MultiEdit",
-    "hooks": [
-      {
-        "type": "command",
-        "command": "python3 $HOME/.claude/hooks/enforce-tdd-e2e.py 2>&1 || true",
-        "timeout": 5
-      },
-      {
-        "type": "command",
-        "command": "python3 $HOME/.claude/hooks/router-reconcile-on-skill-write.py 2>/dev/null || true",
-        "timeout": 5
-      }
-    ]
-  }
-]
-```
+See `reference/router-drift-auto-reconciliation.md` § Wiring for the exact `PostToolUse` block — matcher `Write|Edit|MultiEdit`, runs the reconcile hook alongside `enforce-tdd-e2e.py`, each `type: command` with `timeout: 5` and a `|| true` guard.
 
 ## Anti-patterns
 
@@ -86,13 +68,7 @@ Run `/audit-router --fix` for stale pruning or task routing updates (monthly cad
 
 ## Verification
 
-```bash
-ls -la ~/.claude/hooks/router-reconcile-on-skill-write.py
-jq '.hooks.PostToolUse' ~/.claude/settings.json
-echo "test" > ~/.claude/plugins/heymegabyte-claude-skills/05-architecture-and-stack/_test-reconcile.md
-grep '_test-reconcile' ~/.claude/plugins/heymegabyte-claude-skills/_router.md
-rm ~/.claude/plugins/heymegabyte-claude-skills/05-architecture-and-stack/_test-reconcile.md
-```
+See `reference/router-drift-auto-reconciliation.md` § Verification for the recipe: confirm the hook file exists, `jq` the `PostToolUse` block in settings.json, write a throwaway skill `.md` → grep `_router.md` for its slug → remove it.
 
 ## See also
 
