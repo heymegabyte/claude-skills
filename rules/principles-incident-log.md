@@ -319,7 +319,7 @@ The root failure mode is accumulation lag: orphans don't break anything today, b
 - Override: `CLAUDE_ROUTER_RECONCILE_DISABLE=1` for batch operations
 - stderr output: `router-reconcile: registered orphan {slug} in {dir}` or `router-reconcile: no action needed`
 
-- **[[audit-router]]** — the `/audit-router --fix` command this hook automates; run on demand for full sweep
+- **`audit-router`** — the `/audit-router --fix` command this hook automates; run on demand for full sweep
 - **[[bash-matcher-guardrails]]** — hook event names, matcher syntax, and `PostToolUse` wiring patterns
 - **[[drift-detection]]** — router orphans are a class of doc drift fixed by this hook
 - Ship as standalone rule? **Y — extracted as `rules/router-drift-auto-reconciliation.md`**

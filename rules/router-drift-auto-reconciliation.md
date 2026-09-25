@@ -72,7 +72,7 @@ See `reference/router-drift-auto-reconciliation.md` § Verification for the reci
 
 ## See also
 
-- `[[audit-router]]` — full sweep; handles stale pruning + task routing updates the hook cannot
+- ``audit-router`` — full sweep; handles stale pruning + task routing updates the hook cannot
 - `[[bash-matcher-guardrails]]` — `PostToolUse` event name, `Write|Edit|MultiEdit` matcher syntax
 - `[[drift-detection]]` — router orphans as a class of doc drift; this hook is the auto-fix
 - `rules/principles-incident-log.md` §18 — 2026-06-18 51-orphan incident log

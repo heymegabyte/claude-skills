@@ -331,7 +331,7 @@ Every deploy must clear all gates. No exceptions. No overrides.
 
 ## Task Routing
 
-The router loads the smallest useful subset per task — never the full 159 docs. See [`_router.md`](_router.md) for the complete routing table. This plugin ships 159 reference docs across 19 skill categories.
+The router loads the smallest useful subset per task — never the full 156 docs. See [`_router.md`](_router.md) for the complete routing table. This plugin ships 156 reference docs across 25 skill categories.
 
 | When you say... | Skills loaded |
 |-----------------|---------------|
