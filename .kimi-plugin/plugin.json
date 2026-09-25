@@ -70,16 +70,16 @@
       "id": "cinematic-website-prime-directive"
     },
     {
-      "path": "../17-non-engineering-verticals/SKILL.md",
-      "id": "non-engineering-verticals"
-    },
-    {
       "path": "../18-document-processing/SKILL.md",
       "id": "document-processing"
     },
     {
       "path": "../19-mcp-authoring/SKILL.md",
       "id": "mcp-authoring"
+    },
+    {
+      "path": "../20-superpowers/SKILL.md",
+      "id": "superpowers"
     }
   ]
 }

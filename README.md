@@ -18,15 +18,14 @@
 <br/>
 
 <div align="center">
-  <code>20 categories</code> · <code>117 doctrine rules</code> · <code>26 agents</code> · <code>20+ slash commands</code> · <code>32 platform variants</code><br/>
+  <code>19 categories</code> · <code>117 doctrine rules</code> · <code>26 agents</code> · <code>20+ slash commands</code> · <code>32 platform variants</code><br/>
   <a href="https://claude.megabyte.space"><strong>Showcase Website</strong></a>
 </div>
 
 ## What's New
 
-**Skills 17–19 + integration arc (2026-06)**
+**Skills 18–19 + integration arc (2026-06)**
 
-- **Skill 17 — Non-Engineering Verticals** — C-suite personas, finance domain, compliance OS, PM domain. One OS, every function.
 - **Skill 18 — Document Processing** — DOCX/XLSX read-write, PDF generation + parsing, PPTX generation. Full pipeline, no manual exports.
 - **Skill 19 — MCP Authoring** — forge HTTP MCP servers on Workers, stdio MCP templates, OpenAPI→MCP forger. Publish to the registry in one command.
 - **20+ slash commands** — `/saas`, `/forge-from-openapi`, `/forge-webhook-handler`, `/generate-prp`, `/execute-prp`, `/run-evals`, `/audit-doctrine`, `/audit-mcp-fleet`, `/dashboard-cockpit`, `/drift-check`, and more.
@@ -207,7 +206,6 @@ Auto-generated on every push to master. Each format uses native frontmatter for 
 | 14 | **Idea Engine** | — | Autonomous research, evidence-backed improvement proposals |
 | 15 | **Site Generation** | 9 | Full-corpus rebuild, slot-first GPT Image 1.5 media, NotebookLM podcast/infographic/video, citations |
 | 16 | **Cinematic Website** | — | 100-rule prime directive: cinematic UX, PWA, JSON-LD, CWV, a11y, integrations, TDD, deploy |
-| 17 | **Non-Engineering Verticals** | 4 | C-suite personas, finance domain, compliance OS, PM domain — full-org coverage |
 | 18 | **Document Processing** | 4 | DOCX/XLSX read-write, PDF parse + generate, PPTX generation — zero manual exports |
 | 19 | **MCP Authoring** | 3 | HTTP MCP on Workers, stdio server templates, OpenAPI→MCP forger, registry publish |
 
@@ -333,7 +331,7 @@ Every deploy must clear all gates. No exceptions. No overrides.
 
 ## Task Routing
 
-The router loads the smallest useful subset per task — never the full 163 docs. See [`_router.md`](_router.md) for the complete routing table. This plugin ships 163 reference docs across 20 skill categories.
+The router loads the smallest useful subset per task — never the full 159 docs. See [`_router.md`](_router.md) for the complete routing table. This plugin ships 159 reference docs across 19 skill categories.
 
 | When you say... | Skills loaded |
 |-----------------|---------------|

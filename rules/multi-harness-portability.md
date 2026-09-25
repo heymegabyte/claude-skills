@@ -26,7 +26,7 @@ Brian's plugin currently ships Claude Code only (`.claude-plugin/`). This rule d
 
 - A paying client or partner uses a different harness (Cursor, Codex, Kimi, opencode)
 - A skill reaches "stable, 100%" and the additional reach justifies ongoing sync cost
-- A skill is domain-agnostic (e.g., `finance-domain.md`, `compliance-os.md`) — not Claude-specific
+- A skill is domain-agnostic (e.g., `pdf-generation.md`, `pdf-parsing.md`) — not Claude-specific
 
 **Skip it when:**
 

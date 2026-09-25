@@ -37,7 +37,7 @@ Rules dir (harness-neutral):
   "description": "Emdash OS v6.1 — Brian Zalewski / Megabyte Labs",
   "skills": [
     { "path": "../01-operating-system/SKILL.md", "id": "operating-system" },
-    { "path": "../17-non-engineering-verticals/SKILL.md", "id": "non-engineering-verticals" },
+    { "path": "../18-document-processing/SKILL.md", "id": "document-processing" },
     { "path": "../18-document-processing/SKILL.md", "id": "document-processing" }
   ],
   "hooks": {
@@ -57,7 +57,7 @@ globs: ["**/*.ts", "**/*.md", "**/ROADMAP*"]
 alwaysApply: false
 ---
 
-[content of finance-domain.md]
+[content of pdf-generation.md]
 ```
 
 Generation script: `bin/export-cursor-rules.sh`
@@ -88,8 +88,8 @@ Codex does not support hooks or dynamic routing — export only harness-neutral 
     "rules/always.md",
     "rules/autonomous-engineering.md",
     "rules/feature-flags.md",
-    "17-non-engineering-verticals/finance-domain.md",
-    "17-non-engineering-verticals/compliance-os.md"
+    "18-document-processing/pdf-generation.md",
+    "18-document-processing/pdf-parsing.md"
   ]
 }
 ```
@@ -100,7 +100,7 @@ Codex does not support hooks or dynamic routing — export only harness-neutral 
 {
   "instructions": ["rules/always.md", "rules/code-style.md"],
   "skills": [
-    { "path": "17-non-engineering-verticals/SKILL.md" },
+    { "path": "18-document-processing/SKILL.md" },
     { "path": "18-document-processing/SKILL.md" }
   ]
 }
@@ -116,7 +116,7 @@ Kimi plugin format mirrors Claude Code with localization additions.
   "locale": "zh-CN",
   "fallback_locale": "en",
   "skills": [
-    { "path": "../17-non-engineering-verticals/SKILL.md", "id": "non-engineering-verticals" }
+    { "path": "../18-document-processing/SKILL.md", "id": "document-processing" }
   ]
 }
 ```

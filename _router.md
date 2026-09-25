@@ -20,7 +20,6 @@ Route prompts to smallest useful subset. Load `01-operating-system` FIRST always
 - **14 — Independent Idea Engine** — —
 - **15 — Site Generation** — `bolt-artifact-protocol`, `build-prompts`, `domain-features`, `homepage-block-library`, `local-seo`, `media-acquisition`, `non-technical-owner-onboarding`, `page-set-expansion`, `pseo-templates`, `quality-gates`, `research-pipeline`, `small-business-mode`, `source-fidelity-loop`, `template-improvements-100`, `template-system`
 - **16 — Cinematic Website Prime Directive** — —
-- **17 — Non-Engineering Verticals** — `c-suite-personas`, `compliance-os`, `finance-domain`, `pm-domain`
 - **18 — Document Processing** — `docx-xlsx`, `pdf-generation`, `pdf-parsing`, `pptx-generation`
 - **19 — MCP Authoring** — `forge-mcp-from-openapi`, `http-server-on-workers`, `stdio-server-template`
 - **20 — Superpowers** — `brainstorming`, `writing-plans`, `subagent-driven-development`, `using-git-worktrees`, `finishing-a-development-branch`, `requesting-code-review`, `receiving-code-review`, `writing-skills` — process discipline vendored from obra/Superpowers (MIT), compressed to house style; TDD/debug/verify/parallel folded into `rules/`
@@ -57,7 +56,6 @@ Route prompts to smallest useful subset. Load `01-operating-system` FIRST always
 - **OG images / media pipeline** → `12/og-card-pipeline`, `12/og-image-generation`, `12/image-optimization`
 - **MCP server authoring** → `19/forge-mcp-from-openapi`, `19/http-server-on-workers`, `19/stdio-server-template`
 - **Document generation (PDF/DOCX/PPTX)** → `18`
-- **Non-engineering domains (finance, PM, compliance)** → `17`
 - **Payments (Square / Stripe)** → `13/square-payments`, `13/stripe-billing`, `06/stripe-first-donations`
 - **Small business / local SEO** → `15/small-business-mode`, `15/local-seo`, `09/per-route-metadata`
 - **Accessibility / WCAG** → `07/accessibility-gate`, `07/wcag-2-2-2026`

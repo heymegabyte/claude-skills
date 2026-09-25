@@ -17,7 +17,6 @@ A one-read orientation guide for new agents and contributors.
 | `ai` | AI features — contract-first, evals, agents, sandbox | 22 |
 | `angular` | Angular 21 + Nx + Spartan UI + RxJS-first | 6 |
 | `backend` | CF Workers + Hono + D1 + Drizzle + Zod backend | 23 |
-| `business` | Non-engineering verticals — finance, legal, ops, compliance domains | 1 |
 | `compliance` | Data-subject rights + regulatory compliance (GDPR/CCPA) | 1 |
 | `content` | Copy + brand voice + citations + anti-slop | 6 |
 | `core` | Always-loaded essentials | 69 |
@@ -58,7 +57,6 @@ A one-read orientation guide for new agents and contributors.
 | 14 | `14-independent-idea-engine/` | independent-idea-engine | 0 |
 | 15 | `15-site-generation/` | site-generation | 16 |
 | 16 | `16-cinematic-website-prime-directive/` | cinematic-website-prime-directive | 0 |
-| 17 | `17-non-engineering-verticals/` | non-engineering-verticals | 4 |
 | 18 | `18-document-processing/` | document-processing | 4 |
 | 19 | `19-mcp-authoring/` | mcp-authoring | 3 |
 
