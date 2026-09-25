@@ -114,7 +114,7 @@ Check each item as acceptance criteria. Each unchecked item = a failing test = n
 - [ ] In-app notification bell with unread count badge
 - [ ] Notification preferences per user (email, push, in-app)
 - [ ] Real-time updates (WebSocket or polling)
-- [ ] Push notifications via OneSignal (opt-in)
+- [ ] Web push (VAPID) via psnotify, opt-in after a value moment
 - [ ] Email fallback for offline users
 - [ ] Notification types: system, billing, activity, marketing
 - [ ] Mark all as read

@@ -2,7 +2,7 @@
 name: "Service Worker and Offline"
 version: "1.2.0"
 updated: "2026-04-23"
-description: "Workbox cache strategies: CacheFirst static (30-day), NetworkFirst API/HTML, offline fallback, background sync, push via Novu, Angular ngsw integration, CF Workers edge+client SW coordination."
+description: "Workbox cache strategies: CacheFirst static (30-day), NetworkFirst API/HTML, offline fallback, background sync, web push (VAPID) via psnotify, Angular ngsw integration, CF Workers edge+client SW coordination."
 ---
 
 # Service Worker and Offline
@@ -238,7 +238,7 @@ self.addEventListener('activate', (event) => {
 }
 ```
 
-## Push Notifications (Novu Integration)
+## Push Notifications (Web Push / psnotify)
 
 ```typescript
 // src/sw-push.ts — append to sw.ts or separate push handler
@@ -263,15 +263,15 @@ self.addEventListener('notificationclick', (event) => {
 ```
 
 ```typescript
-// Server-side: trigger push via Novu
-import { Novu } from '@novu/node';
-const novu = new Novu(env.NOVU_API_KEY);
-
-await novu.trigger('push-notification', {
-  to: { subscriberId: userId },
+// Server-side: trigger push through psnotify — the DO signs with VAPID + delivers web-push.
+// Novu removed, never reintroduce. See 06/notification-center + rules/notifications-email-webhooks-supervisor.
+await env.NOTIFY.notify('push-notification', {
+  to: userId,
   payload: { title: 'Update Available', body: 'New features shipped.', url: '/changelog' },
 });
 ```
+
+The browser subscribes via `PushManager.subscribe({ applicationServerKey: VAPID_PUBLIC_KEY })` after a value moment (see `06/notification-center` § Web push); the SW `push` handler above renders it.
 
 ## SW Registration (main.ts)
 
