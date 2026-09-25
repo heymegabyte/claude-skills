@@ -102,17 +102,4 @@ Promotion = button in admin UI (`Promote → beta`); rule is policy, not mechani
 
 ## Schema
 
-```sql
-CREATE TABLE IF NOT EXISTS feature_flags (
-  key             TEXT PRIMARY KEY,
-  enabled         INTEGER NOT NULL DEFAULT 0,
-  rollout_percent INTEGER NOT NULL DEFAULT 0,
-  stage           TEXT NOT NULL DEFAULT 'experimental',
-  description     TEXT NOT NULL DEFAULT '',        -- 240-1200 chars prose runbook
-  e2e_tests       TEXT NOT NULL DEFAULT '[]',      -- JSON array of test file paths
-  smoke_steps     TEXT NOT NULL DEFAULT '',        -- markdown ordered list
-  owner_email     TEXT NOT NULL DEFAULT '',
-  created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at      TEXT NOT NULL DEFAULT (datetime('now'))
-);
-```
+See `reference/feature-flags.md` for the `feature_flags` D1 table DDL (columns: `key`, `enabled`, `rollout_percent`, `stage`, `description`, `e2e_tests`, `smoke_steps`, `owner_email`, `created_at`, `updated_at`).
