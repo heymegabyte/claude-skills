@@ -109,7 +109,7 @@ See `reference/e2e-tdd-organization.md` for the full triage protocol and referen
 
 ## Folded from Superpowers — test-driven-development
 
-*Vendored discipline from [obra/Superpowers](https://github.com/obra/Superpowers) (MIT, Jesse Vincent). Full skill: [[20-superpowers]] → test-driven-development/SKILL.md.*
+*Vendored discipline from [obra/Superpowers](https://github.com/obra/Superpowers) (MIT, Jesse Vincent). Full skill: `20-superpowers` → test-driven-development/SKILL.md.*
 
 - The Iron Law: NO production code without a failing test first. Wrote code before the test? Delete it — don't keep it as "reference", don't adapt it, don't even look at it.
 - Watch RED fail for the RIGHT reason — feature missing, not a typo/import error. A test that errors isn't RED; fix until it fails on the assertion.
@@ -130,4 +130,4 @@ See `reference/e2e-tdd-organization.md` for the full triage protocol and referen
 - Asserting on implementation details — verify behavior/output, not internal call counts or private structure.
 - Tests as afterthought — "implementation complete, ready for testing" is a TDD violation; testing IS implementation, not a follow-up.
 
-- See [[20-superpowers]]
+- See `20-superpowers`

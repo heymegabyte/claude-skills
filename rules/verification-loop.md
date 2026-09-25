@@ -157,7 +157,7 @@ For any repo with a deployed surface (Cloudflare Worker, Pages, Vercel, etc.), t
 
 ## Folded from Superpowers — verification-before-completion
 
-*Vendored discipline from [obra/Superpowers](https://github.com/obra/Superpowers) (MIT, Jesse Vincent). Full skill: [[20-superpowers]] → verification-before-completion/SKILL.md.*
+*Vendored discipline from [obra/Superpowers](https://github.com/obra/Superpowers) (MIT, Jesse Vincent). Full skill: `20-superpowers` → verification-before-completion/SKILL.md.*
 
 - Epistemic layer atop the deploy gates: claim ONLY what you verified this turn — evidence before assertions, always.
 - Iron law: no completion claim without FRESH verification evidence. If you didn't run the command in this message, you can't claim it passes.
@@ -169,4 +169,4 @@ For any repo with a deployed surface (Cloudflare Worker, Pages, Vercel, etc.), t
 - Trusting an agent's "success" report is not verification — independently check the VCS diff / artifacts before relaying completion.
 - Requirements met ≠ tests pass: re-read the plan, build a line-by-line checklist, verify each item, report gaps or completion.
 - Binding before committing, pushing, or opening a PR — these are completion claims and demand the gate first.
-- See [[20-superpowers]]
+- See `20-superpowers`
