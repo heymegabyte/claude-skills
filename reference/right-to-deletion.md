@@ -58,7 +58,7 @@ app.post('/account/delete', zValidator('json', DeletionRequestSchema), async (c)
 
 Full `WorkflowEntrypoint` implementation. Steps run in dependency order: resolve user →
 revoke sessions → purge KV → delete D1 rows → delete Vectorize → delete R2 → delete
-Stripe → archive Square → remove Resend → delete PostHog → delete Sentry → send receipt.
+Stripe → archive Square → remove listmonk contact → delete PostHog → delete Sentry → send receipt.
 
 Every step has `retries: { limit: 3 }` except the audit-only steps. FK-ordered D1 deletes
 are batched in a single `env.DB.batch([...])` call.
@@ -166,18 +166,20 @@ export class DeletionCascade extends WorkflowEntrypoint<Env, z.infer<typeof Dele
       }
     })
 
-    // 9. Resend audience removal
-    await step.do('remove-resend-contact', { retries: { limit: 3, delay: '5 seconds' } }, async () => {
-      // Resend: delete contact from every audience by email
-      const audiences = await fetch('https://api.resend.com/audiences', {
-        headers: { Authorization: `Bearer ${this.env.RESEND_API_KEY}` },
-      }).then(r => r.json() as Promise<{ data: Array<{ id: string }> }>)
+    // 9. listmonk subscriber removal (our contact/audience store — auth per [[13/email-marketing-and-listmonk]])
+    await step.do('remove-listmonk-subscriber', { retries: { limit: 3, delay: '5 seconds' } }, async () => {
+      const auth = `Basic ${btoa(`${this.env.LISTMONK_USER}:${this.env.LISTMONK_PASS}`)}`
+      // find by email, then HARD-delete (GDPR erasure — not blocklist, which retains the record)
+      const found = await fetch(
+        `${this.env.LISTMONK_URL}/api/subscribers?query=${encodeURIComponent(`subscribers.email='${email}'`)}`,
+        { headers: { Authorization: auth } },
+      ).then(r => r.json() as Promise<{ data: { results: Array<{ id: number }> } }>)
 
       await Promise.allSettled(
-        audiences.data.map(aud =>
-          fetch(`https://api.resend.com/audiences/${aud.id}/contacts/${encodeURIComponent(email)}`, {
+        found.data.results.map(s =>
+          fetch(`${this.env.LISTMONK_URL}/api/subscribers/${s.id}`, {
             method: 'DELETE',
-            headers: { Authorization: `Bearer ${this.env.RESEND_API_KEY}` },
+            headers: { Authorization: auth },
           })
         )
       )
@@ -225,7 +227,7 @@ export class DeletionCascade extends WorkflowEntrypoint<Env, z.infer<typeof Dele
 
 ---
 
-## Receipt email via Resend (`sendDeletionReceipt`)
+## Receipt email via Amazon SES (`sendDeletionReceipt`)
 
 Send from `privacy@yourdomain.com`. Required body content: (1) request received date,
 (2) completion date, (3) what was deleted, (4) what was retained and why, (5) dispute contact.
@@ -233,16 +235,14 @@ Mark `X-Category: transactional` to exempt from unsubscribe requirement.
 
 ```ts
 async function sendDeletionReceipt(email: string, requestedAt: string, completedAt: string, env: Env) {
-  await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from: `Privacy <privacy@${env.DOMAIN}>`,
-      to: email,
-      subject: `Your data has been deleted — ${new Date(completedAt).toDateString()}`,
-      html: deletionReceiptHtml({ requestedAt, completedAt, domain: env.DOMAIN }),
-      headers: { 'X-Category': 'transactional' }, // exempt from unsubscribe requirement
-    }),
+  // Send through the Amazon SES seam (SESv2 SendEmail, zero-dep SigV4) — see [[email-deliverability-implementation]].
+  // The deletion cascade calls the canonical send path; it never hand-rolls SigV4 here.
+  await sendEmail(env, {
+    from: `Privacy <privacy@${env.DOMAIN}>`,
+    to: email,
+    subject: `Your data has been deleted — ${new Date(completedAt).toDateString()}`,
+    html: deletionReceiptHtml({ requestedAt, completedAt, domain: env.DOMAIN }),
+    headers: { 'X-Category': 'transactional' }, // exempt from unsubscribe requirement
   })
 }
 ```

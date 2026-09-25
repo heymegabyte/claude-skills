@@ -22,7 +22,7 @@ Every project storing PII MUST implement automated deletion via CF Workflows v2.
 
 ## When this fires
 
-- Any project with a D1 `users` table AND at least one of: Stripe/Square records, R2 uploads, Vectorize embeddings, Resend/PostHog/Sentry user records.
+- Any project with a D1 `users` table AND at least one of: Stripe/Square records, R2 uploads, Vectorize embeddings, listmonk/PostHog/Sentry user records.
 - Before first deployment of any user-account feature.
 - GDPR applies to EU residents' data regardless of server location.
 
@@ -49,7 +49,7 @@ See `reference/right-to-deletion.md` for the full implementation.
 
 ### 2. Email intake (DSR@yourdomain.com)
 
-- Wire Resend inbound webhook (or Email Workers) to `POST /internal/deletion-email`.
+- Wire CF Email Workers (or Amazon SES inbound) to `POST /internal/deletion-email`.
 - Parse subject for "delete my account" / "right to erasure" / "RTBF"; auto-queue the Workflow.
 - Reply with confirmation email within **5 minutes**.
 - Parse body with Workers AI (`@cf/meta/llama-3-8b-instruct`) to extract requester email and intent.
@@ -69,7 +69,7 @@ See `reference/right-to-deletion.md` for the full implementation.
 5. R2 uploaded files        → by prefix users/{id}/  (paginate with cursor until not truncated)
 6. Stripe customer.delete   → if customer_id exists
 7. Square customer archive  → if square_customer_id exists
-8. Resend audience remove   → by email from all audiences
+8. listmonk subscriber remove → by email from all lists (hard-delete, not blocklist)
 9. PostHog person delete    → by distinct_id
 10. Sentry user delete      → by username/email
 11. Audit log UPDATE        → mark complete, preserve required fields only
@@ -77,7 +77,7 @@ See `reference/right-to-deletion.md` for the full implementation.
 
 Every step in the CF Workflow uses `retries: { limit: 3 }`. See `reference/right-to-deletion.md` for the full `DeletionCascade` WorkflowEntrypoint.
 
-## Receipt email (Resend)
+## Receipt email (Amazon SES)
 
 - Send from `privacy@yourdomain.com`; subject: `"Your data has been deleted — [date]"`.
 - Body MUST state: (1) request received date, (2) completion date, (3) what was deleted, (4) what was retained and why, (5) contact for disputes.
@@ -113,13 +113,13 @@ See `reference/right-to-deletion.md` for the `sendDeletionReceipt` implementatio
 
 - `grep -rn 'users.*INSERT\|users.*UPDATE' src/worker/` — every new user-data write needs a deletion step added to the Workflow.
 - Monthly: query `deletion_audit` for `status='failed'` rows; investigate and rerun.
-- Annually: verify all third-party deletion APIs still work (Stripe, Square, Resend, PostHog, Sentry endpoints change).
+- Annually: verify all third-party deletion APIs still work (Stripe, Square, listmonk, PostHog, Sentry endpoints change).
 
 ## See
 
 - `[[hono-api]]` — Workflows v2 step-do patterns + retry semantics
 - `[[feature-flags]]` — `deletion_dashboard` flag lifecycle
 - `[[zod-everywhere]]` — DeletionParamsSchema at every Workflow boundary
-- `[[secret-provisioning]]` — STRIPE_SECRET_KEY + RESEND_API_KEY + POSTHOG_PERSONAL_API_KEY env setup
+- `[[secret-provisioning]]` — STRIPE_SECRET_KEY + AWS_SES_* + LISTMONK_USER/PASS + POSTHOG_PERSONAL_API_KEY env setup
 - `[[email-deliverability]]` + `[[email-deliverability-implementation]]` — receipt email send path
 - `[[drift-detection]]` — new data writes that skip cascade registration = drift
