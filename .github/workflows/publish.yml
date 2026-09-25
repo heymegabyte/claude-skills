@@ -128,7 +128,7 @@ jobs:
           This repository contains 14 skill categories, 18 agents, and 94 reference docs for autonomous product building.
 
           ## Stack
-          CF Workers + Hono | Angular 21 + Ionic 8 + PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+          CF Workers + Hono | Angular 21 + Ionic 8 + PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
           ## Usage
           Load skills on demand via the skill router (`_router.md`). Each category has a `SKILL.md` with submodules listed in frontmatter.
@@ -162,7 +162,7 @@ jobs:
           14 categories (01-14), 94 reference docs, 18 agents.
 
           ## Stack
-          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
           ## Rules
           - TypeScript strict, never `any`, prefer `interface` over `type`
@@ -222,7 +222,7 @@ jobs:
           14 categories (01-14), 94 reference docs, 18 agents.
 
           ## Stack
-          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
           ## Rules
           - TypeScript strict, never `any`, prefer `interface` over `type`
@@ -247,7 +247,7 @@ jobs:
           14 categories (01-14), 94 reference docs, 18 agents.
 
           ## Stack
-          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
           ## Rules
           - TypeScript strict, never `any`, prefer `interface` over `type`
@@ -272,7 +272,7 @@ jobs:
           14 categories (01-14), 94 reference docs, 18 agents.
 
           ## Stack
-          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
           ## Rules
           - TypeScript strict, never `any`, prefer `interface` over `type`
@@ -296,7 +296,7 @@ jobs:
           14 categories (01-14), 94 reference docs, 18 agents.
 
           ## Stack
-          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
           ## Rules
           - TypeScript strict, never `any`, prefer `interface` over `type`
@@ -317,7 +317,7 @@ jobs:
           14 categories (01-14), 94 reference docs, 18 agents.
 
           ## Stack
-          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
           ## Rules
           - TypeScript strict, never `any`, prefer `interface` over `type`
@@ -359,7 +359,7 @@ jobs:
           14 categories (01-14), 94 reference docs, 18 agents.
 
           ## Stack
-          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+          CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
           ## Rules
           - TypeScript strict, never `any`, prefer `interface` over `type`
@@ -382,7 +382,7 @@ jobs:
             Load CONVENTIONS.md for stack defaults. Load _router.md for skill routing.
             14 categories (01-14), 94 reference docs, 18 agents.
 
-            Stack: CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Resend | Bun | Playwright v1.59+ | PostHog | Sentry
+            Stack: CF Workers+Hono | Angular 21+Ionic 8+PrimeNG 21 | D1/Neon | Drizzle v1 | Clerk | Stripe | Inngest | Amazon SES | Bun | Playwright v1.59+ | PostHog | Sentry
 
             Rules:
             - TypeScript strict, never `any`, prefer `interface` over `type`
