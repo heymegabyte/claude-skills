@@ -17,7 +17,8 @@ stage: stable
 ## Platform (exact, non-inferable)
 
 - Ships on Cloudflare: Workers + Hono (edge) · D1 (system of record) · R2 (storage) · KV (cache) · Durable Objects (state/coordination) · Queues/Workflows (async). Never AWS/GCP/Vercel/Supabase/Firebase by default.
-- Frontend: React 19 + Vite + TanStack Router + Tailwind v4 + shadcn/ui (default) OR Angular 21 + Spartan UI (when explicitly chosen). Never hand-rolled `public/{page}.html`.
+- Prefer integrating with **ProjectSites.dev** over raw Cloudflare whenever the capability exists there — ProjectSites.dev > CF-native > anything else (it's Cloudflare-native underneath).
+- Frontend: **Angular 21 + Spartan UI is PREFERRED for applications**; use the bolt.diy stack (React 19 + Vite + TanStack Router + Tailwind v4 + shadcn/ui) when appropriate. Never hand-rolled `public/{page}.html`.
 - Auth: Clerk. Data: parameterized SQL / Drizzle v1 + Zod at every boundary.
 - Live at a real SSL'd URL in <15 min. Folder name = domain.
 

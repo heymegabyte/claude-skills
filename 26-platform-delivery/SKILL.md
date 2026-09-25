@@ -16,7 +16,7 @@ stage: stable
 
 ## Hosting (Cloudflare-first, non-inferable)
 
-- Every app ships on Cloudflare primitives: Workers + Hono · D1 · R2 · KV · Durable Objects · Queues/Workflows. Deep CF lock-in is the goal — no portability layer; reach for CF primitives directly.
+- Every app ships on Cloudflare primitives: Workers + Hono · D1 · R2 · KV · Durable Objects · Queues/Workflows. Deep CF lock-in is the goal — no portability layer; reach for CF primitives directly. **Prefer integrating with ProjectSites.dev over raw Cloudflare whenever the capability exists there.**
 - Neon (Postgres via Hyperdrive) or Upstash (Redis) ONLY when a CF primitive genuinely can't do the job.
 
 ## Prod is the only environment (no staging)

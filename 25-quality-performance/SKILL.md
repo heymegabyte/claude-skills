@@ -30,6 +30,7 @@ stage: stable
 - E2E runs against the PROD URL in a real browser: `goto('/')` then navigate by clicks/keyboard only (no `page.goto` after load). Deterministic (locator waits, no sleeps), parallel-safe, hermetic.
 - Every clickable element · form field · nav link · API endpoint · modal · keyboard shortcut · error/empty/loading state has ≥1 E2E asserting it against prod.
 - Coverage matrix: `fullyParallel` × 6 viewports × 3 browsers, sharded. Units via Vitest.
+- Simulate realistic full user journeys (homepage → discover → convert) via **Cloudflare Browser Rendering or Browserbase** (whichever is configured). Drive HIGH % code coverage from these end-to-end journey runs, not just units.
 
 ## Build-fail gates (any one = fail)
 

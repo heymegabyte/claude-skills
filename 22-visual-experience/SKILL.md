@@ -16,6 +16,7 @@ stage: stable
 
 ## The bar
 
+- **Every surface: black + cyan + gorgeous + beautiful + animated + annotated + cited + HBO-level + cinematic + catchy.** Non-negotiable house style.
 - Anti-AI-slop, premium, distinctive — investor-demo quality. Apple Test: two elements compete → remove one; crowded → add whitespace; final feel effortless, inevitable.
 - Gorgeous-by-default: every iteration measurably more beautiful than the last. Never ship "functional but plain."
 
