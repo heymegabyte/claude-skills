@@ -96,7 +96,7 @@ database_name = "myapp"
 ## Cost discipline
 
 - Workers free tier: 100k req/day; Workers Paid: $5/mo (10M req + 30M CPU-ms) + $0.30/M extra req + $0.02/M extra CPU-ms
-- D1 on Workers Paid: 5GB + 25B rows-read + 50M rows-written/mo; then $0.75/GB-mo + $0.001/M rows-read + $1/M rows-written; no egress; read replication included (verified 2026-06-09)
+- D1 on Workers Paid: 5GB + 25B rows-read + 50M rows-written/mo; then $0.75/GB-mo + $0.001/M rows-read + $1/M rows-written; no egress; read replication included (verified 2026-09-24 against developers.cloudflare.com — Workers/D1/R2 rates all unchanged)
 - R2: 10GB free, $0.015/GB-mo, $0/egress · Workers AI Llama 3.3 70B FP8 FREE · AI Gateway free
 - Solo SaaS <$100k/mo MRR stays 10-100× cheaper than AWS-equivalent on CF
 
