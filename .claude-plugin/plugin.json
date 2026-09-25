@@ -47,7 +47,8 @@
     "24-functional",
     "25-quality-performance",
     "26-platform-delivery",
-    "27-trust-compliance"
+    "27-trust-compliance",
+    "28-cf-integrations-reference"
   ],
   "outputStyles": ["output-styles/emdash-concise.md"],
   "monitors": "monitors/monitors.json",

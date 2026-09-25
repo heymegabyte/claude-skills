@@ -5,6 +5,7 @@ members:
   - rules/secret-auto-provisioning
   - 08-deploy-and-runtime-verification
   - 26-platform-delivery
+  - 28-cf-integrations-reference
   - rules/computer-use-safety
   - rules/browser-automation-routing
   - rules/docker-slim-all-containers
