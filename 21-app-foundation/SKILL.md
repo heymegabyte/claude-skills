@@ -22,6 +22,11 @@ stage: stable
 - Auth: Clerk. Data: parameterized SQL / Drizzle v1 + Zod at every boundary.
 - Live at a real SSL'd URL in <15 min. Folder name = domain.
 
+## Edge intelligence & AI-native (world-class bar)
+
+- Reach for Cloudflare's AI/edge primitives before any third-party: **Workers AI** (LLMs + embeddings) · **Vectorize** (vector DB for RAG) · **AI Gateway** (caching · observability · fallback · rate-limit) · **Realtime via Durable Objects** (WebSockets · live collaboration · presence) · **Stream** (video) · **Images** (transform/optimize) · **Browser Rendering** · **Hyperdrive** (Postgres acceleration).
+- Every app is AI-native, never AI-optional: ship generative / chat-as-UI / voice / multimodal surfaces wherever they make the product easier, faster, or more delightful. RAG = Vectorize + Workers AI. Prefer ProjectSites.dev's managed AI surfaces when they cover the need.
+
 ## Payments (route by model)
 
 - Donations / POS / one-time / sub-$100 / in-person → **Square**.
