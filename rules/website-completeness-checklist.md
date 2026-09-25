@@ -69,7 +69,7 @@ The flat, scannable "is it actually finished?" gate every one-line site build ru
 
 ## Functionality
 
-35. Every form submits to a real endpoint (Turnstile + Zod + Resend or D1) — test an ACTUAL submission, assert success.
+35. Every form submits to a real endpoint (Turnstile + Zod + Amazon SES or D1) — test an ACTUAL submission, assert success.
 36. Contact/HQ page with an address renders a branded, address-pointed Google Map.
 37. Search works if present; newsletter double-opt-in if present; every booking/external link resolves.
 38. Analytics instrumented (PostHog + Workers Tracing) behind a consent gate.

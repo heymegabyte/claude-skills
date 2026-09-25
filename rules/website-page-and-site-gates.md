@@ -123,7 +123,7 @@ paths:
 
 - Turnstile (invisible, `data-appearance="interaction-only"`, NEVER visible widgets)
 - Zod
-- Resend — every send path passes the `[[email-deliverability]]` gate (SPF+DKIM+DMARC, RFC 8058 one-click unsub on marketing, spam <0.3%)
+- Amazon SES — every send path passes the `[[email-deliverability]]` gate (SPF+DKIM+DMARC, RFC 8058 one-click unsub on marketing, spam <0.3%)
 
 ## Every historical timeline (`[[timeline-authenticity]]`)
 

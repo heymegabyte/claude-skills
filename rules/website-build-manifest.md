@@ -76,7 +76,7 @@ Cross-links: `[[always]]` `[[website-build-doctrine]]` `[[competitor-research]]`
 - React 19 + Vite SSR/SSG + TanStack Router + Tailwind v4 + shadcn (default), OR Angular 21 stack when chosen (`[[frontend-stack]]`).
 - CF Workers + Hono + D1 + R2 + KV + DO (`[[hono-api]]`). Deep lock-in is the feature.
 - Every clickable entity linked (email/phone/URL/route) — unlinked email/phone = build fail.
-- Every form: Turnstile + Zod + Resend deliverability gate.
+- Every form: Turnstile + Zod + Amazon SES deliverability gate.
 - Analytics instrumented before DONE (solo tier: PostHog + Workers Tracing OTLP) — Worker-reverse-proxied, autocapture OFF, schema-controlled events (`[[production-observability-default-on]]`). A finished site with zero analytics is incomplete; this rule's triggers don't fire on a bare site prompt, so pull it explicitly.
 
 ## Quality gates (every gate green before DONE)
