@@ -79,7 +79,7 @@ Dark theme FIRST. Purple for cosmic/space only.
 - **Validation** — Zod
 - **Auth** — Clerk Core 3 (SaaS) / Authentik (self-hosted)
 - **Payments** — Stripe (versioned releases: `2026-03-25.dahlia`)
-- **Email** — Resend
+- **Email** — Amazon SES (sole rail; SendGrid break-glass)
 - **Jobs** — Inngest v4
 - **Runtime** — Bun 1.3
 - **Language** — TS 5.9

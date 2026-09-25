@@ -100,7 +100,7 @@ Scope:
   - Payouts to contractors / vendors / volunteers → **Stripe Connect Express**
   - Full: `rules/payments-routing.md`
 - **Jobs** — Inngest / Workflows v2
-- **Email** — Resend
+- **Email** — Amazon SES (sole transactional rail) + Listmonk (bulk); SendGrid break-glass
 - **Runtime** — Node 22 native TS / Bun 1.2+
 - **TypeScript** — 5.9+
 - **Lint** — oxlint + ESLint 9 + Prettier (NEVER Biome)

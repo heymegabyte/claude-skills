@@ -65,5 +65,5 @@ Email that bounces is a feature that silently doesn't work. Since Feb 2024 (Goog
 
 - `notifications-email-webhooks-supervisor` — psnotify backbone; Amazon SES as the sole email rail behind it
 - `secret-provisioning` — sending-domain DNS auto-provision (provider API → CF zone)
-- `website-page-and-site-gates` § Every form — Turnstile + Zod + Resend; this rule gates the send path those forms trigger
-- `13-observability-and-growth` — Listmonk-on-Coolify newsletters via Resend SMTP relay
+- `website-page-and-site-gates` § Every form — Turnstile + Zod + Amazon SES; this rule gates the send path those forms trigger
+- `13-observability-and-growth` — Listmonk-on-Coolify newsletters via SES SMTP relay

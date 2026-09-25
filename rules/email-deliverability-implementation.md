@@ -108,6 +108,6 @@ Set up both before the first marketing send (both are free).
 
 - `[[email-deliverability]]` — the WHAT: bulk-sender bar, enforcement context, build gate mandate
 - `[[right-to-deletion]]` — unsubscribe suppression list feeds into deletion cascade
-- `[[secret-provisioning]]` — RESEND_API_KEY + UNSUBSCRIBE_HMAC_KEY + CF_API_TOKEN provisioning
+- `[[secret-provisioning]]` — AWS_SES_* creds + UNSUBSCRIBE_HMAC_KEY + CF_API_TOKEN provisioning
 - `[[hono-api]]` — one-click unsubscribe Hono route patterns
 - `[[notifications-email-webhooks-supervisor]]` — Amazon SES as the sole email rail, psnotify backbone

@@ -75,7 +75,7 @@ WebPage floor. Add Organization · BreadcrumbList · FAQPage · Person · Produc
 - Auth: Clerk (M2M JWT)
 - Payments: Square (accept) / Stripe Billing (SaaS recurring) / Stripe Connect (payouts)
 - Jobs: Inngest / Workflows v2
-- Email: Resend
+- Email: Amazon SES (sole rail) + Listmonk (bulk); SendGrid break-glass
 - Runtime: Node 22 native TS / Bun 1.2+
 - TS: 5.9+ strict
 - Lint: oxlint + ESLint 9 + Prettier (NEVER Biome)
