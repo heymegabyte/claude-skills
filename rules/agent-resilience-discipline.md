@@ -34,19 +34,7 @@ Every `Write` call is **atomic and durable** — once it returns success, the fi
 - **High-value** — primary deliverable (implementation, skill, rule) — write second
 - **Supporting** — supplementary artifacts (test, doc, cross-link update) — write last
 
-Every multi-file agent brief MUST include:
-
-```
-## File write order (resilience mandate)
-Write files in this exact sequence — one Write call per file, in priority order:
-1. [File 1 path] — write this FIRST, before any optional reads or analysis
-2. [File 2 path] — write after File 1 is confirmed written
-3. [File 3 path] — write after File 2 is confirmed written
-
-Each Write is atomic. If the connection drops, files already written survive.
-Retry agents inherit partial state and write only the remaining files.
-Do NOT batch writes at the end of the response.
-```
+Every multi-file agent brief MUST include a **"## File write order (resilience mandate)"** block: one Write per file in priority order, the first file BEFORE any optional reads/analysis, each write atomic (survives a drop), retry agents write only the remaining files, and NEVER batch writes at the end. See `reference/agent-resilience-discipline.md` § Pattern A for the paste-in template.
 
 - **Bad brief:** "Research the codebase, read 5 files, analyze patterns, then write config.ts, schema.ts, and handler.ts."
 - **Good brief:** "Write config.ts first via Write tool. Then write schema.ts. Then write handler.ts. Read source files only as needed between writes."
@@ -61,14 +49,7 @@ Do NOT batch writes at the end of the response.
 
 Tasks #32 and #51 (2026-06-18): Pattern B retries succeeded in **1–2 tool calls** vs. original 4–16 pre-write calls that all dropped.
 
-```
-## Your task
-Call Write with the following path and content. That is the only tool call needed.
-
-Path: /path/to/rules/my-new-rule.md
-Content:
-[... full file content here ...]
-```
+See `reference/agent-resilience-discipline.md` § Pattern B for the skeleton brief template (embed the full file content; the agent's only task is one `Write` call).
 
 ## Anti-Patterns (Build Fail)
 
