@@ -43,7 +43,7 @@ This is heretical to every senior architect's training. It is correct for THIS s
 
 - **Neon Postgres** when CF D1 cannot meet the requirement (advanced SQL, RLS-as-tenant-isolation, OLAP) per `05-architecture-and-stack` § fallback decision tree. Front with **Hyperdrive** — still CF-native.
 - **Upstash Redis** when CF KV/DO cannot meet a specific need (Redis primitives at scale). Both Hyperdrive and Upstash are CF *partners*; they're not "multi-cloud," they're CF-extending.
-- **Sentry / PostHog / Stripe / Resend / Clerk** — third-party SaaS for problems outside CF's surface. Not lock-in exits; CF is the substrate, these are the integrations.
+- **Sentry / PostHog / Stripe / Amazon SES / Clerk** — third-party SaaS for problems outside CF's surface. Not lock-in exits; CF is the substrate, these are the integrations.
 
 ## What the team-shop wisdom got right (and doesn't apply here)
 

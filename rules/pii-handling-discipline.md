@@ -77,7 +77,7 @@ Plaintext PII belongs only in **active subject-of-record rows** deleted in full 
 | `sessions` | — (joins to users) | Session token, not PII; user row is the identity |
 | `billing` | `stripe_customer_id` only | Opaque ID; actual PII stored at Stripe |
 | `oauth_accounts` | `provider_user_id` | Opaque ID; not PII |
-| Resend / PostHog API calls | email in transit | Never persisted in D1 |
+| Amazon SES / PostHog API calls | email in transit | Never persisted in D1 |
 
 Never store plaintext email in any table that survives a deletion cascade — `deletion_audit` is updated last, not deleted, because it uses a hash.
 
@@ -112,7 +112,7 @@ See `reference/pii-handling-discipline.md` for the cron SQL.
 ## Cross-links
 
 - `[[right-to-deletion]]` — deletion cascade; audit tables survive because they use hashes
-- `[[email-deliverability-implementation]]` — email in transit (Resend API calls); never persisted
-- `[[secret-provisioning]]` — `POSTHOG_PERSONAL_API_KEY`, `RESEND_API_KEY` env setup
+- `[[email-deliverability-implementation]]` — email in transit (Amazon SES API calls); never persisted
+- `[[secret-provisioning]]` — `POSTHOG_PERSONAL_API_KEY`, `AWS_SES_*` env setup
 - `[[data-residency-by-default]]` — D1 read-replica placement for EU compliance
 - `[[zod-everywhere]]` — validate audit insert payloads at the boundary; schema enforces no `email` field

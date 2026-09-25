@@ -44,7 +44,7 @@ Trigger a 100-point comprehensive audit and multi-agent polish sweep on the full
 - Every Hono mount under `/api/*`.
 - `src/shared/*`, `src/data/*`, scripts, migrations.
 - Unit + E2E test inventory.
-- Integrations: Sentry, PostHog, GA4, Stripe, Square, Resend, Twilio, Turnstile, Clerk, Workers Tracing, AI Gateway, CF bindings.
+- Integrations: Sentry, PostHog, GA4, Stripe, Square, Amazon SES, Twilio, Turnstile, Clerk, Workers Tracing, AI Gateway, CF bindings.
 - Meta-files: manifest, robots, sitemap, humans.txt, security.txt, llms.txt, browserconfig, favicons, OG cards, apple-touch-icon, JSON-LD per route.
 - Perf budgets per route; a11y per breakpoint × 6.
 - Brand (palette, type, logo, voice); content (banned slop, citations, EEAT, FAQPage density, hyperlink density).
