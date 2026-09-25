@@ -193,7 +193,7 @@ describe('Quality Evals', () => {
 
 ## Cost Model
 
-- Haiku 4.5: $1/MTok input, $5/MTok output (verified 2026-05-28 per Anthropic pricing docs; 4× the legacy Haiku 3.5 rate this section used to quote)
+- Haiku 4.5: $1/MTok input, $5/MTok output (verified 2026-09-24 against the claude-api skill SoT; 4× the legacy Haiku 3.5 rate this section used to quote)
 - Typical eval: ~800 input + ~200 output tokens = ~$0.0018/eval
 - Suite of 20 evals = ~$0.036
 - Run 100×/day = ~$3.60/day
