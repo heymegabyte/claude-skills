@@ -83,7 +83,7 @@ logHeader "2. validate-packs"
 runGate "validate-packs" "node scripts/validate-packs.mjs" node scripts/validate-packs.mjs
 
 logHeader "3. sha-pin-check"
-runGate "sha-pin-check" "scripts/sha-pin-actions.mjs --check" node scripts/sha-pin-actions.mjs --check .github/workflows/publish.yml .github/workflows/supply-chain-pr-comment.yml .github/workflows/version-drift-check.yml
+runGate "sha-pin-check" "scripts/sha-pin-actions.mjs --check" node scripts/sha-pin-actions.mjs --check .github/workflows/*.yml
 
 logHeader "4. yamllint"
 if command -v yamllint >/dev/null; then
