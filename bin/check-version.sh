@@ -10,7 +10,7 @@ echo "Current Claude Code: $CURRENT"
 # If it installs, we report the new version.
 UPDATE_OUT=$(claude update 2>&1)
 UPDATE_EXIT=$?
-echo "Update result: $UPDATE_OUT"
+echo "Update result: $UPDATE_OUT (exit $UPDATE_EXIT)"
 
 # Timestamp
 echo "Checked: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"

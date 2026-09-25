@@ -37,8 +37,8 @@ for plugin in "${DISABLED[@]}"; do
       rm -rf "$dir"
       echo "DELETED: $dir (${size}K)"
     fi
-  done <<< "$dirs"
+  done <<<"$dirs"
 done
 
 echo "---"
-echo "Items: $COUNT | Freed: $(( TOTAL_BYTES / 1024 / 1024 ))M"
+echo "Items: $COUNT | Freed: $((TOTAL_BYTES / 1024 / 1024))M"

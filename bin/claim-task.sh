@@ -28,7 +28,7 @@ if git log -1 --format="%s" -- "$LOCK_FILE" 2>/dev/null | grep -q "claim:"; then
 fi
 
 # Write and push claim
-echo "$AGENT_ID:$TIMESTAMP:$TASK_NAME" > "$LOCK_FILE"
+echo "$AGENT_ID:$TIMESTAMP:$TASK_NAME" >"$LOCK_FILE"
 git add "$LOCK_FILE" 2>/dev/null
 git commit -m "claim: $AGENT_ID — $TASK_NAME" 2>/dev/null || true
 

@@ -15,7 +15,7 @@ BYTES=0
 while IFS= read -r -d '' dir; do
   mtime=$(stat -f%m "$dir" 2>/dev/null)
   now=$(date +%s)
-  age=$(( (now - mtime) / 86400 ))
+  age=$(((now - mtime) / 86400))
   size=$(du -sk "$dir" 2>/dev/null | cut -f1)
   if $DRY_RUN; then
     echo "WOULD DELETE: $dir (${age}d, ${size}K)"
@@ -28,4 +28,4 @@ while IFS= read -r -d '' dir; do
 done < <(find "$CACHE" -maxdepth 2 \( -name 'temp_git_*' -o -name 'temp_subdir_*.clone' \) -type d -mtime +7 -print0 2>/dev/null)
 
 echo "---"
-echo "Items: $COUNT | Freed: $(( BYTES / 1024 / 1024 ))M"
+echo "Items: $COUNT | Freed: $((BYTES / 1024 / 1024))M"

@@ -104,16 +104,18 @@ runGate "prettier" "prettier --check JSON/YAML" \
 
 logHeader "7. shellcheck"
 if command -v shellcheck >/dev/null; then
-  runGate "shellcheck" "shellcheck bin/ scripts/" \
-    shellcheck -x -S warning bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/check-deprecated-models.sh bin/check-skill-required-fields.sh bin/check-skill-pack-claim.sh bin/check-skill-submodules.sh bin/check-ci-status.sh bin/check-doc-counts.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
+  # Glob matches CI's validate job exactly (publish.yml § Self-lint Shell) so local mirrors CI.
+  runGate "shellcheck" "shellcheck bin/*.sh bin/lib/*.sh scripts/*.sh" \
+    shellcheck -x -S warning bin/*.sh bin/lib/*.sh scripts/*.sh
 else
   skipGate "shellcheck" "not installed (brew install shellcheck)"
 fi
 
 logHeader "8. shfmt"
 if command -v shfmt >/dev/null; then
-  runGate "shfmt" "shfmt -d -i 2 -ci -bn" \
-    shfmt -i 2 -ci -bn -d bin/lint-all.sh bin/lint-auto-improve.sh bin/security-supply-chain.sh bin/session-recap.sh bin/check-doc-urls.sh bin/check-pricing.sh bin/check-agent-routing.sh bin/check-pack-frontmatter.sh bin/check-agent-fallback.sh bin/check-deprecated-models.sh bin/check-skill-required-fields.sh bin/check-skill-pack-claim.sh bin/check-skill-submodules.sh bin/check-ci-status.sh bin/check-doc-counts.sh bin/install-hooks.sh bin/lib/emit-json.sh scripts/discover-secrets.sh scripts/gpt4o-vision-analyze.sh scripts/validate-skills.sh scripts/visual-tdd-loop.sh
+  # Glob matches CI's validate job exactly (publish.yml § Self-lint Shell) so local mirrors CI.
+  runGate "shfmt" "shfmt -d -i 2 -ci -bn bin/*.sh bin/lib/*.sh scripts/*.sh" \
+    shfmt -i 2 -ci -bn -d bin/*.sh bin/lib/*.sh scripts/*.sh
 else
   skipGate "shfmt" "not installed (brew install shfmt OR go install mvdan.cc/sh/v3/cmd/shfmt@latest)"
 fi

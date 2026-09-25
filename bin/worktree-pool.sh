@@ -21,7 +21,7 @@ ARG="${2:-}"
 
 _init_pool_file() {
   if [[ ! -f "$POOL_FILE" ]]; then
-    echo "{}" > "$POOL_FILE"
+    echo "{}" >"$POOL_FILE"
   fi
 }
 
@@ -45,7 +45,8 @@ init() {
   for i in $(seq 1 "$count"); do
     local name="pool-${i}"
     local path="$POOL_DIR/$name"
-    local branch="worktree-${name}-$(date +%s)"
+    local branch
+    branch="worktree-${name}-$(date +%s)"
 
     if [[ -d "$path" ]]; then
       echo "[worktree-pool] $name already exists, skipping" >&2
@@ -72,15 +73,17 @@ with open('$POOL_FILE', 'w') as f:
 
 acquire() {
   local label="${ARG:-agent-$(date +%s)}"
-  local free=$(_list_free | head -1)
+  local free
+  free=$(_list_free | head -1)
 
   if [[ -z "$free" ]]; then
     echo "[worktree-pool] NO FREE WORKTREES. Create more with: worktree-pool.sh init" >&2
     exit 1
   fi
 
-  local name=$(echo "$free" | cut -d'|' -f1)
-  local path=$(echo "$free" | cut -d'|' -f2)
+  local name path
+  name=$(echo "$free" | cut -d'|' -f1)
+  path=$(echo "$free" | cut -d'|' -f2)
 
   python3 -c "
 import json
@@ -107,7 +110,8 @@ release() {
     exit 1
   fi
 
-  local name=$(basename "$path")
+  local name
+  name=$(basename "$path")
 
   # Reset to main
   cd "$path" && git checkout main 2>/dev/null && git reset --hard origin/main 2>/dev/null || true
@@ -153,7 +157,8 @@ print('╰───────────────────────�
 cleanup() {
   for dir in "$POOL_DIR"/pool-*; do
     if [[ -d "$dir" ]]; then
-      local name=$(basename "$dir")
+      local name
+      name=$(basename "$dir")
       git worktree remove "$dir" --force 2>/dev/null || true
       echo "[worktree-pool] Removed $name" >&2
     fi
@@ -163,10 +168,13 @@ cleanup() {
 }
 
 case "$ACTION" in
-  init)     init ;;
-  acquire)  acquire ;;
-  release)  release ;;
-  status)   status ;;
-  cleanup)  cleanup ;;
-  *)        echo "Usage: worktree-pool.sh {init|acquire|release|status|cleanup} [arg]" >&2; exit 1 ;;
+  init) init ;;
+  acquire) acquire ;;
+  release) release ;;
+  status) status ;;
+  cleanup) cleanup ;;
+  *)
+    echo "Usage: worktree-pool.sh {init|acquire|release|status|cleanup} [arg]" >&2
+    exit 1
+    ;;
 esac
