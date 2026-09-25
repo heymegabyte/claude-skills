@@ -1,7 +1,7 @@
 # Emdash Skills for GitHub Copilot
 
 Load CONVENTIONS.md for stack defaults. Load _router.md for skill routing.
-20 categories (01-20), 163 reference docs, 26 agents.
+19 categories, 159 reference docs, 26 agents.
 
 ## Stack
 
