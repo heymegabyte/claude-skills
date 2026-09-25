@@ -27,7 +27,7 @@ See `reference/email-deliverability-implementation.md` for all DNS record exampl
 
 - SPF has a **10 DNS lookup limit** (RFC 7208 §4.6.4). Every `include:` costs one lookup. Flatten aggressively; alert at 9.
 - Use `~all` (softfail) during DMARC `p=none` ramp; switch to `-all` only AFTER reaching `p=reject`.
-- Resend include: `include:_spf.resend.com`. Verify the sending domain in the Resend dashboard first, then push returned SPF + DKIM CNAME records to CF zone API.
+- Amazon SES SPF: `v=spf1 include:amazonses.com ~all`. Enable Easy DKIM on the SES sending identity first, then push the SPF + SES DKIM CNAME records (`<selector>._domainkey.<domain>` → `<selector>.dkim.amazonses.com`, default selector `default`) to the CF zone API.
 
 ## DKIM — Key rotation (180-day cycle)
 
@@ -37,11 +37,11 @@ See `reference/email-deliverability-implementation.md` for all DNS record exampl
 Rotation steps — do NOT skip the overlap window:
 
 1. Generate new key pair; add new selector to DNS — wait 48h for propagation.
-2. Upload new private key to Resend; switch traffic to new selector.
+2. Upload new private key to Amazon SES (BYODKIM); switch traffic to new selector.
 3. Keep old selector in DNS for **30 days** (in-flight messages signed by old key still validate).
 4. Remove old selector after 30 days.
 
-For Resend managed DKIM (CNAME delegation): Resend handles rotation internally. Verify the CNAME is current whenever running `validate-email-auth.mjs`.
+For SES Easy DKIM (CNAME delegation, our default): SES handles rotation internally — no manual selector rotation needed. Verify the CNAME is current whenever running `validate-email-auth.mjs`.
 
 ## DMARC — Policy progression
 
@@ -100,7 +100,7 @@ Set up both before the first marketing send (both are free).
 
 **Microsoft SNDS:**
 
-- Register at sendersupport.olc.protection.outlook.com/snds; add Resend's sending IP ranges.
+- Register at sendersupport.olc.protection.outlook.com/snds; add Amazon SES's sending IP ranges (dedicated IPs, if configured).
 - Target: trap hit rate 0%, complaint rate as low as possible, filter status Green.
 - Red filter status → warm up IP/domain with low volume before resuming bulk.
 
